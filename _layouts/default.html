@@ -1,8 +1,11 @@
 {% include header.html %}
 
-<div class="row-fluid">
-  <div class="span12">
+<div class="row">
+  <div class="col-md-9">
     {{ content }}
+  </div>
+  <div class="col-md-3">
+    {% include sidebar.html %}
   </div>
 </div>
 

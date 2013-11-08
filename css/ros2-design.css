@@ -1,6 +1,8 @@
 body {
     padding-top: 60px;
+    background-color: #eee;
 }
-.navbar-inverse {
-    background-color: #242F4D;
+
+.tbmargin {
+    margin: 10px 0 10px 0;
 }
