@@ -10,3 +10,7 @@ Damage report! I will obey your orders. I will serve this ship as First Officer.
 ## Sub Heading
 
 Some days you get the bear, and some days the bear gets you. I recommend you don't fire until you're within 40,000 kilometers. Captain, why are we out here chasing comets? Mr. Worf, you do remember how to fire phasers? I'll alert the crew. and attack the Romulans. My oath is between Captain Kargan and myself. Your only concern is with how you obey my orders. Or do you prefer the rank of prisoner to that of lieutenant? I guess it's better to be lucky than good. You're going to be an interesting companion, Mr. Data. I think you've let your personal feelings cloud your judgement. The Enterprise computer system is controlled by three primary main processor cores, cross-linked with a redundant melacortz ramistat, fourteen kiloquad interface modules. I suggest you drop it, Mr. Data. Well, that's certainly good to know. What's a knock-out like you doing in a computer-generated gin joint like this? A surprise party? Mr. Worf, I hate surprise parties. I would *never* do that to you. Yes, absolutely, I do indeed concur, wholeheartedly! Now we know what they mean by 'advanced' tactical training. Maybe we better talk out here; the observation lounge has turned into a swamp. I'm afraid I still don't understand, sir. Computer, belay that order. I can't. As much as I care about you, my first duty is to the ship. Worf, It's better than music. It's jazz.
+
+# star wars quotes
+
+stay on target. stay on target.
