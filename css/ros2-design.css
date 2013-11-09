@@ -6,3 +6,7 @@ body {
 .tbmargin {
     margin: 10px 0 10px 0;
 }
+
+hr {
+    border-top-color: #aaa;
+}
