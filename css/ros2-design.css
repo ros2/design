@@ -47,3 +47,7 @@ div.maruku_toc {
 .maruku_toc ul ul {
     display: none;
 }
+
+.table {
+    border-radius: 8px;
+}
