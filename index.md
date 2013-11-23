@@ -15,6 +15,7 @@ Here is a list of the articles (white papers) we have written which should serve
 {% for p in site.pages %}
 <!-- {{ p.url }} -->
     {% if p.url contains 'articles/' %}
-<a href="{{ p.url }}">{{ p.title }}</a>
+<!-- {{ site.baseurl }}/{{ p.url }} -->
+<a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
     {% endif %}
 {% endfor %}

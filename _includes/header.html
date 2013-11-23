@@ -29,7 +29,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.name }}</a>
+          <a class="navbar-brand" href="{{ site.baseurl }}">{{ site.name }}</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -37,7 +37,7 @@
             {% assign p_split = p.url | split: '/' %}
             {% if p_split.last and p_split[1] == p_split.last %}
             <li>
-              <a href="{{ site.baseurl }}/{{ p.url }}">{{ p.title }}</a>
+              <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
             </li>
             {% endif %}
           {% endfor %}
