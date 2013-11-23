@@ -10,7 +10,7 @@ title: Topological Discovery and Communication Negotiation
 
 ## Problem Space
 
-ROS systems tend to be implemented as a **computational graph**, where there are graph **node**'s connected by **topic**'s and **service**'s. The graph which models the computational nodes with their topics and services can be different from the graph which represents the physical groupings and connections which implement the behavior modeled in the topics and services graph.
+Modern ROS systems tend to be implemented as a **computational graph**, where there are graph **node**'s connected by **topic**'s and **service**'s. The graph which models the computational nodes with their topics and services can be different from the graph which represents the physical groupings and connections which implement the behavior modeled in the topics and services graph.
 
 For the purposes of this document, the graph which defines the computational nodes and how they are connected using topics and services will be referred to as the **computational graph**. The graph which models processes around nodes and physical layers between nodes will be referred to as the **data layer graph**. A **node** is any addressable participant in the **computational graph**, it does not imply how nodes are organized into system processes, i.e. a node is neither necessarily a single process, nor does it necessarily share a process with other nodes.
 
