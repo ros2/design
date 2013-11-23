@@ -37,7 +37,7 @@
             {% assign p_split = p.url | split: '/' %}
             {% if p_split.last and p_split[1] == p_split.last %}
             <li>
-              <a href="{{ p.url }}">{{ p.title }}</a>
+              <a href="{{ site.baseurl }}/{{ p.url }}">{{ p.title }}</a>
             </li>
             {% endif %}
           {% endfor %}
