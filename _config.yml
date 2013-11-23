@@ -6,5 +6,5 @@ repo: https://github.com/ros2/design
 
 permalink: pretty
 
-markdown: redcarpet
+markdown: maruku
 pygments: true

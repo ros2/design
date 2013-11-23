@@ -1,6 +1,17 @@
 body {
     padding-top: 60px;
-    background-color: #eee;
+    background-color: #ddd;
+}
+
+/*This allows h2's which are linked to in toc to not get covered by the navbar*/
+h2 {
+    padding-top: 60px;
+    margin-top: -50px;
+}
+
+.content-container {
+    border-radius: 3px;
+    background-color: #fff;
 }
 
 .tbmargin {
@@ -9,4 +20,30 @@ body {
 
 hr {
     border-top-color: #aaa;
+}
+
+div.maruku_toc p {
+    padding: 5px 5px 0 5px;
+    margin: 0;
+    background-color: #aaa;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom: 1px solid #333;
+}
+
+div.maruku_toc {
+    float: right !important;
+    width: 300px;
+    background-color: #ddd;
+    margin-top: 20px;
+    border-radius: 3px;
+}
+
+.maruku_toc ul {
+    margin-top: 10px;
+    list-style: disc !important;
+}
+
+.maruku_toc ul ul {
+    display: none;
 }
