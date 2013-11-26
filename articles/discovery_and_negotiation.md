@@ -8,7 +8,7 @@ title: Topological Discovery and Communication Negotiation
 
 # {{ page.title }}
 
-I plan to make more changes.
+I plan to make more changes. +1 changes.
 
 ## Problem Space
 
