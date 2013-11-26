@@ -126,12 +126,13 @@ $( document ).ready(function() {
                 console.log(index);
                 console.log(prs_in);
                 console.log(pr);
+                return check_issue(prs_in, index + 1);
             }
-            // Else if we stored the pr previously and the sha of the head is the same, use its file listing
-            else if (sessionStorage.getItem('pr_' + pr['number']) &&
-                     stored_pr_and_files[0]['head']['sha'] == pr['head']['sha'])
+            // If we stored the pr previously and the sha of the head is the same, use its file listing
+            var stored_pr_and_files = sessionStorage.getItem('pr_' + pr['number']);
+            console.log(typeof stored_pr_and_files);
+            if (stored_pr_and_files && stored_pr_and_files[0]['head']['sha'] == pr['head']['sha'])
             {
-                var stored_pr_and_files = sessionStorage.getItem('pr_' + pr['number']);
                 add_pull_request(pr, stored_pr_and_files[1]);
             }
             // It is an unstored pr or one that has changed, so fetch it
