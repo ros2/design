@@ -1,24 +1,27 @@
-<a href="{{ site.repo }}/blob/gh-pages/{{ page.path }}" type="button" class="btn btn-default pull-left">
+<a href="{{ site.repo }}/blob/gh-pages/{{ page.path }}" type="button" class="btn btn-default tbmargin">
   <span class="glyphicon glyphicon-file"></span> View Source
 </a>
 
-<a href="{{ site.repo }}/edit/gh-pages/{{ page.path }}" type="button" class="btn btn-default pull-right">
+<a href="{{ site.repo }}/edit/gh-pages/{{ page.path }}" type="button" class="btn btn-default tbmargin">
   <span class="glyphicon glyphicon-edit"></span> Edit in Github
 </a>
 
-<div class="clearfix tbmargin">&nbsp;</div>
+<div class="clearfix">&nbsp;</div>
 
 <div class="panel panel-default">
   <div class="panel-heading">Pull Requests</div>
-  <ul class="nav nav-pills" style="margin: 10px;">
-    <li class="active"><a href="#">Open (9,999)</a></li>
-    <li><a href="#">Closed (9,999)</a></li>
+  <ul class="nav nav-pills nav-justified" style="padding: 10px;">
+    <li class="open-pr active"><a>Open</a></li>
+    <li class="closed-pr"><a>Closed</a></li>
   </ul>
 
-  <!-- List group -->
-  <div class="list-group">
-    <a href="#" class="list-group-item">Example pull request 1</a>
-    <a href="#" class="list-group-item">Example pull request 2</a>
-    <a href="#" class="list-group-item">Example pull request 3</a>
-  </ul>
+  <!-- Open List group -->
+  <div class="open-pr-list pr-list list-group">
+    <a class="list-group-item">Please Login to View Pull Requests</a>
+  </div>
+
+  <!-- Closed List group -->
+  <div class="closed-pr-list pr-list list-group">
+    <a class="list-group-item">Please Login to View Pull Requests</a>
+  </div>
 </div>

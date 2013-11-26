@@ -24,3 +24,12 @@ Here you go:
 
 So basically the usual :)
 ```
+
+Site Setup
+==========
+
+Site is a Jekyll website with design.ros2.org as the CNAME.
+
+The site requires no static generation outside of github's static jekyll generation, which means that changes are published to the site as soon as they are pushed (can take up to 10 minutes for github to update the site).
+
+The github login (for showing pull requests) also requires that https://github.com/prose/gatekeeper is setup in heroku, and the url for that is http://auth.design.ros2.org/authenticate/TEMP_TOKEN.
