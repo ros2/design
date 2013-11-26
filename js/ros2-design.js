@@ -72,7 +72,7 @@ $( document ).ready(function() {
         // Define function for adding a pull request to the website
         var add_pull_request = function(pr, pr_files) {
             // Store the pr/files pair for later use
-            sessionStorage.setItem('pr_' + pr['number'], [pr, pr_files]);
+            sessionStorage.setItem('pr_' + pr['number'], JSON.stringify([pr, pr_files]));
             // Iterate over the list files affected by the pull request
             for (var i = 0; i < pr_files.length; i++) {
                 // If the filename matches, update the page
@@ -129,8 +129,7 @@ $( document ).ready(function() {
                 return check_issue(prs_in, index + 1);
             }
             // If we stored the pr previously and the sha of the head is the same, use its file listing
-            var stored_pr_and_files = sessionStorage.getItem('pr_' + pr['number']);
-            console.log(typeof stored_pr_and_files);
+            var stored_pr_and_files = JSON.parse(sessionStorage.getItem('pr_' + pr['number']));
             if (stored_pr_and_files && stored_pr_and_files[0]['head']['sha'] == pr['head']['sha'])
             {
                 add_pull_request(pr, stored_pr_and_files[1]);
