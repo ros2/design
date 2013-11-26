@@ -35,7 +35,7 @@
           <ul class="nav navbar-nav">
           {% for p in site.pages %}
             {% assign p_split = p.url | split: '/' %}
-            {% if p_split.last and p_split[1] == p_split.last %}
+            {% if p_split.last and p_split.last != 'login' and p_split[1] == p_split.last %}
             <li>
               <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
             </li>
