@@ -70,6 +70,47 @@ $( document ).ready(function() {
         // Keep track of the total number of open/closed pull requests about this file
         var total_open_pr = 0;
         var total_closed_pr = 0;
+        // Define function for adding a pull request to the website
+        var add_pull_request = function(pr, pr_files) {
+            // Iterate over the list files affected by the pull request
+            for (var i = 0; i < pr_files.length; i++) {
+                // If the filename matches, update the page
+                if (pr_files[i]['filename'] == this_file) {
+                    // If open
+                    if (pr['state'] == 'open') {
+                        // Increment total open pr
+                        total_open_pr = total_open_pr + 1;
+                        // Update the open number badge
+                        $( 'li.open-pr' ).html(
+                            '<a>Open <span class="badge">' + total_open_pr + '</span></a>');
+                        // Append a li with a link and title of the pull request
+                        $( 'div.open-pr-list' ).append(
+                            '<a href="' + pr['html_url'] +
+                            '" class="list-group-item">' +
+                            '<strong>#' + pr['number'] + '</strong> ' +
+                            pr['title'] + '</a>');
+                    }
+                    // Else if closed
+                    else if (pr['state'] == 'closed') {
+                        // Increment total open pr
+                        total_closed_pr = total_closed_pr + 1;
+                        // Update the closed number badge
+                        $( 'li.closed-pr' ).html(
+                            '<a>Closed <span class="badge">' + total_closed_pr + '</span></a>');
+                        // Append a li with a link and title of the pull request
+                        $( 'div.closed-pr-list' ).append(
+                            '<a href="' + pr['html_url'] +
+                            '" class="list-group-item">' +
+                            '<strong>#' + pr['number'] + '</strong> ' +
+                            pr['title'] + '</a>');
+                    }
+                    // Else wtf
+                    else {
+                        console.log('Unknown state for pull request: ' + pr['state']);
+                    }
+                }
+            }
+        };
         // Define function for handling a single issue
         var check_issue = function(prs_in, index) {
             // If index >= the length of the issues originally given, exit
@@ -92,47 +133,8 @@ $( document ).ready(function() {
                 // Add authentication, as not to hit our unauthenticated limit
                 api_url += '?access_token=' + gh_token;
                 // Make the call to github
-                $.getJSON(api_url,
-                    // On success
-                    function(data) {
-                        // Iterate over the list files affected by the pull request
-                        for (var i = 0; i < data.length; i++) {
-                            // If the filename matches, update the page
-                            if (data[i]['filename'] == this_file) {
-                                // If open
-                                if (pr_state == 'open') {
-                                    // Increment total open pr
-                                    total_open_pr = total_open_pr + 1;
-                                    // Update the open number badge
-                                    $( 'li.open-pr' ).html(
-                                        '<a>Open <span class="badge">' + total_open_pr + '</span></a>');
-                                    // Append a li with a link and title of the pull request
-                                    $( 'div.open-pr-list' ).append(
-                                        '<a href="' + pr['html_url'] +
-                                        '" class="list-group-item">' +
-                                        '<strong>#' + pr['number'] + '</strong> ' +
-                                        pr['title'] + '</a>');
-                                }
-                                // Else if closed
-                                else if (pr_state == 'closed') {
-                                    // Increment total open pr
-                                    total_closed_pr = total_closed_pr + 1;
-                                    // Update the closed number badge
-                                    $( 'li.closed-pr' ).html(
-                                        '<a>Closed <span class="badge">' + total_closed_pr + '</span></a>');
-                                    // Append a li with a link and title of the pull request
-                                    $( 'div.closed-pr-list' ).append(
-                                        '<a href="' + pr['html_url'] +
-                                        '" class="list-group-item">' +
-                                        '<strong>#' + pr['number'] + '</strong> ' +
-                                        pr['title'] + '</a>');
-                                }
-                                // Else wtf
-                                else {
-                                    console.log('Unknown state for pull request: ' + pr_state);
-                                }
-                            }
-                        }
+                $.getJSON(api_url, function(data) {
+                    add_pull_request(pr, data);
                 });
             }
             // Recurse, until index >= prs_in.length
