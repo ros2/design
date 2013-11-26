@@ -47,7 +47,10 @@ $( document ).ready(function() {
                 '<img class="gravatar" src="' + user.avatar_url + '"/> &nbsp;' + user.name + ', Logout');
         };
         // Check for an use if set the stored user info
-        var stored_user = sessionStorage.getItem('user_' + gh_token);
+        var stored_user = null;
+        try {
+            stored_user = JSON.parse(sessionStorage.getItem('user_' + gh_token));
+        } catch (err) {}
         if (stored_user) {
             update_logout_btn(stored_user);
         } else {
@@ -68,7 +71,7 @@ $( document ).ready(function() {
                         '</div>'].join('\n'));
                 } else {
                     // Store user info for given gh_token
-                    sessionStorage.setItem('user_' + gh_token, user);
+                    sessionStorage.setItem('user_' + gh_token, JSON.stringify(res));
                     update_logout_btn(res);
                 }
             });
