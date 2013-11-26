@@ -36,30 +36,43 @@ $( document ).ready(function() {
         $( 'button.login-btn' ).click(function() {
             // When logout is clicked, unset github_oauth_token and refresh
             localStorage.removeItem('github_oauth_token');
+            sessionStorage.removeItem('user_' + gh_token);
             window.location.reload();
         });
-        // Get user information from github
         github = new Github({token: gh_token});
-        user = github.getUser();
-        user.show('', function(err, res) {
-            // If there is an error
-            if (err) {
-                // Show it
-                $( 'div.sidebar-container' ).append([
-                    '<div class="panel panel-danger">',
-                    '  <div class="panel-heading">',
-                    '    <h3 class="panel-title">Error</h3>',
-                    '  </div>',
-                    '  <div class="panel-body">',
-                    '    Error retrieving Github Info: ' + err,
-                    '  </div>',
-                    '</div>'].join('\n'));
-            } else {
-                // Update the logout button with user info
-                $( 'button.login-btn' ).html(
-                    '<img class="gravatar" src="' + res.avatar_url + '"/> &nbsp;' + res.name + ', Logout');
-            }
-        });
+        // Define function for updating logout button with user info
+        var update_logout_btn = function(user) {
+            // Update the logout button with user info
+            $( 'button.login-btn' ).html(
+                '<img class="gravatar" src="' + user.avatar_url + '"/> &nbsp;' + user.name + ', Logout');
+        };
+        // Check for an use if set the stored user info
+        var stored_user = sessionStorage.getItem('user_' + gh_token);
+        if (stored_user) {
+            update_logout_btn(stored_user);
+        } else {
+            // Get user information from github
+            user = github.getUser();
+            user.show('', function(err, res) {
+                // If there is an error
+                if (err) {
+                    // Show it
+                    $( 'div.sidebar-container' ).append([
+                        '<div class="panel panel-danger">',
+                        '  <div class="panel-heading">',
+                        '    <h3 class="panel-title">Error</h3>',
+                        '  </div>',
+                        '  <div class="panel-body">',
+                        '    Error retrieving Github Info: ' + err,
+                        '  </div>',
+                        '</div>'].join('\n'));
+                } else {
+                    // Store user info for given gh_token
+                    sessionStorage.setItem('user_' + gh_token, user);
+                    update_logout_btn(res);
+                }
+            });
+        }
         /* Get Pull Requests related to this page and populate accordingly */
         // Clear "please login" message
         $( 'div.pr-list' ).html('');
