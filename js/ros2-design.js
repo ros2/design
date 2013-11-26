@@ -56,7 +56,6 @@ $( document ).ready(function() {
                     '</div>'].join('\n'));
             } else {
                 // Update the logout button with user info
-                console.log(res);
                 $( 'button.login-btn' ).html(
                     '<img class="gravatar" src="' + res.avatar_url + '"/> &nbsp;' + res.name + ', Logout');
             }
