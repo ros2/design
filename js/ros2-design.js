@@ -129,7 +129,10 @@ $( document ).ready(function() {
                 return check_issue(prs_in, index + 1);
             }
             // If we stored the pr previously and the sha of the head is the same, use its file listing
-            var stored_pr_and_files = JSON.parse(sessionStorage.getItem('pr_' + pr['number']));
+            var stored_pr_and_files = null;
+            try {
+                stored_pr_and_files = JSON.parse(sessionStorage.getItem('pr_' + pr['number']));
+            } catch (err) {}
             if (stored_pr_and_files && stored_pr_and_files[0]['head']['sha'] == pr['head']['sha'])
             {
                 add_pull_request(pr, stored_pr_and_files[1]);
