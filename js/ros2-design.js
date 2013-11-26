@@ -72,6 +72,8 @@ $( document ).ready(function() {
         var total_closed_pr = 0;
         // Define function for adding a pull request to the website
         var add_pull_request = function(pr, pr_files) {
+            // Store the pr/files pair for later use
+            sessionStorage.setItem('pr_' + pr['number'], [pr, pr_files]);
             // Iterate over the list files affected by the pull request
             for (var i = 0; i < pr_files.length; i++) {
                 // If the filename matches, update the page
@@ -125,9 +127,16 @@ $( document ).ready(function() {
                 console.log(index);
                 console.log(prs_in);
                 console.log(pr);
-            } else {
-                // Capture the current pr's state
-                var pr_state = pr['state'];
+            }
+            // Else if we stored the pr previously and the sha of the head is the same, use its file listing
+            else if (sessionStorage.getItem('pr_' + pr['number']) &&
+                     stored_pr_and_files[0]['head']['sha'] == pr['head']['sha'])
+            {
+                var stored_pr_and_files = sessionStorage.getItem('pr_' + pr['number']);
+                add_pull_request(pr, stored_pr_and_files[1]);
+            }
+            // It is an unstored pr or one that has changed, so fetch it
+            else {
                 // Get the list of files for that pull request
                 var api_url = 'https://api.github.com/repos/ros2/design/pulls/' + pr["number"] + '/files';
                 // Add authentication, as not to hit our unauthenticated limit
