@@ -719,9 +719,20 @@
 
     Github.Issue = function(options) {
       var path = "/repos/" + options.user + "/" + options.repo + "/issues";
+      var pr_path = "/repos/" + options.user + "/" + options.repo + "/pulls";
 
       this.list = function(options, cb) {
         var tmp_path = path;
+        if (options['state'] == 'closed') {
+          tmp_path = tmp_path + '?state=closed';
+        }
+        _request("GET", tmp_path, options, function(err, res) {
+          cb(err,res);
+        });
+      };
+
+      this.list_pr = function(options, cb) {
+        var tmp_path = pr_path;
         if (options['state'] == 'closed') {
           tmp_path = tmp_path + '?state=closed';
         }

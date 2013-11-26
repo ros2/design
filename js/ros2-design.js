@@ -71,26 +71,24 @@ $( document ).ready(function() {
         var total_open_pr = 0;
         var total_closed_pr = 0;
         // Define function for handling a single issue
-        var check_issue = function(issues_in, index) {
+        var check_issue = function(prs_in, index) {
             // If index >= the length of the issues originally given, exit
-            if (index >= issues_in.length) {
+            if (index >= prs_in.length) {
                 return;
             }
             // Else grab the current issue
-            var issue = issues_in[index];
-            // If not issue, wut?
-            if (!issue) {
-                console.log('issue is invalid');
+            var pr = prs_in[index];
+            // If not pr, wut?
+            if (!pr) {
+                console.log('pr is invalid');
                 console.log(index);
-                console.log(issues);
-                console.log(issue);
-            }
-            // Else if the issue is a pull request
-            else if (issue['pull_request']['html_url']) {
-                // Capture the current issue's state
-                var pr_state = issue['state'];
+                console.log(prs_in);
+                console.log(pr);
+            } else {
+                // Capture the current pr's state
+                var pr_state = pr['state'];
                 // Get the list of files for that pull request
-                var api_url = 'https://api.github.com/repos/ros2/design/pulls/' + issue["number"] + '/files';
+                var api_url = 'https://api.github.com/repos/ros2/design/pulls/' + pr["number"] + '/files';
                 // Add authentication, as not to hit our unauthenticated limit
                 api_url += '?access_token=' + gh_token;
                 // Make the call to github
@@ -110,10 +108,10 @@ $( document ).ready(function() {
                                         '<a>Open <span class="badge">' + total_open_pr + '</span></a>');
                                     // Append a li with a link and title of the pull request
                                     $( 'div.open-pr-list' ).append(
-                                        '<a href="' + issue['html_url'] +
+                                        '<a href="' + pr['html_url'] +
                                         '" class="list-group-item">' +
-                                        '<strong>#' + issue['number'] + '</strong> ' +
-                                        issue['title'] + '</a>');
+                                        '<strong>#' + pr['number'] + '</strong> ' +
+                                        pr['title'] + '</a>');
                                 }
                                 // Else if closed
                                 else if (pr_state == 'closed') {
@@ -124,10 +122,10 @@ $( document ).ready(function() {
                                         '<a>Closed <span class="badge">' + total_closed_pr + '</span></a>');
                                     // Append a li with a link and title of the pull request
                                     $( 'div.closed-pr-list' ).append(
-                                        '<a href="' + issue['html_url'] +
+                                        '<a href="' + pr['html_url'] +
                                         '" class="list-group-item">' +
-                                        '<strong>#' + issue['number'] + '</strong> ' +
-                                        issue['title'] + '</a>');
+                                        '<strong>#' + pr['number'] + '</strong> ' +
+                                        pr['title'] + '</a>');
                                 }
                                 // Else wtf
                                 else {
@@ -137,18 +135,18 @@ $( document ).ready(function() {
                         }
                 });
             }
-            // Recurse, until index >= issues_in.length
-            check_issue(issues_in, index + 1);
+            // Recurse, until index >= prs_in.length
+            check_issue(prs_in, index + 1);
         };
-        // Fetch open and closed issues, passing the first of each to check_issue
+        // Fetch open and closed pull requests, passing the first of each to check_issue
         var issues = github.getIssues('ros2', 'design');
         // open
-        issues.list({state: 'open'}, function(err, issues) {
-            check_issue(issues, 0);
+        issues.list_pr({state: 'open'}, function(err, prs) {
+            check_issue(prs, 0);
         });
         // closed
-        issues.list({state: 'closed'}, function(err, issues) {
-            check_issue(issues, 0);
+        issues.list_pr({state: 'closed'}, function(err, prs) {
+            check_issue(prs, 0);
         });
     }
 });
