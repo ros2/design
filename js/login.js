@@ -3,7 +3,7 @@ $( document ).ready(function() {
         window.location.origin = window.location.protocol+"//"+window.location.host;
     }
     // If already logged in, go to home page
-    if (sessionStorage.getItem('github_oauth_token')) {
+    if (localStorage.getItem('github_oauth_token')) {
         window.location.replace(target_url);
     }
     // Check for redirect_uri
@@ -32,8 +32,8 @@ $( document ).ready(function() {
                     '  </div>',
                     '</div>'].join('\n'));
             } else {
-                // Else store the key in the the sessionStorage
-                sessionStorage.setItem('github_oauth_token', data.token);
+                // Else store the key in the the localStorage
+                localStorage.setItem('github_oauth_token', data.token);
                 window.location.replace(target_url);
             }
         });

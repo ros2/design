@@ -26,7 +26,7 @@ $( document ).ready(function() {
     // Set the redirect_uri for the login button
     sessionStorage.setItem('login_redirect', window.location);
     // If the github id is set, show us as logged in
-    gh_token = sessionStorage.getItem('github_oauth_token');
+    gh_token = localStorage.getItem('github_oauth_token');
     if (gh_token) {
         // Change login to logout
         $( 'a.login-btn' ).replaceWith([
@@ -35,7 +35,7 @@ $( document ).ready(function() {
             '</button>'].join('\n'));
         $( 'button.login-btn' ).click(function() {
             // When logout is clicked, unset github_oauth_token and refresh
-            sessionStorage.removeItem('github_oauth_token');
+            localStorage.removeItem('github_oauth_token');
             window.location.reload();
         });
         // Get user information from github
