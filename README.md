@@ -1,6 +1,6 @@
 # ROS 2.0 design
 
-This repository is a Jekyll website hosted on Github pages at http://design.ros2.org/.
+This repository is a [Jekyll](http://jekyllrb.com/) website hosted on [Github Pages](http://pages.github.com/) at http://design.ros2.org/.
 
 The repository/website is meant to be a point around which users can collaborate on the ROS 2.0 design efforts as well as capture those discussions for posterity.
 
@@ -15,12 +15,12 @@ jekyll serve --watch --baseurl=''
 
 And navgiating to your browser to:
 
-http://localhost:4000
+[http://localhost:4000/](http://localhost:4000/)
 
 
 ## Site Setup
 
-Site is a Jekyll website with design.ros2.org as the CNAME.
+Site is a Jekyll website with `design.ros2.org` as the `CNAME`.
 
 The site requires no static generation outside of github's static jekyll generation, which means that changes are published to the site as soon as they are pushed (can take up to 10 minutes for github to update the site).
 
