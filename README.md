@@ -1,35 +1,27 @@
-design
-======
+# ROS 2.0 design
 
-Design documentation for ROS 2.0 effort
+This repository is a Jekyll website hosted on Github pages at http://design.ros2.org/.
 
-to be captured
-==============
+The repository/website is meant to be a point around which users can collaborate on the ROS 2.0 design efforts as well as capture those discussions for posterity.
 
-From Vincent's French Robotics Conference:
+
+## Working Locally
+
+You can run the site locally by running this command in this repository:
 
 ```
-Here you go:
-- good stuff: docs/tutorials, easy to use/install, good for education
-- bad: catkin (need was understood but the main complaint was that it is harder to teach student), lack of multicast, lack of pluggable message transport, contribution to the core were hard/rejected (a pluggable ros_comm was submitted to Dirk but that was a year ago, during the Willow/catki/GitHub move crisis),
-- fear of perennity: if I switch to ROS now, will it work in a few years ?
-- how does the industry react ? (Mentioned a few companies, ros industrial)
-- good: .msg files are well defined and can be reused in other frameworks (e.g. Genom3 http://homepages.laas.fr/mallet/soft/architecture/genom3)
-- bad: actionlib is clunky (not sure exactly why) so they reimplemented their own
-- Python ROS comm is slower and not robust to packet loss.
-- good: relatively plug and play. A student can get started in a few days. Many drivers
-- bad: a lot of stuff on the wiki that needs to be deprecated removed
-- no high level decision framework (smash but good basically) but that was just to show that it was not A solution to high level robotics. Just something complementary
-- need of clarity/ roadmap to see how contributions can happen
-
-So basically the usual :)
+jekyll serve --watch --baseurl=''
 ```
 
-Site Setup
-==========
+And navgiating to your browser to:
+
+http://localhost:4000
+
+
+## Site Setup
 
 Site is a Jekyll website with design.ros2.org as the CNAME.
 
 The site requires no static generation outside of github's static jekyll generation, which means that changes are published to the site as soon as they are pushed (can take up to 10 minutes for github to update the site).
 
-The github login (for showing pull requests) also requires that https://github.com/prose/gatekeeper is setup in heroku, and the url for that is http://auth.design.ros2.org/authenticate/TEMP_TOKEN.
+The github login (for showing pull requests) also requires that https://github.com/prose/gatekeeper is setup in heroku, and the url for that is http://auth.design.ros2.org/authenticate/TEMP_TOKEN. Because of the free Heroku instance, the first time someone logins in after a period of time, there is a delay.
