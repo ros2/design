@@ -176,7 +176,6 @@ $( document ).ready(function() {
         var api_url_inavlid = 'https://api.github.com/repos/ros2/design/issues?state=closed&?labels=invalid';
         api_url_inavlid += '?access_token=' + gh_token;
         $.getJSON(api_url_inavlid, function(data) {
-            console.log(data);
             // Build list of invalid pull requests
             for (var i = 0; i < data.length; i++) {
                 issue = data[i];
