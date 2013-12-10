@@ -180,10 +180,14 @@ $( document ).ready(function() {
             // Build list of invalid pull requests
             for (var i = 0; i < data.length; i++) {
                 issue = data[i];
+                invalid_prs[issue['number']] = false;
                 if (issue['labels']) {
                     labels = issue['labels'];
                     for (var j = 0; j < labels.length; j++) {
-                        invalid_prs[issue['number']] = (labels[j]['name'] == 'invalid');
+                        if (labels[j]['name'] == 'invalid' || labels[j]['name'] == 'trivial') {
+                            invalid_prs[issue['number']] = true;
+                            break;
+                        }
                     }
                 }
             }
