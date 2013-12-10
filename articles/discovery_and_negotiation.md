@@ -2,7 +2,7 @@
 layout: default
 title: Topological Discovery and Communication Negotiation
 abstract:
-  This is an abstract for the deiscovery and negotiation paper.
+  This is an abstract for the discovery and negotiation paper.
 ---
 
 * This will become a table of contents (this text will be scraped).
