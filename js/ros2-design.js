@@ -85,6 +85,7 @@ $( document ).ready(function() {
         // Keep track of the total number of open/closed pull requests about this file
         var total_open_pr = 0;
         var total_closed_pr = 0;
+        var invalid_prs = {};
         // Define function for adding a pull request to the website
         var add_pull_request = function(pr, pr_files) {
             // Store the pr/files pair for later use
@@ -144,6 +145,10 @@ $( document ).ready(function() {
                 console.log(pr);
                 return check_issue(prs_in, index + 1);
             }
+            // If the pr is in the invalid list, do not add
+            if (invalid_prs[pr['number']]) {
+                return check_issue(prs_in, index + 1);
+            }
             // If we stored the pr previously and the sha of the head is the same, use its file listing
             var stored_pr_and_files = null;
             try {
@@ -167,15 +172,31 @@ $( document ).ready(function() {
             // Recurse, until index >= prs_in.length
             check_issue(prs_in, index + 1);
         };
-        // Fetch open and closed pull requests, passing the first of each to check_issue
-        var issues = github.getIssues('ros2', 'design');
-        // open
-        issues.list_pr({state: 'open'}, function(err, prs) {
-            check_issue(prs, 0);
-        });
-        // closed
-        issues.list_pr({state: 'closed'}, function(err, prs) {
-            check_issue(prs, 0);
+        // Fetch list of closed issues (and pull requests), with the invalid label
+        var api_url_inavlid = 'https://api.github.com/repos/ros2/design/issues?state=closed&?labels=invalid';
+        api_url_inavlid += '?access_token=' + gh_token;
+        $.getJSON(api_url_inavlid, function(data) {
+            console.log(data);
+            // Build list of invalid pull requests
+            for (var i = 0; i < data.length; i++) {
+                issue = data[i];
+                if (issue['labels']) {
+                    labels = issue['labels'];
+                    for (var j = 0; j < labels.length; j++) {
+                        invalid_prs[issue['number']] = (labels[j]['name'] == 'invalid');
+                    }
+                }
+            }
+            // Fetch open and closed pull requests, passing the first of each to check_issue
+            var issues = github.getIssues('ros2', 'design');
+            // open
+            issues.list_pr({state: 'open'}, function(err, prs) {
+                check_issue(prs, 0);
+            });
+            // closed
+            issues.list_pr({state: 'closed'}, function(err, prs) {
+                check_issue(prs, 0);
+            });
         });
     }
 });
