@@ -31,6 +31,9 @@ New articles should follow this outline:
       This is a multi-line abstract about this article. It should give a good overview about the contents of this article, the reason for writing it, and what the article delivers. The abstract is put in the "front-matter" of the document (YAML between the initial `---`'s) so that it can easily be reused else where in the site.
     ---
 
+    * This will become a table of contents (this text will be scraped). This is required by Maruku (our markdown engine).
+    {:toc}
+
     # {{ page.title }}
 
     ## Abstract
