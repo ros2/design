@@ -56,3 +56,7 @@ div.maruku_toc {
     height: 20px;
     border-radius: 2px;
 }
+
+.content-container p {
+    padding: 5px;
+}
