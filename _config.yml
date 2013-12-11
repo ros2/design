@@ -10,3 +10,10 @@ permalink: pretty
 
 markdown: maruku
 pygments: true
+
+exclude:
+ - CNAME
+ - config.json
+ - Gemfile
+ - LICENSE
+ - README.md

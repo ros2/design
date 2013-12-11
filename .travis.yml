@@ -1,0 +1,10 @@
+language: ruby
+script:
+    - bundle exec jekyll build
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+branches:
+  only:
+      - gh-pages
