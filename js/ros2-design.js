@@ -43,8 +43,12 @@ $( document ).ready(function() {
         // Define function for updating logout button with user info
         var update_logout_btn = function(user) {
             // Update the logout button with user info
+            var name = user.name;
+            if (!name) {
+                name = user.login;
+            }
             $( 'button.login-btn' ).html(
-                '<img class="gravatar" src="' + user.avatar_url + '"/> &nbsp;' + user.name + ', Logout');
+                '<img class="gravatar" src="' + user.avatar_url + '"/> &nbsp;' + name + ', Logout');
         };
         // Check for an use if set the stored user info
         var stored_user = null;
