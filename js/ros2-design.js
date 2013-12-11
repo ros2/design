@@ -30,9 +30,9 @@ $( document ).ready(function() {
     if (gh_token) {
         // Change login to logout
         $( 'a.login-btn' ).replaceWith([
-            '<button class="login-btn btn btn-default navbar-btn">',
-            '<span class="glyphicon glyphicon-user"></span> &nbsp;Logout',
-            '</button>'].join('\n'));
+           '<button class="login-btn btn btn-default navbar-btn">',
+           '<span class="glyphicon glyphicon-user"></span> &nbsp;Logout',
+           '</button>'].join('\n'));
         $( 'button.login-btn' ).click(function() {
             // When logout is clicked, unset github_oauth_token and refresh
             localStorage.removeItem('github_oauth_token');
@@ -61,14 +61,14 @@ $( document ).ready(function() {
                 if (err) {
                     // Show it
                     $( 'div.sidebar-container' ).append([
-                        '<div class="panel panel-danger">',
-                        '  <div class="panel-heading">',
-                        '    <h3 class="panel-title">Error</h3>',
-                        '  </div>',
-                        '  <div class="panel-body">',
-                        '    Error retrieving Github Info: ' + err,
-                        '  </div>',
-                        '</div>'].join('\n'));
+                       '<div class="panel panel-danger">',
+                       '  <div class="panel-heading">',
+                       '    <h3 class="panel-title">Error</h3>',
+                       '  </div>',
+                       '  <div class="panel-body">',
+                       '    Error retrieving Github Info: ' + err,
+                       '  </div>',
+                       '</div>'].join('\n'));
                 } else {
                     // Store user info for given gh_token
                     sessionStorage.setItem('user_' + gh_token, JSON.stringify(res));
@@ -103,10 +103,10 @@ $( document ).ready(function() {
                             '<a>Open <span class="badge">' + total_open_pr + '</span></a>');
                         // Append a li with a link and title of the pull request
                         $( 'div.open-pr-list' ).append(
-                            '<a href="' + pr['html_url'] +
-                            '" class="list-group-item">' +
-                            '<strong>#' + pr['number'] + '</strong> ' +
-                            pr['title'] + '</a>');
+                           '<a href="' + pr['html_url'] +
+                           '" class="list-group-item">' +
+                           '<strong>#' + pr['number'] + '</strong> ' +
+                           pr['title'] + '</a>');
                     }
                     // Else if closed
                     else if (pr['state'] == 'closed') {
@@ -114,13 +114,13 @@ $( document ).ready(function() {
                         total_closed_pr = total_closed_pr + 1;
                         // Update the closed number badge
                         $( 'li.closed-pr' ).html(
-                            '<a>Closed <span class="badge">' + total_closed_pr + '</span></a>');
+                           '<a>Closed <span class="badge">' + total_closed_pr + '</span></a>');
                         // Append a li with a link and title of the pull request
                         $( 'div.closed-pr-list' ).append(
-                            '<a href="' + pr['html_url'] +
-                            '" class="list-group-item">' +
-                            '<strong>#' + pr['number'] + '</strong> ' +
-                            pr['title'] + '</a>');
+                           '<a href="' + pr['html_url'] +
+                           '" class="list-group-item">' +
+                           '<strong>#' + pr['number'] + '</strong> ' +
+                           pr['title'] + '</a>');
                     }
                     // Else wtf
                     else {
