@@ -10,6 +10,10 @@ abstract:
 
 # {{ page.title }}
 
+## Abstract
+
+{{ page.abstract }}
+
 ## Problem Space
 
 ROS systems tend to be implemented as a **computational graph**, where there are graph **node**'s connected by **topic**'s and **service**'s. The graph which models the computational nodes with their topics and services can be different from the graph which represents the physical groupings and connections which implement the behavior modeled in the topics and services graph.
@@ -64,13 +68,16 @@ The main evolution of required functionality for this system over the previous o
 
 This is were the system features matrix forks. There are two glaring limitations of the previous use cases:
 
-- Nodes have no general way to notify the rest of the graph about events, events like:
+**Nodes have no general way to notify the rest of the graph about events, events like:**
+
  - node life cycle state changed
  - heartbeat
  - connection_established/connection_lost
  - mapping_established/mapping_lost
  - etc...
-- The list of nodes and their addresses, publishers, subscribers, etc. are statically maintained, which prevents:
+
+**The list of nodes and their addresses, publishers, subscribers, etc. are statically maintained, which prevents:**
+
  - dynamically computing the **communication graph** connections
  - dynamically adding nodes
  - dynamically adding publishers and subscribers
