@@ -22,29 +22,31 @@ hr {
     border-top-color: #aaa;
 }
 
-div.maruku_toc p {
-    padding: 5px 5px 0 5px;
+#markdown-toc {
+    padding: 0 0 0 0;
     margin: 0;
     background-color: #aaa;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border-bottom: 1px solid #333;
-}
-
-div.maruku_toc {
+    border-radius: 3px;
+    list-style: none !important;
     float: right !important;
     width: 300px;
-    background-color: #ddd;
     margin-top: 20px;
-    border-radius: 3px;
 }
 
-.maruku_toc ul {
-    margin-top: 10px;
+#markdown-toc p {
+    margin: 0px;
+}
+
+#markdown-toc ul {
+    background-color: #ddd;
+    margin-top: 0;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top: 1px solid #333;
     list-style: disc !important;
 }
 
-.maruku_toc ul ul {
+#markdown-toc ul ul {
     display: none;
 }
 
