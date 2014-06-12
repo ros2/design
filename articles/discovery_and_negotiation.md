@@ -124,12 +124,12 @@ Below is a table summarizing the above mentioned use cases and what interfaces/f
 <div class="table" markdown="1">
 System Name | Remote Node API | Node Configuration API | Data Layer Events | Dynamic Discovery | Requires Graph API
 --- | --- | --- | --- | --- | ---
-Statically Configured Nodes | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp;
-Statically Configured Graph | &#x2713; | &nbsp; | &nbsp; | &nbsp; | &nbsp;
-Dynamically Configured Graph with Static Discovery | &#x2713; | &#x2713; | &nbsp; | &nbsp; | &nbsp;
-Statically Configured Graph with Events | &#x2713; | &nbsp; | &#x2713; | &nbsp; | &#x2713;
-Dynamically Configured Graph with Events and Static Discovery | &#x2713; | &#x2713; | &#x2713; | &nbsp; | &#x2713;
-Dynamically Configured Graph with Dynamic Discovery | &#x2713; | &#x2713; | &nbsp; | &#x2713; | &#x2713;
+Statically Configured Nodes |   |   |   |   |  |
+Statically Configured Graph | &#x2713; |   |   |   |  |
+Dynamically Configured Graph with Static Discovery | &#x2713; | &#x2713; |   |   |  |
+Statically Configured Graph with Events | &#x2713; |   | &#x2713; |   | &#x2713;
+Dynamically Configured Graph with Events and Static Discovery | &#x2713; | &#x2713; | &#x2713; |   | &#x2713;
+Dynamically Configured Graph with Dynamic Discovery | &#x2713; | &#x2713; |   | &#x2713; | &#x2713;
 Dynamically Configured Graph with Events and Dynamic Discovery | &#x2713; | &#x2713; | &#x2713; | &#x2713; | &#x2713;
 </div>
 
