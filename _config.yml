@@ -8,7 +8,6 @@ oauth_client_id: efa6dd8eae9106381720
 
 permalink: pretty
 
-markdown: maruku
 pygments: true
 
 exclude:
