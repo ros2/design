@@ -99,5 +99,15 @@ all of those areas, such as:
 - DDS (Data Distribution Service).
 
 It is now possible to build a ROS-like middleware system using
-off-the-shelf open source libraries.  
+off-the-shelf open source libraries.  We can benefit tremendously from this
+approach in many ways, including:
+
+- we maintain less code, especially less non-robotics-specific code;
+- we can take advantage of features in those libraries that are beyond the
+  scope of what we would build ourselves; and
+- we can benefit from ongoing improvements that are made by others to those
+  libraries.
+
+## API changes
+
 
