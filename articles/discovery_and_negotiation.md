@@ -122,6 +122,7 @@ All of these capabilities together allows for complex systems which are capable 
 Below is a table summarizing the above mentioned use cases and what interfaces/features each of them need to be implemented. All of the systems in the table below require the basic local node API with the "connect_to" and "map_to" functions as well as basic connection introspection.
 
 <div class="table" markdown="1">
+
 System Name | Remote Node API | Node Configuration API | Data Layer Events | Dynamic Discovery | Requires Graph API
 --- | --- | --- | --- | --- | ---
 Statically Configured Nodes |   |   |   |   |  |
@@ -131,6 +132,7 @@ Statically Configured Graph with Events | &#x2713; |   | &#x2713; |   | &#x2713;
 Dynamically Configured Graph with Events and Static Discovery | &#x2713; | &#x2713; | &#x2713; |   | &#x2713;
 Dynamically Configured Graph with Dynamic Discovery | &#x2713; | &#x2713; |   | &#x2713; | &#x2713;
 Dynamically Configured Graph with Events and Dynamic Discovery | &#x2713; | &#x2713; | &#x2713; | &#x2713; | &#x2713;
+
 </div>
 
 ## Node Life Cycles
