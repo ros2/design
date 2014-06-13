@@ -14,7 +14,8 @@ If you would like to contribute, checkout the [contribute]({{ site.baseurl }}/co
 
 Here is a list of the articles (white papers) which have been written so far. These articles should serve as an excellent entry point for anyone wanting to join the conversation about any of the ROS 2.0 topics.
 
-{% for p in site.pages %}
+{% assign sorted_pages = site.pages | sort:"name" %}
+{% for p in sorted_pages %}
     {% if p.url contains 'articles/' %}
 ----
 
