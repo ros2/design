@@ -11,6 +11,8 @@ permalink: pretty
 markdown: kramdown
 pygments: true
 
+relative_permalinks: false
+
 exclude:
  - CNAME
  - config.json
