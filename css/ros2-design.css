@@ -52,7 +52,8 @@ hr {
 }
 
 #markdown-toc ul ul {
-    display: none;
+    border-top: none;
+    font-size: 75%;
 }
 
 .table {
