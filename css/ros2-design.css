@@ -68,3 +68,7 @@ hr {
 .content-container p {
     padding: 5px;
 }
+
+.content-container img {
+    max-width: 100%;
+}

@@ -114,6 +114,9 @@ TwinOaks's CoreDX DDS implementation is proprietary only, but apparently they sp
 Given the relatively strong LGPL option and the encouraging but custom license from RTI, it seems that depending on and even distributing DDS as a dependency should be straight forward.
 One of the goals of this proposal would be to make ROS 2.0 DDS vendor agnostic.
 So, just as an example, if the default implementation is RTI, but someone wants to use OpenSplice, they simply need to recompile the ROS source code with some options flipped and they could use the OpenSplice implementation.
+
+![DDS and ROS API Layout](/img/ros_on_dds/api_levels.png "DDS and ROS API Layout")
+
 This is made possible because of the fact that DDS defines an API in its specification.
 Research has shown that making code which is vendor agnostic is possible if not a little painful since the API's of the different vendors is almost identical, but there are minor differences like return types (pointer versus shared_ptr like thing) and header file organization.
 
@@ -172,6 +175,8 @@ In order to meet this goal, and in order to make DDS an implementation detail, R
 Therefore, the ROS 1.x `.msg` files would continue to be used and the `.msg` files would be converted into `.idl` files so that they could be used with the DDS transport.
 Language specific files would be generated for both the `.msg` files and the `.idl` files as well as conversion functions for converting between ROS and DDS in memory instances.
 The ROS 2.0 API would work exclusively with the `.msg` style message objects in memory and would convert them to `.idl` objects before publishing.
+
+![Message Generation Diagram](/img/ros_on_dds/message_generation.png "Message Generation Diagram")
 
 At first, the idea of converting a message field by field into another object type for each call to publish seems like a huge performance problem, but experimentation has shown that the cost of this copy is insignificant when compared to the cost of serialization.
 This ratio, which was found to be at least one order of magnitude, between the cost of converting types and the cost of serialization holds true with every serialization library that we tried, except [Cap'n Proto](http://kentonv.github.io/capnproto/) which doesn't have serialization step.
