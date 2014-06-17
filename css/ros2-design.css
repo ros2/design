@@ -72,3 +72,9 @@ hr {
 .content-container img {
     max-width: 100%;
 }
+
+.abstract {
+    font-style: italic;
+    font-size: 90%;
+    padding: 0 15px;
+}

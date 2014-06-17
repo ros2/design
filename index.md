@@ -21,7 +21,7 @@ Here is a list of the articles (white papers) which have been written so far. Th
 
 #### [{{ p.title }}]({{ site.baseurl }}{{ p.url }})
 
-{{ p.abstract }}
+> {{ p.abstract }}
     {% endif %}
 {% endfor %}
 
