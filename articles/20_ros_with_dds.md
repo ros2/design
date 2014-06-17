@@ -4,7 +4,7 @@ title: ROS on DDS
 permalink: articles/ros_on_dds/
 abstract:
   This article makes the case for using DDS as the middleware for ROS, outlining the pros and cons of this approach, as well as considering the impact to the user experience and code API that using DDS would have. The results of the ros_dds prototype are also summarized and used in the exploration of the issue.
-author: William Woodall
+author: '[William Woodall](https://github.com/wjwwood)'
 ---
 
 * This will become a table of contents (this text will be scraped).
@@ -12,8 +12,18 @@ author: William Woodall
 
 # {{ page.title }}
 
-In this article, the case will be made for using a vendor implementation of the [Data Distribution Service (DDS)](http://en.wikipedia.org/wiki/Data_Distribution_Service) as the middleware for ROS.
-One goal of this article is to educate the audience on what DDS is, and how it would fit into the ROS picture.
+<div class="abstract" markdown="1">
+{{ page.abstract }}
+</div>
+
+Original Author: {{ page.author }}
+
+Terminology:
+
+- [Data Distribution Service (DDS)](http://en.wikipedia.org/wiki/Data_Distribution_Service)
+- The [Object Management Group (OMG)](http://www.omg.org/)
+- OMG [Interface Description Language (IDL)](http://www.omg.org/gettingstarted/omg_idl.htm)
+  | [Formal description](http://www.omg.org/cgi-bin/doc?formal/02-06-39)
 
 ## Why Consider DDS?
 
@@ -103,9 +113,9 @@ RTI's Connext DDS is available under a custom "Community Infrastructure" License
 Like the other vendors this license is available for the core set of functionality, basically the basic DDS API, whereas other parts of their product like development and introspection tools are proprietary.
 RTI seems to have the largest on-line presence and installation base.
 
-PrismTech's OpenSplice DDS implementation is liberally licensed under the LGPL and is available on Github:
+PrismTech's OpenSplice DDS implementation is liberally licensed under the LGPL and is available on [Github](https://github.com):
 
-https://github.com/PrismTech/opensplice
+[https://github.com/PrismTech/opensplice](https://github.com/PrismTech/opensplice)
 
 PrismTech's implementation comes with a basic, functioning build system and was fairly easy to package.
 OpenSplice appears to be the number two DDS implementation in use, but that is hard to tell for sure.
