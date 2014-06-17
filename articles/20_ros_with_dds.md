@@ -39,7 +39,7 @@ DDS provides a publish-subscribe transport which is very similar to ROS's publis
 DDS uses the "Interface Description Language (IDL)" as defined by the [Object Management Group (OMG)](http://www.omg.org/) for message definition and serialization.
 DDS does not yet provide a request-response style transport, which would be like ROS's service system, but a draft for that style of transport is being reviewed right now (2014).
 
-By supporting the publish-subscribe transport, DDS provides a completely distributed discovery system by default.
+In order to support publish-subscribe transport, DDS provides a distributed discovery system by default.
 This allows any two DDS programs to communicate without the need for a tool like the ROS master.
 This makes the system more fault tolerant and flexible.
 It is not required to use the dynamic discovery mechanism, however, as multiple DDS vendors provide options for static discovery.
