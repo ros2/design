@@ -19,19 +19,19 @@ One goal of this article is to educate the audience on what DDS is, and how it w
 
 When exploring options for the next generation communication system of ROS, the initial options were to either improve the ROS 1.x transport or build a new middleware using component libraries such as [ZeroMQ](http://zeromq.org/), Protocol Buffers, and zeroconf (Bonjour/Avahi).
 However, in addition to those options, which both involved us building a middleware from parts or scratch, other end-to-end middlewares were considered.
-One middleware that was always coming up in the research was DDS.
+During our research, one middleware that stood out was DDS.
 
 ### An End-to-End Middleware
 
 The benefit of using an end-to-end middleware, like DDS, is that there is much less code to maintain and the the behavior and exact specifications of the middleware have already been distilled into documentation.
-By using something like DDS, ROS can build on a standard which not only has documents describing the system, but also clearly defines the way in which it should be used and even specifies the software API.
-Because of this concrete specification, other organizations can review and audit the design of the middleware and different vendors can make implementations that, in varying degrees, can inter-operate with each other.
+In addition to system-level documentation, DDS also has recommended use cases and a software API.
+With this concrete specification, third parties can review, audit, and implement the middleware with varying degrees of interoperability.
 This is something that ROS has never had, besides a few basic descriptions in a wiki and a reference implementation.
-If it is eventually decided that a new middleware should be built from existing libraries, then this type of specification is something that will also need to be created.
+Additionally, this type of specification would need to be created anyway if a new middleware were to be built from existing libraries.
 
-The draw back of using an end-to-end middleware is that ROS must work within the design of that middleware.
-If the middleware was designed for a different use case or is not flexible enough for ROS, then it might be necessary to work around the design.
-So at some level, by adopting an end-to-end middleware ROS is adopting many of the philosophies and culture of that middleware, and that is something that should not be taken lightly.
+The draw back of using an end-to-end middleware is that ROS must work within that existing design.
+If the design did not target a relevant use case or is not flexible, it might be necessary to work around the design.
+On some level, adopting an end-to-end middleware includes the philosophy and culture of that middleware, which should not be taken lightly.
 
 ## What is DDS?
 
