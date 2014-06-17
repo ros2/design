@@ -156,7 +156,7 @@ DDS also allows for user defined meta data in their discovery system, which will
 ### Publish-Subscribe Transport
 
 The DDSI-RTPS (DDS-Interoperability Real Time Publish Subscribe) protocol would replace ROS's rostcp and rosudp wire protocols for publish/subscribe.
-The DDS API provides a few more actors to the typical publish-subscribe pattern that you would be used to in ROS.
+The DDS API provides a few more actors to the typical publish-subscribe pattern of ROS 1.x.
 In ROS the concept of a node is most clearly paralleled to a graph participant in DDS.
 A graph participant can have zero to many topics, which are very similar to the concept of topics in ROS, but are represented as separate code objects in DDS, and is neither a subscriber nor a publisher.
 Then, from a DDS topic, DDS subscribers and publishers can be created, but again these are used to represent the subscriber and publisher concepts in DDS, and not to directly read data from or write data to the topic.
