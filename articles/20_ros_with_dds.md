@@ -214,7 +214,7 @@ However, writing the entire system in C might not be the first goal, and in the 
 One of the goals of ROS 2.0 is to reuse as much code as possible (do not reinvent the wheel) but also minimize the number of dependencies to improve portability and to keep the build dependency list lean.
 These two goals are sometimes at odds, since it is often the choice between implementing something internally or relying on an outside source (dependency) for the implementation.
 
-This is a point where the DDS implementations shine, because the two DDS vendors ROS is considering both build on Linux, OS X, Windows, and other more exotic systems with no, that is zero, external dependencies.
+This is a point where the DDS implementations shine, because two of the three DDS vendors under evaluation build on Linux, OS X, Windows, and other more exotic systems with no external dependencies.
 The C implementation relies only on the system libraries, the C++ implementations only rely on a C++03 compiler, and the Java implementation only needs a JVM and the Java standard library.
 Bundled as a binary (during prototyping) on both Ubuntu and OS X, the C, C++, Java, and C# implementations of OpenSplice (LGPL) is less than three megabytes in size and has no other dependencies.
 As dependencies go, this makes DDS very attractive because it significantly simplifies the build and run dependencies for ROS.
