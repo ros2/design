@@ -14,7 +14,7 @@ $( document ).ready(function() {
         sessionStorage.removeItem('login_redirect');
     }
     // Get temporary code from HTTP GET
-    var match = window.location.href.match(/\?code=(.*)/);
+    var match = window.location.href.match(/\?code=(.*)/)[1];
     // If found, pass the temp token to gatekeeper
     if (match) {
         var code = match[1];

@@ -252,18 +252,18 @@
         _request("DELETE", repoPath + "/git/refs/"+ref, options, cb);
       };
 
-      // Create a repo  
+      // Create a repo
       // -------
 
       this.createRepo = function(options, cb) {
         _request("POST", "/user/repos", options, cb);
       };
 
-      // Delete a repo  
-      // --------  
+      // Delete a repo
+      // --------
 
-      this.deleteRepo = function(cb) {  
-        _request("DELETE", repoPath, options, cb);  
+      this.deleteRepo = function(cb) {
+        _request("DELETE", repoPath, options, cb);
       };
 
       // List all tags of a repository
@@ -450,9 +450,9 @@
         _request("POST", repoPath + "/forks", null, cb);
       };
 
-      // Branch repository  
-      // --------  
- 
+      // Branch repository
+      // --------
+
       this.branch = function(oldBranch,newBranch,cb) {
         if(arguments.length === 2 && typeof arguments[1] === "function") {
           cb = newBranch;

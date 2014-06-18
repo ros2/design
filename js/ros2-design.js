@@ -84,8 +84,7 @@ $( document ).ready(function() {
         // Clear "please login" message
         $( 'div.pr-list' ).html('');
         // Determine the path to this file in github
-        var this_file = window.location.pathname.substring(0, window.location.pathname.length - 1) + '.md';
-        this_file = this_file.substring(1, this_file.length);
+        var this_file = $( 'p.github_file' ).text();
         // Keep track of the total number of open/closed pull requests about this file
         var total_open_pr = 0;
         var total_closed_pr = 0;
