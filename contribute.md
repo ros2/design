@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Contribute
+show_in_nav: true
 ---
 
 # Contribute
