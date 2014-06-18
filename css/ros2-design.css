@@ -78,3 +78,8 @@ hr {
     font-size: 90%;
     padding: 0 15px;
 }
+
+.contributor-icon {
+    height: 30px;
+    border-radius: 2px;
+}

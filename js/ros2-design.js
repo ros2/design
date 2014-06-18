@@ -204,5 +204,48 @@ $( document ).ready(function() {
                 check_issue(prs, 0);
             });
         });
+
+        /* Get Contributors for this file */
+        // Clear "please login" message
+        $( 'div.contributors' ).html('');
+        // Fetch list of commits for this file
+        var api_url_commits = 'https://api.github.com/repos/ros2/design/commits?path=' + this_file;
+        // if the commits for this file have already been fetched, only try to get more commits
+        api_url_commits += '&?sha=gh-pages';
+        api_url_commits += '&?access_token=' + gh_token;
+        $.getJSON(api_url_commits, function(data) {
+            // Update list of contributors for this page
+            var contributors = {};
+            try {
+                contributors = JSON.parse(sessionStorage.getItem('contributors_' + this_file));
+            } catch (err) {}
+            if (contributors == null) {
+                contributors = {};
+            }
+            for (var i = data.length - 1; i >= 0; i--) {
+                commit = data[i];
+                if (!(commit['author']['login'] in contributors)) {
+                    contributors[commit['author']['login']] = commit['author'];
+                }
+                if (!(commit['committer']['login'] in contributors)) {
+                    contributors[commit['committer']['login']] = commit['committer'];
+                }
+            }
+            // Store results
+            sessionStorage.setItem('contributors_' + this_file, JSON.stringify(contributors));
+            // Update UI elements
+            for (var contributor in contributors) {
+                if (!contributors.hasOwnProperty(contributor)) {
+                    continue;
+                }
+                dict = contributors[contributor];
+                // Append a li with a link and title of the pull request
+                $( 'div.contributors' ).append(
+                   '<a href="' + dict['html_url'] +
+                   '" class="list-group-item">' +
+                   '<img class="contributor-icon" src="' + dict['avatar_url'] + '" />' +
+                   ' @' + dict['login'] + '</a>');
+            }
+        });
     }
 });
