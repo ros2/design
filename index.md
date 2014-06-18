@@ -16,7 +16,24 @@ Here is a list of the articles (white papers) which have been written so far. Th
 
 {% assign sorted_pages = site.pages | sort:"name" %}
 {% for p in sorted_pages %}
-    {% if p.url contains 'articles/' %}
+    {% if p.url contains 'articles/' and p.published == true %}
+----
+
+#### [{{ p.title }}]({{ site.baseurl }}{{ p.url }})
+
+> {{ p.abstract }}
+    {% endif %}
+{% endfor %}
+
+----
+
+# Unpublished Articles
+
+These articles are not finished or maybe not even started yet:
+
+{% assign sorted_pages = site.pages | sort:"name" %}
+{% for p in sorted_pages %}
+    {% if p.url contains 'articles/' and p.published != true %}
 ----
 
 #### [{{ p.title }}]({{ site.baseurl }}{{ p.url }})

@@ -3,6 +3,7 @@ layout: default
 title: Topological Discovery and Communication Negotiation
 abstract:
   This article lays out the logical components and possibilities within a discovery and transport negotiation system. This article was written to try and understand the different possibilities for how the middleware could be implemented.
+published: true
 ---
 
 * This will become a table of contents (this text will be scraped).

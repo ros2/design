@@ -43,6 +43,7 @@ New articles should follow this template:
     abstract:
       This is a multi-line abstract about this article. It should give a good overview about the contents of this article, the reason for writing it, and what the article delivers. The abstract is put in the "front-matter" of the document (YAML between the initial `---`'s) so that it can easily be reused else where in the site.
     author: '[William Woodall](https://github.com/wjwwood)'
+    published: false
     ---
 
     * This will become a table of contents (this text will be scraped).
