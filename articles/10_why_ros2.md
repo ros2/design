@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Why ROS 2.0?
-permalink: articles/why_ros2/
+permalink: articles/why_ros2.html
 abstract:
   This article captures the reasons for making breaking changes to the ROS API, hence the 2.0.
 published: true
