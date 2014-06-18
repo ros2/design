@@ -125,7 +125,8 @@ to improve our user-facing APIs.  A great deal of the ROS code that exists
 today is compatible with the client libraries as far back as the 0.4 "Mango
 Tango" release from February 2009.  That's great from the point of view of
 stability, but it also implies that we're still living with API decisions
-that mere made several years ago.
+that were made several years ago, some of which we know now to be not the
+best.
 
 So, with ROS 2.0, we will design new APIs, incorporating to the best of our
 ability the collective experience of the community with the
