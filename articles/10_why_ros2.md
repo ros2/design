@@ -61,7 +61,7 @@ International Space Station.
 
 With all these new uses of ROS, the platform is being stretched in
 unexpected ways.  While it is holding up well, we believe that we can
-better meet the needs of now-broader ROS community by tackling their new
+better meet the needs of a now-broader ROS community by tackling their new
 use cases head-on.
 
 ## New use cases
@@ -93,7 +93,7 @@ beginning of the project:
 
 ## New technologies
 
-At the core of ROS in an anonymous publish-subscribe middleware system that
+At the core of ROS is an anonymous publish-subscribe middleware system that
 is built almost entirely from scratch.  Starting in 2007, we built our own
 systems for discovery, message definition, serialization, and transport.
 The intervening seven years have seen the development, improvement, and/or
@@ -111,7 +111,7 @@ It is now possible to build a ROS-like middleware system using
 off-the-shelf open source libraries.  We can benefit tremendously from this
 approach in many ways, including:
 
-- we maintain less code, especially less non-robotics-specific code;
+- we maintain less code, especially non-robotics-specific code;
 - we can take advantage of features in those libraries that are beyond the
   scope of what we would build ourselves;
 - we can benefit from ongoing improvements that are made by others to those
