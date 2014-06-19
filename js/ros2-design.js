@@ -241,8 +241,8 @@ $( document ).ready(function() {
                 dict = contributors[contributor];
                 // Append a li with a link and title of the pull request
                 $( 'div.contributors' ).append(
-                   '<a href="' + dict['html_url'] +
-                   '" class="list-group-item">' +
+                   '<a href="https://github.com/ros2/design/commits/gh-pages/' + this_file +
+                   '?author=' + dict['login'] + '" class="list-group-item">' +
                    '<img class="contributor-icon" src="' + dict['avatar_url'] + '" />' +
                    ' @' + dict['login'] + '</a>');
             }
