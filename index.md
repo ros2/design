@@ -1,6 +1,7 @@
 ---
 layout: default
 title: ROS2 Design
+html_title: Design
 ---
 
 # ROS 2.0 Design
