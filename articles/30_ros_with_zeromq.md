@@ -41,8 +41,8 @@ The core technology here is `mDNSresponder`, which is provided by Apple as free 
 
 These zeroconf implementations, however, proved to not be so reliable with respect to keeping a consistent graph between machines.
 Adding and removing more than about twenty items at a time from subprocesses typically resulted in inconsistent state on at least one of the computers on the network.
-Particularly bad was the experiment of removing items from zeroconf, where several "nodes" registered on machine A and then after a few seconds shutdown cleanly.
-Then observed behavior on remote machines B and C is that the zeroconf browser would show all "nodes" as registered, but after being shutdown only some would be removed from the list, resulting in "zombie nodes".
+One particularly bad case was the experiment of removing items from zeroconf, where in several "nodes" were registered on machine A and then after a few seconds shutdown cleanly.
+The observed behavior on remote machines B and C was that the zeroconf browser would show all "nodes" as registered, but then after being shutdown only some would be removed from the list, resulting in "zombie nodes".
 Worse still is that the list of "zombie nodes" were different on B and C.
 This problem was only observed between machines using avahi as a compatibility layer, which lead into a closer look into avahi and its viability as a core dependency.
 This closer look at avahi raised some concerns about the quality of the implementation with respect to the [Multicast DNS](http://en.wikipedia.org/wiki/Multicast_DNS) and [DNS Service Discovery](http://en.wikipedia.org/wiki/Zero_configuration_networking#Service_discovery) technology.
