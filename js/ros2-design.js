@@ -50,14 +50,30 @@ $( document ).ready(function() {
             $( 'button.login-btn' ).html(
                 '<img class="gravatar" src="' + user.avatar_url + '"/> &nbsp;' + name + ', Logout');
         };
+        // Define function for updating unpublished articles based on user
+        var update_unpublished_articles_view = function(user) {
+            // Update the logout button with user info
+            var login = user.login;
+            var url = 'https://api.github.com/repos/ros2/design/collaborators/' + login;
+            url += '?access_token=' + gh_token;
+            $.ajax(url, {
+                statusCode: {
+                    204: function() {
+                        $( '.unpublished' ).show();
+                    },
+                    404: function() {
+                        // Do nothing, means no access
+                        $( '.unpublished' ).hide();
+                    }
+                }
+            });
+        };
         // Check for an use if set the stored user info
         var stored_user = null;
         try {
             stored_user = JSON.parse(sessionStorage.getItem('user_' + gh_token));
         } catch (err) {}
-        if (stored_user) {
-            update_logout_btn(stored_user);
-        } else {
+        if (!stored_user) {
             // Get user information from github
             user = github.getUser();
             user.show('', function(err, res) {
@@ -76,9 +92,17 @@ $( document ).ready(function() {
                 } else {
                     // Store user info for given gh_token
                     sessionStorage.setItem('user_' + gh_token, JSON.stringify(res));
+                    // Set logout button
                     update_logout_btn(res);
+                    // Hide/show unpublished articles based on user
+                    update_unpublished_articles_view(res);
                 }
             });
+        } else {
+            // Set logout button
+            update_logout_btn(stored_user);
+            // Hide/show unpublished articles based on user
+            update_unpublished_articles_view(stored_user);
         }
         /* Get Pull Requests related to this page and populate accordingly */
         // Clear "please login" message
