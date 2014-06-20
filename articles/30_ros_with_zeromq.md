@@ -5,7 +5,7 @@ html_title: ZeroMQ and Friends
 permalink: articles/ros_with_zeromq.html
 abstract:
   This article makes the case for using ZeroMQ and other libraries to implement a new, modern middleware for ROS. This article also covers the results of the ZeroMQ based prototype made by OSRF.
-published: false
+published: true
 author: '[William Woodall](https://github.com/wjwwood)'
 ---
 
