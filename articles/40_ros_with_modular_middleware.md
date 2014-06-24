@@ -12,4 +12,4 @@ published: false
 
 # {{ page.title }}
 
-Content goes here.
+Instead of committing to a specific middleware, this option would instead allow _all_ middlwares to be used, connecting them through a meta-middleware-matrix (MMM).
