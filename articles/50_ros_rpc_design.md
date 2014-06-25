@@ -69,7 +69,7 @@ Some level of the Services and Actions would be made available and ideally, they
 The features outlined above are desirable but if implemented as a monolithic implementation will be much more complicated than necessary for most use cases, e.g. feedback is not always required, but if monolithic it would always be a part of the API.
 There are 4 levels of abstraction the abstraction which the above features can be sorted into at each level providing higher levels of functionality to the user.
 
-> TODO: add graphic
+![ROS RPC Higherarchy](/img/ros_rpc_design/rpc_diagram.png)
 
 ### Plain RPC
 
