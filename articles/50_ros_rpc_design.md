@@ -6,6 +6,7 @@ abstract:
   This is an exploration of possible design patterns for the next generation of ROS Remote Procedure Call interfaces.
   This paper is focused on specifying the user API and leaves the implementation unspecified.
   It is expected that there are one or more RPC implementations which can be used, such as Apache Thrift, ROS RPC, and MsgPack.
+author: '[Tully Foote](https://github.com/tfoote)'
 published: false
 ---
 
@@ -14,7 +15,11 @@ published: false
 
 # {{ page.title }}
 
+<div class="abstract" markdown="1">
+{{ page.abstract }}
+</div>
 
+Original Author: {{ page.author }}
 
 ## Background
 
