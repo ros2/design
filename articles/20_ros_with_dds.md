@@ -99,14 +99,14 @@ Control over several parameters of reliability, what DDS calls Quality of Servic
 For example, if you are concerned about latency, like for soft real-time, you can basically tune DDS to be just a UDP blaster.
 In another scenario you might need something that behaves like TCP, but needs to be more tolerant to long dropouts, and with DDS all of these things can be controlled by changing the QoS parameters.
 
-Though the default implementation of DDS is over UDP, and only requires that level of functionality from the transport, DDS also added support for DDS over TCP in version 1.2 of their specification.
+Though the default implementation of DDS is over UDP, and only requires that level of functionality from the transport, OMG also added support for DDS over TCP in version 1.2 of their specification.
 Only looking briefly, two of the vendors (RTI and PrismTech) both support DDS over TCP.
 
 From RTI's website ([http://community.rti.com/kb/xml-qos-example-using-rti-connext-dds-tcp-transport](http://community.rti.com/kb/xml-qos-example-using-rti-connext-dds-tcp-transport)):
 
 > By default, RTI Connext DDS uses the UDPv4 and Shared Memory transport to communicate with other DDS applications. In some circumstances, the TCP protocol might be needed for discovery and data exchange. For more information on the RTI TCP Transport, please refer to the section in the RTI Core Libraries and Utilities User Manual titled "RTI TCP Transport".
 
-From PrismTech's spec sheet they support TCP as of DDSI-RTPS version 1.2:
+From PrismTech's spec sheet, they support TCP as of DDSI-RTPS version 1.2:
 
 [http://www.prismtech.com/opensplice/products/opensplice-enterprise/opensplice-dds-core](http://www.prismtech.com/opensplice/products/opensplice-enterprise/opensplice-dds-core) (search for TCP)
 
@@ -122,12 +122,12 @@ Popular DDS vendors include:
 Amongst these vendors is an array of reference implementations with different strategies and licenses.
 
 RTI's Connext DDS is available under a custom "Community Infrastructure" License, which is compatible with the ROS communities needs but requires further discussion with the community in order to determine its viability as the default DDS vendor for ROS.
-"compatible with the ROS communities needs", means that though it is not an OSI approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
-RTI also appears to be willing to negotiate on the license to meet the ROS communities needs, but it will take some iteration between the ROS community and RTI to make sure this would work.
+By, "compatible with the ROS communities needs," we mean that, though it is not an OSI-approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
+RTI also appears to be willing to negotiate on the license to meet the ROS community's needs, but it will take some iteration between the ROS community and RTI to make sure this would work.
 Like the other vendors this license is available for the core set of functionality, basically the basic DDS API, whereas other parts of their product like development and introspection tools are proprietary.
 RTI seems to have the largest on-line presence and installation base.
 
-PrismTech's OpenSplice DDS implementation is liberally licensed under the LGPL, which is the same license that many popular open source libraries use, like ZeroMQ or Qt.
+PrismTech's DDS implementation, OpenSplice, is licensed under the LGPL, which is the same license used by many popular open source libraries, like glibc, ZeroMQ or Qt.
 It is available on [Github](https://github.com):
 
 [https://github.com/PrismTech/opensplice](https://github.com/PrismTech/opensplice)
@@ -169,7 +169,7 @@ ROS 2.0 would provide a ROS 1.x like interface on top of DDS which hides much of
 Accessing the DDS implementation would require depending on an additional package which is not normally used.
 In this way you can tell if a package has tied itself to a particular DDS vendor by just looking at the package dependencies.
 The goal of the ROS API, which is on top of DDS, should be to meet all the common needs for the ROS community, because once a user taps into the underlying DDS system, they will loose portability between DDS vendors.
-Portability between DDS vendors is not intended to encourage people to frequently choose different vendors, there will be one recommended and well supported default vendor, but instead it is meant to partially future proof ROS to changes in the DDS vendor options.
+Portability among DDS vendors is not intended to encourage people to frequently choose different vendors, but rather to enable power users to select the DDS implementation that meets their specific requirements, as well as to future-proof ROS against changes in the DDS vendor options.  There will be one recommended and best-supported default DDS implementation for ROS.
 
 ### Discovery
 
@@ -196,7 +196,7 @@ Therefore, packaging common work flows under the simpler ROS-like interface (Nod
 
 In ROS 1.x there was never a standard shared-memory transport because it is negligibly faster than localhost TCP loop-back connections.
 It is possible to get non-trivial performance improvements from carefully doing zero-copy style shared-memory between processes, but anytime a task required faster than localhost TCP in ROS 1.x, nodelets were used.
-Nodelets allowed publishers and subscribers to share data by passing around `boost::share_ptr`'s to messages.
+Nodelets allow publishers and subscribers to share data by passing around `boost::shared_ptr`'s to messages.
 This intraprocess communication is almost certainly faster than any interprocess communication options and is orthogonal to the discussion of the network publish-subscribe implementation.
 
 In the context of DDS, most vendors will optimize message traffic (even between processes) using shared-memory in a transparent way, only using the wire protocol and UDP sockets when leaving the localhost.
@@ -204,7 +204,7 @@ This provides a considerable performance increase for DDS, whereas it did not fo
 For ROS 1.x the process was: serialize the message into one large buffer, call TCP's `send` on the buffer once.
 For DDS the process would be more like: serialize the message, break the message into potentially many UDP packets, call UDP's `send` many times.
 In this way sending many UDP datagrams does not benefit from the same speed up as one large TCP `send`.
-Therefore, many DDS vendors will short circuit this process for localhost machines and use a blackboard style shared-memory mechanism to communicate efficiently between processes.
+Therefore, many DDS vendors will short circuit this process for localhost messages and use a blackboard style shared-memory mechanism to communicate efficiently between processes.
 
 However, not all DDS vendors are the same in this respect, so ROS would not rely on this "intelligent" behavior for efficient **intra**process communication.
 Additionally, if the ROS message format is kept, which is discussed in the next section, it would not be possible to prevent a conversion to the DDS message type for intraprocess topics.
