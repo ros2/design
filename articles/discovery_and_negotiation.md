@@ -4,12 +4,23 @@ title: Topological Discovery and Communication Negotiation
 abstract:
   This article lays out the logical components and possibilities within a discovery and transport negotiation system. This article was written to try and understand the different possibilities for how the middleware could be implemented.
 published: true
+author: '[William Woodall](https://github.com/wjwwood)'
 ---
 
 * This will become a table of contents (this text will be scraped).
 {:toc}
 
 # {{ page.title }}
+
+<div class="abstract" markdown="1">
+{{ page.abstract }}
+</div>
+
+> For context, this article explores the ideal and theoretical aspects of discovery and negotiation.
+It does not aim to answer all implementation questions or suggest implementation strategies.
+It simply tries to capture the concepts in the design space and identify trade-offs and relationships between design elements.
+
+Original Author: {{ page.author }}
 
 ## Problem Space
 
