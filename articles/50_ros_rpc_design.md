@@ -7,7 +7,7 @@ abstract:
   This paper is focused on specifying the user API and leaves the implementation unspecified.
   It is expected that there are one or more RPC implementations which can be used, such as Apache Thrift, ROS RPC, and MsgPack.
 author: '[Tully Foote](https://github.com/tfoote)'
-published: false
+published: true
 ---
 
 * This will become a table of contents (this text will be scraped).
