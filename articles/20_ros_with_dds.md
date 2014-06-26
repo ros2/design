@@ -121,13 +121,13 @@ Popular DDS vendors include:
 
 Amongst these vendors is an array of reference implementations with different strategies and licenses.
 
-RTI's Connext DDS is available under a custom "Community Infrastructure" License, which is compatible with the ROS communities needs but requires further discussion with the community in order to determine its viability as the default DDS vendor for ROS.
-By, "compatible with the ROS communities needs," we mean that, though it is not an OSI-approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
+RTI's Connext DDS is available under a custom "Community Infrastructure" License, which is compatible with the ROS community's needs but requires further discussion with the community in order to determine its viability as the default DDS vendor for ROS.
+By, "compatible with the ROS community's needs," we mean that, though it is not an OSI-approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
 RTI also appears to be willing to negotiate on the license to meet the ROS community's needs, but it will take some iteration between the ROS community and RTI to make sure this would work.
 Like the other vendors this license is available for the core set of functionality, basically the basic DDS API, whereas other parts of their product like development and introspection tools are proprietary.
 RTI seems to have the largest on-line presence and installation base.
 
-PrismTech's DDS implementation, OpenSplice, is licensed under the LGPL, which is the same license used by many popular open source libraries, like glibc, ZeroMQ or Qt.
+PrismTech's DDS implementation, OpenSplice, is licensed under the LGPL, which is the same license used by many popular open source libraries, like glibc, ZeroMQ, and Qt.
 It is available on [Github](https://github.com):
 
 [https://github.com/PrismTech/opensplice](https://github.com/PrismTech/opensplice)
@@ -169,7 +169,8 @@ ROS 2.0 would provide a ROS 1.x like interface on top of DDS which hides much of
 Accessing the DDS implementation would require depending on an additional package which is not normally used.
 In this way you can tell if a package has tied itself to a particular DDS vendor by just looking at the package dependencies.
 The goal of the ROS API, which is on top of DDS, should be to meet all the common needs for the ROS community, because once a user taps into the underlying DDS system, they will loose portability between DDS vendors.
-Portability among DDS vendors is not intended to encourage people to frequently choose different vendors, but rather to enable power users to select the DDS implementation that meets their specific requirements, as well as to future-proof ROS against changes in the DDS vendor options.  There will be one recommended and best-supported default DDS implementation for ROS.
+Portability among DDS vendors is not intended to encourage people to frequently choose different vendors, but rather to enable power users to select the DDS implementation that meets their specific requirements, as well as to future-proof ROS against changes in the DDS vendor options.
+There will be one recommended and best-supported default DDS implementation for ROS.
 
 ### Discovery
 
