@@ -20,6 +20,8 @@ Original Author: {{ page.author }}
 
 > This is an exploration of possible message interfaces and the relation of the underlying message serialization.
 This paper is focused on specifying the message API and designing the integration with the serialization with performance as well as flexibility in mind.  It is expected that there are one or more message serialization implementations which can be used, such as Protobuf, MessagePack and Thrift.
+>
+> This document predates the decision to build ROS 2 on top of DDS.
 
 ## Background
 
@@ -188,3 +190,8 @@ This still allows us to implement the optimization described as pipeline B for e
 
 ### Message Interface
 Under the assumption that a method-based access is not significantly impacting the performance it is prefered over a member-based access in order to enable changing the storage backend in the future and enabling overriding it with a custom implementation.
+
+### Update
+With the decision to build ROS 2 on top of DDS the Pipeline B will be used.
+The previous conclusion to switch from member to method based access has been revisited.
+Since we do not have the need to make the storage backend exchangable anymore and we might prefer keeping the member based access of messages to keep it similar with ROS 1.
