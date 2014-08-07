@@ -24,7 +24,7 @@ Terminology:
 - [Data Distribution Service (DDS)](http://en.wikipedia.org/wiki/Data_Distribution_Service)
 - The [Object Management Group (OMG)](http://www.omg.org/)
 - OMG [Interface Description Language (IDL)](http://www.omg.org/gettingstarted/omg_idl.htm)
-  | [Formal description](http://www.omg.org/cgi-bin/doc?formal/02-06-39)
+  | [Formal description](http://www.omg.org/cgi-bin/doc?formal/2014-03-01)
 
 ## Why Consider DDS?
 
@@ -34,7 +34,7 @@ During our research, one middleware that stood out was DDS.
 
 ### An End-to-End Middleware
 
-The benefit of using an end-to-end middleware, like DDS, is that there is much less code to maintain and the the behavior and exact specifications of the middleware have already been distilled into documentation.
+The benefit of using an end-to-end middleware, like DDS, is that there is much less code to maintain and the behavior and exact specifications of the middleware have already been distilled into documentation.
 In addition to system-level documentation, DDS also has recommended use cases and a software API.
 With this concrete specification, third parties can review, audit, and implement the middleware with varying degrees of interoperability.
 This is something that ROS has never had, besides a few basic descriptions in a wiki and a reference implementation.
@@ -48,7 +48,7 @@ On some level, adopting an end-to-end middleware includes the philosophy and cul
 
 DDS provides a publish-subscribe transport which is very similar to ROS's publish-subscribe transport.
 DDS uses the "Interface Description Language (IDL)" as defined by the [Object Management Group (OMG)](http://www.omg.org/) for message definition and serialization.
-DDS does not yet provide a request-response style transport, which would be like ROS's service system, but a draft for that style of transport is being reviewed right now (2014).
+DDS does not yet provide a request-response style transport, which would be like ROS's service system, but a draft for that style of transport is being reviewed and hopefully adopted in 2014 (called [RPC4DDS](http://www.omg.org/techprocess/meetings/schedule/RPC_over_DDS_RFP.html)).
 
 The default discovery system provided by DDS, which is required to use DDS's publish-subscribe transport, is a distributed discovery system.
 This allows any two DDS programs to communicate without the need for a tool like the ROS master.
@@ -119,7 +119,7 @@ Popular DDS vendors include:
 - PrismTech
 - Twin Oaks Software
 
-Amongst these vendors is an array of reference implementations with different strategies and licenses.
+Amongst these vendors is an array of reference implementations with different strategies and licenses. The OMG maintains an active [list](http://dds-directory.omg.org/vendor/list.htm) of DDS vendors.
 
 RTI's Connext DDS is available under a custom "Community Infrastructure" License, which is compatible with the ROS community's needs but requires further discussion with the community in order to determine its viability as the default DDS vendor for ROS.
 By, "compatible with the ROS community's needs," we mean that, though it is not an OSI-approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
