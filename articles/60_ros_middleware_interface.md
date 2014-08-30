@@ -7,7 +7,7 @@ abstract:
   It will outline the targeted use cases as well as their requirements and constraints.
   Based on that the developed middleware interface is explained.
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
-published: false
+published: true
 ---
 
 * This will become a table of contents (this text will be scraped).
@@ -29,7 +29,7 @@ Original Author: {{ page.author }}
 
 The ROS client library defines an API which exposed communication concepts like publish / subscribe to users.
 
-In ROS 1 the implementation of these communication concepts were build on custom protocols (e.g. [TCPROS](http://wiki.ros.org/ROS/TCPROS)).
+In ROS 1 the implementation of these communication concepts were build on custom protocols (e.g., [TCPROS](http://wiki.ros.org/ROS/TCPROS)).
 
 For ROS 2 the decision has been made to build it on top of an existing middleware solution (namely [DDS](http://en.wikipedia.org/wiki/Data_Distribution_Service)).
 The major advantage of that approach is that ROS 2 can leverage an existing and well developed implementation of that standard.
@@ -42,7 +42,7 @@ In order to abstract from the specifics an abstract interface is being introduce
 This *middleware interface* defines the API between the ROS client library and any specific implementation.
 
 Each implementation of the interface will usually be a thin adapter which maps the generic *middleware interface* to the specific API of the middleware implementation.
-In the following the common separation of the adapter and the actual middlware implementation will be omitted.
+In the following the common separation of the adapter and the actual middleware implementation will be omitted.
 
     +-----------------------------------------------+
     |                   user land                   |
@@ -82,11 +82,11 @@ One goal of the *middleware interface* is to not expose any DDS specific code to
 Therefore the ROS client library "above" the *middleware interface* needs to only operate on ROS data structures.
 ROS 2 will continue to use ROS message files to define the structure of these data objects and derive the data structures for each supported programming language from them.
 
-The middleware implementation "below" the *middleware interface* must convert the ROS data objects provided from the client libray into its own custom data format before passing it to the DDS implementation.
+The middleware implementation "below" the *middleware interface* must convert the ROS data objects provided from the client library into its own custom data format before passing it to the DDS implementation.
 In reverse custom data objects coming from the DDS implementation must be converted into ROS data objects before being returned to the ROS client library.
 
 The definition for the middleware specific data types can be derived from the information specified in the ROS message files.
-A defined mapping between the primitive data types of ROS message and middleware specific data types ensures that a birectional conversion is possible.
+A defined mapping between the primitive data types of ROS message and middleware specific data types ensures that a bidirectional conversion is possible.
 
     +----------------------+
     |      user land       |   1) create a ROS message
@@ -110,7 +110,7 @@ A defined mapping between the primitive data types of ROS message and middleware
     |      mw impl N       |   3) convert the DDS sample into a ROS message and invoke subscriber callback
     +----------------------+
 
-Depending on the middleware implementation the extra conversion can be avoided by implementing serialization functions directly from ROS messages as well as deserilization functions into ROS messages.
+Depending on the middleware implementation the extra conversion can be avoided by implementing serialization functions directly from ROS messages as well as deserialization functions into ROS messages.
 
 ## Considered use cases
 
@@ -125,7 +125,7 @@ Even with a *middleware interface* in place the decision which middleware implem
 E.g. a package defining a ROS message will need to provide the mapping to and from the middleware specific data type.
 Naively each package defining ROS messages might contain custom (usually generated) code for the specific middleware implementation.
 
-In the context of providing binary packages of ROS (e.g. Debian packages) that implies that a significant part of them (at least all packages containing message definitions) would be specific to the selected middleware implementation.
+In the context of providing binary packages of ROS (e.g., Debian packages) that implies that a significant part of them (at least all packages containing message definitions) would be specific to the selected middleware implementation.
 
                     +-----------+
                     | user land |
@@ -141,10 +141,10 @@ In the context of providing binary packages of ROS (e.g. Debian packages) that i
 
 ### Static vs. dynamic message types with DDS
 
-DDS has two different ways to use and iteract with messages.
+DDS has two different ways to use and interact with messages.
 
 On the one hand the message can be specified in an IDL file from which usually a DDS implementation specific program will generate source code from.
-The generated code for C++ e.g. contains types specifically generated for the message.
+The generated code for C++, e.g., contains types specifically generated for the message.
 
 On the other hand the message can be specified programmatically using the DynamicData API of the [XTypes](http://www.omg.org/spec/DDS-XTypes/) specification.
 Neither an IDL file nor a code generation step is necessary for that.
@@ -178,20 +178,20 @@ However the performance using the DynamicData API will likely always be lower co
 When ROS supports different middleware implementations it should be as easy and low effort as possible for users to switch between them.
 
 One obvious way will be for a user to rebuild all ROS packages from source selecting a different middleware implementation.
-While the workflow won't be too difficult (probably half a dozend of command line invocations) it still requires quite some build time.
+While the workflow won't be too difficult (probably half a dozen command-line invocations), it still requires quite some build time.
 
 To avoid the overhead of rebuilding everything a different set of binary packages could be provided.
 While this would reduce the effort for the user the buildfarm would need to build a completely separate set of binary packages.
-The effort to support N packages with M different middleware implementation would require significant resources for maintaing the service as well as the necessary computing power.
+The effort to support N packages with M different middleware implementation would require significant resources for maintaining the service as well as the necessary computing power.
 
 
 #### Reduce the number of middleware implementation specific packages
 
 One way to at least reduce the effort for building for different middleware implementations is to reduce the number of packages depending on the specific middleware implementation.
-This can e.g. be achieved using the DynamicData API mentioned before.
+This can, e.g., be achieved using the DynamicData API mentioned before.
 Since only a few packages need to be built for each middleware implementation it would be feasible to generate binary packages for them on the buildfarm.
 
-The user could then install (one | a few) binary package(s) for a specific middleware implementation together with its specific implementation of the mapping betwen the message specification and the DynamicData API.
+The user could then install (one | a few) binary package(s) for a specific middleware implementation together with its specific implementation of the mapping between the message specification and the DynamicData API.
 All other binary packages would be agnostic to the selected middleware implementation.
 
             +-----------+
@@ -213,8 +213,8 @@ All other binary packages would be agnostic to the selected middleware implement
 
 #### Generate "fat" binary packages
 
-Another way to enable the user to switch between middleware implemenations without the need to use the DynamicData API is to embed the middleware specific generated code for all supported implementations into each binary package.
-The specific middleware implementation would then be selected e.g. at link time and only the corresponding generated code of that middleware implementation will be used.
+Another way to enable the user to switch between middleware implementations without the need to use the DynamicData API is to embed the middleware specific generated code for all supported implementations into each binary package.
+The specific middleware implementation would then be selected, e.g., at link time and only the corresponding generated code of that middleware implementation will be used.
 
 
 ### Using single middleware implementation only
@@ -258,7 +258,7 @@ Therefore the `create_publisher` function needs to return a *publisher handle* w
 
     PublisherHandle create_publisher(NodeHandle node_handle, String topic_name, .. topic_type);
 
-The information encapsulated by the *topic type* argument are highly depending on the middleware implementation.
+The information encapsulated by the *topic type* argument is highly dependent on the middleware implementation.
 
 
 ##### Topic type information for XTypes DynamicData API
@@ -319,7 +319,7 @@ Beside the *publisher handle* the `publish` function needs to know the *ROS mess
     publish(PublisherHandle publisher_handle, .. ros_message);
 
 Since ROS messages do not have a common base class the signature of the function can not use a known type for the passed ROS message.
-Instead it is passed as a void pointer and the actually implementation reinterprets it according to the previously registered type.
+Instead it is passed as a void pointer and the actual implementation reinterprets it according to the previously registered type.
 
 
 #### Type of the returned handles
@@ -333,7 +333,7 @@ In order to ensure that these information are passed back to the same middleware
 
 ### Subscriber interface
 
-The details of the interface necessary for the subscriber side are not (yet) described in this documents.
+The details of the interface necessary for the subscriber side are not (yet) described in this document.
 
 
 ## Current implementation
@@ -369,7 +369,7 @@ This can be only one (when building against a single middleware implementation) 
 ### User land code decides at link time
 
 The packages implementing the middleware interface are called *middleware implementations*.
-Their package name starts with the prefix `ros_middleware_` followed by the name of the used middleware (e.g. *connext* or *opensplice*).
+Their package name starts with the prefix `ros_middleware_` followed by the name of the used middleware (e.g., *connext* or *opensplice*).
 
 A user land executable using ROS nodes, publishers and subscribers must link against one specific middleware implementation library.
 The used middleware implementation library will only use the corresponding type support from each message package and ignore any additionally available type supports.
