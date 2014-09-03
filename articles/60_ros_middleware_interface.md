@@ -229,6 +229,7 @@ However the additional abstraction due to the middleware interface is still vali
 ## Design of the *middleware interface*
 
 The API is designed as a pure function-based interface in order to be implemented in C.
+A pure C interface can be used in ROS Client Libraries for most other languages including Python, Java, and C++ preventing the need to reimplement the core logic.
 
 
 ### Publisher interface
