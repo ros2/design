@@ -18,7 +18,9 @@ $( document ).ready(function() {
     // If found, pass the temp token to gatekeeper
     if (match) {
         var code = match[1];
-        $.getJSON('http://auth.design.ros2.org/authenticate/' + code, function(data) {
+        // var gatekeeper_domain = 'desolate-shelf-7303.herokuapp.com';  // for local testing
+        var gatekeeper_domain = 'auth.design.ros2.org';
+        $.getJSON('http://' + gatekeeper_domain + '/authenticate/' + code, function(data) {
             // Once gatekeeper gets back, check for the token
             if (!data.token) {
                 // If the token is not set, then display an error

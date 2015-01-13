@@ -86,7 +86,10 @@ $( document ).ready(function() {
                        '    <h3 class="panel-title">Error</h3>',
                        '  </div>',
                        '  <div class="panel-body">',
-                       '    Error retrieving Github Info: ' + err,
+                       '    Error retrieving Github Info: <br/>',
+                       '    [' + err.request.status + '] ' +
+                       err.request.statusText + '<br/>',
+                       '    ' + err.request.response,
                        '  </div>',
                        '</div>'].join('\n'));
                 } else {
@@ -159,7 +162,7 @@ $( document ).ready(function() {
         // Define function for handling a single issue
         var check_issue = function(prs_in, index) {
             // If index >= the length of the issues originally given, exit
-            if (index >= prs_in.length) {
+            if (!prs_in || index >= prs_in.length) {
                 return;
             }
             // Else grab the current issue
