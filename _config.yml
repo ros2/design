@@ -7,7 +7,7 @@ repo: https://github.com/ros2/design
 oauth_client_id: efa6dd8eae9106381720
 
 markdown: kramdown
-pygments: true
+highlighter: pygments
 
 relative_permalinks: false
 
