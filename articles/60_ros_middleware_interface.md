@@ -262,9 +262,9 @@ Therefore the `create_publisher` function needs to return a *publisher handle* w
 The information encapsulated by the *topic type* argument is highly dependent on the middleware implementation.
 
 
-##### Topic type information for XTypes DynamicData API
+##### Topic type information for the DynamicData API
 
-In the case of using XTypes DynamicData API in the implementation there is no C / C++ type which could represent the type information.
+In the case of using the DynamicData API in the implementation there is no C / C++ type which could represent the type information.
 Instead the *topic type* must contains all information to describe the format of the message.
 This information includes:
 
@@ -341,19 +341,19 @@ The details of the interface necessary for the subscriber side are not (yet) des
 
 The described concept has been implemented in the following packages:
 
-* the package [ros_middleware_interface](https://github.com/ros2/ros_middleware_interface/tree/master/ros_middleware_interface) defines the middleware interface
-  * the functions are declared in [ros_middleware_interface/functions.h](https://github.com/ros2/ros_middleware_interface/blob/master/ros_middleware_interface/include/ros_middleware_interface/functions.h)
-  * the handles are defined in [ros_middleware_interface/handles.h](https://github.com/ros2/ros_middleware_interface/blob/master/ros_middleware_interface/include/ros_middleware_interface/handles.h)
-* the package [ros_middleware_connext_cpp](https://github.com/ros2/ros_middleware_connext/tree/master/ros_middleware_connext_cpp) implements the middleware interface using [RTI Connext DDS](http://www.rti.com/products/dds/index.html) based on statically generated code
-  * the package [rosidl_typesupport_connext_cpp](https://github.com/ros2/ros_middleware_connext/tree/master/rosidl_typesupport_connext_cpp) generates
+* the package [rmw](https://github.com/ros2/rmw/tree/master/rmw) defines the middleware interface
+  * the functions are declared in [rms/rmw.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/rmw.h)
+  * the handles are defined in [rmw/types.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h)
+* the package [rmw_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_cpp) implements the middleware interface using [RTI Connext DDS](http://www.rti.com/products/dds/index.html) based on statically generated code
+  * the package [rosidl_typesupport_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rosidl_typesupport_connext_cpp) generates
     * the DDS specific code based on IDL files for each message
       * the package [rosidl_generator_dds_idl](https://github.com/ros2/rosidl_dds/tree/master/rosidl_generator_dds_idl) generates DDS IDL files based on ROS msg files
     * additional code to enable invoking the register/create/convert/write functions for each message type
-* the package [ros_middleware_connext_xtypes_dynamic_cpp](https://github.com/ros2/ros_middleware_connext/tree/master/ros_middleware_connext_xtypes_dynamic_cpp) implements the middleware interface using *RTI Connext DDS* based on the XTypes DynamicData API
+* the package [rmw_connext_dynamic_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_dynamic_cpp) implements the middleware interface using *RTI Connext DDS* based on the DynamicData API
   * the package [rosidl_typesupport_introspection_cpp](https://github.com/ros2/rosidl_dds/tree/master/rosidl_typesupport_introspection_cpp)
     * generates code which encapsulated the information from each ROS msg file in a way which makes the data structures introspectable
-* the package [ros_middleware_opensplice_cpp](https://github.com/ros2/ros_middleware_opensplice/tree/master/ros_middleware_opensplice_cpp) implements the middleware interface using [PrismTech OpenSplice DDS](http://www.prismtech.com/opensplice) based on statically generated code
-  * the package [rosidl_typesupport_opensplice_cpp](https://github.com/ros2/ros_middleware_opensplice/tree/master/rosidl_typesupport_opensplice_cpp) generates
+* the package [rmw_opensplice_cpp](https://github.com/ros2/rmw_opensplice/tree/master/rmw_opensplice_cpp) implements the middleware interface using [PrismTech OpenSplice DDS](http://www.prismtech.com/opensplice) based on statically generated code
+  * the package [rosidl_typesupport_opensplice_cpp](https://github.com/ros2/rmw_opensplice/tree/master/rosidl_typesupport_opensplice_cpp) generates
     * the DDS specific code based on IDL files for each message
     * additional code to enable invoking the register/create/convert/write functions for each message type
 
@@ -370,7 +370,7 @@ This can be only one (when building against a single middleware implementation) 
 ### User land code decides at link time
 
 The packages implementing the middleware interface are called *middleware implementations*.
-Their package name starts with the prefix `ros_middleware_` followed by the name of the used middleware (e.g., *connext* or *opensplice*).
+Their package name starts with the prefix `rmw_` followed by the name of the used middleware (e.g., *connext* or *opensplice*).
 
 A user land executable using ROS nodes, publishers and subscribers must link against one specific middleware implementation library.
 The used middleware implementation library will only use the corresponding type support from each message package and ignore any additionally available type supports.
