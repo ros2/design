@@ -3,7 +3,8 @@ layout: default
 title: ROS on DDS
 permalink: articles/ros_on_dds.html
 abstract:
-  This article makes the case for using DDS as the middleware for ROS, outlining the pros and cons of this approach, as well as considering the impact to the user experience and code API that using DDS would have. The results of the ros_dds prototype are also summarized and used in the exploration of the issue.
+  This article makes the case for using DDS as the middleware for ROS, outlining the pros and cons of this approach, as well as considering the impact to the user experience and code API that using DDS would have.
+  The results of the "ros_dds" prototype are also summarized and used in the exploration of the issue.
 author: '[William Woodall](https://github.com/wjwwood)'
 published: true
 ---
@@ -26,11 +27,13 @@ Terminology:
 - OMG [Interface Description Language (IDL)](http://www.omg.org/gettingstarted/omg_idl.htm)
   | [Formal description](http://www.omg.org/cgi-bin/doc?formal/2014-03-01)
 
+
 ## Why Consider DDS?
 
 When exploring options for the next generation communication system of ROS, the initial options were to either improve the ROS 1.x transport or build a new middleware using component libraries such as [ZeroMQ](http://zeromq.org/), Protocol Buffers, and zeroconf (Bonjour/Avahi).
 However, in addition to those options, which both involved us building a middleware from parts or scratch, other end-to-end middlewares were considered.
 During our research, one middleware that stood out was DDS.
+
 
 ### An End-to-End Middleware
 
@@ -44,16 +47,18 @@ The draw back of using an end-to-end middleware is that ROS must work within tha
 If the design did not target a relevant use case or is not flexible, it might be necessary to work around the design.
 On some level, adopting an end-to-end middleware includes the philosophy and culture of that middleware, which should not be taken lightly.
 
+
 ## What is DDS?
 
 DDS provides a publish-subscribe transport which is very similar to ROS's publish-subscribe transport.
 DDS uses the "Interface Description Language (IDL)" as defined by the [Object Management Group (OMG)](http://www.omg.org/) for message definition and serialization.
-DDS does not yet provide a request-response style transport, which would be like ROS's service system, but a draft for that style of transport is being reviewed and hopefully adopted in 2014 (called [RPC4DDS](http://www.omg.org/techprocess/meetings/schedule/RPC_over_DDS_RFP.html)).
+DDS does not yet provide a request-response style transport, which would be like ROS's service system, but a draft for that style of transport is being reviewed and hopefully adopted in 2015 (called [DDS-RPC](http://www.omg.org/spec/DDS-RPC/)).
 
 The default discovery system provided by DDS, which is required to use DDS's publish-subscribe transport, is a distributed discovery system.
 This allows any two DDS programs to communicate without the need for a tool like the ROS master.
 This makes the system more fault tolerant and flexible.
 It is not required to use the dynamic discovery mechanism, however, as multiple DDS vendors provide options for static discovery.
+
 
 ### Where did DDS come from?
 
@@ -71,6 +76,7 @@ There is also a concern that DDS is a static specification which was defined and
 This kind of stereotype comes from horror stories about things like UML and CORBA, which are also products of OMG.
 On the contrary, DDS seems to have an active and organic specification, which in the recent past has added, or is adding, more specifications for things like websockets, security over SSL, extensible types, request and response transport, and a new, more modern C++11 style API specification for the core API to replace the existing C++ interface.
 This type of evolution in the standard body for DDS is an encouraging thing to observe, and even though the body is relatively slow, as compared to software engineering technology trends, it is evolving to meet demands of its users.
+
 
 ### Technical Credibility
 
@@ -104,11 +110,14 @@ Only looking briefly, two of the vendors (RTI and PrismTech) both support DDS ov
 
 From RTI's website ([http://community.rti.com/kb/xml-qos-example-using-rti-connext-dds-tcp-transport](http://community.rti.com/kb/xml-qos-example-using-rti-connext-dds-tcp-transport)):
 
-> By default, RTI Connext DDS uses the UDPv4 and Shared Memory transport to communicate with other DDS applications. In some circumstances, the TCP protocol might be needed for discovery and data exchange. For more information on the RTI TCP Transport, please refer to the section in the RTI Core Libraries and Utilities User Manual titled "RTI TCP Transport".
+> By default, RTI Connext DDS uses the UDPv4 and Shared Memory transport to communicate with other DDS applications.
+> In some circumstances, the TCP protocol might be needed for discovery and data exchange.
+> For more information on the RTI TCP Transport, please refer to the section in the RTI Core Libraries and Utilities User Manual titled "RTI TCP Transport".
 
 From PrismTech's spec sheet, they support TCP as of DDSI-RTPS version 1.2:
 
 [http://www.prismtech.com/opensplice/products/opensplice-enterprise/opensplice-dds-core](http://www.prismtech.com/opensplice/products/opensplice-enterprise/opensplice-dds-core) (search for TCP)
+
 
 ### Vendors and Licensing
 
@@ -119,7 +128,8 @@ Popular DDS vendors include:
 - PrismTech
 - Twin Oaks Software
 
-Amongst these vendors is an array of reference implementations with different strategies and licenses. The OMG maintains an active [list](http://dds-directory.omg.org/vendor/list.htm) of DDS vendors.
+Amongst these vendors is an array of reference implementations with different strategies and licenses.
+The OMG maintains an active [list](http://dds-directory.omg.org/vendor/list.htm) of DDS vendors.
 
 RTI's Connext DDS is available under a custom "Community Infrastructure" License, which is compatible with the ROS community's needs but requires further discussion with the community in order to determine its viability as the default DDS vendor for ROS.
 By, "compatible with the ROS community's needs," we mean that, though it is not an OSI-approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
@@ -146,11 +156,12 @@ So, just as an example, if the default implementation is RTI, but someone wants 
 This is made possible because of the fact that DDS defines an API in its specification.
 Research has shown that making code which is vendor agnostic is possible if not a little painful since the API's of the different vendors is almost identical, but there are minor differences like return types (pointer versus shared_ptr like thing) and header file organization.
 
+
 ### Ethos and Community
 
 DDS comes out of a set of companies which are decades old, was laid out by the OMG which is an old-school software engineering organization, and is used largely by government and military users.
 So it comes as no surprise that the community for DDS looks very different from the ROS community and similar modern software projects like ZeroMQ.
-Though RTI has a respectable on-line presense, the questions asked by community members is almost always answered by an employee of RTI and though technically open source, neither RTI nor OpenSplice have spent time to provide packages for Ubuntu or Homebrew or any other modern package manager.
+Though RTI has a respectable on-line presense, the questions asked by community members are almost always answered by an employee of RTI and though technically open source, neither RTI nor OpenSplice have spent time to provide packages for Ubuntu or Homebrew or any other modern package manager.
 They do not have extensive user contributed wiki's or an active Github repository.
 
 This staunch difference in ethos between the communities is one of the most concerning issues with depending on DDS.
@@ -158,6 +169,7 @@ Unlike options like keeping rostcp or using ZeroMQ, there isn't the feeling that
 However, the DDS vendors have been very responsive to our inquires during our research and it is hard to say if that will continue when it is the ROS community which brings the questions.
 
 Even though this is something which should be taken under consideration when making a decision about using DDS, it should not disproportionately out weigh the technical pros and cons of the DDS proposal.
+
 
 ## ROS built on DDS
 
@@ -172,6 +184,7 @@ The goal of the ROS API, which is on top of DDS, should be to meet all the commo
 Portability among DDS vendors is not intended to encourage people to frequently choose different vendors, but rather to enable power users to select the DDS implementation that meets their specific requirements, as well as to future-proof ROS against changes in the DDS vendor options.
 There will be one recommended and best-supported default DDS implementation for ROS.
 
+
 ### Discovery
 
 DDS would completely replace the ROS master based discovery system.
@@ -180,6 +193,7 @@ Accessing this information would be hidden behind a ROS defined API, preventing 
 
 The advantage of the DDS discovery system is that, by default, it is completely distributed, so there is no central point of failure which is required for parts of the system to communicate with each other.
 DDS also allows for user defined meta data in their discovery system, which will enable ROS to piggyback higher level concepts onto publish-subscribe.
+
 
 ### Publish-Subscribe Transport
 
@@ -192,6 +206,7 @@ DDS has, in addition to the topics, subscribers, and publishers, the concept of 
 These additional layers of abstraction allow DDS to have a high level of configuration, because you can set QoS settings at each level of the publish-subscribe stack, providing the highest granularity of configuration possible.
 Most of these levels of abstractions are not necessary to meet the current needs of ROS.
 Therefore, packaging common work flows under the simpler ROS-like interface (Node, Publisher, and Subscriber) will be one way ROS 2.0 can hide the complexity of DDS, while exposing some of its features.
+
 
 ### Efficient Transport Alternatives
 
@@ -213,6 +228,7 @@ Therefore a custom intraprocess communication system would need to be developed 
 This same intraprocess communication mechanism would be needed for a custom middleware built on ZeroMQ, for example.
 
 The point to take away here is that efficient **intra**process communication will be addressed regardless of the network/interprocess implementation of the middleware.
+
 
 ### Messages
 
@@ -236,13 +252,15 @@ Because this conversion is only invoked in conjunction with a more expensive ser
 This does not preclude the option to improve the `.msg` file format with things like default values and optional fields.
 But this is a different trade-off which can be decided later.
 
+
 ### Services and Actions
 
 DDS currently does not have a ratified or implemented standard for request-response style RPC which could be used to implement the concept of services in ROS.
 There is currently an RPC specification being considered for ratification in the OMG DDS working group, and several of the DDS vendors have a draft implementation of the RPC API.
 It is not clear, however, whether this standard will work for actions, but it could at least support non-preemptable version of ROS services.
 ROS 2.0 could either implement services and actions on top of publish-subscribe (this is more feasible in DDS because of their reliable publish-subscribe QoS setting) or it could use the DDS RPC specification once it is finished for services and then build actions on top, again like it is in ROS 1.x.
-Either way actions will be a first class citizen in the ROS 2.0 API and it may be the case that services just become a degenerate type of action.
+Either way actions will be a first class citizen in the ROS 2.0 API and it may be the case that services just become a degenerate case of actions.
+
 
 ### Language Support
 
@@ -258,6 +276,7 @@ The author of [ZeroMQ](http://zeromq.org/), however, did not do this in his new 
 Since the C implementation of DDS is typically pure C, it would be possible to have a pure C implementation for the ROS C API all the way down through the DDS implementation.
 However, writing the entire system in C might not be the first goal, and in the interest of getting a minimal viable product working, the implementation might be in C++ and wrapped in C to begin with and later the C++ can be replaced with C if it seems necessary.
 
+
 ### DDS as a Dependency
 
 One of the goals of ROS 2.0 is to reuse as much code as possible (do not reinvent the wheel) but also minimize the number of dependencies to improve portability and to keep the build dependency list lean.
@@ -268,6 +287,7 @@ The C implementation relies only on the system libraries, the C++ implementation
 Bundled as a binary (during prototyping) on both Ubuntu and OS X, the C, C++, Java, and C# implementations of OpenSplice (LGPL) is less than three megabytes in size and has no other dependencies.
 As dependencies go, this makes DDS very attractive because it significantly simplifies the build and run dependencies for ROS.
 Additionally, since the goal is to make DDS an implementation detail, it can probably be removed as transitive run dependency, meaning that it will not even need to be installed on a deployed system.
+
 
 ## The ROS on DDS Prototype
 
@@ -298,7 +318,8 @@ Specifically this prototype includes these packages:
 - Generation of DDS specific C++ code for each generated IDL file: [https://github.com/osrf/ros_dds/tree/master/prototype/src/genidlcpp](https://github.com/osrf/ros_dds/tree/master/prototype/src/genidlcpp)
 - Minimal ROS Client Library for C++ (rclcpp): [https://github.com/osrf/ros_dds/tree/master/prototype/src/rclcpp](https://github.com/osrf/ros_dds/tree/master/prototype/src/rclcpp)
 - Talker and listener for pub-sub and service calls: [https://github.com/osrf/ros_dds/tree/master/prototype/src/rclcpp_examples](https://github.com/osrf/ros_dds/tree/master/prototype/src/rclcpp_examples)
-- A branch of `ros_tutorials` in which `turtlesim` has been modified to build against the `rclcpp` library: [https://github.com/ros/ros_tutorials/tree/ros_dds/turtlesim](https://github.com/ros/ros_tutorials/tree/ros_dds/turtlesim).  This branch of `turtlesim` is not feature-complete (e.g., services and parameters are not supported), but the basics work, and it demonstrates that the changes required to transition from ROS 1.x `roscpp` to the prototype of ROS 2.0 `rclcpp` are not dramatic.
+- A branch of `ros_tutorials` in which `turtlesim` has been modified to build against the `rclcpp` library: [https://github.com/ros/ros_tutorials/tree/ros_dds/turtlesim](https://github.com/ros/ros_tutorials/tree/ros_dds/turtlesim).
+  This branch of `turtlesim` is not feature-complete (e.g., services and parameters are not supported), but the basics work, and it demonstrates that the changes required to transition from ROS 1.x `roscpp` to the prototype of ROS 2.0 `rclcpp` are not dramatic.
 
 This is a rapid prototype which was used to answer questions, so it is not representative of the final product or polished at all.
 Work on certain features was stopped cold once key questions had been answered.
@@ -315,7 +336,6 @@ In addition to the above basic pieces, a pull request was drafted which managed 
 This pull request was ultimately not merged because it was a major refactoring of the structure of the code and other progress had been made in the mean time.
 However, it served its purpose in that it showed that the DDS implementation could be hidden, though there is room for discussion on how to actually achieve that goal.
 
-On going work on this prototype continues whenever it is useful for learning.
 
 ## Conclusion
 
