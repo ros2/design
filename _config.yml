@@ -17,3 +17,4 @@ exclude:
  - Gemfile
  - LICENSE
  - README.md
+ - vendor
