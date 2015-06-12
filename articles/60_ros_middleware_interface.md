@@ -112,6 +112,7 @@ A defined mapping between the primitive data types of ROS message and middleware
 
 Depending on the middleware implementation the extra conversion can be avoided by implementing serialization functions directly from ROS messages as well as deserialization functions into ROS messages.
 
+
 ## Considered use cases
 
 The following use cases have been considered when designing the middleware interface:
