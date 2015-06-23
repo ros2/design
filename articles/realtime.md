@@ -66,7 +66,7 @@ concepts are applicable to other platforms.
     unsigned char dummy[MAX_SAFE_STACK];
 
     memset(dummy, 0, MAX_SAFE_STACK);
-``` `
+```
 
 `mlockall` is a Linux system call for locking the process's virtual address space into RAM,
 preventing the memory that will be accessed by the process from getting paged into swap space. Paging
@@ -96,7 +96,7 @@ block of memory of the stack into the cache, so that no pagefaults will occur wh
       buffer[i] = 0;
   }
   free(buffer);
-``` `
+```
 
 It is commonly thought that dynamic memory allocations are not permitted in the real-time code path.
 This code snippet shows how to lock the virtual address space, disallow returning deallocated memory
