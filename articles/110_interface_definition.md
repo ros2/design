@@ -4,6 +4,7 @@ title: Interface definition
 permalink: articles/interface_definition.html
 abstract:
   This article specifies the file format describing the data structures exchanged by ROS 2 components to interact with each other.
+published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 ---
 

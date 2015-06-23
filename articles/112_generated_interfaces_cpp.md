@@ -4,6 +4,7 @@ title: Generated C++ interfaces
 permalink: articles/generated_interfaces_cpp.html
 abstract:
   This article describes the generated C++ code for ROS 2 interfaces.
+published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 ---
 

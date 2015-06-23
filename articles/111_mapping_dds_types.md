@@ -4,6 +4,7 @@ title: Mapping between ROS interface types and DDS IDL types
 permalink: articles/mapping_dds_types.html
 abstract:
   This article specifies the mapping between the ROS interface types and the DDS types.
+published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 ---
 
