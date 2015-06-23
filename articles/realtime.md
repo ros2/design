@@ -237,7 +237,7 @@ There are a few possible strategies for the real-time "hardening" of existing an
     * More packages to write and maintain.
     * Potentially less convenient for the user.
 
-* Ensure option real-time safety up to a certain point in the stack, and implement a real-time safe language wrapper (rclrt or rclc)
+* Give the option for real-time safety up to a certain point in the stack, and implement a real-time safe language wrapper (rclrt or rclc)
   * Pros:
     * Existing code is designed for this refactoring to be fairly easy
     * User can provide memory allocation strategy to rcl/rmw to ensure deterministic operation
