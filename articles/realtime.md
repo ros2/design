@@ -2,8 +2,8 @@
 layout: default
 title: ROS 2.0 in Realtime
 permalink: articles/realtime.html
-abstract: This article describes ROS 2.0's planned compatibility with real-time computing requirements.
-published: true
+abstract: This article describes real-time computing requirements and how ROS 2 will fulfill them.
+published: false
 author: Jackie Kay
 ---
 
