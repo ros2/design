@@ -18,15 +18,29 @@ author: Jackie Kay
 
 Original Author: {{ page.author }}
 
+This document seeks to summarize the requirements of real-time computing and the challenges of implementing real-time performance.
+It also lays out options for how ROS 2 could be structured to enforce real-time compatibility.
+
 Robotic systems need to be responsive.
 In mission critical applications, a delay of less than a millisecond in the system can cause a catastrophic failure.
 For ROS 2.0 to capture the needs of the robotics community, the core software components must not interfere with the requirements of real-time computing.
 
 # Definition of Real-time Computing
 
+The definition of real-time computing requires the definition of a few other key terms:
+
+* Determinism: A system is deterministic if it always produces the same output for a known input. The output of a nondeterministic system will have random variations.
+* Deadline: A deadline is the finite window of time in which a certain task must be completed.
+* Quality of Service: The overall performance of a network. Includes factors such as bandwith, throughput, availability, jitter, latency, and error rates.
+
 Real-time software guarantees correct computation at the correct time.
-Hard real-time software systems have a set of strict deadlines, and missing a deadline is considered a failure.
-Soft real-time systems degrade their quality of service if a deadline is missed.
+Hard real-time software systems have a set of strict deadlines, and missing a deadline is considered a system failure.
+
+Soft real-time systems try to reach deadlines but do not fail if a deadline is missed.
+However, they may degrade their quality of service in such an event to improve responsiveness.
+
+Firm real-time systems treat information delivered/computations made after a deadline as invalid.
+Like soft real-time systems, they do not fail after a missed deadline, and they may degrade QoS if a deadline is missed. (1) (2)
 
 Real-time computer systems are often associated with low-latency systems.
 Many applications of real-time computing are also low-latency applications (for example, automated piloting systems must be reactive to sudden changes in the environment).
@@ -37,7 +51,7 @@ A more useful metric in evaluating the "hardness" of a real-time system is jitte
 A more jittery system is less deterministic, less predictable, and less real-time.
 Though in practice it is impossible to completely eliminate jitter from a real-time system, it is a worthy goal to determine a hard upper bound for jitter.
 
-# Implementation of Real-time Computing
+# Best Practices in Real-time Computing
 
 In general, an operating system can guarantee that the tasks it handles for the developer, such as thread scheduling, are deterministic, but the OS may not guarantee that the developer's code will run in real-time.
 Therefore, it is up to the developer to know what the determinstic guarantees of an existing system are, and what she must do to write hard real-time code on top of the OS.
@@ -249,6 +263,10 @@ There are a few possible strategies for the real-time "hardening" of existing an
 
 
 # Sources
+
+1. [Presentation on Real-Time Systems](http://www.cse.unsw.edu.au/~cs9242/08/lectures/09-realtimex2.pdf) by Stefan M. Petters, Australian Research Council
+
+2. [Differences between hard real-time, soft real-time, and firm real-time](http://stackoverflow.com/questions/17308956/differences-between-hard-real-time-soft-real-time-and-firm-real-time), Stack Overflow
 
 * [Real-Time Linux Wiki](https://rt.wiki.kernel.org/)
 
