@@ -70,7 +70,11 @@ The following primitive types are defined:
 * `string`
 
 <div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> consider <code>char</code>, <code>wstring</code>, <code>u16string</code>, <code>u32string</code>
+  <b>TODO:</b> consider <code>wchar</code>, <code>wstring</code>, <code>u16string</code>, <code>u32string</code>
+</div>
+
+<div class="alert alert-warning" markdown="1">
+  <b>TODO:</b> consider removing <code>byte</code>, <code>char</code> after specifying the mapping to C++ and Python
 </div>
 
 
