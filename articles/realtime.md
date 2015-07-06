@@ -34,14 +34,15 @@ The definition of real-time computing requires the definition of a few other key
 * Quality of Service: The overall performance of a network. Includes factors such as bandwith, throughput, availability, jitter, latency, and error rates.
 
 Real-time software guarantees correct computation at the correct time.
-Hard real-time software systems have a set of strict deadlines, and missing a deadline is considered a system failure.
+
+*Hard real-time* software systems have a set of strict deadlines, and missing a deadline is considered a system failure.
 Examples of hard real-time systems: airplane sensor and autopilot systems, spacecrafts and planetary rovers.
 
-Soft real-time systems try to reach deadlines but do not fail if a deadline is missed.
+*Soft real-time* systems try to reach deadlines but do not fail if a deadline is missed.
 However, they may degrade their quality of service in such an event to improve responsiveness.
 Examples of soft real-time systems: audio and video delivery software for entertainment (lag is undesirable but not catastrophic).
 
-Firm real-time systems treat information delivered/computations made after a deadline as invalid.
+*Firm real-time systems* treat information delivered/computations made after a deadline as invalid.
 Like soft real-time systems, they do not fail after a missed deadline, and they may degrade QoS if a deadline is missed. (1)
 Examples of firm real-time systems: financial forecast systems, robotic assembly lines. (2)
 
@@ -50,13 +51,13 @@ Many applications of real-time computing are also low-latency applications (for 
 However, a real-time system is not defined by low latency, but by a deterministic schedule: it must be guaranteed that the system finishes a certain task by a certain time.
 Therefore, it is important that the latency in the system be measurable and a maximum allowable latency for tasks be set.
 
-A real-time computer system needs both an operating system that can handle scheduling and memory allocation in real-time and user code that delivers deterministic execution.
+A real-time computer system needs both an operating system that operates in real-time and user code that delivers deterministic execution.
 Neither deterministic user code on a non-real-time operating system or nondeterministic code on a real-time operating system will result in real-time performance.
 
 Some examples of real-time environments:
 
 * The `RT_PREEMPT` Linux kernel patch, which modifies the Linux scheduler to be fully preemptible. (3)
-* Xenomai, a POSIX-compliant co-kernel (or hypervisor) that provides a real-time kernel cooperating with the Linux kernel. The Linux kernel is treated as an idle task of the real-time kernel's scheduler.
+* Xenomai, a POSIX-compliant co-kernel (or hypervisor) that provides a real-time kernel cooperating with the Linux kernel. The Linux kernel is treated as the idle task of the real-time kernel's scheduler (the lowest priority task).
 * RTAI, an alternative co-kernel solution.
 * QNX Neutrino, a POSIX-compliant real-time operating system for mission-critical systems.
 
@@ -67,7 +68,7 @@ Therefore, it is up to the developer to know what the determinstic guarantees of
 
 In this section, various strategies for developing on top of a real-time OS are explored, since these strategies might be applicable to ROS 2.
 The patterns focus on the use case of C/C++ development on Linux-based real-time OS's (such as `RT_PREEMPT`), but the general concepts are applicable to other platforms.
-Most of the patterns focus on workarounds for blocking calls in the OS, since any operation that involves blocking for an indeterminate amount of time is nondeterministic. 
+Most of the patterns focus on workarounds for blocking calls in the OS, since any operation that involves blocking for an indeterminate amount of time is nondeterministic.
 
 It is a common pattern to section real-time code into three parts; a non real-time safe section at the beginning of a process that preallocates memory on the heap, starts threads, etc., a real-time safe section (often implemented as a loop), and a non-real-time safe "teardown" section that deallocates memory as necessary, etc. The "real-time code path" refers to the middle section of the execution.
 
@@ -124,7 +125,8 @@ The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of m
   free(buffer);
 ```
 
-The intro to this section stated that dynamic memory allocation is bad. However, this code snippet shows how to make dynamic memory allocation real-time safe (mostly).
+The intro to this section stated that dynamic memory allocation is usually not real-time safe.
+However, this code snippet shows how to make dynamic memory allocation real-time safe (mostly).
 It locks the virtual address space to a fixed size, disallows returning deallocated memory to the kernel via `sbrk`, and disables `mmap`.
 This effectively locks a pool of memory in the heap into RAM, which prevents page faults due to `malloc` and `free`. (3)
 
@@ -139,18 +141,25 @@ Cons:
 * Using STL containers is therefore dangerous (unbounded sizes)
 * In practice, only works for processes with small memory footprint
 
-### Custom static allocators for STL containers
+### Custom real-time safe memory allocators
 
-To use the standard library safely, custom allocators for STL containers must be implemented that only allocate memory on the stack.
+The default allocator on most operating systems is not optimized for real-time safety.
+However, there is another strategy that is an exception to the "avoid dynamic memory allocation" rule.
+Research into alternative dynamic memory allocators is a rich research topic. (8)
 
-There are various comprehensive tutorials [already written](http://www.codeguru.com/cpp/article.php/c18503/C-Programming-Stack-Allocators-for-STL-Containers.htm) for this task.
+One such alternative allocator is TLSF (Two-Level Segregate Fit).
+It is also called the O(1) allocator, since the time cost of `malloc`, `free`, and `align` operations under TLSF have a constant upper bound.
+It creates a low level of fragmentation.
+The disadvantages of TLSF are that it is not thread safe and that its current implementation is architecture specific: it assumes the system can make 4-byte aligned accesses.
 
 Pros:
-* Use existing STL code with deterministic computation
-* More modular solution
+* Can safely allocate memory in a program with memory bounds that are unknown at runtime or compile
+* Advantages vary depending on the choice of allocator
 
 Cons:
-* Complex to implement
+* Implementations of custom allocators may not be well tested, since they are less widely used
+* Extra dependency, potentially more code complexity
+* Drawbacks vary depending on the choice of allocator
 
 ### Global variables and (static) arrays
 
@@ -244,7 +253,7 @@ The RT Preempt patch replaces much of the kernel's spinlocks with mutexes, but t
 This means that when a forked process modifies a page of memory, it gets its own copy of that page.
 This leads to page faults!
 
-Page faults should be avoided in real-time programming, so Linux `fork`, as well as programs that call `fork`, should be avoided. 
+Page faults should be avoided in real-time programming, so Linux `fork`, as well as programs that call `fork`, should be avoided.
 
 # Testing and Performance Benchmarking
 
@@ -285,11 +294,14 @@ Much of the research in this document focuses on achieving real-time on POSIX-co
 With judicious application of the performance patterns and benchmarking tests proposed in this document, implementing real-time code in C/C++ is feasible.
 The question of how ROS 2 will achieve real-time compatibility remains.
 
+It is acceptable for the setup and teardown stages of the ROS node lifecycle to not be real-time safe.
+However, interacting with ROS interfaces, particularly within an intra-process context, should be real-time safe, since these actions could be on the real-time code path of a process.
+
 There are a few possible strategies for the real-time "hardening" of existing and future ROS 2 code:
 
 * Create a configuration option for the stack to operate in "real-time friendly" mode.
   * Pros:
-    * Could allow user to dynamicaly switch between real-time and non-real-time modes.
+    * Could allow user to dynamically switch between real-time and non-real-time modes.
   * Cons:
     * Refactoring overhead. Integrating real-time code with existing code may be intractable.
 
@@ -315,7 +327,7 @@ The third option is most appealing because it represents the least amount of wor
 
 # Sources
 
-1. [Presentation on Real-Time Systems](http://www.cse.unsw.edu.au/~cs9242/08/lectures/09-realtimex2.pdf) by Stefan M. Petters, Australian Research Council
+1. Stefan M. Petters, [Presentation on Real-Time Systems](http://www.cse.unsw.edu.au/~cs9242/08/lectures/09-realtimex2.pdf)
 
 2. [Differences between hard real-time, soft real-time, and firm real-time](http://stackoverflow.com/questions/17308956/differences-between-hard-real-time-soft-real-time-and-firm-real-time), Stack Overflow
 
@@ -328,3 +340,7 @@ The third option is most appealing because it represents the least amount of wor
 6. Stack Overflow, [Are Exceptions still undesirable in Realtime environment?](http://stackoverflow.com/questions/5257190/are-exceptions-still-undesirable-in-realtime-environment)
 
 7. Pavel Moryc, [Task jitter measurement under RTLinux operating system](https://fedcsis.org/proceedings/2007/pliks/48.pdf)
+
+8. Alfons Crespo, Ismael Ripoll and Miguel Masmano, [Dynamic Memory Management for Embedded Real-Time Systems](http://www.gii.upv.es/tlsf/files/papers/tlsf_slides.pdf)
+
+9. M. Masmno, [TLSF: A New Dynamic Memory Allocator for Real-Time Systems](http://www.gii.upv.es/tlsf/files/ecrts04_tlsf.pdf)
