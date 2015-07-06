@@ -97,3 +97,11 @@ As a result, while the key concepts (distributed processing, anonymous publish/s
 But fear not: there will be mechanisms in place to allow ROS 2.0 code to coexist with existing ROS code.
 At the very least, there will be translation relays that will support run-time interactions between the two systems.
 And it is possible that there will be library shims that will allow existing ROS code to compile/run against ROS 2.0 libraries, with behavior that is qualitatively similar to what is seen today.
+
+## Why not just enhance ROS 1?
+
+In principle, the changes described above could be integrated into the existing core ROS code.
+E.g., new transport technologies could be added to `roscpp` and `rospy`.
+We considered this option and concluded that, given the intrusive nature of the changes that would be required to achieve the benefits that we are seeking, there is too much risk associated with changing the current ROS system that is relied upon by so many people.
+We want ROS 1 as it exists today to keep working and be unaffected by the development of ROS 2.
+So ROS 2 will be built as a parallel set of packages that can be installed alongside and interoprate with ROS 1 (e.g., through message bridges).
