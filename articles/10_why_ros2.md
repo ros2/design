@@ -97,3 +97,8 @@ As a result, while the key concepts (distributed processing, anonymous publish/s
 But fear not: there will be mechanisms in place to allow ROS 2.0 code to coexist with existing ROS code.
 At the very least, there will be translation relays that will support run-time interactions between the two systems.
 And it is possible that there will be library shims that will allow existing ROS code to compile/run against ROS 2.0 libraries, with behavior that is qualitatively similar to what is seen today.
+
+We decided to not integrate these changes directly into ROS 1 for a good reason.
+Even if modifications would only be added in new ROS distributions it would potentially require every ROS package to be updated.
+A lot of packages are using the exact same code base for multiple ROS distribution and require almost no effort to release them for the next ROS distribution.
+Having to catch up with these changes for every ROS package seems like an unneccesary burden for all ROS package maintainers.
