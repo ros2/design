@@ -70,10 +70,10 @@ ament provides an option to create symbolic links instead (if the platform suppo
 This enables the developer to change the resources in the source space and skipping the installation step in many situations.
 
 For CMake packages this is achieved by overriding the CMake `install()` function.
-For Python packages the [development mode[(http://pythonhosted.org//setuptools/setuptools.html#development-mode) is used to install the package.
+For Python packages the [development mode](http://pythonhosted.org//setuptools/setuptools.html#development-mode) is used to install the package.
 
 
-## How does *ament* relate to *catkin*?
+## How is *ament* different from *catkin*?
 
 `catkin` has been used for ROS 1 since ROS Groovy.
 `catkin` is based around CMake and even packages only containing Python code are being processed via CMake.
