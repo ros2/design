@@ -67,14 +67,14 @@ Instead of using `catkin_make`, `catkin_make_isolated` or `catkin build` ROS 2 u
 
 If the ROS 1 package uses CMake only to invoke the `setup.py` file and does not contain anything beside Python code (e.g. also no messages, services, etc.) it should be converted into a pure Python package in ROS 2:
 
-* update the build type in the `package.xml` file:
+* Update the build type in the `package.xml` file:
 
     <export>
       <build_type>ament_python</build_type>
     </export>
 
-* remove the `CMakeLists.txt` file
-* update the `setup.py` file to be a standard Python setup script
+* Remove the `CMakeLists.txt` file
+* Update the `setup.py` file to be a standard Python setup script
 
 ROS 2 supports Python 3 only.
 While each package can choose to also support Python 2 it must invoke executables with Python 3 if it uses any API provided by other ROS 2 packages.
@@ -83,6 +83,12 @@ While each package can choose to also support Python 2 it must invoke executable
 #### Update the *CMakeLists.txt* to use *ament_cmake*
 
 Apply the following changes to use `ament_cmake` instead of `catkin`:
+
+* Set the build type in the `package.xml` file:
+
+    <export>
+      <build_type>ament_cmake</build_type>
+    </export>
 
 * Replace the `find_package` invocation with `catkin` and the `COMPONENTS` with:
 
