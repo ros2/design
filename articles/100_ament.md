@@ -201,7 +201,7 @@ Common features like extension points are not supported which makes it more diff
 
 catkin has the feature to provide a so called [devel space](http://wiki.ros.org/catkin/workspaces#Development_.28Devel.29_Space) after building a set of packages.
 That folder is providing a fully working ROS environment without the need to install the packages.
-Avoiding to copy any files allows to e.g. edit Python code and immediately try running the code.
+Avoiding copying any files allows users to e.g. edit Python code and immediately try running the code.
 
 While this is a very convenient feature and speeds up the development process it comes at a cost.
 The necessary logic in catkin increases its complexity significantly.
@@ -232,7 +232,7 @@ With the different design of ament it becomes possible to implement a package si
 
 #### Building within a single CMake context
 
-catkin allows to build multiple packages within a single CMake context (using `catkin_make`).
+catkin allows users to build multiple packages within a single CMake context (using `catkin_make`).
 While this significantly speeds up the process it is not scalable at large.
 This is due to the fact that all packages share the same CMake namespace.
 Therefore the package might have colliding target names or fail to build correctly due to side effects between the packages.
