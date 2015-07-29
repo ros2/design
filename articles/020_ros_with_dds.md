@@ -168,7 +168,7 @@ This staunch difference in ethos between the communities is one of the most conc
 Unlike options like keeping rostcp or using ZeroMQ, there isn't the feeling that there is a large community to fall back on with DDS.
 However, the DDS vendors have been very responsive to our inquires during our research and it is hard to say if that will continue when it is the ROS community which brings the questions.
 
-Even though this is something which should be taken under consideration when making a decision about using DDS, it should not disproportionately out weigh the technical pros and cons of the DDS proposal.
+Even though this is something which should be taken under consideration when making a decision about using DDS, it should not disproportionately outweigh the technical pros and cons of the DDS proposal.
 
 
 ## ROS built on DDS
@@ -180,7 +180,7 @@ Therefore, DDS would provide discovery, publish-subscribe transport, and at leas
 ROS 2.0 would provide a ROS 1.x like interface on top of DDS which hides much of the complexity of DDS for the majority of ROS users, but then separately provides access to the underlying DDS implementation for users that have extreme use cases or need to integrate with other, existing DDS systems.
 Accessing the DDS implementation would require depending on an additional package which is not normally used.
 In this way you can tell if a package has tied itself to a particular DDS vendor by just looking at the package dependencies.
-The goal of the ROS API, which is on top of DDS, should be to meet all the common needs for the ROS community, because once a user taps into the underlying DDS system, they will loose portability between DDS vendors.
+The goal of the ROS API, which is on top of DDS, should be to meet all the common needs for the ROS community, because once a user taps into the underlying DDS system, they will lose portability between DDS vendors.
 Portability among DDS vendors is not intended to encourage people to frequently choose different vendors, but rather to enable power users to select the DDS implementation that meets their specific requirements, as well as to future-proof ROS against changes in the DDS vendor options.
 There will be one recommended and best-supported default DDS implementation for ROS.
 
@@ -264,7 +264,7 @@ Either way actions will be a first class citizen in the ROS 2.0 API and it may b
 
 ### Language Support
 
-DDS vendors typically provide at least C, C++, and Java implementations since API's for those Languages are explicitly defined by the DDS specification.
+DDS vendors typically provide at least C, C++, and Java implementations since API's for those languages are explicitly defined by the DDS specification.
 There are not any well established versions of DDS for Python that research has uncovered.
 Therefore, one goal of the ROS 2.0 system will be to provide a first-class, feature complete C API.
 This will allow bindings for other languages to be made more easily and to enable more consistent behavior between client libraries, since they will use the same implementation.
