@@ -132,7 +132,7 @@ The serialization library will perform the serialization into the wire format fr
 #### Pipeline B:
 
 The message fields can be serialized directly into the wire format using custom code.
-While this avoid the extra data copy it requires a significant effort for implementing the custom serialization routine.
+While this avoids the extra data copy it requires a significant effort for implementing the custom serialization routine.
 
 <img src="{{ site.baseurl }}/img/serialization_pipeline_b.png"/>
 
@@ -197,13 +197,13 @@ Choosing pipeline A over pipeline B or C should therefore not impose any signifi
 ### Member-based vs. method-based access (with storage in member variable)
 
 As the results of produce_consume_struct and produce_consume_method show the performance difference is not measurable.
-Therefore a method-based interface is prefered as it allows future customizations (e.g. changing the way the data is stored internally).
+Therefore a method-based interface is preferred as it allows future customizations (e.g. changing the way the data is stored internally).
 
 
 ### Storage in message vs. storage in templated backend (both using method-based access)
 
 As the results of produce_consume_method and produce_consume_backend_plain show the performance difference is again not measurable.
-Therefore a templated backend is prefered as it allows customizations (e.g. add value range validation, defer storage, implement thread safety, custom logging for debugging/introspection purposes) and enable to drop in custom storage backends (e.g. any message class of an existing serialization which suits our API).
+Therefore a templated backend is preferred as it allows customizations (e.g. add value range validation, defer storage, implement thread safety, custom logging for debugging/introspection purposes) and enable to drop in custom storage backends (e.g. any message class of an existing serialization which suits our API).
 
 
 ## Technical Issues
@@ -242,10 +242,10 @@ This still allows us to implement the optimization described as pipeline B for e
 
 
 ### Message Interface
-Under the assumption that a method-based access is not significantly impacting the performance it is prefered over a member-based access in order to enable changing the storage backend in the future and enabling overriding it with a custom implementation.
+Under the assumption that a method-based access is not significantly impacting the performance it is preferred over a member-based access in order to enable changing the storage backend in the future and enabling overriding it with a custom implementation.
 
 
 ### Update
 With the decision to build ROS 2 on top of DDS the Pipeline B will be used.
 The previous conclusion to switch from member to method based access has been revisited.
-Since we do not have the need to make the storage backend exchangable anymore and we might prefer keeping the member based access of messages to keep it similar with ROS 1.
+Since we do not have the need to make the storage backend exchangeable anymore and we might prefer keeping the member based access of messages to keep it similar with ROS 1.

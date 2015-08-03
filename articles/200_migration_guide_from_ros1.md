@@ -155,7 +155,7 @@ For more details please see the article about the [generated C++ interfaces](htt
 #### ROS client library
 
 <div class="alert alert-warning" markdown="1">
-NOTE: to be writtten
+NOTE: to be written
 </div>
 
 
