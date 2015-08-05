@@ -101,6 +101,8 @@ For each pointer type there a non-const and a const `typedef`:
 * `UniquePtr` and `ConstUniquePtr`
 * `WeakPtr` and `ConstWeakPtr`
 
+For partial backwards compatibility with ROS 1, these `typedefs` will also be added to ROS 1 packages using `boost::*_ptr` types. Migrating ROS 1 code to use the `typedefs` will ease migration to ROS 2.
+
 
 ## Services
 
