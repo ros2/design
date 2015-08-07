@@ -18,6 +18,8 @@ author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 </div>
 
 Original Author: {{ page.author }}
+Status: Draft
+Type: Standards Track
 
 
 ## Scope
