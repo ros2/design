@@ -30,15 +30,24 @@ This article specifies the generated C++ code for ROS interface types defined in
 ## Namespacing
 
 All code of a ROS package should be defined in a namespace named after the package.
-To separate the generated code from other code within the package it is defined in a sub namespace:
+To separate the generated code from other code within the package it is defined in a sub-namespace:
+
 * namespace for ROS messages: `package_name::msg`.
 * namespace for ROS services: `package_name::srv`.
+
+<div class="alert alert-warning" markdown="1">
+  **Note:** Those namespaces are not consistent with ROS 1 usage.
+</div>
 
 
 ## Generated files
 
 Following the C++ style guide of ROS 2 the namespace hierarchy is mapped to a folder structure.
 The filenames use lowercase alphanumeric characters with underscores for separating words and end with either `.hpp` or `.cpp`.
+
+<div class="alert alert-warning" markdown="1">
+  **Note:** The suggested naming is not consistent with ROS 1 usage.
+</div>
 
 
 ## Messages
@@ -103,6 +112,9 @@ For each pointer type there a non-const and a const `typedef`:
 * `UniquePtr` and `ConstUniquePtr`
 * `WeakPtr` and `ConstWeakPtr`
 
+<div class="alert alert-warning" markdown="1">
+  **Note:** `Ptr` and `ConstPtr` are *not* compatible with ROS 1 usage (which is shared). That may change.
+</div>
 
 ## Services
 
@@ -118,5 +130,10 @@ The generated code is split across multiple files the same way as message are.
 
 ### Request and response messages
 
-For the request as well as the response part messages are being generated which have the same name as the service with a suffix being either `_Request` or `_Response`.
-These messages are still defined in the `srv` sub namespace.
+The request and response messages are generated with the service name and a suffix of `Request` or `Response`.
+
+These messages are still defined in the `srv` sub-namespace.
+
+<div class="alert alert-warning" markdown="1">
+  **Note:** That is not consistent with ROS 1 usage.
+</div>
