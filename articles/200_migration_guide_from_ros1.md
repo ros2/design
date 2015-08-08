@@ -40,11 +40,13 @@ Before being able to migrate a ROS 1 package to ROS 2 all of its dependencies mu
 Packages containing messages and / or services which should be supported by the [ROS bridge](https://github.com/ros2/ros1_bridge/) need to have a different name in ROS 1 and ROS 2.
 Therefore the suffixes `_msgs` and `_srvs` are replaced (and merged in a single package) with the suffix `_interfaces`.
 
+**Comment:** this design problem has been resolved. We will keep the same message package names as ROS 1.
+
 
 ### Package manifests
 
-ROS 2 only support the format 2 of the package specification which is defined in [REP 140](http://www.ros.org/reps/rep-0140.html).
-Therefore the `package.xml` file must be update to format 2 if it uses format 1.
+ROS 2 only supports format 2 of the package specification which is defined in [REP 140](http://www.ros.org/reps/rep-0140.html).
+Therefore, the `package.xml` file must be updated to format 2 if it still uses format 1.
 Since ROS 1 support both formats (1 as well as 2) it is safe to perform that conversion in the ROS 1 package.
 
 Some packages might have different names in ROS 2 so the dependencies might need to be updated accordingly.
@@ -57,7 +59,21 @@ Service files must end in `.srv` and must be located in the subfolder `srv`.
 
 These files might need to be updated to comply with the [ROS Interface definition](http://design.ros2.org/articles/interface_definition.html).
 Some primitive types have been removed and the types `duration` and `time` which were builtin types in ROS 1 have been replaced with normal message definitions and must be used from the `builtin_interfaces` package.
+
+**Comment:** we need to investigate porting the C++ and Python rostime implementations for use by old ROS 1 programs during the period of migration and coexistence.
+That should not require adding them as dependencies for "pure" ROS 2 packages.
+
 Also some naming conventions are stricter then in ROS 1.
+
+**Comment:** those differences should only be recommendations. The old files must still work.
+
+**Comment:** ROS 2 message generation should provide aliases for these old names:
+
+* `Header`: `std_msgs/Header`
+* `time`: `std_msgs/Time`
+* `duration`: `std_msgs/Duration`
+* `byte`: `int8`
+* `char`: `uint8`
 
 
 ### Build system
@@ -165,7 +181,17 @@ For more details please see the article about the [generated C++ interfaces](htt
 NOTE: to be written
 </div>
 
+## Coexistence
+
+Many essential ROS packages will need to be supported on both ROS 1 and ROS 2 for several years.
+In addition to migration, we need to explain how programmers can continue to support both versions from common sources.
+
+That may require duplicate `package.xml` and `package2.xml` files to handle different dependency names.
+
+It may also require some `#if` conditional compilation depending on the version being built.
 
 ## Launch files
 
 While launch files in ROS 1 are specified using [.xml](http://wiki.ros.org/roslaunch/XML) files ROS 2 uses Python scripts to enable more flexibility (see [launch package](https://github.com/ros2/launch/tree/master/launch)).
+
+**Comment:** we need a separate article to address launch files (and their migration and coexistence).
