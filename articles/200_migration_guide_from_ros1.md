@@ -19,6 +19,13 @@ author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 </div>
 
 Original Author: {{ page.author }}
+Status: Draft
+Type: Informational
+
+<div class="alert alert-warning" markdown="1">
+  **Comment (joq):** I don't consider this article ready yet for a full review.
+  But, some of its contents are misleading and no longer relevant, so a preliminary discussion is worthwhile.
+</div>
 
 
 ## Prerequisite
