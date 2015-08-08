@@ -18,3 +18,4 @@ exclude:
  - LICENSE
  - README.md
  - vendor
+ - examples
