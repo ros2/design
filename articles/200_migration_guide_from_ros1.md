@@ -28,12 +28,6 @@ Before being able to migrate a ROS 1 package to ROS 2 all of its dependencies mu
 
 ## Migration steps
 
-### Package naming
-
-Packages containing messages and / or services which should be supported by the [ROS bridge](https://github.com/ros2/ros1_bridge/) need to have a different name in ROS 1 and ROS 2.
-Therefore the suffixes `_msgs` and `_srvs` are replaced (and merged in a single package) with the suffix `_interfaces`.
-
-
 ### Package manifests
 
 ROS 2 only support the format 2 of the package specification which is defined in [REP 140](http://www.ros.org/reps/rep-0140.html).
