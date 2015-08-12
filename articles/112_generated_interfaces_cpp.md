@@ -96,10 +96,13 @@ The comparison operators `==` and `!=` perform the comparison on a per member ba
 The struct contains `typedefs` for the four common pointer types `plain pointer`, `std::shared_ptr`, `std::unique_ptr`, `std::weak_ptr`.
 For each pointer type there a non-const and a const `typedef`:
 
-* `Ptr` and `ConstPtr`
+* `RawPtr` and `ConstRawPtr`
 * `SharedPtr` and `ConstSharedPtr`
 * `UniquePtr` and `ConstUniquePtr`
 * `WeakPtr` and `ConstWeakPtr`
+
+For similarity to ROS 1 the `typedefs` `Ptr` and `ConstPtr` still exist but are deprecated.
+In contrast to ROS 1 they use `std::shared_ptr` instead of Boost.
 
 
 ## Services
