@@ -561,7 +561,8 @@ ament_package()
 
 Similarly to how we found each dependent package separately, instead of finding
 them as parts of catkin, we also need to add their include directories
-separately:
+separately (see also `ament_target_dependencies()` below, which is a more
+concise and more thorough way of handling dependent packages' build flags):
 
 ~~~
 #include_directories(${catkin_INCLUDE_DIRS})
