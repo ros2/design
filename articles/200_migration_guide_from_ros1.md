@@ -156,3 +156,366 @@ NOTE: to be written
 ## Launch files
 
 While launch files in ROS 1 are specified using [.xml](http://wiki.ros.org/roslaunch/XML) files ROS 2 uses Python scripts to enable more flexibility (see [launch package](https://github.com/ros2/launch/tree/master/launch)).
+
+## Example: Converting an existing ROS 1 package to use ROS 2
+
+Let's say that we have simple ROS 1 package called `talker` that uses `roscpp`
+in one node, called `talker`.
+This package is in a catkin workspace, located at `~/ros1_talker`.
+
+### The ROS 1 code
+
+Here's the directory layout of our catkin workspace:
+
+~~~
+$ cd ~/ros1_talker
+$ find .
+.
+./src
+./src/talker
+./src/talker/package.xml
+./src/talker/CMakeLists.txt
+./src/talker/talker.cpp
+~~~
+
+Here is the content of those three files:
+
+~~~
+$ cat src/talker/package.xml
+{% include 200_migration_guide_from_ros1/ros1/src/talker/package.xml %}~~~
+
+~~~
+$ cat src/talker/CMakeLists.txt
+{% include 200_migration_guide_from_ros1/ros1/src/talker/CMakeLists.txt %}~~~
+
+~~~
+$ cat src/talker/talker.cpp
+{% include 200_migration_guide_from_ros1/ros1/src/talker/talker.cpp %}~~~
+
+#### Building the ROS 1 code
+
+We source an environment setup file (in this case for Jade using bash), then we
+build our package using `catkin_make install`:
+
+~~~
+. /opt/ros/jade/setup.bash
+cd ~/ros1_talker
+catkin_make install
+~~~
+
+#### Running the ROS 1 node
+
+If there's not already one running, we start a `roscore`, first sourcing the
+setup file from our `catkin` install tree (the system setup file at
+`/opt/ros/jade/setup.bash` would also work here):
+
+~~~
+. ~/ros1_talker/install/setup.bash
+roscore
+~~~
+
+In another shell, we run the node from the `catkin` install space using
+`rosrun`, again sourcing the setup file first (in this case it must be the one
+from our workspace):
+ 
+~~~
+. ~/ros1_talker/install/setup.bash
+rosrun talker talker
+~~~
+
+### Migrating to ROS 2
+
+Let's start by creating a new workspace in which to work:
+
+~~~
+mkdir ~/ros2_talker
+cd ~/ros2_talker
+~~~
+
+We'll copy the source tree from our ROS 1 package into that workspace, where we can modify it:
+
+~~~
+mkdir src
+cp -a ~/ros1_talker/src/talker src
+~~~
+
+Now we'll modify the the C++ code in the node.
+The ROS 2 C++ library, called `rclcpp`, provides a different API from that
+provided by `roscpp`.
+The concepts are very similar between the two libraries, which makes the changes
+reasonably straightforward to make.
+
+#### Included headers
+
+In place of `ros/ros.h`, which gave us access to the `roscpp` library API, we
+need to include `rclcpp/rclcpp.hpp`, which gives us access to the `rclcpp`
+library API:
+
+~~~
+//#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
+~~~
+
+To get the `std_msgs/String` message definition, in place of
+`std_msgs/String.h`, we need to include `std_msgs/msg/string.hpp`:
+
+~~~
+//#include "std_msgs/String.h"
+#include "std_msgs/msg/string.hpp"
+~~~
+
+#### Changing C++ library calls
+
+Instead of passing the node's name to the library initialization call, we do
+the initialization, then pass the node name to the creation of the node object
+(we can use the `auto` keyword because now we're requiring a C++11 compiler):
+
+~~~
+//  ros::init(argc, argv, "talker");
+//  ros::NodeHandle n;
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::node::Node::make_shared("talker");
+~~~
+
+The creation of the publisher and rate objects looks pretty similar, with some
+changes to the names of namespace and methods.
+For the publisher, instead of an integer queue length argument, we pass a
+quality of service (qos) profile, which is a far more flexible way to
+controlling how message delivery is handled.
+In this example, we just pass the default profile `rmw_qos_profile_default`
+(it's global because it's declared in `rmw`, which is written in C and so
+doesn't have namespaces).
+
+~~~
+//  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+//  ros::Rate loop_rate(10);
+  auto chatter_pub = node->create_publisher<std_msgs::msg::String>("chatter",
+    rmw_qos_profile_default);
+  rclcpp::rate::Rate loop_rate(10);
+~~~
+
+The creation of the outgoing message is different in both the namespace and the
+fact that we go ahead and create a shared pointer (this may change in the future
+with more publish API that accepts const references):
+
+~~~
+//  std_msgs::String msg;
+  auto msg = std::make_shared<std_msgs::msg::String>();
+~~~
+
+In place of `ros::ok()`, we call `rclcpp::ok()`:
+
+~~~
+//  while (ros::ok())
+  while (rclcpp::ok())
+~~~
+
+Inside the publishing loop, we use the `->` operator to access the `data` field
+(because now `msg` is a shared pointer):
+
+~~~
+//    msg.data = ss.str();
+    msg->data = ss.str();
+~~~
+
+To print a console message, instead of using `ROS_INFO()`, we use `printf()`
+(this is temporary, because we don't yet have an equivalent of the `rosconsole`
+package):
+
+~~~
+//    ROS_INFO("%s", msg.data.c_str());
+    printf("%s\n", msg->data.c_str());
+~~~
+
+Publishing the message is very similar, the only noticeable difference being
+that the publisher is now a shared pointer:
+
+~~~
+//    chatter_pub.publish(msg);
+    chatter_pub->publish(msg);
+~~~
+
+Spinning (i.e., letting the communications system process any pending
+incoming/outgoing messages) is different in that the call now takes the node as
+an argument:
+
+~~~
+//    ros::spinOnce();
+    rclcpp::spin_some(node);
+~~~
+
+Sleeping using the rate object is unchanged.
+
+Putting it all together, the new `talker.cpp` looks like this:
+
+~~~
+{% include 200_migration_guide_from_ros1/ros2/src/talker/talker.cpp %}~~~
+
+#### Changing the `package.xml`
+
+Starting with ROS 2, only version 2 of the `package.xml` format is supported
+(this format is also supported in ROS 1, but isn't used by all packages).
+We start by specifying the format version in the `package` tag:
+
+~~~
+<!-- <package> -->
+<package format="2">
+~~~
+
+ROS 2 uses a newer version of `catkin`, called `ament`, which we specify in the
+`buildtool_depend` tag:
+
+~~~
+<!--  <buildtool_depend>catkin</buildtool_depend> -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+~~~
+
+In our build dependencies, instead of `roscpp` we use `rclcpp`, which provides
+the C++ API that we use.
+We additionally depend on `rmw_implementation`, which pulls in the default
+implementation of the `rmw` abstraction layer that allows us to support multiple
+DDS implementations (we should consider restructuring / renaming things so that
+it's possible to depend on one thing, analogous to `roscpp`):
+
+~~~
+<!--  <build_depend>roscpp</build_depend> -->
+  <build_depend>rclcpp</build_depend>
+  <build_depend>rmw_implementation</build_depend>
+~~~
+
+We make the same addition in the run dependencies and also update from the
+`run_depend` tag to the `exec_depend` tag (part of the upgrade to version 2 of
+the package format):
+
+~~~
+<!--  <run_depend>roscpp</run_depend> -->
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>rmw_implementation</exec_depend>
+<!--  <run_depend>std_msgs</run_depend> -->
+  <exec_depend>std_msgs</exec_depend>
+~~~
+
+We also need to tell `ament` what *kind* of package we are, so that it knows how
+to build us.
+Because we're using `ament` and CMake, we add the following lines to declare our
+build type to be `ament_cmake`:
+
+~~~
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+~~~
+
+
+Putting it all together, our `package.xml` now looks like this:
+
+~~~
+{% include 200_migration_guide_from_ros1/ros2/src/talker/package.xml %}~~~
+
+*TODO: show simpler version of this file just using the `<depend>` tag, which is
+enabled by version 2 of the package format (also supported in `catkin` so,
+strictly speaking, orthogonal to ROS 2).*
+
+#### Changing the CMake code
+
+ROS 2 relies on the C++11 standard.
+Depending on what compiler you're using, support for C++11 might not be enabled
+by default.
+Using `gcc` 4.8 (which is what is used on Ubuntu Trusty), we need to enable it
+explicitly, which we do by adding this line near the top of the file:
+
+~~~
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+~~~
+
+Using `catkin`, we specify the packages we want to build against by passing them
+as `COMPONENTS` arguments when initially finding `catkin` itself.
+With `ament`, we find each package individually, starting with `ament_cmake`
+(and adding our new dependency, `rmw_implementation`):
+
+~~~
+#find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rmw_implementation REQUIRED)
+find_package(std_msgs REQUIRED)
+~~~
+
+We call `catkin_package()` to auto-generate things like CMake configuration
+files for other packages that use our package.
+Whereas that call happens *before* specifying targets to build, we now call the
+analogous `ament_package()` *after* the targets:
+
+~~~
+#catkin_package()
+# At the bottom of the file:
+ament_package()
+~~~
+
+Similarly to how we found each dependent package separately, instead of finding
+them as parts of catkin, we also need to add their include directories
+separately (see also `ament_target_dependencies()` below, which is a more
+concise and more thorough way of handling dependent packages' build flags):
+
+~~~
+#include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${rclcpp_INCLUDE_DIRS}
+                    ${rmw_implementation_INCLUDE_DIRS}
+                    ${std_msgs_INCLUDE_DIRS})
+~~~
+
+We do the same to link against our dependent packages' libraries:
+
+~~~
+#target_link_libraries(talker ${catkin_LIBRARIES})
+target_link_libraries(talker
+                      ${rclcpp_LIBRARIES}
+                      ${rmw_implementation_LIBRARIES}
+                      ${std_msgs_LIBRARIES})
+~~~
+
+*TODO: explain how `ament_target_dependencies()` simplifies the above steps and
+is also better (also handling `*_DEFINITIONS`, doing target-specific include
+directories, etc.).*
+
+For installation, `catkin` defines variables like
+`CATKIN_PACKAGE_BIN_DESTINATION`.
+With `ament`, we just give a path relative to the installation root, like `bin`
+for executables (this is in part because we don't yet have an equivalent of
+`rosrun`):
+
+~~~
+#install(TARGETS talker
+#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS talker RUNTIME DESTINATION bin)
+~~~
+
+Putting it all together, the new `CMakeLists.txt` looks like this:
+
+~~~
+{% include 200_migration_guide_from_ros1/ros2/src/talker/CMakeLists.txt %}~~~
+
+*TODO: Show what this would look like with `ament_auto`.*
+
+#### Building the ROS 2 code
+
+We source an environment setup file (in this case the one generated by following
+the ROS 2 installation tutorial, which builds in `~/ros2_ws`, then we build our
+package using `ament build`:
+
+~~~
+. ~/ros2_ws/install/setup.bash
+cd ~/ros2_talker
+ament build
+~~~
+
+#### Running the ROS 2 node
+
+Because we installed the `talker` executable into `bin`, after sourcing the
+setup file, from our `ament` install tree, we can invoke it by name directly
+(also, there is not yet a ROS 2 equivalent for `rosrun`):
+
+~~~
+. ~/ros2_ws/install/setup.bash
+talker
+~~~
