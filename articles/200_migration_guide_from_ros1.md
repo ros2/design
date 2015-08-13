@@ -188,59 +188,15 @@ Here is the content of those three files:
 
 ~~~
 $ cat src/talker/package.xml
-<package>
-  <name>talker</name>
-  <version>0.0.0</version>
-  <description>talker</description>
-  <maintainer email="gerkey@osrfoundation.org">Brian Gerkey</maintainer>
-  <license>Apache License 2.0</license>
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>std_msgs</run_depend>
-</package>
-~~~
+{% include 200_migration_guide_from_ros1/ros1/src/talker/package.xml %}~~~
 
 ~~~
 $ cat src/talker/CMakeLists.txt
-cmake_minimum_required(VERSION 2.8.3)
-project(talker)
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
-catkin_package()
-include_directories(${catkin_INCLUDE_DIRS})
-add_executable(talker talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
-install(TARGETS talker
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-~~~
+{% include 200_migration_guide_from_ros1/ros1/src/talker/CMakeLists.txt %}~~~
 
 ~~~
 $ cat src/talker/talker.cpp
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-#include <sstream>
-int main(int argc, char **argv)
-{
-  ros::init(argc, argv, "talker"); 
-  ros::NodeHandle n;
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-  ros::Rate loop_rate(10);
-  int count = 0;
-  std_msgs::String msg;
-  while (ros::ok())
-  {
-    std::stringstream ss;
-    ss << "hello world " << count++;
-    msg.data = ss.str();
-    ROS_INFO("%s", msg.data.c_str());
-    chatter_pub.publish(msg);
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
-  return 0;
-}
-~~~
+{% include 200_migration_guide_from_ros1/ros1/src/talker/talker.cpp %}~~~
 
 #### Building the ROS 1 code
 
@@ -399,42 +355,7 @@ Sleeping using the rate object is unchanged.
 Putting it all together, the new `talker.cpp` looks like this:
 
 ~~~
-//#include "ros/ros.h"
-#include "rclcpp/rclcpp.hpp"
-//#include "std_msgs/String.h"
-#include "std_msgs/msg/string.hpp"
-#include <sstream>
-int main(int argc, char **argv)
-{
-//  ros::init(argc, argv, "talker");
-//  ros::NodeHandle n;
-  rclcpp::init(argc, argv);
-  auto node = rclcpp::node::Node::make_shared("talker");
-//  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-//  ros::Rate loop_rate(10);
-  auto chatter_pub = node->create_publisher<std_msgs::msg::String>("chatter", rmw_qos_profile_default);
-  rclcpp::rate::Rate loop_rate(10);
-  int count = 0;
-//  std_msgs::String msg;
-  auto msg = std::make_shared<std_msgs::msg::String>();
-//  while (ros::ok())
-  while (rclcpp::ok())
-  {
-    std::stringstream ss;
-    ss << "hello world " << count++;
-//    msg.data = ss.str();
-    msg->data = ss.str();
-//    ROS_INFO("%s", msg.data.c_str());
-    printf("%s\n", msg->data.c_str());
-//    chatter_pub.publish(msg);
-    chatter_pub->publish(msg);
-//    ros::spinOnce();
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
-  }
-  return 0;
-}
-~~~
+{% include 200_migration_guide_from_ros1/ros2/src/talker/talker.cpp %}~~~
 
 #### Changing the `package.xml`
 
@@ -495,29 +416,7 @@ build type to be `ament_cmake`:
 Putting it all together, our `package.xml` now looks like this:
 
 ~~~
-<!-- <package> -->
-<package format="2">
-  <name>talker</name>
-  <version>0.0.0</version>
-  <description>talker</description>
-  <maintainer email="gerkey@osrfoundation.org">Brian Gerkey</maintainer>
-  <license>Apache License 2.0</license>
-<!--  <buildtool_depend>catkin</buildtool_depend> -->
-  <buildtool_depend>ament_cmake</buildtool_depend>
-<!--  <build_depend>roscpp</build_depend> -->
-  <build_depend>rclcpp</build_depend>
-  <build_depend>rmw_implementation</build_depend>
-  <build_depend>std_msgs</build_depend>
-<!--  <run_depend>roscpp</run_depend> -->
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>rmw_implementation</exec_depend>
-<!--  <run_depend>std_msgs</run_depend> -->
-  <exec_depend>std_msgs</exec_depend>
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
-</package>
-~~~
+{% include 200_migration_guide_from_ros1/ros2/src/talker/package.xml %}~~~
 
 *TODO: show simpler version of this file just using the `<depend>` tag, which is
 enabled by version 2 of the package format (also supported in `catkin` so,
@@ -600,30 +499,7 @@ install(TARGETS talker RUNTIME DESTINATION bin)
 Putting it all together, the new `CMakeLists.txt` looks like this:
 
 ~~~
-cmake_minimum_required(VERSION 2.8.3)
-project(talker)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-#find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rmw_implementation REQUIRED)
-find_package(std_msgs REQUIRED)
-#catkin_package()
-#include_directories(${catkin_INCLUDE_DIRS})
-include_directories(${rclcpp_INCLUDE_DIRS}
-                    ${rmw_implementation_INCLUDE_DIRS}
-                    ${std_msgs_INCLUDE_DIRS})
-add_executable(talker talker.cpp)
-#target_link_libraries(talker ${catkin_LIBRARIES})
-target_link_libraries(talker
-                      ${rclcpp_LIBRARIES}
-                      ${rmw_implementation_LIBRARIES}
-                      ${std_msgs_LIBRARIES})
-#install(TARGETS talker
-#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-install(TARGETS talker RUNTIME DESTINATION bin)
-ament_package()
-~~~
+{% include 200_migration_guide_from_ros1/ros2/src/talker/CMakeLists.txt %}~~~
 
 *TODO: Show what this would look like with `ament_auto`.*
 
