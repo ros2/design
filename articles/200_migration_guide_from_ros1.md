@@ -166,8 +166,8 @@ While launch files in ROS 1 are specified using [.xml](http://wiki.ros.org/rosla
 ## Example: Converting an existing ROS 1 package to use ROS 2
 
 Let's say that we have simple ROS 1 package called `talker` that uses `roscpp`
-in one node, called `talker`.  This package is in a catkin workspace, located
-at `~/ros1_talker`.
+in one node, called `talker`.
+This package is in a catkin workspace, located at `~/ros1_talker`.
 
 ### The ROS 1 code
 
@@ -289,9 +289,10 @@ mkdir src
 cp -a ~/ros1_talker/src/talker src
 ~~~
 
-Now we'll modify the the C++ code in the node.  The ROS 2 C++ library, called
-`rclcpp`, provides a different API from that provided by `roscpp`.  The
-concepts are very similar between the two libraries, which makes the changes
+Now we'll modify the the C++ code in the node.
+The ROS 2 C++ library, called `rclcpp`, provides a different API from that
+provided by `roscpp`.
+The concepts are very similar between the two libraries, which makes the changes
 reasonably straightforward to make.
 
 #### Included headers
@@ -327,12 +328,13 @@ the initialization, then pass the node name to the creation of the node object
 ~~~
 
 The creation of the publisher and rate objects looks pretty similar, with some
-changes to the names of namespace and methods.  For the publisher, instead of an
-integer queue length argument, we pass a quality of service (qos) profile, which
-is a far more flexible way to controlling how message delivery is handled.  In
-this example, we just pass the default profile `rmw_qos_profile_default` (it's
-global because it's declared in `rmw`, which is written in C and so doesn't have
-namespaces).
+changes to the names of namespace and methods.
+For the publisher, instead of an integer queue length argument, we pass a
+quality of service (qos) profile, which is a far more flexible way to
+controlling how message delivery is handled.
+In this example, we just pass the default profile `rmw_qos_profile_default`
+(it's global because it's declared in `rmw`, which is written in C and so
+doesn't have namespaces).
 
 ~~~
 //  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
@@ -343,7 +345,8 @@ namespaces).
 ~~~
 
 The creation of the outgoing message is different in both the namespace and the
-fact that we go ahead and create a shared pointer:
+fact that we go ahead and create a shared pointer (this may change in the future
+with more publish API that accepts const references):
 
 ~~~
 //  std_msgs::String msg;
@@ -436,8 +439,8 @@ int main(int argc, char **argv)
 #### Changing the `package.xml`
 
 Starting with ROS 2, only version 2 of the `package.xml` format is supported
-(this format is also supported in ROS 1, but isn't used by all packages).  We
-start by specifying the format version in the `package` tag:
+(this format is also supported in ROS 1, but isn't used by all packages).
+We start by specifying the format version in the `package` tag:
 
 ~~~
 <!-- <package> -->
@@ -445,8 +448,7 @@ start by specifying the format version in the `package` tag:
 ~~~
 
 ROS 2 uses a newer version of `catkin`, called `ament`, which we specify in the
-`buildtool_depend` tag (more specifically, we specify that we want to use
-`ament` to build our package using CMake):
+`buildtool_depend` tag:
 
 ~~~
 <!--  <buildtool_depend>catkin</buildtool_depend> -->
@@ -454,11 +456,11 @@ ROS 2 uses a newer version of `catkin`, called `ament`, which we specify in the
 ~~~
 
 In our build dependencies, instead of `roscpp` we use `rclcpp`, which provides
-the C++ API that we use.   We additionally depend on `rmw_implementation`, which
-pulls in the default implementation of the `rmw` abstraction layer that allows
-us to support multiple DDS implementaitons (we should consider restructuring /
-renaming things so that it's possible to depend on one thing, analogous to
-`roscpp`):
+the C++ API that we use.
+We additionally depend on `rmw_implementation`, which pulls in the default
+implementation of the `rmw` abstraction layer that allows us to support multiple
+DDS implementations (we should consider restructuring / renaming things so that
+it's possible to depend on one thing, analogous to `roscpp`):
 
 ~~~
 <!--  <build_depend>roscpp</build_depend> -->
@@ -479,8 +481,9 @@ the package format):
 ~~~
 
 We also need to tell `ament` what *kind* of package we are, so that it knows how
-to build us.  Because we're using `ament` and CMake, we add the following lines
-to declare our build type to be `ament_cmake`:
+to build us.
+Because we're using `ament` and CMake, we add the following lines to declare our
+build type to be `ament_cmake`:
 
 ~~~
   <export>
@@ -522,19 +525,20 @@ strictly speaking, orthogonal to ROS 2).*
 
 #### Changing the CMake code
 
-ROS 2 relies on the C++11 standard.  Depending on what compiler you're using,
-support for C++11 might not be enabled by default.  Using `gcc` 4.8 (which is
-what is used on Ubuntu Trusty), we need to enable it explicitly, which we do
-by adding this line near the top of the file:
+ROS 2 relies on the C++11 standard.
+Depending on what compiler you're using, support for C++11 might not be enabled
+by default.
+Using `gcc` 4.8 (which is what is used on Ubuntu Trusty), we need to enable it
+explicitly, which we do by adding this line near the top of the file:
 
 ~~~
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ~~~
 
 Using `catkin`, we specify the packages we want to build against by passing them
-as `COMPONENTS` arguments when initially finding `catkin` itself.  With `ament`,
-we find each package individually, starting with `ament_cmake` (and adding our
-new dependency, `rmw_implementation`):
+as `COMPONENTS` arguments when initially finding `catkin` itself.
+With `ament`, we find each package individually, starting with `ament_cmake`
+(and adding our new dependency, `rmw_implementation`):
 
 ~~~
 #find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
@@ -545,9 +549,9 @@ find_package(std_msgs REQUIRED)
 ~~~
 
 We call `catkin_package()` to auto-generate things like CMake configuration
-files for other packages that use our package.  Whereas that call happens
-*before* specifying targets to build, we now call the analogous
-`ament_package()` *after* the targets:
+files for other packages that use our package.
+Whereas that call happens *before* specifying targets to build, we now call the
+analogous `ament_package()` *after* the targets:
 
 ~~~
 #catkin_package()
@@ -581,8 +585,10 @@ is also better (also handling `*_DEFINITIONS`, doing target-specific include
 directories, etc.).*
 
 For installation, `catkin` defines variables like
-`CATKIN_PACKAGE_BIN_DESTINATION`.  With `ament`, we just give a path relative to
-the installation root, like `bin` for executables:
+`CATKIN_PACKAGE_BIN_DESTINATION`.
+With `ament`, we just give a path relative to the installation root, like `bin`
+for executables (this is in part because we don't yet have an equivalent of
+`rosrun`):
 
 ~~~
 #install(TARGETS talker

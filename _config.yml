@@ -14,8 +14,8 @@ relative_permalinks: false
 exclude:
  - CNAME
  - config.json
+ - examples
  - Gemfile
  - LICENSE
  - README.md
  - vendor
- - examples
