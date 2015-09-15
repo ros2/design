@@ -165,7 +165,7 @@ The defintion of the services to use for interacting remotely are contained in t
 
 ### Unimplemented
 
-Currently there a few parts of the specification unimplemnted.
+Currently there a few parts of the specification unimplemented.
 
 - No parameter subscription registration.
   The events are published but there is not way to register a callback for changes to a parameter.
