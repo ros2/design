@@ -41,7 +41,7 @@ Other resources related to the parameter design process for ROS 2.0 include:
 ## Ideal System
 
 It is useful to consider the ideal system to understand how it relates to the current system and how a new system could work.
-We'd like to support both the use cases of standard parameters as well as dynamic parameters.
+We'd like to support both the use cases of ROS 1.0 built in parameters as well as dynamic parameters.
 An ideal parameter system would have the qualities laid out in the following paragraphs.
 
 ### Accept parameter values
@@ -53,6 +53,7 @@ This allows you to update coupled parameters such as PID gains without worring a
 ### Return parameter values
 
 Also at the core functionality return the value of one or more parameters which have previously been set.
+If the value of a parameter is requested which has not been set it will explicitly return `unset`.
 
 ### Unset a parameter value
 
@@ -168,7 +169,8 @@ The defintion of the services to use for interacting remotely are contained in t
 Currently there a few parts of the specification unimplemented.
 
 - No parameter subscription registration.
-  The events are published, but there is not way to register a callback for changes to a parameter.
+  The events are published, but there is not way to register a callback for changes to a specific parameter.
+  You can currently register for a callback on all changes for parameters of a node.
 - The ability to register callback to validate parameter updates prior to them being updated is not available.
 - There has been no work on logging and playback of logged parameter changes.
 - The ability to list and get expected validation policy has not been implemented.
