@@ -23,7 +23,7 @@ Original Author: {{ page.author }}
 ## Background
 
 In ROS 1 the parameters were implemented in a 'blackboard model' with unrestricted read and write access from all nodes.
-The data model proved useful in many cases but there were many cases where the lack of control or ownership proved to be a problem.
+The data model proved useful in many cases, but there were many cases where the lack of control or ownership proved to be a problem.
 One of the common shortcomings was for setting parameters on drivers.
 A tool called dynamic_reconfigure was developed to service this use case.
 It provided a service based interface to interact with parameters of other nodes.
@@ -46,7 +46,7 @@ An ideal parameter system would have the qualities laid out in the following par
 
 ### Accept parameter values
 
-At the most basic a parameter system must be able to accept the setting of parameter values.
+At the most basic, a parameter system must be able to accept the setting of parameter values.
 An extension is to accept a group of parameters updated atomically.
 This allows you to update coupled parameters such as PID gains without worring about invalid intermediate states.
 
@@ -68,12 +68,12 @@ When a parameter changes value it should be possible to get a notification.
 
 ### Reject parameter changes
 
-If a parameter change is requested to an invalid value the parameter server should be able to reject the change.
-Related to this it should also be able to communicate the preconditions which are necessary but not sufficient to determine the acceptance of a change.
+If a parameter change is requested to an invalid value, the parameter server should be able to reject the change.
+Related to this, it should also be able to communicate the preconditions which are necessary but not sufficient to determine the acceptance of a change.
 
 ### Introspection of expected parameters
 
-When using parameters providing a list of expected parameters can prevent accidentally setting parameters with typos in their names etc.
+When using parameters, providing a list of expected parameters can prevent accidentally setting parameters with typos in their names etc.
 
 ### Control parameter lifetime
 
@@ -83,7 +83,7 @@ When parameters are set, there should be an understanding of what the lifetime o
 
 All parameters should be unambiguously addressable.
 
-For example one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on node `/foo/bar`.
+For example, one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on node `/foo/bar`.
 
 ### Logging
 
@@ -92,17 +92,17 @@ And when playing back a log file the parameter changes should be able to be reap
 
 ## Proposed Approach
 
-To cover the feature set above the ROS 2.0 parameter system is proposed as follows.
+To cover the feature set above, the ROS 2.0 parameter system is proposed as follows.
 
 ### Parameters Hosted on nodes
 
-For clarity of parameter lifecycle and validation all parameters will be hosted on a node.
+For the sake of validating parameter lifecycle, all parameters will be hosted on a node.
 Their lifetime will be implicitly tied to the nodes lifetime.
 The node will be responsible for validating current values.
 
 ### Parameter addressing
 
-All parameters will be addressed by two elements, the full node name, and the parameter name.
+All parameters will be addressed by two elements: the full node name and the parameter name.
 
 ### Supported datatypes
 
@@ -123,12 +123,12 @@ Each node is responsible for providing the following functionality.
 - **Get Parameters**
   Given a list of parameter names it will return the parameter values.
 - **Set Parameters**
-  Given a list of parameter names it will request an update of the values subject to validation of the values.
+  Given a list of parameter names, it will request an update of the values subject to validation of the values.
   The updated values can include unsetting the value.
   It will provide an API that can atomically update a set of values such that if any of the values fail validation, none of the values are set.
-  The success or failure of calling set parameters will be available to the client.
+  The success or failure of this call will be available to the client.
 - **List Parameters**
-  Provide a list of names of parameters which are currently set.
+  Provide a list of parameter names which are currently set.
 - **Describe Parameters**
   Given a list of parameter names, return their datatype.
 
@@ -141,7 +141,7 @@ The node will allow for the registration of a callback for custom parameter valu
 ### Backwards compatibility Parameter Server like behavior
 
 There are use cases where the older behavior with parameters persisting beyond the duration of a specific node are valuable.
-To this end we propose to write a simple node which emulates the policy of the ROS 1.0 parameter server and runs in namespace `/` and simply accepts all change requests.
+To this end we propose to write a simple node which emulates the policy of the ROS 1.0 parameter server: it runs in namespace `/` and simply accepts all change requests.
 
 ### Parameter API
 
@@ -155,12 +155,12 @@ It is expect that client libraries will implement the ability to register callba
 
 ### Logging and playback
 
-When logging an entire system the parameter changes can be logged via standard topic recording of the events channel.
+When logging an entire system, the parameter changes can be logged via standard topic recording of the events channel.
 An implementation of the playback mechanism could listen to the parameter event streams and invoke the set parameter calls via the remote API.
 
 ## Current implementation
 
-The above specification has been prototyped, the implementation can be found in [rclcpp](https://github.com/ros2/rclcpp).
+The above specification has been prototyped; the implementation can be found in [rclcpp](https://github.com/ros2/rclcpp).
 The defintion of the services to use for interacting remotely are contained in the [rcl_interfaces package](https://github.com/ros2/rcl_interfaces)
 
 ### Unimplemented
@@ -168,17 +168,17 @@ The defintion of the services to use for interacting remotely are contained in t
 Currently there a few parts of the specification unimplemented.
 
 - No parameter subscription registration.
-  The events are published but there is not way to register a callback for changes to a parameter.
+  The events are published, but there is not way to register a callback for changes to a parameter.
 - The ability to register callback to validate parameter updates prior to them being updated is not available.
 - There has been no work on logging and playback of logged parameter changes.
 - The ability to list and get expected validation policy has not been implemented.
-  It is expected to operate at a slightly higher level and possibly be more closely related to the component life cycle.
+  It is expected to operate at a slightly higher level than parameters, and it possibly will be related to the component life cycle.
 
 ## Topics not covered in at the moment
 
-There are still topics to discuss and flesh out either in this document or others going forward a few to highlight.
+Going forward, there are still topics to discuss and flesh out either in this document or others. A few to highlight.
 
 ## Parameter initialization
 
-There are several ways to load parameters at startup including command line arguments, roslaunch arguments, and potentialy parameter files.
+There are several ways to load parameters at startup including command line arguments, roslaunch arguments, and potentially parameter files.
 This is something which should be addressed in conjunction with the new launch system.
