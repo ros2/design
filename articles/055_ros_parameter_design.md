@@ -44,13 +44,13 @@ It is useful to consider the ideal system to understand how it relates to the cu
 We'd like to support both the use cases of ROS 1.0 built in parameters as well as dynamic parameters.
 An ideal parameter system would have the qualities laid out in the following paragraphs.
 
-### Accept parameter values
+### Set parameter values
 
 At the most basic, a parameter system must be able to accept the setting of parameter values.
 An extension is to accept a group of parameters updated atomically.
 This allows you to update coupled parameters such as PID gains without worring about invalid intermediate states.
 
-### Return parameter values
+### Get parameter values
 
 Also at the core functionality return the value of one or more parameters which have previously been set.
 If the value of a parameter is requested which has not been set it will explicitly return `unset`.
