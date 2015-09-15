@@ -54,6 +54,7 @@ This allows you to update coupled parameters such as PID gains without worring a
 
 Also at the core functionality return the value of one or more parameters which have previously been set.
 If the value of a parameter is requested which has not been set it will explicitly return `unset`.
+Parameters can be queried individually or in groups atomically so as to get a consistent state.
 
 ### Unset a parameter value
 
@@ -117,6 +118,12 @@ The value can be one of the following datatypes:
 - `bool`
 - `bytes[]`
 
+The datatypes are chosen as non-complex primatives.
+The full complement of datatypes of different bitdepth and unsigned types are avoided to allow interpretation from text based configuration files.
+
+`bytes` are included to allow the storage of binary blobs.
+It's use is not recommended but can be very convenient, and explicitly supporting it is better than having people try to abuse other datatypes such as strings.
+
 ### Core API
 
 Each node is responsible for providing the following functionality.
@@ -176,11 +183,18 @@ Currently there a few parts of the specification unimplemented.
 - The ability to list and get expected validation policy has not been implemented.
   It is expected to operate at a slightly higher level than parameters, and it possibly will be related to the component life cycle.
 
-## Topics not covered in at the moment
+## Topics not covered at the moment
 
 Going forward, there are still topics to discuss and flesh out either in this document or others. A few to highlight.
 
-## Parameter initialization
+### Parameter initialization
 
 There are several ways to load parameters at startup including command line arguments, roslaunch arguments, and potentially parameter files.
 This is something which should be addressed in conjunction with the new launch system.
+
+### Support for arrays of primatives
+
+During the API discussions supporting arrays of primatives was discussed and deferred.
+Adding support for arrays in the interface is relatively straight forward.
+It slightly increases the complexity of the API for users, but can support several use cases.
+A use case for arrays of numbers is expressing a matrix or vector, addressing each position in a matrix by some sort of row-column naming scheme can get very cumbersome.
