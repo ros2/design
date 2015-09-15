@@ -34,7 +34,7 @@ Other resources related to the parameter design process for ROS 2.0 include:
 
 - Gonzalo's research on parameters.
   - Discussion: https://groups.google.com/forum/#!topic/ros-sig-ng-ros/YzCmoIsN0o8 and https://groups.google.com/forum/#!searchin/ros-sig-ng-ros/parameter/ros-sig-ng-ros/fwDBcei5Ths/L6ORPfjUDXYJ
-  - Protype: https://github.com/abellagonzalo/dynamic_config
+  - Protoype: https://github.com/abellagonzalo/dynamic_config
   - Final Notes:  [http://wiki.ros.org/sig/NextGenerationROS/Parameters](http://wiki.ros.org/sig/NextGenerationROS/Parameters)
 - Thibault's nodeparam draft REP: https://github.com/tkruse/rep/blob/nodeparam/nodeparam-REP.rst
 
@@ -83,7 +83,7 @@ When parameters are set, there should be an understanding of what the lifetime o
 
 All parameters should be unambiguously addressable.
 
-For example one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on mode `/foo/bar`.
+For example one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on node `/foo/bar`.
 
 ### Logging
 
