@@ -70,7 +70,7 @@ When a parameter changes value it should be possible to get a notification.
 
 ### Reject parameter changes
 
-If a parameter change is requested to an invalid value, the parameter server should be able to reject the change.
+If a parameter change is requested to an invalid value, the owner of the parameter should be able to reject the change.
 Related to this, it should also be able to communicate the preconditions which are necessary but not sufficient to determine the acceptance of a change.
 
 ### Introspection of expected parameters
@@ -89,14 +89,14 @@ For example, one of the challenges of the current system is that there is a nami
 
 ### Logging
 
-All changes to parameters should be visible when logging.
-And when playing back a log file the parameter changes should be able to be reapplied.
+All changes to parameters should be loggable.
+And when playing back a log file the parameter changes should be able to be re-requested by the log playback.
 
 ## Proposed Approach
 
 To cover the feature set above, the ROS 2.0 parameter system is proposed as follows.
 
-### Parameters Hosted on nodes
+### Parameters Hosted in Nodes
 
 For the sake of validating parameter lifecycle, all parameters will be hosted on a node.
 Their lifetime will be implicitly tied to the nodes lifetime.
@@ -118,7 +118,7 @@ The value can be one of the following datatypes:
 - `bool`
 - `bytes[]`
 
-The datatypes are chosen as non-complex primatives.
+The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](articles/interface_definition.html)
 The full complement of datatypes of different bitdepth and unsigned types are avoided to allow interpretation from text based configuration files.
 
 `bytes` are included to allow the storage of binary blobs.
@@ -148,18 +148,20 @@ The node will allow for the registration of a callback for custom parameter valu
 
 ### Backwards compatibility Parameter Server like behavior
 
-There are use cases where the older behavior with parameters persisting beyond the duration of a specific node are valuable.
-To this end we propose to write a simple node which emulates the policy of the ROS 1.0 parameter server: it runs in namespace `/` and simply accepts all change requests.
+
+There are use cases where the older behavior with parameter server was useful.
+Both persisting beyond the duration of a specific node is valuable as well as having parameters with no specific association to a node which would potentially own or validate the values.
+To this end we propose to write a simple node which emulates the policy of the ROS 1.0 parameter server: it runs in namespace `/` and simply accepts all changes requested.
 
 ### Parameter API
 
 The client libraries will provide an API for interfacing with the Core Parameter API for both local and remote nodes including return codes.
 
-### Parameter Change notification
+### Parameter Events
 
-Each node will provide a topic on which parameter changes will be published.
+Each node will provide a topic on which parameter events will be published.
 This topic is to support monitoring parameters for change.
-It is expect that client libraries will implement the ability to register callbacks for specific parameter change notifications using this topic.
+It is expected that client libraries will implement the ability to register callbacks for specific parameter changes using this topic.
 
 ### Logging and playback
 
