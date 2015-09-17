@@ -124,7 +124,7 @@ The full complement of datatypes of different bitdepth and unsigned types are av
 `bytes` are included to allow the storage of binary blobs.
 It's use is not recommended but can be very convenient, and explicitly supporting it is better than having people try to abuse other datatypes such as strings.
 
-### Core API
+### Required functionality
 
 Each node is responsible for providing the following functionality.
 
@@ -134,13 +134,15 @@ Each node is responsible for providing the following functionality.
   Given a list of parameter names, it will request an update of the values subject to validation of the values.
   The updated values can include unsetting the value.
   It will provide an API that can atomically update a set of values such that if any of the values fail validation, none of the values are set.
-  The success or failure of this call will be available to the client.
+  The success or failure of this call will be available to the client for each update unit.
+  Validation of the values is expected to return as quickly as possible and only be related to accepting or rejecting the set request.
+  It should not take into account how the changed value may or may not affect ongoing system performance of the node or the greater system.
 - **List Parameters**
   Provide a list of parameter names which are currently set.
 - **Describe Parameters**
   Given a list of parameter names, return their datatype.
 
-This functionality will be exposed through local API calls as well as a ROS Service call API for remote operations.
+This functionality will be exposed through a user API which will support both local API calls as well as invocations on remote nodes via a ROS Service API.
 
 ### Parameter update validation
 
