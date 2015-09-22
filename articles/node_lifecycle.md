@@ -160,6 +160,7 @@ The following service should be called to clear the node's fatal error status. T
 
 The following service should be called to query the current state of the node. The service must be named `get_state`.
 
+`ComponentState.msg`:
 {% raw %}
     ---
     int8 CREATED=0
@@ -173,4 +174,23 @@ The following service should be called to query the current state of the node. T
 
 The value of `state` must be one of the constants defined in the service definition.
 
-A topic should be provided to broadcast the new life cycle state when it changes. This topic must be latched. The topic must be named `current_state`
+### Lifecycle events
+
+A topic should be provided to broadcast the new life cycle state when it changes.
+This topic must be latched.
+The topic must be named `current_state` it will carry both the end state and the transition, with return code.
+It will publish ever time that a transition is triggered, whether successful or not.
+
+{% raw %}
+    int8 INITIALIZE=0
+    int8 ACTIVATE=1
+    int8 DEACTIVEATE=2
+    int8 ERROR=3
+    int8 DESTROY=4
+    int8 RESET=5
+
+    int8 transition
+    bool success
+    ComponentState resultant_state
+
+{% endraw %}
