@@ -15,6 +15,10 @@ published: true
 
 # {{ page.title }}
 
+<div class="alert alert-warning" markdown="1">
+This article is out-of-date. It was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards. It represents an idealistic understanding of what RPC and "actions" should be like in ROS. It can be considered memoranda and not necessarily the intention on how to develop the system.
+</div>
+
 <div class="abstract" markdown="1">
 {{ page.abstract }}
 </div>
