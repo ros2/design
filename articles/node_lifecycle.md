@@ -106,13 +106,18 @@ Implementation note: In object-oriented languages, the onDestroyed method can be
 
 
 
-## Interface
+## Management Interface
 
-A node must provide the messages and services defined in this section to qualify as a managed node. These services define the external interface of a managed node as seen by tools that perform the managing. As such, it should be possible to consider any object that provides these services correctly to be a managed node.
+A managed node will be exposed to the ROS ecosystem by the following interface, as seen by tools that perform the managing.
+This interface should not be subject to the restrictions on communications imposed by the lifecycle states.
 
+It is expected that a common pattern will be to have a container class which loads a managed node implementation from a library and through a plugin architecture automatically exposes the required management interface via methods and the container is not subject to the lifecycle management.
+However, it is fully valid to consider any implementation which provides this interface and follows the lifecycle policies a managed node.
 Conversely, any object that provides these services but does not behave in the way defined in the life cycle state machine is malformed.
 
-These services may be provided via attributes and method calls (for local management) or via ROS messages and topics/services (for remote management). In the case of providing a ROS middleware interface, specific topics must be used, and they should be placed in a suitable namespace.
+These services may also be provided via attributes and method calls (for local management) in addition to being exposed ROS messages and topics/services (for remote management).
+In the case of providing a ROS middleware interface, specific topics must be used, and they should be placed in a suitable namespace.
+
 
 ### Initialisation
 
@@ -181,7 +186,9 @@ This topic must be latched.
 The topic must be named `current_state` it will carry both the end state and the transition, with return code.
 It will publish ever time that a transition is triggered, whether successful or not.
 
+`ComponentTransition.msg`;
 {% raw %}
+
     int8 INITIALIZE=0
     int8 ACTIVATE=1
     int8 DEACTIVEATE=2
@@ -191,6 +198,12 @@ It will publish ever time that a transition is triggered, whether successful or 
 
     int8 transition
     bool success
+
+{% endraw %}
+
+
+{% raw %}
+    ComponentTransition transition
     ComponentState resultant_state
 
 {% endraw %}
