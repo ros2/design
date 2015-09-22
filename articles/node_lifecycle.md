@@ -104,8 +104,6 @@ On entering this state, the node's `onDestroyed` method must be run. This is the
 Implementation note: In object-oriented languages, the onDestroyed method can be mapped to the class destructor.
 
 
-
-
 ## Management Interface
 
 A managed node will be exposed to the ROS ecosystem by the following interface, as seen by tools that perform the managing.
@@ -207,3 +205,16 @@ It will publish ever time that a transition is triggered, whether successful or 
     ComponentState resultant_state
 
 {% endraw %}
+
+
+## Node Management
+
+There are several different ways in which a managed node may transition between states.
+Most state transitions are expected to be coordinated by an external management tool which will provide the node with it's configuration and start it.
+The external management tool is also expected monitor it and execute recovery behaviors in case of failures.
+A local management tool is also a possibility, leveraging method level interaces.
+And a node could be configured to self manage, however this is discouraged as this will interfere with external logic trying to managed the node via the interface.
+
+There is one transition expected to originate locally, which is the `ERROR` transition.
+
+A managed node may also want to expose arguments to automatically configure and activate when run in an unmanaged system.
