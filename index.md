@@ -49,3 +49,8 @@ These articles are not finished or maybe not even started yet:
 
 ----
 </div>
+
+# Additional Resources
+
+- http://www.osrfoundation.org/wordpress2/wp-content/uploads/2015/04/ROSCON-2014-Why-you-want-to-use-ROS-2.pdf
+
