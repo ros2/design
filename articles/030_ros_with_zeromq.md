@@ -98,7 +98,7 @@ Implementing a custom discovery system is a possible but time consuming.
 
 Second, there is a good deal of software that needs to exist in order to integrate discovery with transport and serialization.
 For example, the way in which connections are established, whether using point to point or multicast is a piece of code which lives between the transport and discovery systems.
-Another example is the efficient intra-process communications, ZeroMQ provides an INPROC socket, but the interface to that socket is bytes, so you cannot use that without serialization without constructing a system where you pass around pointers through INPROC rather than serialized data.
+Another example is the efficient intra-process communications, ZeroMQ provides an INPROC socket, but the interface to that socket is bytes, so you cannot use that without constructing a system where you pass around pointers through INPROC rather than serialized data.
 At the point where you are passing around pointers rather than serialized data you have to start to duplicate behavior between the intraprocess and interprocess communications which are abstracted at the ROS API level.
 One more piece of software which is needed is the type-safety system which works between the transport and the messages serialization system.
 Needless to say, even with these component libraries solving a lot of the problems with implementing a middleware like ROS's, there still exists quite a few glue pieces which are need to finish the implementation.
