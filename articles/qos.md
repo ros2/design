@@ -1,9 +1,10 @@
 ---
 layout: default
 title: ROS 2.0 Quality of Service policies
+permalink: articles/qos.html
 abstract:
   This article describes the approach to provide QoS (Quality of Service) policies for ROS 2.0.
-published: false
+published: true
 author: '[Esteve Fernandez](https://github.com/esteve)'
 ---
 
