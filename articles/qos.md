@@ -11,6 +11,10 @@ author: '[Esteve Fernandez](https://github.com/esteve)'
 * This will become a table of contents (this text will be scraped).
 {:toc}
 
+<div class="alert alert-warning" markdown="1">
+  This is a work in progress. Please check for existing issues/pull requests for related discussion or open new issues/pull requests to propose changes.
+</div>
+
 # {{ page.title }}
 
 <div class="abstract" markdown="1">
