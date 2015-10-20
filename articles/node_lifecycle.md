@@ -258,9 +258,16 @@ It will publish ever time that a transition is triggered, whether successful or 
 There are several different ways in which a managed node may transition between states.
 Most state transitions are expected to be coordinated by an external management tool which will provide the node with it's configuration and start it.
 The external management tool is also expected monitor it and execute recovery behaviors in case of failures.
-A local management tool is also a possibility, leveraging method level interaces.
+A local management tool is also a possibility, leveraging method level interfaces.
 And a node could be configured to self manage, however this is discouraged as this will interfere with external logic trying to managed the node via the interface.
 
 There is one transition expected to originate locally, which is the `ERROR` transition.
 
 A managed node may also want to expose arguments to automatically configure and activate when run in an unmanaged system.
+
+
+## Extensions
+
+This lifecycle will be required to be supported throughout the toolchainm as such this design is not intended to be extended with additional states.
+It is expected that there will be more complicated application specific state machines.
+They may exist inside of any lifecycle state or at the macro level these lifecycle states are expected to be useful primitives as part of a supervisory system.
