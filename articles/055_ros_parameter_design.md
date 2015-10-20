@@ -150,10 +150,17 @@ The node will allow for the registration of a callback for custom parameter valu
 
 ### Backwards compatibility Parameter Server like behavior
 
-
 There are use cases where the older behavior with parameter server was useful.
 Both persisting beyond the duration of a specific node is valuable as well as having parameters with no specific association to a node which would potentially own or validate the values.
 To this end we propose to write a simple node which emulates the policy of the ROS 1.0 parameter server: it runs in namespace `/` and simply accepts all changes requested.
+The parameters held by this parameter server node would persist for the lifetime of the parameter server node.
+Specific instances could be launched in different namespaces to support different parameter persistence models.
+
+### Search parameter behavior
+
+A pattern developed in ROS 1.0 was the `searchParam` mode where a parameter could be set in a namespace and the parameter query would walk up the namespace to search for the parameter.
+A similar behavior can be implemented by allowing the search parameter implementation to walk across the different nodes in hierarchical order.
+
 
 ### Parameter API
 
