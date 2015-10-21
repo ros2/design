@@ -66,6 +66,8 @@ Based on that criteria an ideal system would be able to:
     This would also include the ability to convey at least part of the criteria for the acceptance of a change to external actors.
     For example, communicating the range for an integer or a few choices for a string.
     This type of information would be used to generate generic user interfaces, but might not capture all criteria.
+    Since the validation criteria can be arbitrary complex and can potentially not be communicated to a client the parameter server could offer to validate an atomic set of parameters and respond with a boolean flag if the values would be accepted (based on the current criteria).
+    Obviously the result might be different when the values are set shortly after but it would allow to implement validators in e.g. a GUI generically.
 
 - **Check what parameters are expected to be set for a particular Node**
 
