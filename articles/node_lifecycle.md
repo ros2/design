@@ -59,8 +59,10 @@ The main purpose of this state is to allow a node to be (re-)configured (changin
 
 While in this state, the node will not receive any execution time to read topics, perform processing of data, respond to functional service requests, etc.
 
-In the inactive state, any data that arrives on topics will not be read and discarded.
-Any service requests to a node in the inactive state will not be answered (to the caller, they will fail immediately).
+In the inactive state, any data that arrives on managed topics will not be read and or processed.
+Data retention will be subject to the configured QoS policy for the topic.
+
+Any managed service requests to a node in the inactive state will not be answered (to the caller, they will fail immediately).
 
 Implementation note: Causing the transition to the destroyed state can often be mapped to deletion of the node instance.
 
@@ -227,7 +229,7 @@ The value of `state` must be one of the constants defined in the service definit
 
 A topic should be provided to broadcast the new life cycle state when it changes.
 This topic must be latched.
-The topic must be named `current_state` it will carry both the end state and the transition, with return code.
+The topic must be named `lifecycle_state` it will carry both the end state and the transition, with return code.
 It will publish ever time that a transition is triggered, whether successful or not.
 
 `ComponentTransition.msg`;
