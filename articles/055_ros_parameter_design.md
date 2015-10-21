@@ -40,57 +40,47 @@ Other resources related to the parameter design process for ROS 2.0 include:
 
 ## Ideal System
 
-It is useful to consider the ideal system to understand how it relates to the current system and how a new system could work.
-We'd like to support both the use cases of ROS 1.0 built in parameters as well as dynamic parameters.
-An ideal parameter system would have the qualities laid out in the following paragraphs.
+It is useful to consider an ideal system to understand how it would work and how it would relate to the current system.
+An ideal system would support for the combined use cases of ROS 1.0's built-in parameters as well as ROS 1.0's dynamic parameters system.
+Based on that criteria an ideal system would be able to:
 
-### Set parameter values
+- **Set parameter values**
 
-At the most basic, a parameter system must be able to accept the setting of parameter values.
-An extension is to accept a group of parameters updated atomically.
-This allows you to update coupled parameters such as PID gains without worring about invalid intermediate states.
+    This includes setting groups of parameter values atomically.
 
-### Get parameter values
+- **Get parameter values**
 
-Also at the core functionality return the value of one or more parameters which have previously been set.
-If the value of a parameter is requested which has not been set it will explicitly return `unset`.
-Parameters can be queried individually or in groups atomically so as to get a consistent state.
+    This includes getting groups of parameter values atomically.
 
-### Unset a parameter value
+- **Unset parameter values**
 
-If a parameter has been set it should be able to be unset.
+    This includes unsetting groups of parameter values atomically, but may be a special case of setting groups of parameters atomically.
 
-### Introspection of available parameters
+- **List currently set parameters**
 
-Provide a list of currently set parameters.
+- **Provide notifications when parameter values change or update**
 
-### Notifications of change
+- **Reject changes to parameter values**
 
-When a parameter changes value it should be possible to get a notification.
+    This implies that some entity has the authority to reject or accept a change based on arbitrary criteria.
+    This would also include the ability to convey at least part of the criteria for the acceptance of a change to external actors.
+    For example, communicating the range for an integer or a few choices for a string.
+    This type of information would be used to generate generic user interfaces, but might not capture all criteria.
 
-### Reject parameter changes
+- **Check what parameters are expected to be set for a particular Node**
 
-If a parameter change is requested to an invalid value, the owner of the parameter should be able to reject the change.
-Related to this, it should also be able to communicate the preconditions which are necessary but not sufficient to determine the acceptance of a change.
+    This would help prevent logical errors which arrise from setting the wrong parameter based on a typo.
+    The node could enforce this by rejecting unexpected names, but there are some cases where knowing the expected parameter names would be useful for developer tools.
 
-### Introspection of expected parameters
+- **Provide clear rules on the lifetime of a parameter**
 
-When using parameters, providing a list of expected parameters can prevent accidentally setting parameters with typos in their names etc.
+    These rules would define what the lifetime of the parameter will be and what conditions will clear its value.
 
-### Control parameter lifetime
+- **Address all parameters without ambiguity in the names**
 
-When parameters are set, there should be an understanding of what the lifetime of the parameter value will be and what conditions will clear its value.
+    For example, one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on node `/foo/bar`.
 
-### Unambigious naming
-
-All parameters should be unambiguously addressable.
-
-For example, one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on node `/foo/bar`.
-
-### Logging
-
-All changes to parameters should be loggable.
-And when playing back a log file the parameter changes should be able to be re-requested by the log playback.
+- **Be logged for playback and analysis**
 
 ## Proposed Approach
 
