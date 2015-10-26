@@ -3,7 +3,7 @@ layout: default
 title: Managed nodes
 abstract:
   This article describes the concept of a node with a managed life cycle. It aims to document some of the options for supporting managed-life cycle nodes in ROS 2. It has been written with consideration for the existing design of the ROS 2 C++ client library, and in particular the current design of executors.
-author: '[Geoffrey Biggs](https://github.com/gbiggs)'
+author: '[Geoffrey Biggs](https://github.com/gbiggs) [Tully Foote](https://github.com/tfoote)'
 published: true
 ---
 
@@ -24,38 +24,57 @@ A managed life cycle for nodes allows greater precision over the state of ROS sy
 The most important concept of this document is that a managed node presents a known interface, executes according to a known life cycle state machine, and otherwise can be considered a black box. This allows freedom to the node developer on how they provide the managed life cycle functionality, while also ensuring that any tools created for managing nodes can work with any compliant node.
 
 
-## Glossary
-
-* Configuration: To alter aspects of a node's behaviour through known interfaces (services and topics). This includes setting parameters and connecting topics. Configuration may be performed multiple times during a node's life.
-* Initialise: To shift a node from the created state to the inactive state, during which the node is prepared for execution. For example, memory buffers can be allocated.
-* Activate: To shift a node from the inactive state to the active state. For example, internal variables can be re-initialised based on changed configuration parameters and hardware access may be obtained.
-* Deactivate: To shift a node from the active state to the inactive state. For example, hardware access may be relinquished.
-* Fatal error: An unforeseen error that cannot be handled by the robot application, requiring the node to be reset or destroyed.
-
-
 ## Life cycle
 
 ![The proposed node life cycle state machine](/img/node_lifecycle/life_cycle_sm.png "The proposed node life cycle state machine")
 
-The behaviour of each state is as defined below.
+There are 4 primary states:
+ - `Unconfigured`
+ - `Inactive`
+ - `Active`
+ - `Finalized`
 
-### Created state
+ To transition out of a primary state requires action from an external supervisory process, with the exception of a error being triggered in the `Active` state.
+
+There are also 6 transition states which are intermediate states during a requested transition.
+ - `Configuring`
+ - `CleaningUp`
+ - `ShuttingDown`
+ - `Activating`
+ - `Deactivating`
+ - `ErrorProcessing`
+
+In the transition states users registered callbacks will be called to execute the behavior.
+The return code of the callbacks will determine the resulting transition.
+
+There are 7 transitions exposed to a supervisory process, they are:
+ - `create`
+ - `configure`
+ - `cleanup`
+ - `activate`
+ - `deactive`
+ - `shutdown`
+ - `destroy`
+
+
+The behavior of each state is as defined below.
+
+### Primary State: Unconfigured
 
 This is the life cycle state the node is in immediately after being instantiated.
+This is also the state in which a node may be retuned to after an error has happened.
+In this state there is expected to be no stored state.
 
+#### Valid transition out
 
+- The node may transition to the `Inactive` state via the `configure` transition.
+- The node may transition to the `Finalized` state via the `shutdown` transition.
 
-Implementation note: In object-oriented languages, the onCreated method can be mapped to the class constructor.
-
-## Valid transition out
-
-- The node may transition to the `inactive` state by via the `initialise` transition.
-
-### Inactive state
+### Primary State: Inactive
 
 This state represents a node that is not currently performing any processing.
 
-The main purpose of this state is to allow a node to be (re-)configured (changing configuration parameters, adding and removing topic publications/subscriptions, etc.) without altering its behaviour while it is running.
+The main purpose of this state is to allow a node to be (re-)configured (changing configuration parameters, adding and removing topic publications/subscriptions, etc.) without altering its behavior while it is running.
 
 While in this state, the node will not receive any execution time to read topics, perform processing of data, respond to functional service requests, etc.
 
@@ -64,93 +83,122 @@ Data retention will be subject to the configured QoS policy for the topic.
 
 Any managed service requests to a node in the inactive state will not be answered (to the caller, they will fail immediately).
 
-Implementation note: Causing the transition to the destroyed state can often be mapped to deletion of the node instance.
+#### Valid transition out
 
-## Valid transition out
+- A node may transition to the `Finalized` state via the `shutdown` transition.
+- A node may transition to the `Unconfigured` state via the `cleanup` transition.
+- A node may transition to the `Active` state via the `activate` transition.
 
-- A node may transition to the `destroyed` state via the `destroy` transition.
-- A node may transition to the `created` state via the `cleanup` transition.
-- A node may transition to the `active` state via the `activate` transition.
-- A node may transition to the `Fatal error` state via the `error` transition.
-
-### Active state
+### Primary State: Active
 
 This is the main state of the node's life cycle. While in this state, the node performs any processing, responds to service requests, reads and processes data, produces output, etc.
 
 If an error that cannot be handled by the node/system occurs in this state, the transition to the `fatal error` state is taken.
 
-## Valid transition out
+#### Valid transition out
 
-- A node may transition to the `inactive` state via the `deactivate` transition.
-- A node may transition to the `Fatal error` state via the `error` transition.
+- A node may transition to the `Inactive` state via the `deactivate` transition.
+- A node may transition to the `Finalized` state via the `shutdown` transition.
 
-### Fatal Error state
+### Finalized state
 
-Known errors that can occur in a node should be considered designed behaviour of the system and so should be handled by the node where the error occurred and, if necessary, the surrounding nodes. The reason for this is that the system knows best how to handle errors that occur in its behaviour.
+The `Finalized` state is the state in which the node ends immediately before being destroyed.
+This state is always terminal the only transition from here is to be destroyed.
 
-Any fatal errors (those which the node/system was not expecting and does not know how to handle) will cause a transition to the `fatal error` state. In this state, because the node does not know what to do in the presence of the error, it is not provided any execution time. Arriving data is not processed, service requests are not responded to, and no output is produced.
+This state exists to support debugging and introspection.
+A node which has failed will remain visible to system introspection and may be potentially introspectable by debugging tools instead of directly destructing.
+If a node is being launched in a respawn loop or has known reasons for cycling it is expected that the supervisory process will have a policy to automatically destroy and recreate the node.
 
-In the `Fatal Error` state, any data that arrives on topics will not be read and discarded.
-Any service requests to a node in the `Fatal Error` state will not be answered (to the caller, they will fail immediately).
+#### Valid transition out
 
-## Valid transition out
+- A node may be deallocated via the `destroy` transition.
 
-- A node may transition to the `destroyed` state via the `destroy` transition.
+### Transition State: Configuring
 
-### Destroyed state
+In this transition state the node's `onConfigure` callback will be called to allow the node to load its configuration and conduct any required setup.
 
-This is the state that a node goes through on its way to no longer existing.
-
-In this state it is waiting to be deallocated and it will never be invoked again.
-
-In the `Destryed` state, any data that arrives on topics will not be read and discarded.
-Any service requests to a node in the `Destroyed` state will not be answered (to the caller, they will fail immediately).
-
-Implementation note: In object-oriented languages, the onDestroyed method can be mapped to the class destructor.
-
-## Transitions
-
-All states have named transitions between them.
-The node may register a callback for any transition.
-This callback may return true or false if the transition succeeded.
-
-### Initialize
-
-If the callback fails the nodes stays in `Created` otherwise it goes to `Inactive`.
-
-Initialisation of a node will typically involve those tasks that must be performed once during the node's life time, such as obtaining permanent memory buffers and setting up topic publications/subscriptions that do not change.
+The configuration of a node will typically involve those tasks that must be performed once during the node's life time, such as obtaining permanent memory buffers and setting up topic publications/subscriptions that do not change.
 
 The node uses this to set up any resources it must hold throughout its life (irrespective of if it is active or inactive). As examples, such resources may include topic publications and subscriptions, memory that is held continuously, and initialising configuration parameters.
 
-### Cleanup
+#### Valid transition out
 
-If the callback fails it stays in `Inactive` otherwise it proceeds to `Created`.
-
-
-### Activate
-If the callback fails it stays in `Inactive` otherwise it proceeds to `Active`.
-
-This may include acquiring resources that are only held while the node is actually active, such as access to hardware. Ideally, no preparation that requires significant time (such as lengthy hardware initialisation) should be performed in this callback.
-
-### Deactivate
-If the callback fails it stays in `Active` otherwise it proceeds to `Inactive`.
-
-This provides the node a chance to clean up any resources it only holds while active.
-
-### Error
-The error transition always ends in `Fatal Error` regardless of the return code.
-
-This provides the node with a chance to clean up resources it was using.
+- If the `onConfigure` callback succeeds the node will transition to `Inactive`
+- If the `onConfigure` callback returns a failure code (TODO specific code) the node will transition back to `Unconfigured`.
+- If the `onConfigure` callback raises or returns any other return code the node will transition to `ErrorProcessing`
 
 
-### Destroy
+### Transition State: CleaningUp
 
-This is the node's last chance to clean up.
+In this transition state the node's callback `onCleanup` will be called.
+This method is expected to clear all state and return the node to a functionally equivalent state as when first created.
+If the cleanup cannot be successfully achieved it will transition to `ErrorProcessing`
 
-The error transition always ends in `Destroyed` regardless of the return code.
+#### Valid transition out
+
+- If the `onCleanup` callback succeeds the node will transition to `Unconfigured`
+- If the `onCleanup` callback raises or returns any other return code the node will transition to `ErrorProcessing`
 
 
+### Transition State: Activating
 
+In this transition state the callback `onActivate` will be executed.
+This method is expected to do any final preparations to start executing.
+This may include acquiring resources that are only held while the node is actually active, such as access to hardware.
+Ideally, no preparation that requires significant time (such as lengthy hardware initialisation) should be performed in this callback.
+
+#### Valid transition out
+
+- If the `onActivate` callback succeeds the node will transition to `Active`
+- If the `onActivate` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+
+### Transition State: Deactivating
+
+In this transition state the callback `onDeactivate` will be executed.
+This method is expected to do any cleanup to start executing, and should reverse the `onActivate` changes.
+
+#### Valid transition out
+
+- If the `onDeactivate` callback succeeds the node will transition to `Inactive`
+- If the `onDeactivate` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+
+### Transition State: ShuttingDown
+
+In this transition state the callback `onShutdown` will be executed.
+This method is expected to do any cleanup necessary before destruction.
+It may be entered from any Primary State except `Finalized`, the originating state will be passed to the method.
+
+#### Valid transition out
+
+- If the `onShutdown` callback succeeds the node will transition to `Finalized`
+- If the `onShutdown` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+
+### Transition State: ErrorProcessing
+
+This transition state is where any error can be cleaned up.
+It is possible to enter this state from any state where user code will be executed.
+If error handling is successfully completed the node can return to `Unconfigured`,
+If a full cleanup is not possible it must fail and the node will transition to `Finalized` in preparation for destruction.
+
+Transitions to `ErrorProcessing` may be caused by error return codes in callbacks as well as methods within a callback or an uncaught exception.
+
+#### Valid transition out
+
+- If the `onError` callback succeeds the node will transition to `Unconfigured`.
+  It is expected that the `onError` will clean up all state from any previous state.
+  As such if entered from `Active` it must provide the cleanup of both `onDeactivate` and `onCleanup` to return success.
+- If the `onShutdown` callback raises or returns any other return code the node will transition to `Finalized`
+
+### Destroy Transition
+
+This transition will simply cause the deallocation of the node.
+In an object oriented environment it may just involve invoking the destructor.
+Otherwise it will invoke a standard deallocation method.
+This transition should always succeed.
+
+### Create Transition
+
+This transition will instantiate the node, but will not run any code beyond the constructor.
 
 ## Management Interface
 
@@ -165,65 +213,9 @@ These services may also be provided via attributes and method calls (for local m
 In the case of providing a ROS middleware interface, specific topics must be used, and they should be placed in a suitable namespace.
 
 
-### Initialisation
-
-The following service should be called to initialise the node. This service must be named `initialise`.
-
-{% raw %}
-    ---
-    bool success
-    string result_msg
-{% endraw %}
-
-
-### Activation
-
-The following service should be called to activate the node. This service must be named `activate`.
-
-{% raw %}
-    ---
-    bool success
-    string result_msg
-{% endraw %}
-
-
-### Deactivation
-
-The following service should be called to deactivate the node. This service must be named `deactivate`.
-
-{% raw %}
-    ---
-    bool success
-    string result_msg
-{% endraw %}
-
-
-### Clearing the error state
-
-The following service should be called to clear the node's fatal error status. This is done when the node is to be re-activated in the hope that the error has gone away. This service must be named `reset`.
-
-{% raw %}
-    ---
-    bool success
-{% endraw %}
-
-### State reporting
-
-The following service should be called to query the current state of the node. The service must be named `get_state`.
-
-`ComponentState.msg`:
-{% raw %}
-    ---
-    int8 CREATED=0
-    int8 INACTIVE=1
-    int8 ACTIVE=2
-    int8 ERROR=3
-    int8 DESTROYED=4
-
-    int8 state
-{% endraw %}
-
-The value of `state` must be one of the constants defined in the service definition.
+Each possible supervisory transition will be provides as a service by the name of the transition except `create`.
+`create` will require an extra argument for finding the node to instantiate.
+The service will report whether the transition was successfully completed.
 
 ### Lifecycle events
 
@@ -231,28 +223,6 @@ A topic should be provided to broadcast the new life cycle state when it changes
 This topic must be latched.
 The topic must be named `lifecycle_state` it will carry both the end state and the transition, with return code.
 It will publish ever time that a transition is triggered, whether successful or not.
-
-`ComponentTransition.msg`;
-{% raw %}
-
-    int8 INITIALIZE=0
-    int8 ACTIVATE=1
-    int8 DEACTIVEATE=2
-    int8 ERROR=3
-    int8 DESTROY=4
-    int8 RESET=5
-
-    int8 transition
-    bool success
-
-{% endraw %}
-
-
-{% raw %}
-    ComponentTransition transition
-    ComponentState resultant_state
-
-{% endraw %}
 
 
 ## Node Management
@@ -270,6 +240,6 @@ A managed node may also want to expose arguments to automatically configure and 
 
 ## Extensions
 
-This lifecycle will be required to be supported throughout the toolchainm as such this design is not intended to be extended with additional states.
+This lifecycle will be required to be supported throughout the toolchain as such this design is not intended to be extended with additional states.
 It is expected that there will be more complicated application specific state machines.
 They may exist inside of any lifecycle state or at the macro level these lifecycle states are expected to be useful primitives as part of a supervisory system.
