@@ -19,7 +19,7 @@ Original Author: {{ page.author }}
 
 ## Background
 
-A managed life cycle for nodes allows greater precision over the state of ROS system. It will allow roslaunch to have greater control over launching a ROS system, and in particular will allow roslaunch to ensure that all components have been instantiated correctly before it allows any component to begin executing its behaviour. It will also allow nodes to be restarted or replaced on-line.
+A managed life cycle for nodes allows greater control over the state of ROS system. It will allow roslaunch to ensure that all components have been instantiated correctly before it allows any component to begin executing its behaviour. It will also allow nodes to be restarted or replaced on-line.
 
 The most important concept of this document is that a managed node presents a known interface, executes according to a known life cycle state machine, and otherwise can be considered a black box. This allows freedom to the node developer on how they provide the managed life cycle functionality, while also ensuring that any tools created for managing nodes can work with any compliant node.
 
@@ -34,7 +34,7 @@ There are 4 primary states:
  - `Active`
  - `Finalized`
 
- To transition out of a primary state requires action from an external supervisory process, with the exception of a error being triggered in the `Active` state.
+ To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state.
 
 There are also 6 transition states which are intermediate states during a requested transition.
  - `Configuring`
@@ -100,7 +100,7 @@ If an error that cannot be handled by the node/system occurs in this state, the 
 - A node may transition to the `Inactive` state via the `deactivate` transition.
 - A node may transition to the `Finalized` state via the `shutdown` transition.
 
-### Finalized state
+### Primary State: Finalized
 
 The `Finalized` state is the state in which the node ends immediately before being destroyed.
 This state is always terminal the only transition from here is to be destroyed.
