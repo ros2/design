@@ -96,6 +96,7 @@ To cover the feature set above, the ROS 2.0 parameter system is proposed as foll
 For the sake of validating parameter lifecycle, all parameters will be hosted on a node.
 Their lifetime will be implicitly tied to the nodes lifetime.
 The node will be responsible for validating current values.
+The node could also implement persistence of the parameters to reload the previous values after being restarted.
 
 ### Parameter addressing
 
