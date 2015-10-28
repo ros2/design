@@ -58,7 +58,7 @@ Based on that criteria an ideal system would be able to:
 
 - **List currently set parameters**
 
-- **Provide notifications when parameter values change or update**
+- **Provide notifications when parameters are added and removed or theie value has been changed**
 
 - **Reject changes to parameter values**
 
