@@ -58,6 +58,9 @@ Based on that criteria an ideal system would be able to:
 
 - **List currently set parameters**
 
+    Since the number of parameters might be large this needs to be able to provide subsets of the parameters.
+    E.g. the parameters could be queried incrementally for a tree-like GUI.
+
 - **Provide notifications when parameters are added and removed or theie value has been changed**
 
 - **Reject changes to parameter values**
