@@ -25,7 +25,7 @@ Original Author: {{ page.author }}
 In ROS 1 the parameters were implemented in a 'blackboard model' with unrestricted read and write access from all nodes.
 The data model proved useful in many cases, but there were many cases where the lack of control or ownership proved to be a problem.
 One of the common shortcomings was for setting parameters on drivers.
-A tool called dynamic_reconfigure was developed to service this use case.
+A tool called dynamic_reconfigure was developed to address this use case.
 It provided a service based interface to interact with parameters of other nodes.
 
 ### Other resources
