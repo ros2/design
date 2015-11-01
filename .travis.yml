@@ -1,8 +1,14 @@
 language: ruby
 rvm:
 - 2.1
-install: gem install jekyll
-script: jekyll build
+
+install:
+- gem install jekyll
+- cd scripts/nodejs; npm install
+
+script: 
+- jekyll build
+- cd scripts/nodejs; ./node_modules/.bin/mdast ../../articles --frail --no-color -q --config-path ./mdast/mdastrc
 
 # branch whitelist
 branches:

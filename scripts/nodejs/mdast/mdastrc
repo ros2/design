@@ -1,0 +1,35 @@
+{
+"plugins": {
+    "lint": {
+        "unordered-list-marker-style": "consistent",
+        "list-item-bullet-indent": true,
+        "list-item-indent": true,
+        "list-item-spacing": true,
+        "no-html": false,
+        "maximum-line-length": true,
+        "no-file-name-mixed-case": true,
+        "heading-increment": true,
+        "no-multiple-toplevel-headings": true,
+        "no-consecutive-blank-lines": true,
+        "no-file-name-irregular-characters": true,
+        "maximum-line-length": 9000,
+        "maximum-heading-length": 300,
+        "table-pipes": true,
+        "table-pipe-alignment": true,
+        "no-heading-punctuation": true,
+        "no-duplicate-headings": true,
+        "emphasis-marker": "*",
+        "no-tabs": true,
+        "blockquote-indentation": true,
+        "strong-marker": "*",
+        "external": ["mdast-lint-sentence-newline"]
+    }
+  },
+  "settings": {
+    "bullet": "*",
+    "listItemIndent": "1",
+    "strong": "*",
+    "emphasis": "*"
+  }
+
+}
