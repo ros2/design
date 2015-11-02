@@ -44,8 +44,8 @@ There are also 6 transition states which are intermediate states during a reques
  - `Deactivating`
  - `ErrorProcessing`
 
-In the transition states users registered callbacks will be called to execute the behavior.
-The return code of the callbacks will determine the resulting transition.
+In the transitions states logic will be executed to determine if the transition is successful.
+Success or failure shall be communicated to lifecycle management software through the lifecycle management interface.
 
 There are 7 transitions exposed to a supervisory process, they are:
  - `create`
@@ -124,8 +124,8 @@ The node uses this to set up any resources it must hold throughout its life (irr
 #### Valid transition out
 
 - If the `onConfigure` callback succeeds the node will transition to `Inactive`
-- If the `onConfigure` callback returns a failure code (TODO specific code) the node will transition back to `Unconfigured`.
-- If the `onConfigure` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+- If the `onConfigure` callback results in a failure code (TODO specific code) the node will transition back to `Unconfigured`.
+- If the `onConfigure` callback raises or results in any other result code the node will transition to `ErrorProcessing`
 
 
 ### Transition State: CleaningUp
@@ -137,7 +137,7 @@ If the cleanup cannot be successfully achieved it will transition to `ErrorProce
 #### Valid transition out
 
 - If the `onCleanup` callback succeeds the node will transition to `Unconfigured`
-- If the `onCleanup` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+- If the `onCleanup` callback raises or results in any other return code the node will transition to `ErrorProcessing`
 
 
 ### Transition State: Activating
@@ -150,7 +150,7 @@ Ideally, no preparation that requires significant time (such as lengthy hardware
 #### Valid transition out
 
 - If the `onActivate` callback succeeds the node will transition to `Active`
-- If the `onActivate` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+- If the `onActivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`
 
 ### Transition State: Deactivating
 
@@ -160,7 +160,7 @@ This method is expected to do any cleanup to start executing, and should reverse
 #### Valid transition out
 
 - If the `onDeactivate` callback succeeds the node will transition to `Inactive`
-- If the `onDeactivate` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+- If the `onDeactivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`
 
 ### Transition State: ShuttingDown
 
@@ -171,7 +171,7 @@ It may be entered from any Primary State except `Finalized`, the originating sta
 #### Valid transition out
 
 - If the `onShutdown` callback succeeds the node will transition to `Finalized`
-- If the `onShutdown` callback raises or returns any other return code the node will transition to `ErrorProcessing`
+- If the `onShutdown` callback raises or results in any other return code the node will transition to `ErrorProcessing`
 
 ### Transition State: ErrorProcessing
 
@@ -187,7 +187,7 @@ Transitions to `ErrorProcessing` may be caused by error return codes in callback
 - If the `onError` callback succeeds the node will transition to `Unconfigured`.
   It is expected that the `onError` will clean up all state from any previous state.
   As such if entered from `Active` it must provide the cleanup of both `onDeactivate` and `onCleanup` to return success.
-- If the `onShutdown` callback raises or returns any other return code the node will transition to `Finalized`
+- If the `onShutdown` callback raises or results in any other result code the node will transition to `Finalized`
 
 ### Destroy Transition
 
@@ -221,7 +221,7 @@ The service will report whether the transition was successfully completed.
 
 A topic should be provided to broadcast the new life cycle state when it changes.
 This topic must be latched.
-The topic must be named `lifecycle_state` it will carry both the end state and the transition, with return code.
+The topic must be named `lifecycle_state` it will carry both the end state and the transition, with result code.
 It will publish ever time that a transition is triggered, whether successful or not.
 
 
