@@ -72,10 +72,9 @@ Based on that criteria an ideal system would be able to:
     Since the validation criteria can be arbitrary complex and can potentially not be communicated to a client the parameter server could offer to validate an atomic set of parameters and respond with a boolean flag if the values would be accepted (based on the current criteria).
     Obviously the result might be different when the values are set shortly after but it would allow to implement validators in e.g. a GUI generically.
 
-- **Check what parameters are expected to be set for a particular Node**
+- **Provide visibility into what parameters are expected to pass validation vs be rejected**
 
-    This would help prevent logical errors which arrise from setting the wrong parameter based on a typo.
-    The node could enforce this by rejecting unexpected names, but there are some cases where knowing the expected parameter names would be useful for developer tools.
+    When updating a value it can be valuable to know if the parameter update would be accepted without actually requesting the change to happen.
 
 - **Provide clear rules on the lifetime of a parameter**
 
@@ -142,7 +141,7 @@ This functionality will be exposed through a user API which will support both lo
 
 ### Parameter update validation
 
-The node will allow for the registration of a callback for custom parameter value validation.
+A callback can be registered on the node which will allow for custom parameter value validation prior to accepting the parameter update.
 
 ### Backwards compatibility Parameter Server like behavior
 
@@ -160,7 +159,7 @@ A similar behavior can be implemented by allowing the search parameter implement
 
 ### Parameter API
 
-The client libraries will provide an API for interfacing with the Core Parameter API for both local and remote nodes including return codes.
+The client libraries will provide the following API for interfacing with the Core Parameter API for both local and remote nodes including return codes.
 
 ### Parameter Events
 
@@ -176,7 +175,7 @@ An implementation of the playback mechanism could listen to the parameter event 
 ## Current implementation
 
 The above specification has been prototyped; the implementation can be found in [rclcpp](https://github.com/ros2/rclcpp).
-The defintion of the services to use for interacting remotely are contained in the [rcl_interfaces package](https://github.com/ros2/rcl_interfaces)
+The definition of the services to use for interacting remotely are contained in the [rcl_interfaces package](https://github.com/ros2/rcl_interfaces)
 
 ### Unimplemented
 
@@ -205,3 +204,8 @@ During the API discussions supporting arrays of primatives was discussed and def
 Adding support for arrays in the interface is relatively straight forward.
 It slightly increases the complexity of the API for users, but can support several use cases.
 A use case for arrays of numbers is expressing a matrix or vector, addressing each position in a matrix by some sort of row-column naming scheme can get very cumbersome.
+
+### Predeclared interface to support static checking/validation.
+
+The ability to declare an API which can help with static checks and prevent logical errors which arrise from setting the wrong parameter based on a typo.
+The node could enforce this by rejecting unexpected names, but there are some cases where knowing the expected parameter names would be useful for developer tools.
