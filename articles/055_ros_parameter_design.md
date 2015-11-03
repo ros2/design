@@ -141,7 +141,7 @@ This functionality will be exposed through a user API which will support both lo
 
 ### Parameter update validation
 
-A callback can be registered on the node which will allow for custom parameter value validation prior to accepting the parameter update.
+The node can validate incoming parameter changes and either accept or reject them.
 
 ### Backwards compatibility Parameter Server like behavior
 
