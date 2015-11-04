@@ -3,7 +3,7 @@
     "lint": {
         "unordered-list-marker-style": "consistent",
         "list-item-bullet-indent": true,
-        "list-item-indent": true,
+        "list-item-indent": "space",
         "list-item-spacing": true,
         "no-html": false,
         "maximum-line-length": true,
