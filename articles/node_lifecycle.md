@@ -34,34 +34,34 @@ This allows freedom to the node developer on how they provide the managed life c
 
 There are 4 primary states:
 
--   `Unconfigured`
--   `Inactive`
--   `Active`
--   `Finalized`
+- `Unconfigured`
+- `Inactive`
+- `Active`
+- `Finalized`
 
 To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state.
 
 There are also 6 transition states which are intermediate states during a requested transition.
 
--   `Configuring`
--   `CleaningUp`
--   `ShuttingDown`
--   `Activating`
--   `Deactivating`
--   `ErrorProcessing`
+- `Configuring`
+- `CleaningUp`
+- `ShuttingDown`
+- `Activating`
+- `Deactivating`
+- `ErrorProcessing`
 
 In the transitions states logic will be executed to determine if the transition is successful.
 Success or failure shall be communicated to lifecycle management software through the lifecycle management interface.
 
 There are 7 transitions exposed to a supervisory process, they are:
 
--   `create`
--   `configure`
--   `cleanup`
--   `activate`
--   `deactive`
--   `shutdown`
--   `destroy`
+- `create`
+- `configure`
+- `cleanup`
+- `activate`
+- `deactive`
+- `shutdown`
+- `destroy`
 
 The behavior of each state is as defined below.
 
@@ -73,8 +73,8 @@ In this state there is expected to be no stored state.
 
 #### Valid transition out
 
--   The node may transition to the `Inactive` state via the `configure` transition.
--   The node may transition to the `Finalized` state via the `shutdown` transition.
+- The node may transition to the `Inactive` state via the `configure` transition.
+- The node may transition to the `Finalized` state via the `shutdown` transition.
 
 ### Primary State: Inactive
 
@@ -91,9 +91,9 @@ Any managed service requests to a node in the inactive state will not be answere
 
 #### Valid transitions out of Inactive
 
--   A node may transition to the `Finalized` state via the `shutdown` transition.
--   A node may transition to the `Unconfigured` state via the `cleanup` transition.
--   A node may transition to the `Active` state via the `activate` transition.
+- A node may transition to the `Finalized` state via the `shutdown` transition.
+- A node may transition to the `Unconfigured` state via the `cleanup` transition.
+- A node may transition to the `Active` state via the `activate` transition.
 
 ### Primary State: Active
 
@@ -104,8 +104,8 @@ If an error that cannot be handled by the node/system occurs in this state, the 
 
 #### Valid transitions out of Active
 
--   A node may transition to the `Inactive` state via the `deactivate` transition.
--   A node may transition to the `Finalized` state via the `shutdown` transition.
+- A node may transition to the `Inactive` state via the `deactivate` transition.
+- A node may transition to the `Finalized` state via the `shutdown` transition.
 
 ### Primary State: Finalized
 
@@ -118,7 +118,7 @@ If a node is being launched in a respawn loop or has known reasons for cycling i
 
 #### Valid transitions out of Finalized
 
--   A node may be deallocated via the `destroy` transition.
+- A node may be deallocated via the `destroy` transition.
 
 ### Transition State: Configuring
 
@@ -131,9 +131,9 @@ As examples, such resources may include topic publications and subscriptions, me
 
 #### Valid transitions out of Configuring
 
--   If the `onConfigure` callback succeeds the node will transition to `Inactive`
--   If the `onConfigure` callback results in a failure code (TODO specific code) the node will transition back to `Unconfigured`.
--   If the `onConfigure` callback raises or results in any other result code the node will transition to `ErrorProcessing`
+- If the `onConfigure` callback succeeds the node will transition to `Inactive`
+- If the `onConfigure` callback results in a failure code (TODO specific code) the node will transition back to `Unconfigured`.
+- If the `onConfigure` callback raises or results in any other result code the node will transition to `ErrorProcessing`
 
 ### Transition State: CleaningUp
 
@@ -143,8 +143,8 @@ If the cleanup cannot be successfully achieved it will transition to `ErrorProce
 
 #### Valid transitions out if CleaningUp
 
--   If the `onCleanup` callback succeeds the node will transition to `Unconfigured`.
--   If the `onCleanup` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
+- If the `onCleanup` callback succeeds the node will transition to `Unconfigured`.
+- If the `onCleanup` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: Activating
 
@@ -155,8 +155,8 @@ Ideally, no preparation that requires significant time (such as lengthy hardware
 
 #### Valid transitions out if Activating
 
--   If the `onActivate` callback succeeds the node will transition to `Active`.
--   If the `onActivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
+- If the `onActivate` callback succeeds the node will transition to `Active`.
+- If the `onActivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: Deactivating
 
@@ -165,8 +165,8 @@ This method is expected to do any cleanup to start executing, and should reverse
 
 #### Valid transitions out of Deactivating
 
--   If the `onDeactivate` callback succeeds the node will transition to `Inactive`.
--   If the `onDeactivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
+- If the `onDeactivate` callback succeeds the node will transition to `Inactive`.
+- If the `onDeactivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: ShuttingDown
 
@@ -176,8 +176,8 @@ It may be entered from any Primary State except `Finalized`, the originating sta
 
 #### Valid transitions out of ShuttingDown
 
--   If the `onShutdown` callback succeeds the node will transition to `Finalized`.
--   If the `onShutdown` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
+- If the `onShutdown` callback succeeds the node will transition to `Finalized`.
+- If the `onShutdown` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: ErrorProcessing
 
@@ -190,11 +190,11 @@ Transitions to `ErrorProcessing` may be caused by error return codes in callback
 
 #### Valid transitions out of ErrorProcessing
 
--   If the `onError` callback succeeds the node will transition to `Unconfigured`.
+- If the `onError` callback succeeds the node will transition to `Unconfigured`.
   It is expected that the `onError` will clean up all state from any previous state.
   As such if entered from `Active` it must provide the cleanup of both `onDeactivate` and `onCleanup` to return success.
 
--   If the `onShutdown` callback raises or results in any other result code the node will transition to `Finalized`.
+- If the `onShutdown` callback raises or results in any other result code the node will transition to `Finalized`.
 
 ### Destroy Transition
 
