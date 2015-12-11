@@ -18,6 +18,8 @@ author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 </div>
 
 Original Author: {{ page.author }}
+Status: Draft
+Type: Standards Track
 
 
 ## Scope
@@ -60,8 +62,6 @@ Each of these can optionally be a dynamically or statically sized array.
 The following primitive types are defined:
 
 * `bool`
-* `byte`
-* `char`
 * `float32`, `float64`
 * `int8`, `uint8`
 * `int16`, `uint16`
@@ -70,11 +70,15 @@ The following primitive types are defined:
 * `string`
 
 <div class="alert alert-warning" markdown="1">
+  **Question:** in ROS 1, `string` was ASCII. The Python 3 `str` type is UTF-8. What is the DDS `string` type?
+</div>
+
+<div class="alert alert-warning" markdown="1">
   <b>TODO:</b> consider <code>wchar</code>, <code>wstring</code>, <code>u16string</code>, <code>u32string</code>
 </div>
 
 <div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> consider removing <code>byte</code>, <code>char</code> after specifying the mapping to C++ and Python
+  **Comment:** adding any additional type deserves a separate rationale.
 </div>
 
 
@@ -136,11 +140,23 @@ Both file names must use an upper camel case name and only consist of alphanumer
 Field names must be lowercase alphanumeric characters with underscores for separating words.
 They must start with an alphabetic character, they must not end with an underscore and never have two consecutive underscores.
 
+<div class="alert alert-warning" markdown="1">
+  **Comment:** these rules are not consistent with ROS 1, where some few fields do have upper-case letters.
+
+  I would prefer to word this as a recommendation: *should* rather than *must*.
+
+  Actually breaking compatibility for those messages deserves a separate REP, getting community buy-in for a global change.
+</div>
+
 
 ### Naming of constants
 
 Constant names must be uppercase alphanumeric characters with underscores for separating words.
 They must start with an alphabetic character, they must not end with an underscore and never have two consecutive underscores.
+
+<div class="alert alert-warning" markdown="1">
+  **Comment:** this ought to use *should* rather than *must*, as above, although exceptions are less common.
+</div>
 
 
 ## Syntax
@@ -199,10 +215,6 @@ Depending on the type the following values are valid:
 * `bool`:
   * `true`, `1`
   * `false`, `0`
-* `byte`:
-  * an unsigned integer value in the following interval `[0, 255]`
-* `char`:
-  * an integer value in the following interval `[-128, 127]`
 * `float32` and `float64`:
   * a decimal number using a dot (`.`) as the separator between the integer-part and fractional-part.
 * `int8`, `int16`, `int32` and `int64`:
