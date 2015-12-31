@@ -1,7 +1,9 @@
 language: ruby
 rvm:
 - 2.1
-install: gem install jekyll
+install:
+  - gem install bundler --no-rdoc --no-ri
+  - bundle install
 script: jekyll build
 
 # branch whitelist
