@@ -1,9 +1,9 @@
 ---
 layout: default
-title: ROS 2.0 in Realtime
-permalink: articles/realtime.html
-abstract: This article describes real-time computing requirements and how ROS 2 will fulfill them.
-published: false
+title: Introduction to Real-time Systems
+permalink: articles/realtime_background.html
+abstract: This article is a brief survey of real-time computing requirements and methods to achieve real-time performance.
+published: true
 author: Jackie Kay
 ---
 
@@ -304,12 +304,7 @@ Collecting these statistics gives an indication of what events could cause the l
 
 ## Design Guidelines for ROS 2
 
-### Achieving real-time computation across platforms
-
-TODO: How can ROS 2 be real-time friendly and cross-platform?
-Much of the research in this document focuses on achieving real-time on POSIX-compliant Linux systems.
-
-### Implementation strategy
+## Implementation strategy
 
 With judicious application of the performance patterns and benchmarking tests proposed in this document, implementing real-time code in C/C++ is feasible.
 The question of how ROS 2 will achieve real-time compatibility remains.
