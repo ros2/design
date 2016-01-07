@@ -2,9 +2,12 @@ language: ruby
 rvm:
 - 2.1
 install:
-  - gem install bundler --no-rdoc --no-ri
-  - bundle install
-script: jekyll build
+- gem install bundler --no-rdoc --no-ri
+- bundle install
+- npm install remark remark-lint
+script:
+- jekyll build
+- remark --frail articles/
 
 # branch whitelist
 branches:
