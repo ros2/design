@@ -104,3 +104,12 @@ The `--baseurl=''` option sets the `baseurl` variable for the site's global conf
 ### Submitting a Pull Request
 
 Once you are satisfied with your changes you can follow the Github tutorial on [creating a pull request](https://help.github.com/articles/creating-a-pull-request) against ours, where we can review and discuss your changes before merging.
+
+## Check markdown style locally
+
+For pull requests the markdown linter is automatically invoked on Travis.
+To run the same checks locally you first need [Node.js](https://docs.npmjs.com/getting-started/installing-node).
+Then you need to install the linter specific Node packages and invoke the linter using the following commands:
+
+    npm install remark remark-lint
+    remark --frail articles/
