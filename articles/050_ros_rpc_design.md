@@ -10,13 +10,15 @@ author: '[Tully Foote](https://github.com/tfoote)'
 published: true
 ---
 
-* This will become a table of contents (this text will be scraped).
 {:toc}
 
 # {{ page.title }}
 
 <div class="alert alert-warning" markdown="1">
-This article is out-of-date. It was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards. It represents an idealistic understanding of what RPC and "actions" should be like in ROS. It can be considered memoranda and not necessarily the intention on how to develop the system.
+This article is out-of-date.
+It was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards.
+It represents an idealistic understanding of what RPC and "actions" should be like in ROS.
+It can be considered memoranda and not necessarily the intention on how to develop the system.
 </div>
 
 <div class="abstract" markdown="1">
@@ -35,10 +37,8 @@ An ideal RPC system would have the qualities laid out in the following paragraph
 
 ### Asynchronous API
 
-An asynchronous API allows alternative threading models and is in general
-more flexible than a synchronous API, which can always be implemented on
-top of asynchronous API.  Doing the reverse (building an asynchronous API
-on top of a synchronous API) is harder and likely less efficient.
+An asynchronous API allows alternative threading models and is in general more flexible than a synchronous API, which can always be implemented on top of asynchronous API.
+Doing the reverse (building an asynchronous API on top of a synchronous API) is harder and likely less efficient.
 
 ### Timeouts
 
@@ -71,7 +71,8 @@ Still, it should be possible to efficiently record some level of detail regardin
 
 ## Proposed Approach
 
-The features outlined above are desirable but if provided as a monolithic implementation will be much more complicated than necessary for most use cases.  E.g., feedback is not always required, but in a monolithic system it would always be an exposed part of the API.
+The features outlined above are desirable but if provided as a monolithic implementation will be much more complicated than necessary for most use cases.
+E.g., feedback is not always required, but in a monolithic system it would always be an exposed part of the API.
 We propose four levels of abstraction into which the above features can be sorted, wich each higher level providing more functionality to the user.
 
 ![ROS RPC Higherarchy](/img/ros_rpc_design/rpc_diagram.png)
@@ -120,7 +121,7 @@ There are two options: (i) require the user to embed the UID into the message, o
 It is unclear how this choice affects the user's ability to introspect the messages.
 This also introduces issues when trying to record and potentially play back Service or Actions.
 
-### Action Files?
+### Action Files
 
 Should there be a separate `.action` file type?
 Or should it be more like a `.srv` + `.msg` pair?
@@ -142,14 +143,14 @@ It might be possible to pad communications with debugging data.
 The above UID's may be only locally unique (client-specific for instance).
 For logging, UID's need to be unique within the entire ROS instance to support debugging.
 
-### Collapse Preemptible and Asynchronous?
+### Collapse Preemptible and Asynchronous
 
 These two types are very similar and limiting the variants on the API might be easier for the user.
 If the UID must be generated/embedded into the protocol,
 then it should be embedded into all calls, which will help with logging.
 For the non-preemptible case the implementation can simply not instantiate the state machine and preemption mechanisms.
 
-### caller_id availability?
+### caller_id availability
 
 There are use cases when the concept of `caller_id` is valuable.
 Users of ROS Actions would sometimes use it to provide connection-based information.
@@ -159,7 +160,7 @@ Providing a mechanism for declaring the `caller_id` might be helpful, but would 
 
 One possible solution is to write a spec where a field that matches `[CallerID caller_id]` would be automatically substituted by a publisher if embedded into a message to provide this specifically where valuable.
 
-### Do not bundle feedback at core level?
+### Do not bundle feedback at core level
 
 If namespace remapping works, feedback could simply be a topic which is in the same namespace as a peer.
 This would enable multiple feedback topics of differing types and frequencies.

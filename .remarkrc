@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "remark-lint": {
+      "fenced-code-flag": {
+        "allowEmpty": true
+      },
+      "list-item-indent": "space",
+      "maximum-heading-length": false,
+      "maximum-line-length": false,
+      "no-file-name-irregular-characters": false,
+      "no-html": false,
+      "unordered-list-marker-style": "-"
+    }
+  }
+}

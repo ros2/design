@@ -8,7 +8,6 @@ published: true
 author: Brian Gerkey
 ---
 
-* This will become a table of contents (this text will be scraped).
 {:toc}
 
 # {{ page.title }}
@@ -22,7 +21,6 @@ Original Author: {{ page.author }}
 We started work on ROS in November 2007.
 A lot has happened since then and we believe that it is now time to build the next generation ROS platform.
 In this article we will explain why.
-
 
 ## How we got here
 
@@ -50,7 +48,6 @@ Government agencies are also looking more closely at ROS for use in their fielde
 With all these new uses of ROS, the platform is being stretched in unexpected ways.
 While it is holding up well, we believe that we can better meet the needs of a now-broader ROS community by tackling their new use cases head-on.
 
-
 ## New use cases
 
 Of specific interest to us for the ongoing and future growth of the ROS community are the following use cases, which we did not have in mind at the beginning of the project:
@@ -61,7 +58,6 @@ Of specific interest to us for the ongoing and future growth of the ROS communit
 - Non-ideal networks: we want ROS to behave as well as is possible when network connectivity degrades due to loss and/or delay, from poor-quality WiFi to ground-to-space communication links.
 - Production environments: while it is vital that ROS continue to be the platform of choice in the research lab, we want to ensure that ROS-based lab prototypes can evolve into ROS-based products suitable for use in real-world applications.
 - Prescribed patterns for building and structuring systems: while we will maintain the underlying flexibility that is the hallmark of ROS, we want to provide clear patterns and supporting tools for features such as life cycle management and static configurations for deployment.
-
 
 ## New technologies
 
@@ -84,7 +80,6 @@ We can benefit tremendously from this approach in many ways, including:
 - we can benefit from ongoing improvements that are made by others to those libraries; and
 - we can point to existing production systems that already rely on those libraries when people ask us where ROS is "ready for prime time".
 
-
 ## API changes
 
 A further reason to build ROS 2.0 is to take advantage of the opportunity to improve our user-facing APIs.
@@ -92,13 +87,13 @@ A great deal of the ROS code that exists today is compatible with the client lib
 That's great from the point of view of stability, but it also implies that we're still living with API decisions that were made several years ago, some of which we know now to be not the best.
 
 So, with ROS 2.0, we will design new APIs, incorporating to the best of our ability the collective experience of the community with the first-generation APIs.
-As a result, while the key concepts (distributed processing, anonymous publish/subscribe messaging, RPC with feedback [i.e., actions], language neutrality, system introspectability, etc.) will remain the same, you should not expect ROS 2.0 to be API-compatible with existing ROS code.
+As a result, while the key concepts (distributed processing, anonymous publish/subscribe messaging, RPC with feedback (i.e., actions), language neutrality, system introspectability, etc.) will remain the same, you should not expect ROS 2.0 to be API-compatible with existing ROS code.
 
 But fear not: there will be mechanisms in place to allow ROS 2.0 code to coexist with existing ROS code.
 At the very least, there will be translation relays that will support run-time interactions between the two systems.
 And it is possible that there will be library shims that will allow existing ROS code to compile/run against ROS 2.0 libraries, with behavior that is qualitatively similar to what is seen today.
 
-## Why not just enhance ROS 1?
+## Why not just enhance ROS 1
 
 In principle, the changes described above could be integrated into the existing core ROS code.
 E.g., new transport technologies could be added to `roscpp` and `rospy`.

@@ -38,6 +38,7 @@ This link will create a new file, give an opportunity to name it, and provide yo
 New articles should follow this template:
 
 {% raw %}
+
     ---
     layout: default
     title: Template for New Articles
@@ -47,7 +48,6 @@ New articles should follow this template:
     published: false
     ---
 
-    * This will become a table of contents (this text will be scraped).
     {:toc}
 
     # {{ page.title }}
@@ -72,9 +72,7 @@ If you need to reproduce the site locally and/or make extensive changes, you can
 
 First check to see if you already have a fork of this repository:
 
-{% raw %}
-    https://github.com/<your username>/design
-{% endraw %}
+[https://github.com/<your username>/design][]
 
 If you do not, then browse to this [repository](https://github.com/ros2/design) site and click on the "Fork" button:
 
@@ -96,9 +94,7 @@ First install Jekyll for your system:
 
 Once you have Jekyll installed you should be able to run this command:
 
-
     jekyll serve --watch --baseurl=''
-
 
 The `jekyll server` command will start a web server which you can access at `http://localhost:4000`.
 The `--watch` option will cause the jekyll web server to regenerate pages which are changed each time they are modified.
@@ -108,3 +104,12 @@ The `--baseurl=''` option sets the `baseurl` variable for the site's global conf
 ### Submitting a Pull Request
 
 Once you are satisfied with your changes you can follow the Github tutorial on [creating a pull request](https://help.github.com/articles/creating-a-pull-request) against ours, where we can review and discuss your changes before merging.
+
+## Check markdown style locally
+
+For pull requests the markdown linter is automatically invoked on Travis.
+To run the same checks locally you first need [Node.js](https://docs.npmjs.com/getting-started/installing-node).
+Then you need to install the linter specific Node packages and invoke the linter using the following commands:
+
+    npm install remark remark-lint
+    remark --frail articles/
