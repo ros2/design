@@ -31,8 +31,10 @@ This strategy of composing existing libraries into a middleware is in contrast t
 
 In order to meet the needs of ROS, a middleware needs to provide a few key services.
 First it needs to provide a way for parts of the system to discover each other and make connections dynamically at run time.
-Then the middleware needs to provide one or more transport paradigms for moving information between parts of the system, and for ROS specifically the publish-subscribe pattern is required at a minimum. Additional communication patterns (such as request-response) can be implemented on top of publish-subscribe.
-Finally, the middleware should provide a means of defining messages and then preparing them for transport, i.e. serialization. However, if the middleware lacks a serialization mechanism, this can be provided by an external component.
+Then the middleware needs to provide one or more transport paradigms for moving information between parts of the system, and for ROS specifically the publish-subscribe pattern is required at a minimum.
+Additional communication patterns (such as request-response) can be implemented on top of publish-subscribe.
+Finally, the middleware should provide a means of defining messages and then preparing them for transport, i.e. serialization.
+However, if the middleware lacks a serialization mechanism, this can be provided by an external component.
 Since ROS 1.x was designed, there have been several new libraries in these component fields to gain popularity.
 
 ### Discovery
@@ -66,7 +68,9 @@ For transporting bytes between processes, a popular library is [ZeroMQ](http://z
 In all of those cases the goal of the library is to allow you to establish connections, explicitly, to other participants and then send strings or bytes according to some communication pattern.
 ZeroMQ is an LGPL licensed library which has recently become very popular, is written in C++ with a C API, and has bindings to many languages.
 nanomsg is a new MIT licensed library which was created by one of the original authors of ZeroMQ, is written in C with a C API, but is far less mature than ZeroMQ.
-RabbitMQ is a broker that implements several messaging protocols, mainly AMQP, but also provides gateways for ZeroMQ, STOMP and MQTT. By being a broker, it meets some of the discovery needs as well as the transport needs for ROS. Although ZeroMQ is usually used in brokerless deployments, it can also be used in conjunction with RabbitMQ to provide persitence and durability of messages.
+RabbitMQ is a broker that implements several messaging protocols, mainly AMQP, but also provides gateways for ZeroMQ, STOMP and MQTT.
+By being a broker, it meets some of the discovery needs as well as the transport needs for ROS.
+Although ZeroMQ is usually used in brokerless deployments, it can also be used in conjunction with RabbitMQ to provide persitence and durability of messages.
 RabbitMQ is licensed under the Mozilla Public License.
 All of these libraries could probably be used to replace the ROSTCP transport, but for the purposes of this article we will use ZeroMQ in a brokerless deployment.
 
@@ -84,7 +88,8 @@ Additionally, ZeroMQ, in particular, relies on reliable transports like TCP or [
 
 ### Message Serialization
 
-In ROS 1.x, messages are defined in `.msg` files and code is generated at build time for each of the supported languages. ROS 1.x generated code can instantiate and then later serialize the data in a message as a mechanism for exchanging information.
+In ROS 1.x, messages are defined in `.msg` files and code is generated at build time for each of the supported languages.
+ROS 1.x generated code can instantiate and then later serialize the data in a message as a mechanism for exchanging information.
 Since ROS was created, several popular libraries which take care of this responsibility have come about.
 Google's [Protocol Buffers (Protobuf)](https://code.google.com/p/protobuf/), [MessagePack](http://msgpack.org/), [BSON](http://bsonspec.org/), and [Cap'n Proto](http://kentonv.github.io/capnproto/) are all examples of serialization libraries which have come to popularity since ROS was originally written.
 An entire article could be devoted to the pros and cons of different message definition formats, serialization libraries, and their wire formats, but for the purposes of this prototype we worked with either plain strings or Protobuf.

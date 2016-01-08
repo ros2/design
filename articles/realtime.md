@@ -28,9 +28,13 @@ For ROS 2.0 to capture the needs of the robotics community, the core software co
 
 The definition of real-time computing requires the definition of a few other key terms:
 
-- Determinism: A system is deterministic if it always produces the same output for a known input. The output of a nondeterministic system will have random variations.
+- Determinism: A system is deterministic if it always produces the same output for a known input.
+  The output of a nondeterministic system will have random variations.
+
 - Deadline: A deadline is the finite window of time in which a certain task must be completed.
-- Quality of Service: The overall performance of a network. Includes factors such as bandwith, throughput, availability, jitter, latency, and error rates.
+
+- Quality of Service: The overall performance of a network.
+  Includes factors such as bandwith, throughput, availability, jitter, latency, and error rates.
 
 Real-time software guarantees correct computation at the correct time.
 
@@ -42,8 +46,8 @@ However, they may degrade their quality of service in such an event to improve r
 Examples of soft real-time systems: audio and video delivery software for entertainment (lag is undesirable but not catastrophic).
 
 *Firm real-time systems* treat information delivered/computations made after a deadline as invalid.
-Like soft real-time systems, they do not fail after a missed deadline, and they may degrade QoS if a deadline is missed. (1)
-Examples of firm real-time systems: financial forecast systems, robotic assembly lines. (2)
+Like soft real-time systems, they do not fail after a missed deadline, and they may degrade QoS if a deadline is missed (1).
+Examples of firm real-time systems: financial forecast systems, robotic assembly lines (2).
 
 Real-time computer systems are often associated with low-latency systems.
 Many applications of real-time computing are also low-latency applications (for example, automated piloting systems must be reactive to sudden changes in the environment).
@@ -55,9 +59,13 @@ Neither deterministic user code on a non-real-time operating system or nondeterm
 
 Some examples of real-time environments:
 
-- The `RT_PREEMPT` Linux kernel patch, which modifies the Linux scheduler to be fully preemptible. (3)
-- Xenomai, a POSIX-compliant co-kernel (or hypervisor) that provides a real-time kernel cooperating with the Linux kernel. The Linux kernel is treated as the idle task of the real-time kernel's scheduler (the lowest priority task).
+- The `RT_PREEMPT` Linux kernel patch, which modifies the Linux scheduler to be fully preemptible (3).
+
+- Xenomai, a POSIX-compliant co-kernel (or hypervisor) that provides a real-time kernel cooperating with the Linux kernel.
+  The Linux kernel is treated as the idle task of the real-time kernel's scheduler (the lowest priority task).
+
 - RTAI, an alternative co-kernel solution.
+
 - QNX Neutrino, a POSIX-compliant real-time operating system for mission-critical systems.
 
 ## Best Practices in Real-time Computing
@@ -69,14 +77,16 @@ In this section, various strategies for developing on top of a real-time OS are 
 The patterns focus on the use case of C/C++ development on Linux-based real-time OS's (such as `RT_PREEMPT`), but the general concepts are applicable to other platforms.
 Most of the patterns focus on workarounds for blocking calls in the OS, since any operation that involves blocking for an indeterminate amount of time is nondeterministic.
 
-It is a common pattern to section real-time code into three parts; a non real-time safe section at the beginning of a process that preallocates memory on the heap, starts threads, etc., a real-time safe section (often implemented as a loop), and a non-real-time safe "teardown" section that deallocates memory as necessary, etc. The "real-time code path" refers to the middle section of the execution.
+It is a common pattern to section real-time code into three parts; a non real-time safe section at the beginning of a process that preallocates memory on the heap, starts threads, etc., a real-time safe section (often implemented as a loop), and a non-real-time safe "teardown" section that deallocates memory as necessary, etc.
+The "real-time code path" refers to the middle section of the execution.
 
 ### Memory management
 
 Proper memory management is critical for real-time performance.
 In general, the programmer should avoid page faults in the real-time code path.
 During a page fault, the CPU pauses all computation and loads the missing page from disk into RAM (or cache, or registers).
-Loading data from disk is a slow and unpredictable operation. However, page faults are necessary or else the computer will run out of memory.
+Loading data from disk is a slow and unpredictable operation.
+However, page faults are necessary or else the computer will run out of memory.
 The solution is to avoid pagefaults.
 
 Dynamic memory allocation can cause poor real-time performance.
@@ -99,7 +109,7 @@ Additionally, the heap allocates and frees memory blocks in such a way that lead
 
 This code snippet, when run at the beginning of a thread's lifecycle, ensures that no pagefaults occur while the thread is running.
 `mlockall` locks the stack for the thread.
-The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of memory of the stack into the cache, so that no pagefaults will occur when the stack is accessed. (3)
+The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of memory of the stack into the cache, so that no pagefaults will occur when the stack is accessed (3).
 
 #### Allocate dynamic memory pool
 
@@ -126,7 +136,7 @@ The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of m
 The intro to this section stated that dynamic memory allocation is usually not real-time safe.
 However, this code snippet shows how to make dynamic memory allocation real-time safe (mostly).
 It locks the virtual address space to a fixed size, disallows returning deallocated memory to the kernel via `sbrk`, and disables `mmap`.
-This effectively locks a pool of memory in the heap into RAM, which prevents page faults due to `malloc` and `free`. (3)
+This effectively locks a pool of memory in the heap into RAM, which prevents page faults due to `malloc` and `free` (3).
 
 Pros:
 
@@ -143,7 +153,7 @@ Cons:
 
 The default allocator on most operating systems is not optimized for real-time safety.
 However, there is another strategy that is an exception to the "avoid dynamic memory allocation" rule.
-Research into alternative dynamic memory allocators is a rich research topic. (8)
+Research into alternative dynamic memory allocators is a rich research topic (8).
 
 One such alternative allocator is TLSF (Two-Level Segregate Fit).
 It is also called the O(1) allocator, since the time cost of `malloc`, `free`, and `align` operations under TLSF have a constant upper bound.
@@ -169,7 +179,7 @@ However, this strategy comes with the many disadvantages of using global variabl
 #### Cache friendliness for pointer and vtable accesses
 
 Classes with many levels of inheritance may not be real-time safe because of vtable overhead access.
-When executing an inherited function, the program needs to access the data used in the function, the vtable for the class, and the instructions for the function, which are all stored in different parts of memory, and may or may not be stored in cache together. (5)
+When executing an inherited function, the program needs to access the data used in the function, the vtable for the class, and the instructions for the function, which are all stored in different parts of memory, and may or may not be stored in cache together (5).
 
 In general, C++ patterns with poor cache locality are not well-suited to real-time environments.
 Another such pattern is the opaque pointer idiom (PIMPL), which is convenient for ABI compatibility and speeding up compile times.
@@ -179,7 +189,7 @@ However, bouncing between the memory location for the object and its private dat
 
 Handling exceptions can incur a large performance penalty.
 Running into an exception tends to push a lot of memory onto the stack, which is often a limited resource in real-time programming.
-But if exceptions are used properly, they should not be a concern to real-time programmers (since they indicate a place in the program with undefined behavior and are integral to debugging). (6)
+But if exceptions are used properly, they should not be a concern to real-time programmers (since they indicate a place in the program with undefined behavior and are integral to debugging) (6).
 
 #### Know your problem
 
@@ -271,7 +281,7 @@ Page faults should be avoided in real-time programming, so Linux `fork`, as well
 
 [`cyclictest`](http://manpages.ubuntu.com/manpages/trusty/man8/cyclictest.8.html) is a simple Linux command line tool for measuring the jitter of a real-time environment.
 It takes as input a number of threads, a priority for the threads, and a scheduler type.
-It spins up `n` threads that sleep regular intervals (the sleep period can also be specified from the command line). (7)
+It spins up `n` threads that sleep regular intervals (the sleep period can also be specified from the command line) (7).
 
 For each thread, `cyclictest` measures the time between when the thread is supposed to wake up and when it actually wakes up.
 The variability of this latency is the scheduling jitter in the system.
@@ -287,8 +297,10 @@ A proposed header for a minimal library for real-time code instrumentation can b
 
 ### Pagefaults
 
-The Linux system call [`getrusage`](http://linux.die.net/man/2/getrusage) returns statistics about many resource usage events relevant to real-time performance, such as minor and major pagefaults, swaps, and block I/O. It can retrieve these statistics for an entire process or for one thread.
-Thus it is simple to instrument code to check for these events. In particular, `getrusage` should be called right before and right after the real-time section of the code, and these results should be compared, since `getrusage` collects statistics about the entire duration of the thread/process.
+The Linux system call [`getrusage`](http://linux.die.net/man/2/getrusage) returns statistics about many resource usage events relevant to real-time performance, such as minor and major pagefaults, swaps, and block I/O.
+It can retrieve these statistics for an entire process or for one thread.
+Thus it is simple to instrument code to check for these events.
+In particular, `getrusage` should be called right before and right after the real-time section of the code, and these results should be compared, since `getrusage` collects statistics about the entire duration of the thread/process.
 
 Collecting these statistics gives an indication of what events could cause the latency/scheduling jitter measured by the previously described methods.
 
@@ -317,14 +329,17 @@ There are a few possible strategies for the real-time "hardening" of existing an
 
   - Cons:
 
-    - Refactoring overhead. Integrating real-time code with existing code may be intractable.
+    - Refactoring overhead.
+      Integrating real-time code with existing code may be intractable.
 
 - Implement a new real-time stack (rclrt, rmwrt, etc.) designed with real-time computing in mind.
 
   - Pros:
 
     - Easier to design and maintain.
-    - Real-time code is "quarantined" from existing code. Can fully optimize library for real-time application.
+
+    - Real-time code is "quarantined" from existing code.
+      Can fully optimize library for real-time application.
 
   - Cons:
 

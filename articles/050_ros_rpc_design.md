@@ -15,7 +15,10 @@ published: true
 # {{ page.title }}
 
 <div class="alert alert-warning" markdown="1">
-This article is out-of-date. It was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards. It represents an idealistic understanding of what RPC and "actions" should be like in ROS. It can be considered memoranda and not necessarily the intention on how to develop the system.
+This article is out-of-date.
+It was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards.
+It represents an idealistic understanding of what RPC and "actions" should be like in ROS.
+It can be considered memoranda and not necessarily the intention on how to develop the system.
 </div>
 
 <div class="abstract" markdown="1">
@@ -34,10 +37,8 @@ An ideal RPC system would have the qualities laid out in the following paragraph
 
 ### Asynchronous API
 
-An asynchronous API allows alternative threading models and is in general
-more flexible than a synchronous API, which can always be implemented on
-top of asynchronous API.  Doing the reverse (building an asynchronous API
-on top of a synchronous API) is harder and likely less efficient.
+An asynchronous API allows alternative threading models and is in general more flexible than a synchronous API, which can always be implemented on top of asynchronous API.
+Doing the reverse (building an asynchronous API on top of a synchronous API) is harder and likely less efficient.
 
 ### Timeouts
 
@@ -70,7 +71,8 @@ Still, it should be possible to efficiently record some level of detail regardin
 
 ## Proposed Approach
 
-The features outlined above are desirable but if provided as a monolithic implementation will be much more complicated than necessary for most use cases.  E.g., feedback is not always required, but in a monolithic system it would always be an exposed part of the API.
+The features outlined above are desirable but if provided as a monolithic implementation will be much more complicated than necessary for most use cases.
+E.g., feedback is not always required, but in a monolithic system it would always be an exposed part of the API.
 We propose four levels of abstraction into which the above features can be sorted, wich each higher level providing more functionality to the user.
 
 ![ROS RPC Higherarchy](/img/ros_rpc_design/rpc_diagram.png)

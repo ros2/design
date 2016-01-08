@@ -11,7 +11,8 @@ author: '[Esteve Fernandez](https://github.com/esteve)'
 {:toc}
 
 <div class="alert alert-warning" markdown="1">
-  This is a work in progress. Please check for existing issues/pull requests for related discussion or open new issues/pull requests to propose changes.
+  This is a work in progress.
+  Please check for existing issues/pull requests for related discussion or open new issues/pull requests to propose changes.
 </div>
 
 # {{ page.title }}
@@ -60,7 +61,9 @@ The base QoS profile includes settings for the following policies:
 
 - Durability.
 
-  - Transient local: *only applies to `DataWriter`s*. `DataWriter` becomes responsible of persisting samples until a corresponding `DataReader` becomes available.
+  - Transient local: *only applies to `DataWriter`s*.
+    `DataWriter` becomes responsible of persisting samples until a corresponding `DataReader` becomes available.
+
   - Volatile: no attempt is made to persist samples.
 
 Note: for each of the main bullets there is also the option of "system default", which uses whatever setting was defined via the DDS vendor tools (e.g. XML configuration files).
@@ -83,7 +86,7 @@ ROS 2.0 will provide QoS profiles based on the following use cases:
 
   In the same vein as publishers and subscriptions, services are reliable.
   The difference here is that we support some level of durability, so clients can submit requests even before a service is available.
-  The durability offered is "transient local", that is, the client's writer will be responsible of persiting the samples until the service can respond to requests. 
+  The durability offered is "transient local", that is, the client's writer will be responsible of persiting the samples until the service can respond to requests.
 
 - Sensor data.
 
