@@ -7,7 +7,6 @@ published: true
 author: '[William Woodall](https://github.com/wjwwood)'
 ---
 
-* This will become a table of contents (this text will be scraped).
 {:toc}
 
 # {{ page.title }}
@@ -17,8 +16,8 @@ author: '[William Woodall](https://github.com/wjwwood)'
 </div>
 
 > For context, this article explores the ideal and theoretical aspects of discovery and negotiation.
-It does not aim to answer all implementation questions or suggest implementation strategies.
-It simply tries to capture the concepts in the design space and identify trade-offs and relationships between design elements.
+> It does not aim to answer all implementation questions or suggest implementation strategies.
+> It simply tries to capture the concepts in the design space and identify trade-offs and relationships between design elements.
 
 Original Author: {{ page.author }}
 
@@ -77,15 +76,18 @@ The main evolution of required functionality for this system over the previous o
 This is were the system features matrix forks. There are two glaring limitations of the previous use cases:
 
 - Nodes have no general way to notify the rest of the graph about events, events like:
- - node life cycle state changed
- - heartbeat
- - connection_established/connection_lost
- - mapping_established/mapping_lost
- - etc...
+
+  - node life cycle state changed
+  - heartbeat
+  - connection_established/connection_lost
+  - mapping_established/mapping_lost
+  - etc...
+
 - The list of nodes and their addresses, publishers, subscribers, etc. are statically maintained, which prevents:
- - dynamically computing the data layer connections
- - dynamically adding nodes
- - dynamically adding publishers and subscribers
+
+  - dynamically computing the data layer connections
+  - dynamically adding nodes
+  - dynamically adding publishers and subscribers
 
 The first limitation is about having the ability to introspect the changes in the **data layer graph** so that the system can react dynamically to things like dropped connections. The second limitation is about having the ability to dynamically discover and manipulate the layout of the **computational graph** which might in turn change the **data layer graph**.
 
@@ -135,15 +137,15 @@ Below is a table summarizing the above mentioned use cases and what interfaces/f
 
 <div class="table" markdown="1">
 
-System Name | Remote Node API | Node Configuration API | Data Layer Events | Dynamic Discovery | Requires Graph API
---- | --- | --- | --- | --- | ---
-Statically Configured Nodes |   |   |   |   |  |
-Statically Configured Graph | &#x2713; |   |   |   |  |
-Dynamically Configured Graph with Static Discovery | &#x2713; | &#x2713; |   |   |  |
-Statically Configured Graph with Events | &#x2713; |   | &#x2713; |   | &#x2713;
-Dynamically Configured Graph with Events and Static Discovery | &#x2713; | &#x2713; | &#x2713; |   | &#x2713;
-Dynamically Configured Graph with Dynamic Discovery | &#x2713; | &#x2713; |   | &#x2713; | &#x2713;
-Dynamically Configured Graph with Events and Dynamic Discovery | &#x2713; | &#x2713; | &#x2713; | &#x2713; | &#x2713;
+| System Name                                                    | Remote Node API | Node Configuration API | Data Layer Events | Dynamic Discovery | Requires Graph API |
+| ---                                                            | ---             | ---                    | ---               | ---               | ---                |
+| Statically Configured Nodes                                    | .               | .                      | .                 | .                 | .                  |
+| Statically Configured Graph                                    | &#x2713;        | .                      | .                 | .                 | .                  |
+| Dynamically Configured Graph with Static Discovery             | &#x2713;        | &#x2713;               | .                 | .                 | .                  |
+| Statically Configured Graph with Events                        | &#x2713;        | .                      | &#x2713;          | .                 | &#x2713;           |
+| Dynamically Configured Graph with Events and Static Discovery  | &#x2713;        | &#x2713;               | &#x2713;          | .                 | &#x2713;           |
+| Dynamically Configured Graph with Dynamic Discovery            | &#x2713;        | &#x2713;               | .                 | &#x2713;          | &#x2713;           |
+| Dynamically Configured Graph with Events and Dynamic Discovery | &#x2713;        | &#x2713;               | &#x2713;          | &#x2713;          | &#x2713;           |
 
 </div>
 

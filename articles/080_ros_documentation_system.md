@@ -7,7 +7,6 @@ abstract:
 author: '[William Woodall](https://github.com/wjwwood)'
 ---
 
-* This will become a table of contents (this text will be scraped).
 {:toc}
 
 # {{ page.title }}
@@ -17,7 +16,6 @@ author: '[William Woodall](https://github.com/wjwwood)'
 </div>
 
 Original Author: {{ page.author }}
-
 
 This document is meant to capture the results of discussions about the way we (the ROS 2 developers) would like documentation to work in ROS 2 and polish those results into a proposal.
 It is likely that this document should be refined and made into a REP once a suitable design is settled on.
@@ -345,4 +343,3 @@ Listed in no particular order, the documentation system will...
 - allow the developer to skip running Doxygen on their package.
 - provide default Doxygen configuration for packages which do not provide them.
 - provide a tool to generate the default Doxygen configuration, allowing the developer to modify them.
-

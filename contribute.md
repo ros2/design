@@ -38,6 +38,7 @@ This link will create a new file, give an opportunity to name it, and provide yo
 New articles should follow this template:
 
 {% raw %}
+
     ---
     layout: default
     title: Template for New Articles
@@ -47,7 +48,6 @@ New articles should follow this template:
     published: false
     ---
 
-    * This will become a table of contents (this text will be scraped).
     {:toc}
 
     # {{ page.title }}
@@ -72,9 +72,7 @@ If you need to reproduce the site locally and/or make extensive changes, you can
 
 First check to see if you already have a fork of this repository:
 
-{% raw %}
-    https://github.com/<your username>/design
-{% endraw %}
+[https://github.com/<your username>/design][]
 
 If you do not, then browse to this [repository](https://github.com/ros2/design) site and click on the "Fork" button:
 
@@ -96,9 +94,7 @@ First install Jekyll for your system:
 
 Once you have Jekyll installed you should be able to run this command:
 
-
     jekyll serve --watch --baseurl=''
-
 
 The `jekyll server` command will start a web server which you can access at `http://localhost:4000`.
 The `--watch` option will cause the jekyll web server to regenerate pages which are changed each time they are modified.
