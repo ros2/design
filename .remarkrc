@@ -1,6 +1,7 @@
 {
   "plugins": {
     "remark-lint": {
+      "external": ["remark-lint-sentence-newline"],
       "fenced-code-flag": {
         "allowEmpty": true
       },
@@ -9,6 +10,9 @@
       "maximum-line-length": false,
       "no-file-name-irregular-characters": false,
       "no-html": false,
+      "sentence-newline": {
+        "blacklist": ["e.g.", "E.g.", "etc.", "i.e.", "vs.", "..."]
+      },
       "unordered-list-marker-style": "-"
     }
   }

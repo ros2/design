@@ -291,9 +291,7 @@ If there are processes with non-deterministic blocking behavior running in the s
 
 A more precise way to measure the scheduling jitter in a program is to instrument the periodic real-time update loop of existing code to record scheduling jitter.
 
-A proposed header for a minimal library for real-time code instrumentation can be found here:
-
-[https://github.com/jacquelinekay/rttest/blob/master/include/rttest/rttest.h][]
+A proposed header for a minimal library for real-time code instrumentation can be found here: [rttest.h](https://github.com/jacquelinekay/rttest/blob/master/include/rttest/rttest.h).
 
 ### Pagefaults
 
@@ -364,7 +362,7 @@ The third option is most appealing because it represents the least amount of wor
 
 ## Sources
 
-1. Stefan M. Petters, [Presentation on Real-Time Systems](http://www.cse.unsw.edu.au/~cs9242/08/lectures/09-realtimex2.pdf)
+1. Stefan Petters, [Presentation on Real-Time Systems](http://www.cse.unsw.edu.au/~cs9242/08/lectures/09-realtimex2.pdf)
 2. [Differences between hard real-time, soft real-time, and firm real-time](http://stackoverflow.com/questions/17308956/differences-between-hard-real-time-soft-real-time-and-firm-real-time), Stack Overflow
 3. [Real-Time Linux Wiki](https://rt.wiki.kernel.org/)
 4. [Real-time operating system, Wikipedia](https://en.wikipedia.org/wiki/Real-time_operating_system#Memory_allocation)
@@ -372,4 +370,4 @@ The third option is most appealing because it represents the least amount of wor
 6. Stack Overflow, [Are Exceptions still undesirable in Realtime environment?](http://stackoverflow.com/questions/5257190/are-exceptions-still-undesirable-in-realtime-environment)
 7. Pavel Moryc, [Task jitter measurement under RTLinux operating system](https://fedcsis.org/proceedings/2007/pliks/48.pdf)
 8. Alfons Crespo, Ismael Ripoll and Miguel Masmano, [Dynamic Memory Management for Embedded Real-Time Systems](http://www.gii.upv.es/tlsf/files/papers/tlsf_slides.pdf)
-9. M. Masmno, [TLSF: A New Dynamic Memory Allocator for Real-Time Systems](http://www.gii.upv.es/tlsf/files/ecrts04_tlsf.pdf)
+9. Miguel Masmno, [TLSF: A New Dynamic Memory Allocator for Real-Time Systems](http://www.gii.upv.es/tlsf/files/ecrts04_tlsf.pdf)

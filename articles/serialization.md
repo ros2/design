@@ -197,20 +197,20 @@ But for example a byte array is represented differently in C++ in the various se
 
 - Protobuf:
 
-  - dyn. array&lt;T&gt;: RepeatedField&lt;T&gt; (STL-like interface)
-  - fix. array&lt;T&gt;: ---
+  - dynamic array&lt;T&gt;: RepeatedField&lt;T&gt; (STL-like interface)
+  - fixed array&lt;T&gt;: ---
   - binary/string: std::string
 
 - Thrift:
 
-  - dyn. array&lt;T&gt;: std::vector&lt;T&gt;
-  - fix. array&lt;T&gt;: ---
+  - dynamic array&lt;T&gt;: std::vector&lt;T&gt;
+  - fixed array&lt;T&gt;: ---
   - binary/string: std::string
 
 - ROS:
 
   - array&lt;T&gt;: std::vector&lt;T&gt;
-  - fix. array&lt;T, N&gt;: boost::array&lt;T, N&gt;
+  - fixed array&lt;T, N&gt;: boost::array&lt;T, N&gt;
   - string: std::string
 
 Furthermore the serialization library specific message API might not expose mutable access which could therefore not be provided by RO either when using pipeline C.
