@@ -4,7 +4,7 @@ rvm:
 install:
 - gem install bundler --no-rdoc --no-ri
 - bundle install
-- npm install remark remark-lint
+- npm install remark remark-lint remark-lint-sentence-newline
 script:
 - jekyll build
 - remark --frail articles/

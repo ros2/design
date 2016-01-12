@@ -45,7 +45,7 @@ This article specifies the mapping between ROS interface types defined in the [i
 
 | ROS type                | DDS type       |
 | ----------------------- | -------------- |
-| static array            | T[N][]         |
+| static array            | T\[N\]         |
 | unbounded dynamic array | sequence<T>    |
 | bounded dynamic array   | sequence<T, N> |
 | bounded string          | string<N>      |

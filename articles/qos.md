@@ -70,9 +70,7 @@ Note: for each of the main bullets there is also the option of "system default",
 
 ROS 2.0 will provide QoS profiles based on the following use cases:
 
-- Default QoS settings for publishers and subscriptions.
-
-  [https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L39][]
+- Default QoS settings for publishers and subscriptions ([rmw_qos_profile_default](https://github.com/ros2/rmw/blob/97008fdc646e3199c0a2f99b3307ee2ee807ede9/rmw/include/rmw/qos_profiles.h#L41-L47)).
 
   In order to make the transition from ROS1 to ROS2, exercising a similar network behavior is desirable.
   By default, publishers and subscriptions are reliable in ROS2.
@@ -80,17 +78,13 @@ ROS 2.0 will provide QoS profiles based on the following use cases:
   These DDS vendors support an alternate API (asynchronous publishers) for which support will be added to ROS2.
   Until the asynchronous API is supported by ROS2, it is advised to use the "best effort" QoS setting for reliability.
 
-- Services.
-
-  [https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L46][]
+- Services ([rmw_qos_profile_services_default](https://github.com/ros2/rmw/blob/97008fdc646e3199c0a2f99b3307ee2ee807ede9/rmw/include/rmw/qos_profiles.h#L49-L55)).
 
   In the same vein as publishers and subscriptions, services are reliable.
   The difference here is that we support some level of durability, so clients can submit requests even before a service is available.
   The durability offered is "transient local", that is, the client's writer will be responsible of persiting the samples until the service can respond to requests.
 
-- Sensor data.
-
-  [https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L25][]
+- Sensor data ([rmw_qos_profile_sensor_data](https://github.com/ros2/rmw/blob/97008fdc646e3199c0a2f99b3307ee2ee807ede9/rmw/include/rmw/qos_profiles.h#L25-L31)).
 
   For sensor data, in most cases it's more important to receive readings in a timely fashion, rather than ensuring that all of them arrive.
   That is, developers want the latest samples as soon as they are captured, at the expense of maybe losing some.
@@ -113,7 +107,7 @@ How should the integration of the QoS machinery with intraprocess communication 
 
 ## References
 
-- Gordon A. Hunt, [DDS - Advanced Tutorial, Using QoS to Solve Real-World Problems](http://www.omg.org/news/meetings/workshops/RT-2007/00-T5_Hunt-revised.pdf)
+- Gordon Hunt, [DDS - Advanced Tutorial, Using QoS to Solve Real-World Problems](http://www.omg.org/news/meetings/workshops/RT-2007/00-T5_Hunt-revised.pdf)
 - [OpenDDS - QoS Policy Usages](http://www.opendds.org/qosusages.html)
 - [OpenDDS - QoS Policy Compliance](http://www.opendds.org/qospolicies.html)
 - Angelo Corsaro, [DDS QoS Unleashed](http://www.slideshare.net/Angelo.Corsaro/dds-qos-unleashed)
