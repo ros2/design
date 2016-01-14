@@ -67,6 +67,10 @@ The following primitive types are defined:
 </div>
 
 <div class="alert alert-warning" markdown="1">
+  <b>TODO:</b> <code>string</code> does not specify any encoding yet and the transport is agnostic to it, this means commonly it can only contain ASCII but all endpoints can also "agree" on using a specific encoding
+</div>
+
+<div class="alert alert-warning" markdown="1">
   <b>TODO:</b> consider removing <code>byte</code>, <code>char</code> after specifying the mapping to C++ and Python
 </div>
 
