@@ -27,8 +27,8 @@ This article specifies the generated C++ code for ROS interface types defined in
 All code of a ROS package should be defined in a namespace named after the package.
 To separate the generated code from other code within the package it is defined in a sub namespace:
 
-- namespace for ROS messages: `package_name::msg`.
-- namespace for ROS services: `package_name::srv`.
+- namespace for ROS messages: `<package_name>::msg`.
+- namespace for ROS services: `<package_name>::srv`.
 
 ## Generated files
 
@@ -47,8 +47,46 @@ For each message two files are being generated:
 - `<my_message_name>.hpp` currently only includes `<my_message_name>__struct.hpp`
 - `<my_message_name>__struct.hpp` containing the definition of the struct
 
-This allow to add addition files beside the one with the suffix `__struct` to provide additional functionality.
+This allows to add additional files besides the one with the suffix `__struct` to provide additional functionality.
 For each additional functionality it can be decided to include it from the first header file.
+
+<div class="alert alert-warning" markdown="1">
+  <b>TODO:</b> specify content of <code>&lt;my_message_name&gt;__traits.hpp</code> file
+</div>
+
+### Types
+
+#### Mapping of primitive types
+
+| ROS type | C++ type    |
+| -------- | ----------- |
+| bool     | bool        |
+| byte     | uint8_t     |
+| char     | char        |
+| float32  | float       |
+| float64  | double      |
+| int8     | int8_t      |
+| uint8    | uint8_t     |
+| int16    | int16       |
+| uint16   | uint16      |
+| int32    | int32       |
+| uint32   | uint32      |
+| int64    | int64       |
+| uint64   | uint64_t    |
+| string   | std::string |
+
+#### Mapping of arrays and bounded strings
+
+| ROS type                | C++ type         |
+| ----------------------- | ---------------- |
+| static array            | std::array<T, N> |
+| unbounded dynamic array | std::vector<T>   |
+| bounded dynamic array   | std::array<T, N> |
+| bounded string          | std::string      |
+
+<div class="alert alert-warning" markdown="1">
+  <b>TODO:</b> bounded dynamic array are currently mapped to <code>std::array</code> but that prevents to store less then N values
+</div>
 
 ### Members
 
@@ -67,7 +105,7 @@ The *default constructor* initializes all members with their default value.
 Optionally the constructor can be invoked with an allocator.
 
 The struct has no constructor with positional arguments for the members.
-The short reason for this is that if code would rely on positional arguments to construct data objects changing a message definition would break existing code in various ways.
+The short reason for this is that if code would rely on positional arguments to construct data objects changing a message definition would break existing code in subtle ways.
 Since this would discourage evolution of message definitions the data structures should be populated by setting the members separately, e.g. using the setter methods.
 
 ### Setters
@@ -107,5 +145,6 @@ The generated code is split across multiple files the same way as message are.
 
 ### Request and response messages
 
-For the request as well as the response part messages are being generated which have the same name as the service with a suffix being either `_Request` or `_Response`.
-These messages are still defined in the `srv` sub namespace.
+For the request and response parts of a service separate messages are being generated.
+These messages are named after the service and have either a `_Request` or `_Response` suffix.
+They are are still defined in the `srv` sub namespace.
