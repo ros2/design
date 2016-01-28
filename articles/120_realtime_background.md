@@ -96,13 +96,13 @@ Additionally, the heap allocates and frees memory blocks in such a way that lead
 #### Lock memory, prefault stack
 
 ```c
-    if (mlockall(MCL_CURRENT|MCL_FUTURE) == -1) {
-            perror("mlockall failed");
-            exit(-2);
-    }
-    unsigned char dummy[MAX_SAFE_STACK];
+if (mlockall(MCL_CURRENT|MCL_FUTURE) == -1) {
+  perror("mlockall failed");
+  exit(-2);
+}
+unsigned char dummy[MAX_SAFE_STACK];
 
-    memset(dummy, 0, MAX_SAFE_STACK);
+memset(dummy, 0, MAX_SAFE_STACK);
 ```
 
 [`mlockall`](http://linux.die.net/man/2/mlockall) is a Linux system call for locking the process's virtual address space into RAM, preventing the memory that will be accessed by the process from getting paged into swap space.
@@ -114,23 +114,22 @@ The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of m
 #### Allocate dynamic memory pool
 
 ```c
-  if (mlockall(MCL_CURRENT | MCL_FUTURE))
-    perror("mlockall failed:");
+if (mlockall(MCL_CURRENT | MCL_FUTURE))
+  perror("mlockall failed:");
 
-  /* Turn off malloc trimming.*/
-  mallopt(M_TRIM_THRESHOLD, -1);
+/* Turn off malloc trimming.*/
+mallopt(M_TRIM_THRESHOLD, -1);
 
-  /* Turn off mmap usage. */
-  mallopt(M_MMAP_MAX, 0);
+/* Turn off mmap usage. */
+mallopt(M_MMAP_MAX, 0);
 
-  page_size = sysconf(_SC_PAGESIZE);
-  buffer = malloc(SOMESIZE);
+page_size = sysconf(_SC_PAGESIZE);
+buffer = malloc(SOMESIZE);
 
-  for (i=0; i < SOMESIZE; i+=page_size)
-  {
-      buffer[i] = 0;
-  }
-  free(buffer);
+for (i=0; i < SOMESIZE; i+=page_size) {
+  buffer[i] = 0;
+}
+free(buffer);
 ```
 
 The intro to this section stated that dynamic memory allocation is usually not real-time safe.
