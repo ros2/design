@@ -95,7 +95,7 @@ Additionally, the heap allocates and frees memory blocks in such a way that lead
 
 #### Lock memory, prefault stack
 
-```c
+```cpp
 if (mlockall(MCL_CURRENT|MCL_FUTURE) == -1) {
   perror("mlockall failed");
   exit(-2);
@@ -113,7 +113,7 @@ The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of m
 
 #### Allocate dynamic memory pool
 
-```c
+```cpp
 if (mlockall(MCL_CURRENT | MCL_FUTURE))
   perror("mlockall failed:");
 
