@@ -159,7 +159,7 @@ This package is in a catkin workspace, located at `~/ros1_talker`.
 
 Here's the directory layout of our catkin workspace:
 
-~~~
+{% highlight bash %}
 $ cd ~/ros1_talker
 $ find .
 .
@@ -168,7 +168,7 @@ $ find .
 ./src/talker/package.xml
 ./src/talker/CMakeLists.txt
 ./src/talker/talker.cpp
-~~~
+{% endhighlight %}
 
 Here is the content of those three files:
 

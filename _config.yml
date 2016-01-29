@@ -8,6 +8,7 @@ oauth_client_id: efa6dd8eae9106381720
 
 markdown: kramdown
 highlighter: pygments
+pygments: true
 
 relative_permalinks: false
 
