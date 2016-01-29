@@ -95,15 +95,14 @@ Additionally, the heap allocates and frees memory blocks in such a way that lead
 
 #### Lock memory, prefault stack
 
-```cpp
+{% highlight cpp %}
 if (mlockall(MCL_CURRENT|MCL_FUTURE) == -1) {
   perror("mlockall failed");
   exit(-2);
 }
 unsigned char dummy[MAX_SAFE_STACK];
-
 memset(dummy, 0, MAX_SAFE_STACK);
-```
+{% endhighlight %}
 
 [`mlockall`](http://linux.die.net/man/2/mlockall) is a Linux system call for locking the process's virtual address space into RAM, preventing the memory that will be accessed by the process from getting paged into swap space.
 
@@ -113,7 +112,7 @@ The [`memset`](http://linux.die.net/man/3/memset) call pre-loads each block of m
 
 #### Allocate dynamic memory pool
 
-```cpp
+{% highlight cpp %}
 if (mlockall(MCL_CURRENT | MCL_FUTURE))
   perror("mlockall failed:");
 
@@ -130,7 +129,7 @@ for (i=0; i < SOMESIZE; i+=page_size) {
   buffer[i] = 0;
 }
 free(buffer);
-```
+{% endhighlight %}
 
 The intro to this section stated that dynamic memory allocation is usually not real-time safe.
 However, this code snippet shows how to make dynamic memory allocation real-time safe (mostly).
