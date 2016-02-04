@@ -5,6 +5,7 @@ permalink: articles/ros_documentation_system.html
 abstract:
   This article describes the proposed system for doing documentation for ROS 2.
 author: '[William Woodall](https://github.com/wjwwood)'
+published: false
 ---
 
 {:toc}
