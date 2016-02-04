@@ -1,7 +1,6 @@
 name: ROS2 Design
 description: "Distilled design documents related to the ROS 2.0 effort"
 
-baseurl: ""
 url: http://design.ros2.org
 repo: https://github.com/ros2/design
 
