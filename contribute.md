@@ -7,7 +7,7 @@ show_in_nav: true
 # Contribute
 
 There are many ways you can contribute to the ROS 2.0 design effort.
-The most important of which is probably to review the list of articles posted on the [home page]({{ site.baseurl }}/) and familiarize yourself with the discussions surrounding an issue before getting involved.
+The most important of which is probably to review the list of articles posted on the [home page](/) and familiarize yourself with the discussions surrounding an issue before getting involved.
 This will help keep everyone on the same page and prevent having to discuss things multiple times.
 
 ## The Side Bar
@@ -76,7 +76,7 @@ First check to see if you already have a fork of this repository:
 
 If you do not, then browse to this [repository](https://github.com/ros2/design) site and click on the "Fork" button:
 
-<img style="height: 50px;" src="{{ site.baseurl }}/img/fork.png"/>
+<img style="height: 50px;" src="/img/fork.png"/>
 
 Github will now go off and create a fork off this repository into your Github account.
 Then you can clone your fork of the repository by running this command:

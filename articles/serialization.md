@@ -115,14 +115,14 @@ The message used by the userland code stores its data directly.
 For each communication channel the message data is then copied into the serialization specific message representation.
 The serialization library will perform the serialization into the wire format from there.
 
-<img src="{{ site.baseurl }}/img/serialization_pipeline_a.png"/>
+<img src="/img/serialization_pipeline_a.png"/>
 
 #### Pipeline B
 
 The message fields can be serialized directly into the wire format using custom code.
 While this avoids the extra data copy it requires a significant effort for implementing the custom serialization routine.
 
-<img src="{{ site.baseurl }}/img/serialization_pipeline_b.png"/>
+<img src="/img/serialization_pipeline_b.png"/>
 
 #### Pipeline C
 
@@ -131,7 +131,7 @@ Since the data is stored directly in the serialization library specific represen
 
 This assumes that the API of the serialization library specific representation can be wrapped inside the ROS message API (see [Technical Issues -> Variances in field types](#variances_in_field_types)).
 
-<img src="{{ site.baseurl }}/img/serialization_pipeline_c.png"/>
+<img src="/img/serialization_pipeline_c.png"/>
 
 ### Select message storage
 

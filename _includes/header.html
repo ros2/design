@@ -8,10 +8,10 @@
 
     <title>{% if page.html_title %}{{ page.html_title }}{% else %}{{ page.title }}{% endif %}</title>
 
-    <link rel="icon" type="image/png" href="{{ site.baseurl }}/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
 
-    <link href="{{ site.baseurl }}/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ site.baseurl }}/css/ros2-design.css" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/ros2-design.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -33,12 +33,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.name }}</a>
+          <a class="navbar-brand" href="/">{{ site.name }}</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">{% for p in site.pages %}{% if p.show_in_nav %}
             <li>
-              <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
+              <a href="{{ p.url }}">{{ p.title }}</a>
             </li>{% endif %}{% endfor %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
