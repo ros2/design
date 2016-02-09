@@ -1,6 +1,7 @@
 language: ruby
 rvm:
 - 2.1
+sudo: false
 install:
 - gem install bundler --no-rdoc --no-ri
 - bundle install
