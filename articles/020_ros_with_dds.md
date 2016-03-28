@@ -119,6 +119,7 @@ Popular DDS vendors include:
 - RTI
 - PrismTech
 - Twin Oaks Software
+- eProsima
 
 Amongst these vendors is an array of reference implementations with different strategies and licenses.
 The OMG maintains an active [list](http://dds-directory.omg.org/vendor/list.htm) of DDS vendors.
@@ -139,9 +140,15 @@ OpenSplice appears to be the number two DDS implementation in use, but that is h
 
 TwinOaks's CoreDX DDS implementation is proprietary only, but apparently they specialize in minimal implementations which are able to run on embedded devices and even bare metal.
 
+eProsima Fast RTPS is a new lighweight Open Source (LGPL) implementation of the DDS protocol (RTPS, Real Time Publish Subscribe Protocol), allowing direct access to the protocol settings and features. It includes also a minimum DDS API, IDL support, and automatic code generation.
+
+It is available on [Github](https://github.com):
+
+[https://github.com/eProsima/Fast-RTPS](https://github.com/eProsima/Fast-RTPS)
+
 Given the relatively strong LGPL option and the encouraging but custom license from RTI, it seems that depending on and even distributing DDS as a dependency should be straight forward.
 One of the goals of this proposal would be to make ROS 2.0 DDS vendor agnostic.
-So, just as an example, if the default implementation is RTI, but someone wants to use OpenSplice, they simply need to recompile the ROS source code with some options flipped and they could use the OpenSplice implementation.
+So, just as an example, if the default implementation is RTI, but someone wants to use OpenSplice or eProsima Fast RTPS, they simply need to recompile the ROS source code with some options flipped and they could use the OpenSplice implementation.
 
 ![DDS and ROS API Layout](/img/ros_on_dds/api_levels.png "DDS and ROS API Layout")
 
