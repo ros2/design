@@ -22,6 +22,7 @@ Original Author: {{ page.author }}
 Terminology:
 
 - [Data Distribution Service (DDS)](http://en.wikipedia.org/wiki/Data_Distribution_Service)
+- [Real-Time Publish Subscribe (RTPS)](https://en.wikipedia.org/wiki/Real-Time_Publish-Subscribe_(RTPS)_Protocol)
 - The [Object Management Group (OMG)](http://www.omg.org/)
 - OMG [Interface Description Language (IDL)](http://www.omg.org/gettingstarted/omg_idl.htm) | [Formal description](http://www.omg.org/cgi-bin/doc?formal/2014-03-01)
 
@@ -119,10 +120,16 @@ Popular DDS vendors include:
 - RTI
 - PrismTech
 - Twin Oaks Software
-- eProsima
 
 Amongst these vendors is an array of reference implementations with different strategies and licenses.
 The OMG maintains an active [list](http://dds-directory.omg.org/vendor/list.htm) of DDS vendors.
+
+In addition to vendors providing implementations of the DDS specification's API, there are software vendors which provide an implementation with more direct access to the DDS wire protocol, RTPS.
+For example:
+
+- eProsima
+
+These RTPS-centric implementations are also of interest because they can be smaller in scope and still provide the needed functionality for implementing the necessary ROS capabilities on top.
 
 RTI's Connext DDS is available under a custom "Community Infrastructure" License, which is compatible with the ROS community's needs but requires further discussion with the community in order to determine its viability as the default DDS vendor for ROS.
 By, "compatible with the ROS community's needs," we mean that, though it is not an OSI-approved license, research has shown it to be adequately permissive to allow ROS to keep a BSD style license and for anyone in the ROS community to redistribute it in source or binary form.
@@ -140,15 +147,17 @@ OpenSplice appears to be the number two DDS implementation in use, but that is h
 
 TwinOaks's CoreDX DDS implementation is proprietary only, but apparently they specialize in minimal implementations which are able to run on embedded devices and even bare metal.
 
-eProsima Fast RTPS is a new lighweight Open Source (LGPL) implementation of the DDS protocol (RTPS, Real Time Publish Subscribe Protocol), allowing direct access to the protocol settings and features. It includes also a minimum DDS API, IDL support, and automatic code generation.
-
-It is available on [Github](https://github.com):
+eProsima's FastRTPS implementation is available on GitHub and is LGPL licensed:
 
 [https://github.com/eProsima/Fast-RTPS](https://github.com/eProsima/Fast-RTPS)
 
+eProsima Fast RTPS is a relatively new, lightweight, and open source implementation of RTPS.
+It allows direct access to the RTPS protocol settings and features, which is not always possible with other DDS implementations.
+eProsima's implementation also includes a minimum DDS API, IDL support, and automatic code generation and they are open to working with the ROS community to meet their needs.
+
 Given the relatively strong LGPL option and the encouraging but custom license from RTI, it seems that depending on and even distributing DDS as a dependency should be straight forward.
 One of the goals of this proposal would be to make ROS 2.0 DDS vendor agnostic.
-So, just as an example, if the default implementation is RTI, but someone wants to use OpenSplice or eProsima Fast RTPS, they simply need to recompile the ROS source code with some options flipped and they could use the OpenSplice implementation.
+So, just as an example, if the default implementation is Connext, but someone wants to use one of the LGPL options like OpenSplice or Fast RTPS, they simply need to recompile the ROS source code with some options flipped and they can use the implementation of their choice.
 
 ![DDS and ROS API Layout](/img/ros_on_dds/api_levels.png "DDS and ROS API Layout")
 
@@ -159,11 +168,11 @@ Research has shown that making code which is vendor agnostic is possible if not 
 
 DDS comes out of a set of companies which are decades old, was laid out by the OMG which is an old-school software engineering organization, and is used largely by government and military users.
 So it comes as no surprise that the community for DDS looks very different from the ROS community and similar modern software projects like ZeroMQ.
-Though RTI has a respectable on-line presense, the questions asked by community members are almost always answered by an employee of RTI and though technically open source, neither RTI nor OpenSplice have spent time to provide packages for Ubuntu or Homebrew or any other modern package manager.
+Though RTI has a respectable on-line presence, the questions asked by community members are almost always answered by an employee of RTI and though technically open source, neither RTI nor OpenSplice have spent time to provide packages for Ubuntu or Homebrew or any other modern package manager.
 They do not have extensive user contributed wiki's or an active Github repository.
 
 This staunch difference in ethos between the communities is one of the most concerning issues with depending on DDS.
-Unlike options like keeping rostcp or using ZeroMQ, there isn't the feeling that there is a large community to fall back on with DDS.
+Unlike options like keeping TCPROS or using ZeroMQ, there isn't the feeling that there is a large community to fall back on with DDS.
 However, the DDS vendors have been very responsive to our inquires during our research and it is hard to say if that will continue when it is the ROS community which brings the questions.
 
 Even though this is something which should be taken under consideration when making a decision about using DDS, it should not disproportionately outweigh the technical pros and cons of the DDS proposal.
