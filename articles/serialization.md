@@ -17,7 +17,7 @@ author: '[Dirk Thomas](https://github.com/dirk-thomas) and [Esteve Fernandez](ht
 
 Original Author: {{ page.author }}
 
-> **This document pre-dates the decision to build ROS 2 on top of DDS.**
+> This document pre-dates the decision to build ROS 2 on top of DDS.
 >
 > This is an exploration of possible message interfaces and the relation of the underlying message serialization.
 > This paper is focused on specifying the message API and designing the integration with the serialization with performance as well as flexibility in mind.

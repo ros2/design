@@ -18,7 +18,7 @@ author: '[William Woodall](https://github.com/wjwwood)'
 {{ page.abstract }}
 </div>
 
-> **This document pre-dates the decision to build ROS 2 on top of DDS.**
+> This document pre-dates the decision to build ROS 2 on top of DDS.
 >
 > This article could use additional details, feel free to propose changes.
 
