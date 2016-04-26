@@ -45,26 +45,26 @@ It is useful to consider an ideal system to understand how it would work and how
 An ideal system would support for the combined use cases of ROS 1.0's built-in parameters as well as ROS 1.0's dynamic parameters system.
 Based on that criteria an ideal system would be able to:
 
-- **Set parameter values**
+- Set parameter values
 
   This includes setting groups of parameter values atomically.
 
-- **Get parameter values**
+- Get parameter values
 
   This includes getting groups of parameter values atomically.
 
-- **Unset parameter values**
+- Unset parameter values
 
   This includes unsetting groups of parameter values atomically, but may be a special case of setting groups of parameters atomically.
 
-- **List currently set parameters**
+- List currently set parameters
 
   Since the number of parameters might be large this needs to be able to provide subsets of the parameters.
   E.g. the parameters could be queried incrementally for a tree-like GUI.
 
-- **Provide notifications when parameters are added and removed or theie value has been changed**
+- Provide notifications when parameters are added and removed or their value has been changed
 
-- **Reject changes to parameter values**
+- Reject changes to parameter values
 
   This implies that some entity has the authority to reject or accept a change based on arbitrary criteria.
   This would also include the ability to convey at least part of the criteria for the acceptance of a change to external actors.
@@ -73,19 +73,19 @@ Based on that criteria an ideal system would be able to:
   Since the validation criteria can be arbitrary complex and can potentially not be communicated to a client the parameter server could offer to validate an atomic set of parameters and respond with a boolean flag if the values would be accepted (based on the current criteria).
   Obviously the result might be different when the values are set shortly after but it would allow to implement validators in e.g. a GUI generically.
 
-- **Provide visibility into what parameters are expected to pass validation vs be rejected**
+- Provide visibility into what parameters are expected to pass validation vs be rejected
 
   When updating a value it can be valuable to know if the parameter update would be accepted without actually requesting the change to happen.
 
-- **Provide clear rules on the lifetime of a parameter**
+- Provide clear rules on the lifetime of a parameter
 
   These rules would define what the lifetime of the parameter will be and what conditions will clear its value.
 
-- **Address all parameters without ambiguity in the names**
+- Address all parameters without ambiguity in the names
 
   For example, one of the challenges of the current system is that there is a naming ambiguity between nodes and parameters `/foo/bar/baz` could be a node `/foo/bar/baz` or a private parameter `baz` on node `/foo/bar`.
 
-- **Be logged for playback and analysis**
+- Be logged for playback and analysis
 
 ## Proposed Approach
 
@@ -124,10 +124,12 @@ It's use is not recommended but can be very convenient, and explicitly supportin
 
 Each node is responsible for providing the following functionality.
 
-- **Get Parameters**
+- Get Parameters
+
   Given a list of parameter names it will return the parameter values.
 
-- **Set Parameters**
+- Set Parameters
+
   Given a list of parameter names, it will request an update of the values subject to validation of the values.
   The updated values can include unsetting the value.
   It will provide an API that can atomically update a set of values such that if any of the values fail validation, none of the values are set.
@@ -135,10 +137,12 @@ Each node is responsible for providing the following functionality.
   Validation of the values is expected to return as quickly as possible and only be related to accepting or rejecting the set request.
   It should not take into account how the changed value may or may not affect ongoing system performance of the node or the greater system.
 
-- **List Parameters**
+- List Parameters
+
   Provide a list of parameter names which are currently set.
 
-- **Describe Parameters**
+- Describe Parameters
+
   Given a list of parameter names, return their datatype.
 
 This functionality will be exposed through a user API which will support both local API calls as well as invocations on remote nodes via a ROS Service API.
