@@ -210,9 +210,23 @@ Here are some examples of translations between ROS topic names and DDS topic nam
 
 This section lists concerns about the proposed design and alternatives that were considered.
 
-### Alternative ROS Specific Name Prefix Designs
+### Alternative ROS to DDS Mapping
 
 There was some discussion of alternatives and concerns with respect to the ROS -> DDS translation.
+
+#### Capital Letter Substitution Alternative
+
+Since the forward slash (`/`) is replaced with double underscores (`__`) when translating to DDS from ROS topic names, two characters out of the 256 character limit are lost with each additional namespace.
+One proposed alternative was to add a constraint that ROS topic names could not use capital letters, and then capital letters could be used as the stand in for the forward slashes (`/`).
+
+Trade-offs:
+
+- Uses one less character per namespace and makes it easier to calculate the maximum length of a ROS topic or service name.
+- Prevents users from using capital letters in their names, which is constraining and might be a problem for backwards compatibility with ROS 1 topics and services.
+
+Rational:
+
+Preventing users from using capital letters was too constraining for the added benefit.
 
 #### Prefix with Double Underscores
 
