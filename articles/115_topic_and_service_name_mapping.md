@@ -84,9 +84,10 @@ For example, these are valid names:
 
 But these are not valid names:
 
-| `123abc`   | `123`  | `__foo` | `foo__bar` | `foo bar`  |
-| `foo__`    | ` `    | `foo_`  | `foo//bar` | `foo/`     |
-| `foo_/bar` | `~foo` | `foo~`  | `foo~/bar` | `foo/~bar` |
+| `123abc`   | `123`  | `__foo`  | `foo__bar` | `foo bar`  |
+| `foo__`    | ` `    | `foo_`   | `foo//bar` | `foo/`     |
+| `foo_/bar` | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar` |
+| `/_/bar`   | `_`    | `_/_bar` |            |            |
 
 ### Namespaces
 
@@ -129,6 +130,10 @@ Topic and service name tokens:
 - must not end with a single underscore (`_`)
 
   - rational: if tokens are allowed to end with and start with `_` then `foo_/bar` is indistinguishable from `foo/_bar` if the `/` is replaced with `__`, i.e. both result in `foo___bar`
+
+- must not be a single underscore (`_`)
+
+  - rational: this is a special case of "must not end with an underscore"
 
 - must not have two or more underscores (`__`) repeated anywhere
 
@@ -204,7 +209,6 @@ Here are some examples of translations between ROS topic names and DDS topic nam
 | `/foo/_bar`       | Topic     | `rt_foo___bar`        |
 | `/_foo/_bar`      | Topic     | `rt__foo___bar`       |
 | `/_foo/_bar/_baz` | Topic     | `rt__foo___bar___baz` |
-| `/foo/_/bar`      | Topic     | `rt_foo_____bar`      |
 
 ## Concerns/Alternatives
 
