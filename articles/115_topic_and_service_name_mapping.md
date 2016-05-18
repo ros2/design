@@ -74,7 +74,7 @@ For example, the absolute name `/foo` could also be represented as a topic with 
 Note the triple forward slash (`/`), which is a similar style as the `file://` scheme.
 A relative name `foo/bar` could would be represented (as a topic) with `rostopic://foo/bar`.
 
-### Examples
+### ROS 2 Name Examples
 
 For example, these are valid names:
 
@@ -119,13 +119,21 @@ Name token's are the strings between the namespace delimiters, e.g. the tokens o
 Topic and service name tokens:
 
 - must not be empty, e.g. the name `//bar` is not allowed
+
   - rational: it removes the chance for accidental `//` from concatenation; also if the implementation chooses to use a trailing underscore (`_`) then it prevents `foo_/_bar` and `foo//bar` from being ambiguous
+
 - may use alphanumeric characters (`[0-9|a-z|A-Z]`), or an underscore (`_`)
+
 - must not start with numeric characters (`[0-9]`)
+
 - must not end with a single underscore (`_`)
+
   - rational: if tokens are allowed to end with and start with `_` then `foo_/bar` is indistinguishable from `foo/_bar` if the `/` is replaced with `__`, i.e. both result in `foo___bar`
+
 - must not have two or more underscores (`__`) repeated anywhere
+
   - rational: this provides the implementation with a safe to use delimiter
+
 - may be a single tilde character (`~`)
 
 ### Private Namespace Substitution Character
@@ -184,19 +192,19 @@ Here is a non-exhaustive list of prefixes:
 The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
 The leading forward slash (`/`) is not replaced with double underscores (`__`), and is replaced instead by the ROS specific name prefix.
 
-### Examples
+### ROS to DDS Name Conversion Examples
 
 Here are some examples of translations between ROS topic names and DDS topic names:
 
-| ROS Name        | Subsystem | DDS Name            |
-|-----------------|-----------|---------------------|
-| /foo            | Topic     | rt_foo              |
-| /foo/bar        | Topic     | rt_foo__bar         |
-| /_foo/bar       | Topic     | rt__foo__bar        |
-| /foo/_bar       | Topic     | rt_foo___bar        |
-| /_foo/_bar      | Topic     | rt__foo___bar       |
-| /_foo/_bar/_baz | Topic     | rt__foo___bar___baz |
-| /foo/_/bar      | Topic     | rt_foo_____bar      |
+| ROS Name          | Subsystem | DDS Name              |
+|-------------------|-----------|-----------------------|
+| `/foo`            | Topic     | `rt_foo`              |
+| `/foo/bar`        | Topic     | `rt_foo__bar`         |
+| `/_foo/bar`       | Topic     | `rt__foo__bar`        |
+| `/foo/_bar`       | Topic     | `rt_foo___bar`        |
+| `/_foo/_bar`      | Topic     | `rt__foo___bar`       |
+| `/_foo/_bar/_baz` | Topic     | `rt__foo___bar___baz` |
+| `/foo/_/bar`      | Topic     | `rt_foo_____bar`      |
 
 ## Concerns/Alternatives
 
@@ -229,11 +237,15 @@ This alternative would:
 Trade-offs:
 
 - it would be easier to have ROS subscribe to a DDS created topic
+
   - e.g. DDS publisher on topic `image` could be subscribed to in ROS using just `image`
   - however, the types would need to match as well
   - in the current proposal the ROS topic `image` would become `rt_image`, so DDS topics would need to follow the ROS topic conversion scheme to interoperate with ROS components
+
 - it would be hard to distinguish ROS created DDS topics and normal DDS topics
+
 - services would still need to be differentiated
+
   - e.g. service `/foo` would need to make two topics, something like `foo_Request` and `foo_Reply`
 
 Rational:
@@ -247,13 +259,17 @@ Also, the workaround for separating ROS created topics from other DDS topics was
 This alternative would:
 
 - No prefix
+
 - The prefix is restructured to be a suffix, i.e. `rX_<topic>` -> `<topic>_rX_`
+
   - this would be unique to user defined names because they cannot have a trailing underscore (`_`)
 
 Trade-offs:
 
 - more difficult to distinguish ROS created DDS topics from normal or built-in DDS topics when listing them using DDS tools because they are not sorted by a prefix
+
 - if the service name is suffixed again by the DDS vendor (like in Connext's implementation of Request-Reply) then it would be potentially difficult to differentiate from a user's topic name
+
   - e.g. service `/foo` might become topics: `foo_S_Requster` and `foo_S_Replier` and the user could create a topic called `/foo_S_Requster` too.
   - this also applies to any other similar transformations that an rmw implementation might make to the topic
 
@@ -271,7 +287,9 @@ This alternative is the same as the "Suffix Alternative" except:
 Trade-offs:
 
 - same trade-offs as the "Suffix Alternative"
+
 - but also easier to have ROS subscribe to a DDS created topic
+
   - e.g. DDS publisher on topic `image` could be subscribed to in ROS using just `image`
   - the types would need to match
   - in the current proposal the ROS topic `image` would become `rt_image`, so DDS topics would need to follow our naming scheme to interoperate with ROS components
