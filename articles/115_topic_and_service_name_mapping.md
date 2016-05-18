@@ -173,8 +173,8 @@ Therefore the only forward slash has to be substituted when converting to DDS to
 In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX_`, where `X` is a single character which indicates what subsystem of ROS to which the topic belongs.
 For example, a plain topic called `/foo` would translate to a DDS topic named `rt_foo`.
 
-For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq_` for the request topic and `rp_` for the response topic.
-On systems where the implementation is handled for us by DDS (like with Connext), we use `rS_` as the common prefix.
+For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq_` for the request topic and `rr_` for the response topic.
+On systems where the implementation is handled for us by DDS (like with Connext), we use `rs_` as the common prefix.
 
 Here is a non-exhaustive list of prefixes:
 
@@ -182,8 +182,8 @@ Here is a non-exhaustive list of prefixes:
 |----------------------|--------|
 | ROS Topics           | rt_    |
 | ROS Service Request  | rq_    |
-| ROS Service Response | rs_    |
-| ROS Service          | rS_    |
+| ROS Service Response | rr_    |
+| ROS Service          | rs_    |
 | ROS Parameter        | rp_    |
 | ROS Action           | ra_    |
 
@@ -284,7 +284,7 @@ Trade-offs:
 
 - if the service name is suffixed again by the DDS vendor (like in Connext's implementation of Request-Reply) then it would be potentially difficult to differentiate from a user's topic name
 
-  - e.g. service `/foo` might become topics: `foo_S_Requster` and `foo_S_Replier` and the user could create a topic called `/foo_S_Requster` too.
+  - e.g. service `/foo` might become topics: `foo_s_Requster` and `foo_s_Replier` and the user could create a topic called `/foo_s_Requster` too.
   - this also applies to any other similar transformations that an rmw implementation might make to the topic
 
 Rational:
