@@ -94,7 +94,9 @@ But these are not valid names:
 Topic and service names:
 
 - may be split into tokens using a forward slash (`/`) as a delimiter
+
   - see the "Name Tokens" section for more details on tokens
+
 - must not end with a forward slash (`/`)
 
 The last token is the topic or service name, and any preceding tokens comprise the namespace of the topic or service.
