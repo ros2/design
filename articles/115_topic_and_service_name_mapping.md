@@ -172,44 +172,43 @@ Any topic or service name that contains any tokens (either namespaces or a topic
 The ROS topic and service name constraints allow more characters than the DDS topic names because ROS allows for the forward slash (`/`) and the tilde (`~`).
 Since ROS 2 topic and service names are expanded to absolute names before being used, there is always a leading forward slash (`/`) and any tildes (`~`) will have been expanded.
 Additionally any URL related syntax is removed, e.g. the `rostopic://` prefix.
-Therefore the only forward slash has to be substituted when converting to DDS topic names.
+Therefore only forward slashes have to be substituted when converting to DDS topic names.
+
+### Substitution of the Namespace Delimiter
+
+The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
 
 ### ROS Specific Name Prefix
 
-In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX_`, where `X` is a single character which indicates what subsystem of ROS to which the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS topic named `rt_foo`.
+In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character which indicates what subsystem of ROS to which the topic belongs.
+For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, or expanded `rt` for ROS topic, plus `__` for the leading `/`, plus the topic name `foo`.
 
-For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq_` for the request topic and `rr_` for the response topic.
-On systems where the implementation is handled for us by DDS (like with Connext), we use `rs_` as the common prefix.
+For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
+On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
 
 Here is a non-exhaustive list of prefixes:
 
 | ROS Subsystem        | Prefix |
 |----------------------|--------|
-| ROS Topics           | rt_    |
-| ROS Service Request  | rq_    |
-| ROS Service Response | rr_    |
-| ROS Service          | rs_    |
-| ROS Parameter        | rp_    |
-| ROS Action           | ra_    |
-
-### Substitution of the Namespace Delimiter
-
-The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
-The leading forward slash (`/`) is not replaced with double underscores (`__`), and is replaced instead by the ROS specific name prefix.
+| ROS Topics           | rt     |
+| ROS Service Request  | rq     |
+| ROS Service Response | rr     |
+| ROS Service          | rs     |
+| ROS Parameter        | rp     |
+| ROS Action           | ra     |
 
 ### ROS to DDS Name Conversion Examples
 
 Here are some examples of translations between ROS topic names and DDS topic names:
 
-| ROS Name          | Subsystem | DDS Name              |
-|-------------------|-----------|-----------------------|
-| `/foo`            | Topic     | `rt_foo`              |
-| `/foo/bar`        | Topic     | `rt_foo__bar`         |
-| `/_foo/bar`       | Topic     | `rt__foo__bar`        |
-| `/foo/_bar`       | Topic     | `rt_foo___bar`        |
-| `/_foo/_bar`      | Topic     | `rt__foo___bar`       |
-| `/_foo/_bar/_baz` | Topic     | `rt__foo___bar___baz` |
+| ROS Name          | Subsystem | DDS Name               |
+|-------------------|-----------|------------------------|
+| `/foo`            | Topic     | `rt__foo`              |
+| `/foo/bar`        | Topic     | `rt__foo__bar`         |
+| `/_foo/bar`       | Topic     | `rt___foo__bar`        |
+| `/foo/_bar`       | Topic     | `rt__foo___bar`        |
+| `/_foo/_bar`      | Topic     | `rt___foo___bar`       |
+| `/_foo/_bar/_baz` | Topic     | `rt___foo___bar___baz` |
 
 ## Concerns/Alternatives
 
@@ -233,18 +232,18 @@ Rational:
 
 Preventing users from using capital letters was too constraining for the added benefit.
 
-#### Prefix with Double Underscores
+#### ROS Prefix with Single Underscore
 
-This alternative differs only in that it uses two underscores in the prefix, i.e. `rt__` rather than `rt_`.
+This alternative differs only in that it uses a single underscore in the prefix, i.e. `rt_` rather than `rt__` (`rt` + the leading `/`).
 
 Trade-offs:
 
-- More consistent with replacement of other forward slashes (`/`)
-- Uses one more character
+- Uses one less character
+- Less consistent with replacement of other forward slashes (`/`)
 
 Rational:
 
-Slight preference given to the shorter alternative.
+Slight preference given to the more consistent alternative.
 
 #### Limited Prefixes Alternative
 
@@ -259,7 +258,7 @@ Trade-offs:
 
   - e.g. DDS publisher on topic `image` could be subscribed to in ROS using just `image`
   - however, the types would need to match as well
-  - in the current proposal the ROS topic `image` would become `rt_image`, so DDS topics would need to follow the ROS topic conversion scheme to interoperate with ROS components
+  - in the current proposal the ROS topic `image` would become `rt__image`, so DDS topics would need to follow the ROS topic conversion scheme to interoperate with ROS components
 
 - it would be hard to distinguish ROS created DDS topics and normal DDS topics
 
@@ -279,13 +278,13 @@ This alternative would:
 
 - No prefix
 
-- The prefix is restructured to be a suffix, i.e. `rX_<topic>` -> `<topic>_rX_`
+- The prefix is restructured to be a suffix, i.e. `rX<topic>` -> `<topic>_rX_`
 
   - this would be unique to user defined names because they cannot have a trailing underscore (`_`)
 
 Trade-offs:
 
-- more difficult to distinguish ROS created DDS topics from normal or built-in DDS topics when listing them using DDS tools because they are not sorted by a prefix
+- more difficult to distinguish ROS created DDS topics from normal or built-in DDS topics when listing them using DDS tools because they are not sorted by a ROS specific prefix
 
 - if the service name is suffixed again by the DDS vendor (like in Connext's implementation of Request-Reply) then it would be potentially difficult to differentiate from a user's topic name
 
@@ -295,7 +294,7 @@ Trade-offs:
 Rational:
 
 This alternative was not selected over the prefix solution because of a lack of advantages over the prefix solution.
-Also, it typically took one more character to express (`rt_` versus `_rt_`) and the potential issues with ambiguity when the DDS implementation handles Request-Reply (added suffixes).
+Also, it typically took one more character to express (`rt` versus `_rt_`; unles you also drop the implicit first namespace `/` then it's `rt__` versus `_rt_`) and the potential issues with ambiguity when the DDS implementation handles Request-Reply (added suffixes).
 
 #### Limited Suffix Alternative
 
@@ -311,7 +310,7 @@ Trade-offs:
 
   - e.g. DDS publisher on topic `image` could be subscribed to in ROS using just `image`
   - the types would need to match
-  - in the current proposal the ROS topic `image` would become `rt_image`, so DDS topics would need to follow our naming scheme to interoperate with ROS components
+  - in the current proposal the ROS topic `image` would become `rt__image`, so DDS topics would need to follow our naming scheme to interoperate with ROS components
 
 Rational:
 
