@@ -62,7 +62,7 @@ For convenience here is a summary of all rules for topic and service names in RO
 - must not start with a numeric character (`[0-9]`)
 - must not contain any number of repeated underscores (`_`)
 - must not end with an underscore (`_`)
-- must not have an underscore (`_`) proceeded by a forward slash (`/`), i.e. `_/`
+- must not have an underscore (`_`) followed by a forward slash (`/`), i.e. `_/`
 - must not end with a forward slash (`/`)
 - must not contain any number of repeated forward slashes (`/`)
 - must not have tilde (`~`) adjacent to anything other than forward slashes (`/`)
@@ -94,12 +94,13 @@ But these are not valid names:
 Topic and service names:
 
 - may be split into tokens using a forward slash (`/`) as a delimiter
+  - see the "Name Tokens" section for more details on tokens
 - must not end with a forward slash (`/`)
 
 The last token is the topic or service name, and any preceding tokens comprise the namespace of the topic or service.
 
 For example, the topic name `/foo/bar/baz` comprises of a topic or service named `baz` in the `/foo/bar` namespace.
-In another example, the name `/foo` does not use splitting into tokens, so it comprises of a topic or service named `foo` in the `/` namespace (the root namespace).
+In another example, the name `/foo` splits into one token, such that it comprises of a topic or service named `foo` in the `/` namespace (the root namespace).
 
 Topic and service names:
 
@@ -115,13 +116,13 @@ However, if the topic or service name is `/foo/bar`, then the absolute name will
 
 ### Name Tokens
 
-Name token's are the strings between the namespace delimiters, e.g. the tokens of the topic or service `/foo/bar/baz` are `foo`, `bar`, and `baz`.
+"Name token" are the strings between the namespace delimiters, e.g. the tokens of the topic or service `/foo/bar/baz` are `foo`, `bar`, and `baz`.
 
 Topic and service name tokens:
 
 - must not be empty, e.g. the name `//bar` is not allowed
 
-  - rational: it removes the chance for accidental `//` from concatenation; also if the implementation chooses to use a trailing underscore (`_`) then it prevents `foo_/_bar` and `foo//bar` from being ambiguous
+  - rational: it removes the chance for accidental `//` from concatenation
 
 - may use alphanumeric characters (`[0-9|a-z|A-Z]`), or an underscore (`_`)
 
@@ -129,7 +130,7 @@ Topic and service name tokens:
 
 - must not end with a single underscore (`_`)
 
-  - rational: if tokens are allowed to end with and start with `_` then `foo_/bar` is indistinguishable from `foo/_bar` if the `/` is replaced with `__`, i.e. both result in `foo___bar`
+  - rational: if tokens are allowed to end with and start with `_` then `foo_/bar` is indistinguishable from `foo/_bar` if the `/` is replaced with `__` (as proposed in the "Substitution of the Namespace Delimiter" section), i.e. both result in `foo___bar`
 
 - must not be a single underscore (`_`)
 
