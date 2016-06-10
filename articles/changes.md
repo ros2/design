@@ -42,7 +42,7 @@ ROS 2 will use C++11 (and newer) when supported on all major platforms.
 #### Python
 
 ROS 1 is targeting Python 2.
-ROS 2 will use 3.4+.
+ROS 2 will use 3.5+.
 
 ### Reusing existing middleware
 
