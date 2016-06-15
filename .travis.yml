@@ -5,10 +5,10 @@ sudo: false
 install:
 - gem install bundler --no-rdoc --no-ri
 - bundle install
-- npm install remark remark-lint remark-lint-sentence-newline
+- npm install remark-cli remark-lint remark-lint-sentence-newline
 script:
 - jekyll build
-- remark --frail articles/
+- ./node_modules/remark-cli/cli.js --frail articles/
 
 # branch whitelist
 branches:
