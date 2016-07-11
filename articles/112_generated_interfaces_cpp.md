@@ -77,16 +77,12 @@ For each additional functionality it can be decided to include it from the first
 
 #### Mapping of arrays and bounded strings
 
-| ROS type                | C++ type         |
-| ----------------------- | ---------------- |
-| static array            | std::array<T, N> |
-| unbounded dynamic array | std::vector<T>   |
-| bounded dynamic array   | std::array<T, N> |
-| bounded string          | std::string      |
-
-<div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> bounded dynamic array are currently mapped to <code>std::array</code> but that prevents to store less then N values
-</div>
+| ROS type                | C++ type           |
+| ----------------------- | ------------------ |
+| static array            | std::array<T, N>   |
+| unbounded dynamic array | std::vector<T>     |
+| bounded dynamic array   | custom_class<T, N> |
+| bounded string          | std::string        |
 
 ### Members
 
