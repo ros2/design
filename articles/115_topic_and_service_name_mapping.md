@@ -58,15 +58,31 @@ In this section an outline of the proposed constrains for ROS 2 topic and servic
 
 For convenience here is a summary of all rules for topic and service names in ROS 2:
 
-- may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), tildes (`~`), or forward slashes (`/`)
+- may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), balanced curly braces (`{}`), or forward slashes (`/`)
+- may start with a tilde (`~`)
 - must not start with a numeric character (`[0-9]`)
 - must not contain any number of repeated underscores (`_`)
 - must not end with an underscore (`_`)
 - must not have an underscore (`_`) followed by a forward slash (`/`), i.e. `_/`
 - must not end with a forward slash (`/`)
 - must not contain any number of repeated forward slashes (`/`)
-- must not have tilde (`~`) adjacent to anything other than forward slashes (`/`)
-- may start with or end with a tilde (`~`)
+- must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`
+- must have balanced curly braces (`{}`), i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`
+
+### Fully Qualified Names
+
+The topic and service name rules allow for some convenience syntax, which in some cases requires additional context to expand to the fully qualified name and then to the DDS equivalent name.
+For example, names may be relative (e.g. `foo` versus the absolute `/foo`), they may contain the private namespace substitution character, or arbitrary substitutions which are within the bracket syntax.
+With context, each of these features can be expanded to some simple string to form the fully qualified name.
+Fully qualified names have these additional restrictions:
+
+- must start with a forward slash (`/`), i.e. they must be absolute
+- must not contain tilde (`~`) or curly braces (`{}`)
+
+Note that expanded substitutions must result in a valid name.
+For example, a name `foo_{bar}` is not valid if `bar` is expanded as `_baz`, because that would result in a fully qualified name of `foo__baz` which contains repeated underscores (`_`).
+
+### Uniform Resource Locators (URL's)
 
 Additionally, topic and service names can be represented in the [Uniform Resource Locator (URL)](https://en.wikipedia.org/wiki/Uniform_Resource_Locator) format to further disambiguate the resource name.
 A topic name may be preceded by a `rostopic://` scheme prefix, and a service name may be preceded by a `rosservice://` scheme prefix.
@@ -78,16 +94,20 @@ A relative name `foo/bar` could would be represented (as a topic) with `rostopic
 
 For example, these are valid names:
 
-| `foo`       | `abc123`            | `_foo`               | `Foo` | `BAR`       |
-| `~`         | `foo/bar`           | `~/foo`              | `/~`  | `foo/~/bar` |
-| `foo/_/bar` | `rosservice:///foo` | `rostopic://foo/bar` |       |             |
+| `foo`       | `abc123`            | `_foo`               | `Foo`        | `BAR`            |
+| `~`         | `foo/bar`           | `~/foo`              | `{foo}_bar`  | `foo/{ping}/bar` |
+| `foo/_/bar` | `rosservice:///foo` | `rostopic://foo/bar` |              |                  |
 
 But these are not valid names:
 
-| `123abc`   | `123`  | `__foo`  | `foo__bar` | `foo bar`  |
-| `foo__`    | ` `    | `foo_`   | `foo//bar` | `foo/`     |
-| `foo_/bar` | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar` |
-| `/_/bar`   | `_`    | `_/_bar` |            |            |
+| `123abc`   | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
+| `foo__`    | ` `    | `foo_`   | `foo//bar` | `foo/`      |
+| `foo_/bar` | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
+| `/_/bar`   | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
+
+These are some valid fully qualified names:
+
+| `/foo`     | `/bar/baz` | `rostopic:///ping` | `/_private/thing` | `/public_namespace/_private/thing` |
 
 ### Namespaces
 
@@ -99,10 +119,10 @@ Topic and service names:
 
 - must not end with a forward slash (`/`)
 
-The last token is the topic or service name, and any preceding tokens comprise the namespace of the topic or service.
+The last token is the topic or service basename, and any preceding tokens comprise the namespace of the topic or service.
 
-For example, the topic name `/foo/bar/baz` comprises of a topic or service named `baz` in the `/foo/bar` namespace.
-In another example, the name `/foo` splits into one token, such that it comprises of a topic or service named `foo` in the `/` namespace (the root namespace).
+For example, the topic name `/foo/bar/baz` comprises of a topic or service with the basename `baz` in the `/foo/bar` namespace.
+In another example, the name `/foo` splits into one token, such that it comprises of a topic or service with the basename `foo` in the `/` namespace (the root namespace).
 
 Topic and service names:
 
@@ -126,7 +146,7 @@ Topic and service name tokens:
 
   - rational: it removes the chance for accidental `//` from concatenation
 
-- may use alphanumeric characters (`[0-9|a-z|A-Z]`), or an underscore (`_`)
+- may use alphanumeric characters (`[0-9|a-z|A-Z]`), an underscore (`_`), or balanced curly braces (`{}`)
 
 - must not start with numeric characters (`[0-9]`)
 
@@ -144,14 +164,21 @@ Topic and service name tokens:
 
 - may be a single tilde character (`~`)
 
+### Substitutions
+
+The bracket syntax (`{substitution_name}`) maybe used in non-fully qualified names to substitute useful contextual information into the name.
+The set of substitution keys (names) are not set in this document, but some reasonable examples might be: `{node}` expands to the current node's name or `{ns}` expands to the current node's namespace.
+
+Substitutions are expanded before the private namespace substitution character is expanded.
+Therefore a substitution may contain the private namespace substitution character, i.e. `~`.
+For example, given the name `{private}foo`, that there is a substitution called `{private}` which expands to `~/_`, the current node name is `my_node`, and the current node's namespace is `my_ns`, then the fully qualified name would be `/my_ns/my_node/_foo`.
+
 ### Private Namespace Substitution Character
 
 The special single character token `~` will be replaced with a namespace snippet that is a concatenation of the namespace for the node and the node name.
 For example, for a node `node1` in a namespace `/foo` would result in `~` being replaced with `/foo/node1`.
 For another example, a node `node1` in a namespace `foo/bar` would result in `~` being replaced with `foo/bar/node1`.
-It may be used in any token position.
-Any resulting empty namespaces which result from expanding the `~` will be collapsed.
-For example, when `~` expands to `/foo/node1` and the name `ping/~/pong` is given, it will expand to `ping/foo/node1/pong` and not to `ping//foo/node1/pong`.
+It must be used at the beginning of a non-fully qualified name, if at all.
 Here is a table with some example expansions:
 
 | **Input Name** | Node: `my_node` NS: none | Node: `my_node` NS: `/foo`     |
@@ -160,10 +187,6 @@ Here is a table with some example expansions:
 | `/ping`        | *`/ping`*                | *`/ping`*                      |
 | `~`            | *`/my_node`*             | *`/foo/foo/my_node`*           |
 | `~/ping`       | *`/my_node/ping`*        | *`/foo/foo/my_node/ping`*      |
-| `/~`           | *`/my_node`*             | *`/foo/my_node`*               |
-| `/~/ping`      | *`/my_node/ping`*        | *`/foo/my_node/ping`*          |
-| `ping/~/pong`  | *`/ping/my_node/pong`*   | *`/foo/ping/foo/my_node/pong`* |
-| `/ping/~/pong` | *`/ping/my_node/pong`*   | *`/ping/foo/my_node/pong`*     |
 
 ### Hidden Topic or Service Names
 
@@ -171,8 +194,8 @@ Any topic or service name that contains any tokens (either namespaces or a topic
 
 ## Mapping of ROS 2 Topic and Service Names to DDS Topics
 
-The ROS topic and service name constraints allow more characters than the DDS topic names because ROS allows for the forward slash (`/`) and the tilde (`~`).
-Since ROS 2 topic and service names are expanded to absolute names before being used, there is always a leading forward slash (`/`) and any tildes (`~`) will have been expanded.
+The ROS topic and service name constraints allow more characters than the DDS topic names because ROS allows for the forward slash (`/`) the tilde (`~`), and the balanced curly braces (`{}`).
+Since ROS 2 topic and service names are expanded to fully qualified names (which are absolute) before being used, there is always a leading forward slash (`/`) and any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax is removed, e.g. the `rostopic://` prefix.
 Therefore only forward slashes have to be substituted when converting to DDS topic names.
 
@@ -215,6 +238,43 @@ Here are some examples of translations between ROS topic names and DDS topic nam
 ## Concerns/Alternatives
 
 This section lists concerns about the proposed design and alternatives that were considered.
+
+### Alternative Name Rules and Concerns About Name Rules
+
+There were some suggested but then rejected alternatives to the rules for topic and service names.
+
+#### More Versatile Private Namespace Substitution Character
+
+Currently the `~` private namespace substitution character may only be a the the beginning of the name, but it was also suggested that it could be placed anywhere within the name and could be substituted in place.
+
+This was rejected because it was complicated to explain and did not behave the same as the `~` when used in filesystem paths on Unix machines.
+Also, it was difficult to justify its existence because all suggested use cases were quite contrived.
+It also behaved differently from how it worked in ROS 1, which was yet another negative for this alternative.
+
+#### Alternative Substitution Syntax
+
+There were some alternative syntaxes proposed for substitutions in the names before the plain balanced curly braces syntax (`{}`) was selected:
+
+- `%{sub}`
+- `${sub}`
+- `$sub`
+
+The most serious alternatives considered were the "bash-like" syntax of `${sub}` and `$sub`.
+The `$sub` style syntax has the downside of being difficult to process and impossible express some kinds of concatenation.
+The `${sub}` was a strong candidate, but ultimately was rejected because it would collide with use in shell scripts.
+For example, you can imagine a shell script that runs a node and remaps a topic name would contain these substitutions, but they would need to be escaped to prevent bash itself from trying to expand them.
+The `{}` syntax avoids this problem but is also easy to parse.
+
+The `{}` syntax will collide with Python String substitution, but since that is an explicit action (unlike shell substitution which will implicitly always occur) it's less of an issue.
+
+#### Concerns About Substitutions
+
+This document does not prescribe what substitutions should be supported by implementations.
+This was done to avoid blocking progress on this document on the need to agree on the set of required substitutions.
+However, this is just delaying the issue.
+For the substitutions to be useful, then all implementations that process topic and service names need to support them.
+
+This compromise was made so that when more work is done on substitutions, it would hopefully not require changes to the name syntax, but instead revolve around what substitutions to support and whether or not they are optional to support.
 
 ### Alternative ROS to DDS Mapping
 
