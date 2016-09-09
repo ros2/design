@@ -181,12 +181,14 @@ For another example, a node `node1` in a namespace `foo/bar` would result in `~`
 It must be used at the beginning of a non-fully qualified name, if at all.
 Here is a table with some example expansions:
 
-| **Input Name** | Node: `my_node` NS: none | Node: `my_node` NS: `/foo`     |
+| **Input Name** | Node: `my_node` NS: none | Node: `my_node` NS: `/my_ns`   |
 |----------------|--------------------------|--------------------------------|
-| `ping`         | *`/ping`*                | *`/foo/ping`*                  |
+| `ping`         | *`/ping`*                | *`/my_ns/ping`*                |
 | `/ping`        | *`/ping`*                | *`/ping`*                      |
-| `~`            | *`/my_node`*             | *`/foo/foo/my_node`*           |
-| `~/ping`       | *`/my_node/ping`*        | *`/foo/foo/my_node/ping`*      |
+| `~`            | *`/my_node`*             | *`/my_ns/my_node`*             |
+| `~/ping`       | *`/my_node/ping`*        | *`/my_ns/my_node/ping`*        |
+
+Note the private namespace substitution character makes the name absolute, and therefore the namespace is not added a second time.
 
 ### Hidden Topic or Service Names
 
