@@ -208,7 +208,7 @@ The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`),
 ### ROS Specific Name Prefix
 
 In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character which indicates what subsystem of ROS to which the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, or expanded `rt` for ROS topic, plus `__` for the leading `/`, plus the topic name `foo`.
+For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is a result of concatenating the prefix `rt` for being a ROS topic, plus `__` for the leading `/`, plus the topic name `foo`.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
 On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
@@ -223,6 +223,9 @@ Here is a non-exhaustive list of prefixes:
 | ROS Service          | rs     |
 | ROS Parameter        | rp     |
 | ROS Action           | ra     |
+
+While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `__`, can be considered part of the prefix.
+The standard reserves the right to use up to 8 characters for the prefix in case additional prefix space is needed in the future.
 
 ### ROS to DDS Name Conversion Examples
 
