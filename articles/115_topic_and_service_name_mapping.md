@@ -240,6 +240,43 @@ Here are some examples of translations between ROS topic names and DDS topic nam
 | `/_foo/_bar`      | Topic     | `rt___foo___bar`       |
 | `/_foo/_bar/_baz` | Topic     | `rt___foo___bar___baz` |
 
+### ROS Topic and Service Name Length Limit
+
+Because DDS topic names must be limited to 255 characters, calculating the length of a ROS topic or service name is also limited in length.
+Calculating this length is governed by an unfortunately non-trivial algorithm.
+In the case of a topic:
+
+`C + (N * 2) <= 255 - P`
+
+Where `P` is `8`, the maximum possible prefix length, `C` is the number of non forward slash characters (`[a-z,A-Z,0-9,_]`) in the topic name, and `N` is the number of namespace separators, i.e. forward slashes (`/`), in the name.
+Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`).
+
+Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
+In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Response` strings to the topic names.
+Therefore, it would be safest to assume that the Service name limit to be less 8 more characters.
+
+## Compare and Contrast with ROS 1
+
+In order to support a mapping to the more restrictive DDS topic name rules, these rules are in some ways more constraining than the rules for ROS 1.
+Other changes have been proposed for convenience or to remove a point of confusion that existed in ROS 1.
+In ROS 2 topic and service names differ from ROS 1 in that they:
+
+- must separate the tilde (`~`) from the rest of the name with a forward slash (`/`)
+
+  - This is done to avoid inconsistency with how `~foo` works in filesystem paths versus when used in a ROS name.
+
+- may contain substitutions which are delimited with balanced curly braces (`{}`)
+
+  - This is a more generic extension of the idea behind the tilde (`~`).
+
+- have length limits
+
+  - This is driven by the topic name length limit of DDS.
+
+- may indicated as "hidden" by using a leading underscore (`_`) in one of the namespaces
+
+  - This is used to hide common but infrequently introspected topics and services.
+
 ## Concerns/Alternatives
 
 This section lists concerns about the proposed design and alternatives that were considered.
