@@ -253,7 +253,7 @@ Where `P` is `8`, the maximum possible prefix length, `C` is the number of non f
 Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`).
 
 Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
-In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Response` strings to the topic names.
+In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
 Therefore, it would be safest to assume the Service name limit to be less 8 more characters.
 
 ## Compare and Contrast with ROS 1
