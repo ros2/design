@@ -122,8 +122,8 @@ Topic and service names:
 
 The last token is the topic or service basename, and any preceding tokens make up the namespace of the topic or service.
 
-For example, the topic name `/foo/bar/baz` comprises a topic or service with the basename `baz` in the `/foo/bar` namespace.
-In another example, the name `/foo` splits into one token, such that it comprises a topic or service with the basename `foo` in the `/` namespace (the root namespace).
+For example, the topic name `/foo/bar/baz` is composed of a topic or service with the basename `baz` in the `/foo/bar` namespace.
+In another example, the name `/foo` splits into one token, such that it is composed of a topic or service with the basename `foo` in the `/` namespace (the root namespace).
 
 Topic and service names:
 
@@ -193,11 +193,12 @@ For example, given the name `{private}foo`, if there is a substitution called `{
 
 ### Hidden Topic or Service Names
 
-Any topic or service name that contains any tokens (either namespaces or a topic or service name) that start with an underscore (`_`) will be considered hidden and tools may not show them unless explicitly asked to.
+Any topic or service name that contains any tokens (either namespaces or a topic or service name) that start with an underscore (`_`) will be considered hidden and tools may not show them unless explicitly asked.
 
 ## Mapping of ROS 2 Topic and Service Names to DDS Topics
 
-The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the forward slash (`/`), the tilde (`~`), and the balanced curly braces (`{}`). These must be substituted or otherwise removed during the process of mapping to DDS topic names.
+The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the forward slash (`/`), the tilde (`~`), and the balanced curly braces (`{}`).
+These must be substituted or otherwise removed during the process of mapping to DDS topic names.
 Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
 Therefore only forward slashes have to be substituted when converting to DDS topic names.
