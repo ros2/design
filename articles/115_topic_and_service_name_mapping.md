@@ -197,19 +197,20 @@ Any topic or service name that contains any tokens (either namespaces or a topic
 
 ## Mapping of ROS 2 Topic and Service Names to DDS Topics
 
-The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS allows for the forward slash (`/`) the tilde (`~`), and the balanced curly braces (`{}`).
-Since ROS 2 topic and service names are expanded to fully qualified names (which are absolute) before being used, there is always a leading forward slash (`/`) and any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
-Additionally any URL related syntax is removed, e.g. the `rostopic://` prefix.
+The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the forward slash (`/`), the tilde (`~`), and the balanced curly braces (`{}`). These must be substituted or otherwise removed during the process of mapping to DDS topic names.
+Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
+Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
 Therefore only forward slashes have to be substituted when converting to DDS topic names.
 
 ### Substitution of the Namespace Delimiter
 
 The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
+Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
 
 ### ROS Specific Name Prefix
 
 In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is a result of concatenating the prefix `rt` for being a ROS topic, plus `__` for the leading `/`, plus the topic name `foo`.
+For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is the result of concatenating the prefix `rt` for being a ROS topic, with `__` for the leading `/`, and the topic name `foo`.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
 On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
