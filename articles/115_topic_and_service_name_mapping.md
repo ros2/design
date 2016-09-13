@@ -246,13 +246,12 @@ Here are some examples of translations between ROS topic names and the correspon
 ### ROS Topic and Service Name Length Limit
 
 Because DDS topic names must be limited to 255 characters, the length of a ROS topic or service name is also limited in length.
-Calculating this length is governed by an unfortunately non-trivial algorithm.
-In the case of a topic:
+In the case of a topic, the length is governed by the following algorithm:
 
-`C + (N * 2) <= 255 - P`
+`C + N + P <= 255`
 
-Where `P` is `8`, the maximum possible prefix length, `C` is the number of non forward slash characters (`[a-z,A-Z,0-9,_]`) in the topic name, and `N` is the number of namespace separators, i.e. forward slashes (`/`), in the name.
-Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`).
+Where `P` is `8`, the maximum possible length of the ROS specific prefix, `C` is the number of characters in the topic name, and `N` is the number of name tokens in the topic name.
+Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`), after removing any URL related syntax (e.g. without the `rostopic://` prefix).
 
 Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
 In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
