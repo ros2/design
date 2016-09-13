@@ -145,7 +145,7 @@ Topic and service name tokens:
 
 - must not be empty, e.g. the name `//bar` is not allowed
 
-  - rationale: it removes the chance for accidental `//` from concatenation
+  - rationale: it removes the chance for accidental `//` from concatenation and thereore the need to collapse `//` to `/`
 
 - may use alphanumeric characters (`[0-9|a-z|A-Z]`), single underscores (`_`), and/or balanced curly braces (`{}`)
 
