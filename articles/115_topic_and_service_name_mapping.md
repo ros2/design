@@ -73,7 +73,7 @@ For convenience here is a summary of all rules for topic and service names in RO
 ### Fully Qualified Names
 
 The topic and service name rules allow for some convenience syntax, which in some cases requires additional context to expand to the fully qualified name and then to the DDS equivalent name.
-For example, as outlined in the sections that follow, names may be relative (e.g. `foo` versus the absolute `/foo`), they may contain the private namespace substitution character (`~`), or arbitrary substitutions which are within the curly braces (`{}`) syntax.
+For example, as outlined in further detail in the sections that follow, names may be relative (e.g. `foo` versus the absolute `/foo`), they may contain the private namespace substitution character (`~`), or arbitrary substitutions which are within the curly braces (`{}`) syntax.
 With context, each of these features can be expanded to some simple string to form the fully qualified name.
 Fully qualified names have these additional restrictions:
 
@@ -165,20 +165,11 @@ Topic and service name tokens:
 
 - may be a single tilde character (`~`)
 
-### Substitutions
-
-The bracket syntax (`{substitution_name}`) may be used in non-fully qualified names to substitute useful contextual information into the name.
-The set of substitution keys (names) are not set in this document, but some reasonable examples might be: `{node}` expands to the current node's name or `{ns}` expands to the current node's namespace.
-
-Substitutions are expanded before the private namespace substitution character is expanded.
-Therefore a substitution may contain the private namespace substitution character, i.e. `~`.
-For example, given the name `{private}foo`, that there is a substitution called `{private}` which expands to `~/_`, that the current node name is `my_node`, and that the current node's namespace is `my_ns`, then the fully qualified name would be `/my_ns/my_node/_foo`.
-
 ### Private Namespace Substitution Character
 
 The special single character token `~` will be replaced with a namespace snippet that is a concatenation of the namespace for the node and the node name.
 For example, a node `node1` in a namespace `/foo` would result in `~` being replaced with `/foo/node1`.
-For another example, a node `node1` in a namespace `foo/bar` would result in `~` being replaced with `foo/bar/node1`.
+As another example, a node `node1` in a namespace `foo/bar` would result in `~` being replaced with `foo/bar/node1`.
 It must be used at the beginning of a non-fully qualified name, if at all.
 Here is a table with some example expansions:
 
@@ -190,6 +181,15 @@ Here is a table with some example expansions:
 | `~/ping`       | *`/my_node/ping`*        | *`/my_ns/my_node/ping`*        |
 
 Note the private namespace substitution character makes the name absolute, and therefore the namespace is not added a second time.
+
+### Substitutions
+
+The bracket syntax (`{substitution_name}`) may be used in non-fully qualified names to substitute useful contextual information into the name.
+The set of substitution keys (names) are not set in this document, but some reasonable examples might be: `{node}` expands to the current node's name or `{ns}` expands to the current node's namespace.
+
+Substitutions are expanded before the private namespace substitution character is expanded.
+Therefore a substitution may contain the private namespace substitution character, i.e. `~`.
+For example, given the name `{private}foo`, if there is a substitution called `{private}` that expands to `~/_`, the current node name is `my_node`, and the current node's namespace is `my_ns`, then the fully qualified name would be `/my_ns/my_node/_foo`.
 
 ### Hidden Topic or Service Names
 
