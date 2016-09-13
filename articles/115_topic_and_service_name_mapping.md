@@ -58,8 +58,9 @@ In this section an outline of the proposed constrains for ROS 2 topic and servic
 
 For convenience here is a summary of all rules for topic and service names in ROS 2:
 
-- may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), balanced curly braces (`{}`), or forward slashes (`/`)
-- may start with a tilde (`~`)
+- may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), or forward slashes (`/`)
+- may use balanced curly braces (`{}`) for substitutions
+- may start with a tilde (`~`), the private namespace substitution character
 - must not start with a numeric character (`[0-9]`)
 - must not contain any number of repeated underscores (`_`)
 - must not end with an underscore (`_`)
@@ -72,7 +73,7 @@ For convenience here is a summary of all rules for topic and service names in RO
 ### Fully Qualified Names
 
 The topic and service name rules allow for some convenience syntax, which in some cases requires additional context to expand to the fully qualified name and then to the DDS equivalent name.
-For example, names may be relative (e.g. `foo` versus the absolute `/foo`), they may contain the private namespace substitution character, or arbitrary substitutions which are within the bracket syntax.
+For example, as outlined in the sections that follow, names may be relative (e.g. `foo` versus the absolute `/foo`), they may contain the private namespace substitution character (`~`), or arbitrary substitutions which are within the curly braces (`{}`) syntax.
 With context, each of these features can be expanded to some simple string to form the fully qualified name.
 Fully qualified names have these additional restrictions:
 
