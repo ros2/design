@@ -12,7 +12,7 @@ The goal of the ROS 2.0 project is to leverage what is great about ROS 1.x and i
 If you would like to contribute, checkout the [contribute](/contribute.html) page to learn how.
 
 The best mailing list for discussing these topics is [ros-sig-ng-ros@googlegroups.com](mailto:ros-sig-ng-ros@googlegroups.com).
- You can view the archives [here](https://groups.google.com/forum/?fromgroups#!forum/ros-sig-ng-ros)
+ You can view the archives [here](https://groups.google.com/forum/?fromgroups#!forum/ros-sig-ng-ros).
 
 # Articles
 
@@ -52,5 +52,6 @@ These articles are not finished or maybe not even started yet:
 
 # Additional Resources
 
-- http://www.osrfoundation.org/wordpress2/wp-content/uploads/2015/04/ROSCON-2014-Why-you-want-to-use-ROS-2.pdf
+- [Why You Want to Use ROS 2: ROSCon 2014 presentation](http://www.osrfoundation.org/wordpress2/wp-content/uploads/2015/04/ROSCON-2014-Why-you-want-to-use-ROS-2.pdf) 
+- [State of ROS 2 - demos and the technology behind: ROSCon 2015 presentation](http://roscon.ros.org/2015/presentations/state-of-ros2.pdf)
 
