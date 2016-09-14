@@ -58,6 +58,7 @@ In this section an outline of the proposed constrains for ROS 2 topic and servic
 
 For convenience here is a summary of all rules for topic and service names in ROS 2:
 
+- must not be empty
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), or forward slashes (`/`)
 - may use balanced curly braces (`{}`) for substitutions
 - may start with a tilde (`~`), the private namespace substitution character
@@ -69,6 +70,17 @@ For convenience here is a summary of all rules for topic and service names in RO
 - must not contain any number of repeated forward slashes (`/`)
 - must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`
 - must have balanced curly braces (`{}`) when used, i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`
+
+The content of substitutions, i.e. the string in side of balanced curly braces (`{}`), follow very similar rules to names.
+The content of substitutions:
+
+- must not be empty
+- may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
+- must not start with a numeric character (`[0-9]`)
+- are unlike topic and service names in that they:
+
+  - may start with or end with underscores (`_`)
+  - may contain repeated underscores, e.g. `__`
 
 ### Fully Qualified Names
 
