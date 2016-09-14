@@ -242,6 +242,12 @@ Here is a non-exhaustive list of prefixes:
 While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `__`, can be considered part of the prefix.
 The standard reserves the right to use up to 8 characters for the prefix in case additional prefix space is needed in the future.
 
+### Communicating with Non-ROS Topics
+
+Since all ROS topics are prefixed when being converted to DDS topic names, it makes it impossible to subscribe to existing DDS topics which do not follow the same naming pattern.
+For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling.
+Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
+
 ### ROS to DDS Name Conversion Examples
 
 Here are some examples of translations between ROS topic names and the corresponding DDS topic names:
