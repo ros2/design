@@ -26,7 +26,7 @@ In this article we will explain why.
 
 ROS began life as the development environment for the Willow Garage PR2 robot.
 Our primary goal was to provide the software tools that users would need to undertake novel research and development projects with the PR2.
-At the same time, we knew that the PR2 would not be the only, or even the most important robot in the world, and we wanted ROS to be useful on other robots.
+At the same time, we knew that the PR2 would not be the only, or even the most important, robot in the world, and we wanted ROS to be useful on other robots.
 So we put a lot of effort into defining levels of abstraction (usually through message interfaces) that would allow much of the software to be reused elsewhere.
 
 Still, we were guided by the PR2 use case, the salient characteristics of which included:
@@ -39,7 +39,7 @@ Still, we were guided by the PR2 use case, the salient characteristics of which 
 - maximum flexibility, with nothing prescribed or proscribed (e.g., "we don't wrap your main()").
 
 It is fair to say that ROS satisfied the PR2 use case, but also overshot by becoming useful on a surprisingly wide [variety of robots](http://wiki.ros.org/Robots).
-Today we see ROS used not only on the PR2 and robots that are similar the PR2, but also on wheeled robots of all sizes, legged humanoids, industrial arms, outdoor ground vehicles (including self-driving cars), aerial vehicles, surface vehicles, and more.
+Today we see ROS used not only on the PR2 and robots that are similar to the PR2, but also on wheeled robots of all sizes, legged humanoids, industrial arms, outdoor ground vehicles (including self-driving cars), aerial vehicles, surface vehicles, and more.
 
 In addition, we are seeing ROS adoption in domains beyond the mostly academic research community that was our initial focus.
 ROS-based products are coming to market, including manufacturing robots, agricultural robots, commercial cleaning robots, and others.
