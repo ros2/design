@@ -29,7 +29,7 @@ Terminology:
 ## Why Consider DDS
 
 When exploring options for the next generation communication system of ROS, the initial options were to either improve the ROS 1.x transport or build a new middleware using component libraries such as [ZeroMQ](http://zeromq.org/), Protocol Buffers, and zeroconf (Bonjour/Avahi).
-However, in addition to those options, which all involved us building a middleware from parts or scratch, other end-to-end middlewares were considered.
+However, in addition to those options, both of which involved us building a middleware from parts or scratch, other end-to-end middlewares were considered.
 During our research, one middleware that stood out was DDS.
 
 ### An End-to-End Middleware
@@ -77,12 +77,12 @@ This type of evolution in the standard body for DDS is an encouraging thing to o
 DDS has an extensive list of varied installations which are typically mission critical.
 DDS has been used in:
 
-- battleships,
-- large utility installations like dams,
-- financial systems,
-- space systems,
-- flight systems,
-- train switchboard systems,
+- battleships
+- large utility installations like dams
+- financial systems
+- space systems
+- flight systems
+- train switchboard systems
 
 and many other equally important and varied scenarios.
 These successful use cases lend credibility to DDS's design being both reliable and flexible.

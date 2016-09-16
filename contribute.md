@@ -72,7 +72,7 @@ If you need to reproduce the site locally and/or make extensive changes, you can
 
 First check to see if you already have a fork of this repository at:
 
-https://github.com/{your github username}/design
+`https://github.com/<your github username>/design`
 
 If you do not, then browse to this [repository](https://github.com/ros2/design) site and click on the "Fork" button:
 
@@ -81,7 +81,7 @@ If you do not, then browse to this [repository](https://github.com/ros2/design) 
 Github will now go off and create a fork off this repository into your Github account.
 Then you can clone your fork of the repository by running this command:
 
-    git clone https://github.com/{your github username}/design.git
+    git clone https://github.com/<your github username>/design.git
 
 This will clone the repository onto your machine into a folder called `design`. You can edit these files in this folder using your favorite editor.
 

@@ -92,7 +92,7 @@ For logging/introspection purposes the RPC Server instance might publish all inc
 
 ### ROS Preemptible RPC API
 
-The ROS preemptible RPC API will extend the Asynchronous API to enable preemption of an RPC in progress using a user identifier (UID).
+The ROS preemptible RPC API will extend the Asynchronous API to enable preemption of an RPC in progress using a unique identifier (UID).
 This UID will be provided by the initial request method.
 
 ### ROS Action RPC API (Not Affecting RPC Protocol)
@@ -112,7 +112,7 @@ This will just be a thin layer on top of the Asynchronous API requiring no addit
 
 There are some issues with the above proposed approach, which are outlined below.
 
-### Visibility of User Identifiers
+### Visibility of Unique Identifiers
 
 UIDs are generally necessary for asynchronous communications to pair the requests and the responses.
 There are possible ways to build this without a UID embedded in the data type, however it will require some level of heuristics to do data association.
