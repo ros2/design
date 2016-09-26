@@ -13,6 +13,11 @@ published: true
 
 # {{ page.title }}
 
+<div class="alert alert-warning" markdown="1">
+This article was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards for ROS 2.
+For details on how ROS 2 has been implemented, see the [Core Documentation](https://github.com/ros2/ros_core_documentation/)
+</div>
+
 <div class="abstract" markdown="1">
 {{ page.abstract }}
 </div>
@@ -160,7 +165,7 @@ One of the goals of this proposal would be to make ROS 2.0 DDS vendor agnostic.
 So, just as an example, if the default implementation is Connext, but someone wants to use one of the LGPL options like OpenSplice or FastRTPS, they simply need to recompile the ROS source code with some options flipped and they can use the implementation of their choice.
 
 This is made possible because of the fact that DDS defines an API in its specification.
-Research has shown that making code which is vendor agnostic is possible if not a little painful since the API's of the different vendors is almost identical, but there are minor differences like return types (pointer versus shared_ptr like thing) and header file organization.
+Research has shown that making code which is vendor agnostic is possible if not a little painful since the APIs of the different vendors is almost identical, but there are minor differences like return types (pointer versus shared_ptr like thing) and header file organization.
 
 ### Ethos and Community
 
