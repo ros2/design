@@ -6,6 +6,7 @@ abstract:
   This article provides an overview about the changes being made in ROS 2 compared to ROS 1.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+categories: Overview
 ---
 
 {:toc}

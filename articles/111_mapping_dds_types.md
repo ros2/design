@@ -6,6 +6,7 @@ abstract:
   This article specifies the mapping between the ROS interface types and the DDS types.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+categories: Interfaces
 ---
 
 {:toc}

@@ -7,6 +7,7 @@ abstract:
   The results of the "ros_dds" prototype are also summarized and used in the exploration of the issue.
 author: '[William Woodall](https://github.com/wjwwood)'
 published: true
+categories: Middleware
 ---
 
 {:toc}

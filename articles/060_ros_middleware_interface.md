@@ -8,6 +8,7 @@ abstract:
   Based on that the developed middleware interface is explained.
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 published: true
+categories: Middleware
 ---
 
 {:toc}

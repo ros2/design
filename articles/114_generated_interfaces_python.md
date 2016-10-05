@@ -6,6 +6,7 @@ abstract:
   This article describes the generated Python code for ROS 2 interfaces.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+categories: Interfaces
 ---
 
 {:toc}
