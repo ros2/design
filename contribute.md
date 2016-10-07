@@ -18,24 +18,24 @@ In the side bar there are "View Source" and "Edit in Github" buttons, which take
 Additionally, if you are logged with Github (see the top right corner of the screen), you will see any open or closed pull requests related to this page.
 These pull requests are modifications people have already proposed to this page and should be reviewed before proposing changes of your own.
 
-Finally, a list of contributors to this page are listed if you are logged in.
+Finally, a list of contributors to this page is listed if you are logged in.
 
 ## Proposing Changes to an Existing Article
 
-If you believe you have something to add to an existing article, then you can click the "Edit in Github" button and make you modifications.
+If you believe you have something to add to an existing article, then you can click the "Edit in Github" button and make your modifications.
 Github will then prompt you for a commit message, which is basically your opportunity to describe what you've changed, and then make a pull request on your behalf.
 This is the easiest way to modify an existing article, but you can checkout the "Manually Making a Pull Request" section below if you need to see what it will look like rendered first or if you wish to edit it off-line.
 
 ## Submitting a New Article
 
 New articles should be submitted as a new file under the `articles/` folder.
-You can add a new file using Github's web interface using this link:
+You can add a new file using Github's web interface through this link:
 
 [https://github.com/ros2/design/new/gh-pages/articles](https://github.com/ros2/design/new/gh-pages/articles)
 
 This link will create a new file, give an opportunity to name it, and provide you with an on-line editor to write the file.
 
-New articles should follow this template:
+New articles should follow this template, with the content of the article formatted using [Markdown](https://daringfireball.net/projects/markdown/):
 
 {% raw %}
 
@@ -43,7 +43,7 @@ New articles should follow this template:
     layout: default
     title: Template for New Articles
     abstract:
-      This is a multi-line abstract about this article. It should give a good overview about the contents of this article, the reason for writing it, and what the article delivers. The abstract is put in the "front-matter" of the document (YAML between the initial `---`'s) so that it can easily be reused else where in the site.
+      This is a multi-line abstract about this article. It should give a good overview about the contents of this article, the reason for writing it, and what the article delivers. The abstract is put in the "front-matter" of the document (YAML between the initial `---`'s) so that it can easily be reused elsewhere in the site.
     author: '[William Woodall](https://github.com/wjwwood)'
     published: false
     ---
@@ -70,9 +70,9 @@ If you need to reproduce the site locally and/or make extensive changes, you can
 
 ### Forking this Repository
 
-First check to see if you already have a fork of this repository:
+First check to see if you already have a fork of this repository at:
 
-[https://github.com/<your username>/design][]
+`https://github.com/<your github username>/design`
 
 If you do not, then browse to this [repository](https://github.com/ros2/design) site and click on the "Fork" button:
 
@@ -81,9 +81,9 @@ If you do not, then browse to this [repository](https://github.com/ros2/design) 
 Github will now go off and create a fork off this repository into your Github account.
 Then you can clone your fork of the repository by running this command:
 
-    git clone https://github.com/<your username>/design.git
+    git clone https://github.com/<your github username>/design.git
 
-This will clone this repository onto your machine into a folder called `design`. You can edit these files in this folder using your favorite editor.
+This will clone the repository onto your machine into a folder called `design`. You can edit these files in this folder using your favorite editor.
 
 ### Using Jekyll to Preview Changes
 
@@ -103,13 +103,20 @@ The `--baseurl=''` option sets the `baseurl` variable for the site's global conf
 
 ### Submitting a Pull Request
 
-Once you are satisfied with your changes you can follow the Github tutorial on [creating a pull request](https://help.github.com/articles/creating-a-pull-request) against ours, where we can review and discuss your changes before merging.
+Once you are satisfied with your changes you can follow the Github tutorial on [creating a pull request](https://help.github.com/articles/creating-a-pull-request) to create a pull request against our repository, where we can review and discuss your changes before merging.
 
 ## Check markdown style locally
 
-For pull requests the markdown linter is automatically invoked on Travis.
-To run the same checks locally you first need [Node.js](https://docs.npmjs.com/getting-started/installing-node).
-Then you need to install the linter specific Node packages and invoke the linter using the following commands:
+There is a markdown linter that checks formatting style which is automatically invoked for new pull requests by [Travis](https://travis-ci.org/).
+To run the same checks locally you first need Node.js version 4 or later.
+Install [nvm](https://github.com/creationix/nvm/blob/master/README.markdown) and use it to install Node, for example with:
 
-    npm install remark remark-lint
-    remark --frail articles/
+    nvm install 4
+
+Then you need to install the linter specific Node packages and invoke the linter using the following commands, within the repository directory:
+
+    npm install remark-cli remark-lint remark-lint-sentence-newline
+    jekyll build
+    ./node_modules/remark-cli/cli.js --frail articles/
+
+If the result of the check is that no issues were found, your markdown style is correct and you can submit your pull request.
