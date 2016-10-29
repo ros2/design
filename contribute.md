@@ -48,6 +48,7 @@ New articles should follow this template, with the content of the article format
     published: false
     ---
 
+    - This will become a table of contents (this text will be scraped).
     {:toc}
 
     # {{ page.title }}
