@@ -205,7 +205,7 @@ This transition should always succeed.
 
 ### Create Transition
 
-This transition will instantiate the node, but will not run any code beyond the constructor.
+This transition will instantiate the node, but will not run any code beyond the constructor.settings.settings.
 
 ## Management Interface
 
@@ -243,14 +243,6 @@ The messages used by the interface shall use the following enumeration for indic
     uint8 DEACTIVATING=14
     uint8 ERROR_PROCESSING=15
 
-### Transition result enumerations
-
-The messages used by the interface shall use the following enumeration for indicating the result of transitions.
-
-    uint8 TRANSITION_ERROR=0
-    uint8 SUCCESS=1
-    uint8 WRONG_PREV_STATE=10
-
 ### Life cycle state changes topic
 
 When the node's life cycle changes, it shall broadcast the following message on the `infra/lifecycle/state_change` topic.
@@ -259,9 +251,11 @@ When the node's life cycle changes, it shall broadcast the following message on 
     uint8 next_state
     string trigger
 
-`trigger` may be filled in containing a reason for the life cycle change. This value is optional.
+`trigger` may be filled in containing a reason for the life cycle change.
+This value is optional.
 
-This topic must be latched. A history of a suitable length should be provided.
+This topic must at a minimum make the most recent message available to new subscribers at all times.
+This may be achieved by use of appropriate QoS settings.
 
 For example, if the `talker` node transitions from the `Active` state to the `Finalised` state via the `ShuttingDown` state in response to an external request to shut down the node, it will produce the following sequence of messages on this topic (values for `trigger` are illustrative only):
 
@@ -313,90 +307,48 @@ The service definition is:
 
 The `UNKNOWN`/`unknown` value shall be assumed by clients of the service to indicate that the node is in an unknown state and thus unusable.
 
-### Configure transition request service
+### Transition request service
 
-The service `infra/lifecycle/configure` service shall be provided by the life cycle interface.
+The service `infra/lifecycle/change_state` service shall be provided by the life cycle interface.
 
-When this service call is received, the node's life cycle state shall be shifted from the `Unconfigured` state to the `Configuring` state, and then from the `Configuring` state to the `Inactive` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `Configuring` state.
+When this service call is received, the node's life cycle state shall be shifted to the requested state via any appropriate intermediate states in accordance with the state diagram shown above.
 
-The service definition is:
-
-    ---
-    uint8 result
-
-`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Inactive` state and the result of the `onConfigure()` function (executed by the `Configuring` state) was `success`.
-
-`result` shall be `TRANSITION_ERROR` if the result of the `onConfigure()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
-
-`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Unconfigured` state when the request is received.
-
-### Cleanup transition request service
-
-The service `infra/lifecycle/cleanup` service shall be provided by the life cycle interface.
-
-When this service call is received, the node's life cycle state shall be shifted from the `Inactive` state to the `CleaningUp` state, and then from the `CleaningUp` state to the `Unconfigured` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `CleaningUp`` state.
+For example, if the node is in the `Inactive` state and a request is made to shift to the `Active` state, the node's life cycle shall first be shifted to the `Activating` state.
+Based on the result of the `onActivate()` function called during the `Activating` state, the node's life cycle shall then shift to either the `Active` state or the `ErrorProcessing` state.
 
 The service definition is:
 
+    # Allowable transitions
+    uint8 CONFIGURE=0
+    uint8 CLEANUP=1
+    uint8 ACTIVATE=2
+    uint8 DEACTIVATE=3
+    uint8 SHUTDOWN=4
+    # Transition results
+    uint8 TRANSITION_ERROR=0
+    uint8 SUCCESS=1
+    uint8 WRONG_PREV_STATE=10
+
+
+    uint8 transition
     ---
     uint8 result
 
-`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Unconfigured` state and the result of the `onCleanup()` function (executed by the `CleaningUp` state) was `success`.
+`transition` must take one of the values defined in the transitions enumeration.
+Additionally, the allowable values for `transition` is determined by the current life cycle state.
+`transition` must take one of the following values, depending on the current life cycle state.
 
-`result` shall be `TRANSITION_ERROR` if the result of the `onCleanup()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
+    Current state | `transition` allowable values
+    Unconfigured  | `CONFIGURE`, `SHUTDOWN`
+    Inactive      | `ACTIVATE`, `CLEANUP`, `SHUTDOWN`
+    Active        | `DEACTIVATE`, `SHUTDOWN`
+    Finalized     | None
 
-`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Inactive` state when the request is received.
+`result` shall be `SUCCESS` if the node's life cycle successfully moved to the requested state and the results of any intermediate state functions were all `success`.
 
-### Activate transition request service
+`result` shall be `TRANSITION_ERROR` if the result of any intermediate state function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
 
-The service `infra/lifecycle/activate` service shall be provided by the life cycle interface.
-
-When this service call is received, the node's life cycle state shall be shifted from the `Inactive` state to the `Activating` state, and then from the `Activating` state to the `Active` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `Activating`` state.
-
-The service definition is:
-
-    ---
-    uint8 result
-
-`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Active` state and the result of the `onActivate()` function (executed by the `Activating` state) was `success`.
-
-`result` shall be `TRANSITION_ERROR` if the result of the `onActivate()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
-
-`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Inactive` state when the request is received.
-
-### Deactivate transition request service
-
-The service `infra/lifecycle/deactivate` service shall be provided by the life cycle interface.
-
-When this service call is received, the node's life cycle state shall be shifted from the `Active` state to the `Deactivating` state, and then from the `Deactivating` state to the `Inactive` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `Deactivating`` state.
-
-The service definition is:
-
-    ---
-    uint8 result
-
-`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Inactive` state and the result of the `onDeactivate()` function (executed by the `Deactivating` state) was `success`.
-
-`result` shall be `TRANSITION_ERROR` if the result of the `onDeactivate()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
-
-`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Active` state when the request is received.
-
-### Shutdown transition request service
-
-The service `infra/lifecycle/shutdown` service shall be provided by the life cycle interface.
-
-When this service call is received, the node's life cycle state shall be shifted from the `Unconfigured` state, `Inactive` state or `Active` state to the `ShuttingDown` state, and then from the `ShuttingDown` state to the `Finalized` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `ShuttingDown`` state.
-
-The service definition is:
-
-    ---
-    uint8 result
-
-`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Finalized` state and the result of the `onShutdown()` function (executed by the `ShuttingDown` state) was `success`.
-
-`result` shall be `TRANSITION_ERROR` if the result of the `onShutdown()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
-
-`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in one of the `Unconfigured`, `Inactive` or `Active` states when the request is received.
+`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the correct predecessor state for the requested transition, as described above.
 
 ### Provision of the interface
 
