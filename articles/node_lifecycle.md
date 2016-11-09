@@ -209,38 +209,203 @@ This transition will instantiate the node, but will not run any code beyond the 
 
 ## Management Interface
 
-A managed node will be exposed to the ROS ecosystem by the following interface, as seen by tools that perform the managing.
-This interface should not be subject to the restrictions on communications imposed by the lifecycle states.
+A node that has a managed life cycle complying with the above life cycle shall provide the following interface via ROS topics and services.
+This interface is to be used by tools to manage the node's life cycle state transitions, either automatically or manually according to the tool's purpose.
+
+The topics and services of this interface shall function in all states of the node's life cycle.
+They shall not be disabled by the node shifting to the `Inactive` state, for example.
+
+### Interface namespace
+
+The interface shall be provided in a namespace named "infra/lifecycle" underneath the node's namespace.
+
+For example, if a node named `talker` has a managed life cycle complying with the state machine described above, it shall provide topics under the namespace `/talker/infra/lifecycle`.
+
+All examples in the following sections are also given assuming a node named `talker`.
+
+If the `infra/lifecycle` namespace is available under a node's namespace, then that node shall be assumed to be functioning according to the managed life cycle.
+If the node is not functioning according to the managed life cycle, the `infra/lifecycle` namespace shall not exist.
+In other words, tooling shall judge if a node is managed or not by the presence of the `infra/lifecycle` namespace.
+
+### State enumerations
+
+The messages used by the interface shall use the following enumeration for indicating states.
+
+    uint8 UNKNOWN=0
+    uint8 UNCONFIGURED=1
+    uint8 INACTIVE=2
+    uint8 ACTIVE=3
+    uint8 FINALIZED=4
+    uint8 CONFIGURING=10
+    uint8 CLEANING_UP=11
+    uint8 SHUTTING_DOWN=12
+    uint8 ACTIVATING=13
+    uint8 DEACTIVATING=14
+    uint8 ERROR_PROCESSING=15
+
+### Transition result enumerations
+
+The messages used by the interface shall use the following enumeration for indicating the result of transitions.
+
+    uint8 TRANSITION_ERROR=0
+    uint8 SUCCESS=1
+    uint8 WRONG_PREV_STATE=10
+
+### Life cycle state changes topic
+
+When the node's life cycle changes, it shall broadcast the following message on the `infra/lifecycle/state_change` topic.
+
+    uint8 previous_state
+    uint8 next_state
+    string trigger
+
+`trigger` may be filled in containing a reason for the life cycle change. This value is optional.
+
+This topic must be latched. A history of a suitable length should be provided.
+
+For example, if the `talker` node transitions from the `Active` state to the `Finalised` state via the `ShuttingDown` state in response to an external request to shut down the node, it will produce the following sequence of messages on this topic (values for `trigger` are illustrative only):
+
+    previous_state = INACTIVE
+    next_state = SHUTTTING_DOWN
+    trigger = "shutdown request"
+
+    previous_state = SHUTTING_DOWN
+    next_state = FINALIZED
+    trigger = "shutdown returned OK"
+
+If the `talker` node transitions from the `Inactive` state to the `Unconfigured` state via a request to activate the node and an error occurring in activation processing, it will produce the following sequence of messages:
+
+    previous_state = INACTIVE
+    next_state = ACTIVATING
+    trigger = "activate request"
+
+    previous_state = ACTIVATING
+    next_state = ERROR_PROCESSING
+    trigger = "error in activating state"
+
+    previous_state = ERROR_PROCESSING
+    next_state = UNCONFIGURED
+    trigger = "error processing returned OK"
+
+### Current life cycle state service
+
+The node's current life cycle state shall be available via the `infra/lifecycle/get_state` service.
+The service definition is:
+
+    ---
+    uint8 state
+    string state_name
+
+`state_name` must assume one of the following values, according to the value of `state`.
+
+    Value of state   | Value of state_name
+    UNKNOWN          | unknown
+    UNCONFIGURED     | unconfigured
+    INACTIVE         | inactive
+    ACTIVE           | active
+    FINALIZED        | finalized
+    CONFIGURING      | configuring
+    CLEANING_UP      | cleaning_up
+    SHUTTING_DOWN    | shutting_down
+    ACTIVATING       | activating
+    DEACTIVATING     | deactivating
+    ERROR_PROCESSING | error_processing
+
+The `UNKNOWN`/`unknown` value shall be assumed by clients of the service to indicate that the node is in an unknown state and thus unusable.
+
+### Configure transition request service
+
+The service `infra/lifecycle/configure` service shall be provided by the life cycle interface.
+
+When this service call is received, the node's life cycle state shall be shifted from the `Unconfigured` state to the `Configuring` state, and then from the `Configuring` state to the `Inactive` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `Configuring` state.
+
+The service definition is:
+
+    ---
+    uint8 result
+
+`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Inactive` state and the result of the `onConfigure()` function (executed by the `Configuring` state) was `success`.
+
+`result` shall be `TRANSITION_ERROR` if the result of the `onConfigure()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
+
+`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Unconfigured` state when the request is received.
+
+### Cleanup transition request service
+
+The service `infra/lifecycle/cleanup` service shall be provided by the life cycle interface.
+
+When this service call is received, the node's life cycle state shall be shifted from the `Inactive` state to the `CleaningUp` state, and then from the `CleaningUp` state to the `Unconfigured` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `CleaningUp`` state.
+
+The service definition is:
+
+    ---
+    uint8 result
+
+`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Unconfigured` state and the result of the `onCleanup()` function (executed by the `CleaningUp` state) was `success`.
+
+`result` shall be `TRANSITION_ERROR` if the result of the `onCleanup()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
+
+`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Inactive` state when the request is received.
+
+### Activate transition request service
+
+The service `infra/lifecycle/activate` service shall be provided by the life cycle interface.
+
+When this service call is received, the node's life cycle state shall be shifted from the `Inactive` state to the `Activating` state, and then from the `Activating` state to the `Active` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `Activating`` state.
+
+The service definition is:
+
+    ---
+    uint8 result
+
+`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Active` state and the result of the `onActivate()` function (executed by the `Activating` state) was `success`.
+
+`result` shall be `TRANSITION_ERROR` if the result of the `onActivate()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
+
+`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Inactive` state when the request is received.
+
+### Deactivate transition request service
+
+The service `infra/lifecycle/deactivate` service shall be provided by the life cycle interface.
+
+When this service call is received, the node's life cycle state shall be shifted from the `Active` state to the `Deactivating` state, and then from the `Deactivating` state to the `Inactive` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `Deactivating`` state.
+
+The service definition is:
+
+    ---
+    uint8 result
+
+`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Inactive` state and the result of the `onDeactivate()` function (executed by the `Deactivating` state) was `success`.
+
+`result` shall be `TRANSITION_ERROR` if the result of the `onDeactivate()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
+
+`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in the `Active` state when the request is received.
+
+### Shutdown transition request service
+
+The service `infra/lifecycle/shutdown` service shall be provided by the life cycle interface.
+
+When this service call is received, the node's life cycle state shall be shifted from the `Unconfigured` state, `Inactive` state or `Active` state to the `ShuttingDown` state, and then from the `ShuttingDown` state to the `Finalized` state or the `ErrorProcessing` state, according to the result of executing the function defined in the `ShuttingDown`` state.
+
+The service definition is:
+
+    ---
+    uint8 result
+
+`result` shall be `SUCCESS` if the node's life cycle successfully moved to the `Finalized` state and the result of the `onShutdown()` function (executed by the `ShuttingDown` state) was `success`.
+
+`result` shall be `TRANSITION_ERROR` if the result of the `onShutdown()` function was anything other than `success` or an error was reported by any other means, and the node is now in the `ErrorProcessing` state or one of its successor states.
+
+`result` shall be `WRONG_PREV_STATE` if the node's life cycle is not in one of the `Unconfigured`, `Inactive` or `Active` states when the request is received.
+
+### Provision of the interface
+
+What provides the interface is implementation dependent.
+It may be provided directly by the node object itself, by a container object, or by any other means as appropriate to the technologies being used to implement the node and ROS infrastructure.
 
 It is expected that a common pattern will be to have a container class which loads a managed node implementation from a library and through a plugin architecture automatically exposes the required management interface via methods and the container is not subject to the lifecycle management.
 However, it is fully valid to consider any implementation which provides this interface and follows the lifecycle policies a managed node.
 Conversely, any object that provides these services but does not behave in the way defined in the life cycle state machine is malformed.
-
-These services may also be provided via attributes and method calls (for local management) in addition to being exposed ROS messages and topics/services (for remote management).
-In the case of providing a ROS middleware interface, specific topics must be used, and they should be placed in a suitable namespace.
-
-Each possible supervisory transition will be provides as a service by the name of the transition except `create`.
-`create` will require an extra argument for finding the node to instantiate.
-The service will report whether the transition was successfully completed.
-
-### Lifecycle events
-
-A topic should be provided to broadcast the new life cycle state when it changes.
-This topic must be latched.
-The topic must be named `lifecycle_state` it will carry both the end state and the transition, with result code.
-It will publish ever time that a transition is triggered, whether successful or not.
-
-## Node Management
-
-There are several different ways in which a managed node may transition between states.
-Most state transitions are expected to be coordinated by an external management tool which will provide the node with it's configuration and start it.
-The external management tool is also expected monitor it and execute recovery behaviors in case of failures.
-A local management tool is also a possibility, leveraging method level interfaces.
-And a node could be configured to self manage, however this is discouraged as this will interfere with external logic trying to managed the node via the interface.
-
-There is one transition expected to originate locally, which is the `ERROR` transition.
-
-A managed node may also want to expose arguments to automatically configure and activate when run in an unmanaged system.
 
 ## Extensions
 
