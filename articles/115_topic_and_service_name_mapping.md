@@ -109,14 +109,15 @@ For example, these are valid names:
 
 | `foo`       | `abc123`            | `_foo`               | `Foo`        | `BAR`            |
 | `~`         | `foo/bar`           | `~/foo`              | `{foo}_bar`  | `foo/{ping}/bar` |
-| `foo/_/bar` | `rosservice:///foo` | `rostopic://foo/bar` |              |                  |
+| `foo/_bar`  | `rosservice:///foo` | `rostopic://foo/bar` |              |                  |
 
 But these are not valid names:
 
-| `123abc`   | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
-| `foo__`    | ` `    | `foo_`   | `foo//bar` | `foo/`      |
-| `foo_/bar` | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
-| `/_/bar`   | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
+| `123abc`    | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
+| `foo__`     | ` `    | `foo_`   | `foo//bar` | `foo/`      |
+| `foo_/bar`  | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
+| `/_/bar`    | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
+| `foo/_/bar` |        |          |            |             |
 
 These are some valid fully qualified names:
 
