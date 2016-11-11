@@ -113,11 +113,11 @@ For example, these are valid names:
 
 But these are not valid names:
 
-| `123abc`   | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
-| `foo__`    | ` `    | `foo_`   | `foo//bar` | `foo/`      |
-| `foo_/bar` | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
-| `/_/bar`   | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
-| `foo/_bar` |        |          |            |             |
+| `123abc`    | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
+| `foo__`     | ` `    | `foo_`   | `foo//bar` | `foo/`      |
+| `foo_/bar`  | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
+| `/_/bar`    | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
+| `foo/_/bar` |        |          |            |             |
 
 These are some valid fully qualified names:
 
