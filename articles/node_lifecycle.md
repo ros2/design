@@ -53,14 +53,17 @@ There are also 6 transition states which are intermediate states during a reques
 In the transitions states logic will be executed to determine if the transition is successful.
 Success or failure shall be communicated to lifecycle management software through the lifecycle management interface.
 
-There are 7 transitions exposed to a supervisory process, they are:
+There are 5 transitions exposed to a supervisory process, they are:
 
-- `create`
 - `configure`
 - `cleanup`
 - `activate`
 - `deactive`
 - `shutdown`
+
+Additionally, there are two transitions that may be exposed by a supervisory process if dynamic creation and destruction of nodes is supported by that supervisory process.
+
+- `create`
 - `destroy`
 
 The behavior of each state is as defined below.
@@ -196,16 +199,24 @@ Transitions to `ErrorProcessing` may be caused by error return codes in callback
 
 - If the `onShutdown` callback raises or results in any other result code the node will transition to `Finalized`.
 
+## Use of a supervisory process
+
+Managed nodes may be instantiated manually by a developer.
+In this case, the developer's own code is responsible for creating and destroying the node.
+However, the node may alternatively be owned by a container system.
+The container will be responsible for creating and destroying the node.
+Such a container will be responsible for exposing the following two transitions.
+
+### Create Transition
+
+This transition will instantiate the node, but will not run any code beyond the constructor.
+
 ### Destroy Transition
 
 This transition will simply cause the deallocation of the node.
 In an object oriented environment it may just involve invoking the destructor.
 Otherwise it will invoke a standard deallocation method.
 This transition should always succeed.
-
-### Create Transition
-
-This transition will instantiate the node, but will not run any code beyond the constructor.settings.settings.
 
 ## Management Interface
 
