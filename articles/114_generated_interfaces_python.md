@@ -31,6 +31,11 @@ To separate the generated code from other code within the package it is defined 
 - module for ROS messages: `<package_name>.msg`.
 - module for ROS services: `<package_name>.srv`.
 
+<div class="alert alert-warning" markdown="1">
+  <b>NOTE:</b> The names are currently identical to the ones used in ROS 1.
+  Therefore it is not possible to import both in a Python application.
+</div>
+
 ## Generated files
 
 Following the Python conventions the namespace hierarchy is mapped to a folder structure.
