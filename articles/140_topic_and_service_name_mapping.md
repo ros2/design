@@ -75,8 +75,11 @@ The content of substitutions, i.e. the string in side of balanced curly braces (
 The content of substitutions:
 
 - must not be empty
+
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
+
 - must not start with a numeric character (`[0-9]`)
+
 - are unlike topic and service names in that they:
 
   - may start with or end with underscores (`_`)
