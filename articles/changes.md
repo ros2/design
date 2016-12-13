@@ -33,7 +33,7 @@ Some of the described features are not yet available and are marked with ⏳.
 ROS 1 is only being CI tested on Ubuntu.
 It is actively supported by the community on other Linux flavors as well as OS X.
 
-ROS 2 is being CI tested and supported on Ubuntu Xenial, OS X as well as Windows 10 (see [ci.ros2.org](http://ci.ros2.org/)).
+ROS 2 is currently being CI tested and supported on Ubuntu Xenial, OS X El Capitan as well as Windows 10 (see [ci.ros2.org](http://ci.ros2.org/)).
 
 ### Languages
 
