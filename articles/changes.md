@@ -42,8 +42,8 @@ ROS 2 is currently being CI tested and supported on Ubuntu Xenial, OS X El Capit
 #### C++ standard
 
 The core of ROS 1 is targeting C++03 and doesn't make use of C++11 features in its API.
-ROS 2 uses C++11 extensively.
-In the future ROS 2 might start using C++14 / C++17 as long as it is supported on all major platforms.
+ROS 2 uses C++11 extensively and uses some parts from C++14.
+In the future ROS 2 might start using C++17 as long as it is supported on all major platforms.
 
 #### Python
 
