@@ -144,7 +144,7 @@ This is useful for performance and for use cases like real-time.
 In ROS 1 the duration and time types are defined in the client libraries.
 The member names of the data structures are different in C++ (sec, nsec) and Python (secs, nsecs).
 
-In ROS 2 these types are defined as messages and therefore be consistent across languages.
+In ROS 2 these types are defined as messages and therefore are consistent across languages.
 
 ### Remove sequence field from Header message
 
