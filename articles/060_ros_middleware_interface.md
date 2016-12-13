@@ -369,3 +369,15 @@ Their package name starts with the prefix `rmw_` followed by the name of the use
 A user land executable using ROS nodes, publishers and subscribers must link against one specific middleware implementation library.
 The used middleware implementation library will only use the corresponding type support from each message package and ignore any additionally available type supports.
 Only middleware implementations can be selected for which the corresponding type support generators have been available when building the message packages.
+
+### Mapping between DDS and ROS concepts
+
+Every ROS node is one DDS participant.
+If multiple ROS nodes are being run in a single process they are still mapped to separate DDS participants.
+If the containing process exposes its own ROS interface (e.g. to load nodes into the process at runtime) it is acting as a ROS node itself and is therefore also mapped to a separate DDS participant.
+
+The ROS publishers and subsubscribers are mapped to DDS publishers and subscribers.
+The DDS DataReader and DataWriter as well as DDS topics are not exposed through the ROS API.
+
+The ROS API defines queue sizes and a few [Quality of Service parameters](http://design.ros2.org/articles/qos.html) which are being mapped to their DDS equivalent.
+The other DDS QoS parameters are not being exposed through the ROS API.
