@@ -24,7 +24,9 @@ Original Author: {{ page.author }}
 Each change is described as briefly as possible but giving enough context and rationale for a reader familiar with ROS 1.
 If further external information is available (e.g. other articles) it should be linked to.
 
-Some of the described features are not yet available and are marked with ⏳.
+<div class="alert alert-info" markdown="1">
+  Some of the described features are not yet available and are marked with ⏳.
+</div>
 
 ## Platforms and dependencies
 
