@@ -53,7 +53,7 @@ ROS 2 requires at least Python version 3.5.
 ROS 1 uses a custom serialization format, a custom transport protocol as well as a custom central discovery mechanism.
 ROS 2 has an [abstract middleware interface](http://design.ros2.org/articles/ros_middleware_interface.html), through which serialization, transport, and discovery is being provided.
 Currently all implementations of this interface are based on the DDS standard.
-This enables ROS 2 to provide various [Quality of Service parameters](http://design.ros2.org/articles/qos.html) which improve communication over different networks.
+This enables ROS 2 to provide various [Quality of Service policies](http://design.ros2.org/articles/qos.html) which improve communication over different networks.
 
 ## Build system
 
