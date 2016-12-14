@@ -89,7 +89,7 @@ ROS 2.0 will provide QoS profiles based on the following use cases:
 - Parameters
 
   Parameters are based on services, and as such have a similar profile.
-  The difference is that parameters use a much larger queue depth so that requests do not get lost when, for example, the parameter client is unable to reach the parameter service.
+  The difference is that parameters use a much larger queue depth so that requests do not get lost when, for example, the parameter client is unable to reach the parameter service server.
 
 Profiles allow developers to focus on their applications without worrying about every QoS setting in the DDS specification.
 
