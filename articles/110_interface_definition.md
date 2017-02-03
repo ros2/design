@@ -209,7 +209,7 @@ Depending on the type the following values are valid:
 - `string`:
 
   - a string value which can optionally be quoted with either single quotes (`'`) or double quotes (`"`)
-  - a double-quoted (`"`) string (respectively single-quoted (`'`)) should have any inner double quotes (respectively single quotes) escaped. E.g.
+  - a double-quoted (`"`) string (respectively single-quoted (`'`)) should have any inner double quotes (respectively single quotes) escaped:
 
     - `string my_string "I heard \"Hello\""` is valid
     - `string my_string "I heard "Hello""` is **not** valid
