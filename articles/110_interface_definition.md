@@ -104,8 +104,19 @@ If no default value is specified a common default value is used:
 - for *numeric* types it is a `0` value
 - for `string` it is an *empty* string
 
+#### Array default values
+
+A field of type `array` can optionally specify a default value.
+
+- default values for an array must start with an opening square bracket (`[`) and end with a closing square bracket (`]`)
+- each value within the array must be separated with a comma (`,`)
+
+Additional rule for string arrays:
+
+- every element of a string array must be quoted using either single quote (`'`) or double quote (`"`)
+
 <div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> default values are currently not supported for <code>string array</code> fields and <i>complex</i> fields
+  <b>TODO:</b> default values are currently not supported for <i>complex</i> fields
 </div>
 
 ### Constants
