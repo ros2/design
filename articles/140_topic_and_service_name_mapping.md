@@ -219,65 +219,15 @@ Since ROS 2 topic and service names are expanded to fully qualified names, any b
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
 Therefore only forward slashes have to be substituted when converting to DDS topic names.
 
-### Substitution of the Namespace Delimiter
+### DDS Partitions as namespace hierarchy
 
-The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
-Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
+Having looked closer to the various QoS settings inside the DDS protocol, paritions have been considered as the prefered method of implementing namespaces. DDS partitions allow up to 64 items in a string array, limiting the accumulated string size to 255 characters (TODO: Find spec ref). This allows a simple parsing from a fully qualified name (FQN) to a list of parition elements as well as the base name. The base name is set as the actual topic name.
 
-### ROS Specific Name Prefix
+The big benefit of handling the namespaces with partitions is that it generally stays ROS agnostic. This means if future implementations of the RMW interface (e.g. ZeroMQ etc.) want to introduce another, different namespace system, they are non-restricted.
 
-In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is the result of concatenating the prefix `rt` for being a ROS topic, with `__` for the leading `/`, and the topic name `foo`.
+### Remapping with DDS Partitions
 
-For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
-On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
-
-Here is a non-exhaustive list of prefixes:
-
-| ROS Subsystem        | Prefix |
-|----------------------|--------|
-| ROS Topics           | rt     |
-| ROS Service Request  | rq     |
-| ROS Service Response | rr     |
-| ROS Service          | rs     |
-| ROS Parameter        | rp     |
-| ROS Action           | ra     |
-
-While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `__`, can be considered part of the prefix.
-The standard reserves the right to use up to 8 characters for the prefix in case additional prefix space is needed in the future.
-
-### Communicating with Non-ROS Topics
-
-Since all ROS topics are prefixed when being converted to DDS topic names, it makes it impossible to subscribe to existing DDS topics which do not follow the same naming pattern.
-For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling.
-Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
-
-### ROS to DDS Name Conversion Examples
-
-Here are some examples of translations between ROS topic names and the corresponding DDS topic names:
-
-| ROS Name          | Subsystem | DDS Name               |
-|-------------------|-----------|------------------------|
-| `/foo`            | Topic     | `rt__foo`              |
-| `/foo/bar`        | Topic     | `rt__foo__bar`         |
-| `/_foo/bar`       | Topic     | `rt___foo__bar`        |
-| `/foo/_bar`       | Topic     | `rt__foo___bar`        |
-| `/_foo/_bar`      | Topic     | `rt___foo___bar`       |
-| `/_foo/_bar/_baz` | Topic     | `rt___foo___bar___baz` |
-
-### ROS Topic and Service Name Length Limit
-
-Because DDS topic names must be limited to 255 characters, the length of a ROS topic or service name is also limited in length.
-In the case of a topic, the length is governed by the following algorithm:
-
-`C + N + P <= 255`
-
-Where `P` is `8`, the maximum possible length of the ROS specific prefix, `C` is the number of characters in the topic name, and `N` is the number of name tokens in the topic name.
-Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`), after removing any URL related syntax (e.g. without the `rostopic://` prefix).
-
-Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
-In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
-Therefore, it would be safest to assume the Service name limit to be less 8 more characters.
+The partition string array makes a remapping relatively simple task. Depending on which level of the namespace hierarchy is ought to be remapped, corresponds the a specific element within that array.
 
 ## Compare and Contrast with ROS 1
 
@@ -304,6 +254,68 @@ In ROS 2, topic and service names differ from ROS 1 in that they:
 ## Concerns/Alternatives
 
 This section lists concerns about the proposed design and alternatives that were considered.
+
+### ROS Specific Name Prefix
+
+Initially, the idea of implementing ROS topics and namespaces based on specific name prefixes was chosen. This is not any longer the favorite solution as DDS partitions have proven to be more flexible and accurate since they are part of the protocol.
+
+In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
+For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is the result of concatenating the prefix `rt` for being a ROS topic, with `__` for the leading `/`, and the topic name `foo`.
+
+For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
+On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
+
+Here is a non-exhaustive list of prefixes:
+
+| ROS Subsystem        | Prefix |
+|----------------------|--------|
+| ROS Topics           | rt     |
+| ROS Service Request  | rq     |
+| ROS Service Response | rr     |
+| ROS Service          | rs     |
+| ROS Parameter        | rp     |
+| ROS Action           | ra     |
+
+While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `__`, can be considered part of the prefix.
+The standard reserves the right to use up to 8 characters for the prefix in case additional prefix space is needed in the future.
+
+#### Communicating with Non-ROS Topics
+
+Since all ROS topics are prefixed when being converted to DDS topic names, it makes it impossible to subscribe to existing DDS topics which do not follow the same naming pattern.
+For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling.
+Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
+
+#### ROS to DDS Name Conversion Examples
+
+Here are some examples of translations between ROS topic names and the corresponding DDS topic names:
+
+| ROS Name          | Subsystem | DDS Name               |
+|-------------------|-----------|------------------------|
+| `/foo`            | Topic     | `rt__foo`              |
+| `/foo/bar`        | Topic     | `rt__foo__bar`         |
+| `/_foo/bar`       | Topic     | `rt___foo__bar`        |
+| `/foo/_bar`       | Topic     | `rt__foo___bar`        |
+| `/_foo/_bar`      | Topic     | `rt___foo___bar`       |
+| `/_foo/_bar/_baz` | Topic     | `rt___foo___bar___baz` |
+
+#### ROS Topic and Service Name Length Limit
+
+Because DDS topic names must be limited to 255 characters, the length of a ROS topic or service name is also limited in length.
+In the case of a topic, the length is governed by the following algorithm:
+
+`C + N + P <= 255`
+
+Where `P` is `8`, the maximum possible length of the ROS specific prefix, `C` is the number of characters in the topic name, and `N` is the number of name tokens in the topic name.
+Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`), after removing any URL related syntax (e.g. without the `rostopic://` prefix).
+
+Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
+In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
+Therefore, it would be safest to assume the Service name limit to be less 8 more characters.
+
+#### Substitution of the Namespace Delimiter
+
+The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
+Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
 
 ### Alternative Name Rules and Concerns About Name Rules
 
