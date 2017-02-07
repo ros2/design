@@ -293,7 +293,8 @@ This section lists concerns about the proposed design and alternatives that were
 
 ### ROS Specific Name Prefix
 
-Initially, the idea of implementing ROS topics and namespaces based on specific name prefixes was chosen. This is not any longer the favorite solution as DDS partitions have proven to be more flexible and accurate since they are part of the protocol.
+Initially, the idea of implementing ROS topics and namespaces based on specific name prefixes was chosen.
+This is not any longer the favorite solution as DDS partitions have proven to be more flexible and accurate since they are part of the protocol.
 
 In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
 For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is the result of concatenating the prefix `rt` for being a ROS topic, with `__` for the leading `/`, and the topic name `foo`.
