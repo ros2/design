@@ -221,28 +221,49 @@ Therefore only forward slashes have to be substituted when converting to DDS top
 
 ### DDS Partitions as namespace hierarchy
 
-Having looked closer to the various QoS settings inside the DDS protocol, paritions have been considered as the prefered method of implementing namespaces. DDS partitions allow up to 64 items in a string array, limiting the accumulated string size to 255 characters (TODO: Find spec ref).
-The big benefit of handling the namespaces with partitions is that it generally stays ROS agnostic. This means if future implementations of the RMW interface (e.g. ZeroMQ etc.) want to introduce another, different namespace system, they are non-restricted.
+Having looked closer to the various QoS settings inside the DDS protocol, paritions have been considered as the prefered method of implementing namespaces.
+DDS partitions allow up to 64 items in a string array, limiting the accumulated string size to 255 characters (TODO: Find spec ref).
+The big benefit of handling the namespaces with partitions is that it generally stays ROS agnostic.
+This means if future implementations of the RMW interface (e.g. ZeroMQ etc.) want to introduce another, different namespace system, they are non-restricted.
 
 #### DDS Partitions Characteristics
 
-As already said, DDS Partitions are implemented as a QoS setting. Hereby, the partitions field is implemented as an array of strings, where each string is an individual partitions. This means further that every partition index is stricly unique and independent from all other items.
-At the same time, DDS Partitions don't support a partition hierarchy. If a publisher operates on two partition entries, e.g. `foo` and `bar` with a base name of `baz`, the resulting topic will be twofold:
-1.) `/foo/baz`
-2.) `/bar/baz`
+As already said, DDS Partitions are implemented as a QoS setting.
+Hereby, the partitions field is implemented as an array of strings, where each string is an individual partitions.
+This means further that every partition index is stricly unique and independent from all other items.
+At the same time, DDS Partitions don't support a partition hierarchy.
+If a publisher operates on two partition entries, e.g. `foo` and `bar` with a base name of `baz`, the resulting topic will be twofold:
 
-That implies, that DDS Partitions by default are not depicting any hierarchy. However, aliasing is easily douable with it. That is, having an original topic such as `cmd_vel` in a namespace `robot1`, we can easily duplicate that topic as `robot2/cmd_vel`.
+```
+- /foo/baz
+- /bar/baz
+```
+
+That implies, that DDS Partitions by default are not depicting any hierarchy.
+However, aliasing is easily douable with it.
+That is, having an original topic such as `cmd_vel` in a namespace `robot1`, we can easily duplicate that topic as `robot2/cmd_vel`.
 
 #### Hierarchy with DDS Partitions
 
-Given that DDS Partitions are not hierarchical, we have to setup the hierarchy on top. For this, we use the forward slash `/` explicitely in each partition field. If we want to replicate a hierarchy of `warehouse`, `robot1`, `camera_left`, and finally the basename `image_raw`, the first entry of the partitions would look like:
-`warehouse/robot1/camera_left/image_raw`
+Given that DDS Partitions are not hierarchical, we have to setup the hierarchy on top.
+For this, we use the forward slash `/` explicitely in each partition field.
+If we want to replicate a hierarchy of `warehouse`, `robot1`, `camera_left`, and finally the basename `image_raw`, the first entry of the partitions would look like:
+
+```
+warehouse/robot1/camera_left/image_raw
+```
 
 #### Remapping with DDS Partitions
 
-We have to differentiate remapping from aliasing at this point. As described before, aliasing implies a duplication a topic. Remapping, in contrast, alters an existing topic and thus remaps one topic into another.
+We have to differentiate remapping from aliasing at this point.
+As described before, aliasing implies a duplication a topic.
+Remapping, in contrast, alters an existing topic and thus remaps one topic into another.
 Given the nature of DDS Partitions, aliasing is natively supported by adding a second entry in the partition field.
-Remapping means, we have to change one existing partition field. However, as the completely hierarchy is illustrated within the first index of the partitions, the act of remapping is a simple string modification. If we want to remap a camera image from `camera1` to `camera2`, we have to modify the string in the respective field. Publishers or Subscribers are uneffected by this change and don't have to be shutdown and restarted. The way of modifying these strings, whether with complete string replacement or regex modifiers, exceeds the scope of this article.
+Remapping means, we have to change one existing partition field.
+However, as the completely hierarchy is illustrated within the first index of the partitions, the act of remapping is a simple string modification.
+If we want to remap a camera image from `camera1` to `camera2`, we have to modify the string in the respective field.
+Publishers or Subscribers are uneffected by this change and don't have to be shutdown and restarted.
+The way of modifying these strings, whether with complete string replacement or regex modifiers, exceeds the scope of this article.
 
 ## Compare and Contrast with ROS 1
 
