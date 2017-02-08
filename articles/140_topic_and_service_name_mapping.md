@@ -63,9 +63,6 @@ For convenience here is a summary of all rules for topic and service names in RO
 - may use balanced curly braces (`{}`) for substitutions
 - may start with a tilde (`~`), the private namespace substitution character
 - must not start with a numeric character (`[0-9]`)
-- must not contain any number of repeated underscores (`_`)
-- must not end with an underscore (`_`)
-- must not have an underscore (`_`) followed by a forward slash (`/`), i.e. `_/`
 - must not end with a forward slash (`/`)
 - must not contain any number of repeated forward slashes (`/`)
 - must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`
@@ -96,7 +93,6 @@ Fully qualified names have these additional restrictions:
 - must not contain tilde (`~`) or curly braces (`{}`)
 
 Note that expanded substitutions must result in a valid name.
-For example, a name `foo_{bar}` is not valid if `bar` is expanded as `_baz`, because that would result in a fully qualified name of `foo__baz` which contains repeated underscores (`_`).
 
 ### Uniform Resource Locators (URLs)
 
@@ -116,11 +112,9 @@ For example, these are valid names:
 
 But these are not valid names:
 
-| `123abc`    | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
-| `foo__`     | ` `    | `foo_`   | `foo//bar` | `foo/`      |
-| `foo_/bar`  | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
-| `/_/bar`    | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
-| `foo/_/bar` |        |          |            |             |
+| `123abc`    | `123`  | `foo bar`| ` `        | `foo//bar` | `foo/` |
+| `foo_/bar`  | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar` | `/~`   |
+| `foo/~/bar` |
 
 These are some valid fully qualified names:
 
@@ -167,18 +161,6 @@ Topic and service name tokens:
 
 - must not start with numeric characters (`[0-9]`)
 
-- must not end with a single underscore (`_`)
-
-  - rationale: if tokens are allowed to end with and start with `_` then `foo_/bar` is indistinguishable from `foo/_bar` if the `/` is replaced with `__` (as proposed in the "Substitution of the Namespace Delimiter" section), i.e. both result in `foo___bar`
-
-- must not be a single underscore (`_`)
-
-  - rationale: this is a special case of "must not end with an underscore"
-
-- must not have two or more underscores (`__`) repeated anywhere
-
-  - rationale: this provides the implementation with a safe to use delimiter
-
 - may be a single tilde character (`~`)
 
 ### Private Namespace Substitution Character
@@ -221,17 +203,25 @@ Therefore only forward slashes have to be substituted when converting to DDS top
 
 ### DDS Partitions as namespace hierarchy
 
-Having looked closer to the various QoS settings inside the DDS protocol, paritions have been considered as the prefered method of implementing namespaces.
-DDS partitions allow up to 64 items in a string array, limiting the accumulated string size to 255 characters (TODO: Find spec ref).
-The big benefit of handling the namespaces with partitions is that it generally stays ROS agnostic.
-This means if future implementations of the RMW interface (e.g. ZeroMQ etc.) want to introduce another, different namespace system, they are non-restricted.
+We chose to implement the ROS namespace hierarchy with the help of DDS Partitions.
+DDS Paritions are part of the Subscription/Publisher QoS settings and have been considered as the prefered method of implementing namespaces.
+A subscriber and publisher only match when not only their basename topic matches, they also have to be specified on the same partiton.
+The big benefit of handling the namespaces with partitions is that it is an official QoS within the DDS specification.
+Furthermore, we can separate a ROS topic hierarchy from a DDS implementation, by forwarding the ROS topic in form of `/ns1/ns2/ns3/base_name` to the DDS implementation, which then takes take about setting up a hierarchy.
+All this stays generally ROS agnostic and open to alternative implementations of the RMW interface (e.g. ZeroMQ etc.), which may want to introduce another, different namespace system.
 
 #### DDS Partitions Characteristics
 
-As already said, DDS Partitions are implemented as a QoS setting.
+A DDS topic at this point is the basename token within a ROS topic.
+The namespace of a ROS topic is implemented within the parititon field of DDS.
+DDS partitions are implemented as a string array within the Subscription/Publisher QoS, allowing up to 64 items.
+The maximum size of each string has yet to be verified and may depend strongly on the implementation.
 Hereby, the partitions field is implemented as an array of strings, where each string is an individual partitions.
 This means further that every partition index is stricly unique and independent from all other items.
-At the same time, DDS Partitions don't support a partition hierarchy.
+Special character used within regular expressions (such as `+`, `*`, `^`) are officially not supported by the standard.
+
+DDS Partitions don't support a partition hierarchy.
+Each entry in the partition array is directly combined with the DDS topic and they are not sequentially combined.
 If a publisher operates on two partition entries, e.g. `foo` and `bar` with a base name of `baz`, the resulting topic will be twofold:
 
 ```
@@ -240,8 +230,8 @@ If a publisher operates on two partition entries, e.g. `foo` and `bar` with a ba
 ```
 
 That implies, that DDS Partitions by default are not depicting any hierarchy.
-However, aliasing is easily douable with it.
-That is, having an original topic such as `cmd_vel` in a namespace `robot1`, we can easily duplicate that topic as `robot2/cmd_vel`.
+On the other hand, it allows an easy aliasing or duplication of the specified topic, given that the basename topic does not change.
+A dynamic duplication of the original topic such as `cmd_vel` in a namespace `robot1` to `robot2/cmd_vel` can thus be easily achieved by expanding the DDS partition array.
 
 #### Hierarchy with DDS Partitions
 
@@ -250,19 +240,21 @@ For this, we use the forward slash `/` explicitely in each partition field.
 If we want to replicate a hierarchy of `warehouse`, `robot1`, `camera_left`, and finally the basename `image_raw`, the first entry of the partitions would look like:
 
 ```
-warehouse/robot1/camera_left/image_raw
+warehouse/robot1/camera_left
 ```
 
 #### Remapping with DDS Partitions
 
 We have to differentiate remapping from aliasing at this point.
-As described before, aliasing implies a duplication a topic.
+As described before, aliasing implies a duplication of a topic.
 Remapping, in contrast, alters an existing topic and thus remaps one topic into another.
 Given the nature of DDS Partitions, aliasing is natively supported by adding a second entry in the partition field.
 Remapping means, we have to change one existing partition field.
-However, as the completely hierarchy is illustrated within the first index of the partitions, the act of remapping is a simple string modification.
-If we want to remap a camera image from `camera1` to `camera2`, we have to modify the string in the respective field.
+However, as the complete hierarchy is illustrated within the first index of the partitions, the act of remapping resolves into a string modification.
+If we want to remap a camera image from namespace `camera1` to namespace `camera2`, we have to modify the string in the respective field.
 Publishers or Subscribers are uneffected by this change and don't have to be shutdown and restarted.
+Please note that at this point, we exclusively change the namespace tokens (i.e. the partitions) and not the basename.
+Changing the basename necessarily results in a complete restart of the publisher/subscription  instance.
 The way of modifying these strings, whether with complete string replacement or regex modifiers, exceeds the scope of this article.
 
 ## Compare and Contrast with ROS 1
@@ -295,6 +287,7 @@ This section lists concerns about the proposed design and alternatives that were
 
 Initially, the idea of implementing ROS topics and namespaces based on specific name prefixes was chosen.
 This is not any longer the favorite solution as DDS partitions have proven to be more flexible and accurate since they are part of the protocol.
+In the following, partitions are not used within the namespace and the complete ROS topic is specified as the DDS topic.
 
 In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
 For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is the result of concatenating the prefix `rt` for being a ROS topic, with `__` for the leading `/`, and the topic name `foo`.
@@ -322,6 +315,11 @@ Since all ROS topics are prefixed when being converted to DDS topic names, it ma
 For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling.
 Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
 
+#### Substitution of the Namespace Delimiter
+
+The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
+Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
+
 #### ROS to DDS Name Conversion Examples
 
 Here are some examples of translations between ROS topic names and the corresponding DDS topic names:
@@ -348,11 +346,6 @@ Note that this algorithm must be applied on a fully qualified name, i.e. after e
 Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
 In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
 Therefore, it would be safest to assume the Service name limit to be less 8 more characters.
-
-#### Substitution of the Namespace Delimiter
-
-The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
-Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
 
 ### Alternative Name Rules and Concerns About Name Rules
 
