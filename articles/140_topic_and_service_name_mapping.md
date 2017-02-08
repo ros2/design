@@ -213,7 +213,7 @@ All this stays generally ROS agnostic and open to alternative implementations of
 #### DDS Partitions Characteristics
 
 A DDS topic at this point is the basename token within a ROS topic.
-The namespace of a ROS topic is implemented within the parititon field of DDS.
+The namespace of a ROS topic is implemented within the partition field of DDS.
 DDS partitions are implemented as a string array within the Subscription/Publisher QoS, allowing up to 64 items.
 The maximum size of each string has yet to be verified and may depend strongly on the implementation.
 Hereby, the partitions field is implemented as an array of strings, where each string is an individual partitions.
