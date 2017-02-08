@@ -50,7 +50,7 @@ TOPICNAME - A topic name is an identifier for a topic, and is defined as any ser
 
 *Note:* that the DDS specification has a known typo, where it says `-` are allowed, but the RTI documentation correctly lists `_` as allowed.
 
-Additionally, DDS has a hard limit on topic names of 256 characters, so an additional goal is to minimize the number of extra characters used when mapping from ROS to DDS names.
+Additionally, DDS has a hard limit on topic names of 255 characters, so an additional goal is to minimize the number of extra characters used when mapping from ROS to DDS names.
 
 ## ROS 2 Topic and Service Name Constraints
 
@@ -72,6 +72,8 @@ The content of substitutions, i.e. the string in side of balanced curly braces (
 The content of substitutions:
 
 - must not be empty
+
+- must be not longer than 256 characters
 
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
 
