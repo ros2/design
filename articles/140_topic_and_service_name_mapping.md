@@ -209,8 +209,9 @@ We chose to implement the ROS namespace hierarchy with the help of DDS Partition
 DDS Paritions are part of the Subscription/Publisher QoS settings and have been considered as the prefered method of implementing namespaces.
 A subscriber and publisher only match when not only their basename topic matches, they also have to be specified on the same partiton.
 The big benefit of handling the namespaces with partitions is that it is an official QoS within the DDS specification.
-Furthermore, we can separate a ROS topic hierarchy from a DDS implementation, by forwarding the ROS topic in form of `/ns1/ns2/ns3/base_name` to the DDS implementation, which then takes take about setting up a hierarchy.
-All this stays generally ROS agnostic and open to alternative implementations of the RMW interface (e.g. ZeroMQ etc.), which may want to introduce another, different namespace system.
+Furthermore, we can separate a ROS topic hierarchy from a DDS implementation, by forwarding the ROS topic in form of `/ns1/ns2/ns3/base_name` to the DDS implementation, which then takes care about setting up a hierarchy.
+We can therefore make the translation from a ROS Topic (namespaces and basename separated by forward slashes) to a DDS Topic (topic plus paritions) an implementation detail of each RMW implementation.
+This further upholds the flexibility of each alternative to DDS (e.g. ZeroMQ) to realize a different mapping depending on what the middleware provides.
 
 #### DDS Partitions Characteristics
 
@@ -232,8 +233,6 @@ If a publisher operates on two partition entries, e.g. `foo` and `bar` with a ba
 ```
 
 That implies, that DDS Partitions by default are not depicting any hierarchy.
-On the other hand, it allows an easy aliasing or duplication of the specified topic, given that the basename topic does not change.
-A dynamic duplication of the original topic such as `cmd_vel` in a namespace `robot1` to `robot2/cmd_vel` can thus be easily achieved by expanding the DDS partition array.
 
 #### Hierarchy with DDS Partitions
 
@@ -250,13 +249,10 @@ warehouse/robot1/camera_left
 We have to differentiate remapping from aliasing at this point.
 As described before, aliasing implies a duplication of a topic.
 Remapping, in contrast, alters an existing topic and thus remaps one topic into another.
-Given the nature of DDS Partitions, aliasing is natively supported by adding a second entry in the partition field.
-Remapping means, we have to change one existing partition field.
+This is effectively done by changing one existing partition field.
 However, as the complete hierarchy is illustrated within the first index of the partitions, the act of remapping resolves into a string modification.
-If we want to remap a camera image from namespace `camera1` to namespace `camera2`, we have to modify the string in the respective field.
-Publishers or Subscribers are uneffected by this change and don't have to be shutdown and restarted.
-Please note that at this point, we exclusively change the namespace tokens (i.e. the partitions) and not the basename.
-Changing the basename necessarily results in a complete restart of the publisher/subscription  instance.
+As partitions are part of QoS settings, it technically doesn't require a full restart of the publisher and subscription when changing the partitions field, however we cannot change the ROS basename on the fly.
+With this in mind, we may want to require a full restart of the publisher or subscription instance to have a clean transition of the remapping.
 The way of modifying these strings, whether with complete string replacement or regex modifiers, exceeds the scope of this article.
 
 ## Compare and Contrast with ROS 1
@@ -319,7 +315,7 @@ Therefore to allow ROS programs to interoperate with "native" DDS topic names th
 
 #### Substitution of the Namespace Delimiter
 
-The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
+Without the use of partitions, the namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
 Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
 
 #### ROS to DDS Name Conversion Examples
