@@ -283,7 +283,7 @@ As partitions are part of QoS settings, it technically doesn't require a full re
 With this in mind, we may want to require a full restart of the publisher or subscription instance to have a clean transition of the remapping.
 The way of modifying these strings, whether with complete string replacement or regex modifiers, exceeds the scope of this article.
 
-#### ROS Topic and Service Name Length Limit
+### ROS Topic and Service Name Length Limit
 
 The length of the DDS topic plus the length of the partition must not exceed 255 characters.
 Thus, the actual length of a ROS topic or service name is also limited in length.
