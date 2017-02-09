@@ -82,7 +82,6 @@ The content of substitutions:
 - are unlike topic and service names in that they:
 
   - may start with or end with underscores (`_`)
-  - may contain repeated underscores, e.g. `__`
 
 ### Fully Qualified Names
 
@@ -235,7 +234,7 @@ Therefore to allow ROS programs to interoperate with "native" DDS topic names th
 
 We chose to implement the ROS namespace hierarchy with the help of DDS Partitions.
 DDS Paritions are part of the Subscription/Publisher QoS settings and have been considered as the prefered method of implementing namespaces.
-A subscriber and publisher only match when not only their basename topic matches, they also have to be specified on the same partiton.
+A subscriber and publisher not only match when their basename topic matches, they also have to be specified on the same partition.
 The big benefit of handling the namespaces with partitions is that it is an official QoS within the DDS specification.
 Furthermore, we can separate a ROS topic hierarchy from a DDS implementation, by forwarding the ROS topic in form of `/ns1/ns2/ns3/base_name` to the DDS implementation, which then takes care about setting up a hierarchy.
 We can therefore make the translation from a ROS Topic (namespaces and basename separated by forward slashes) to a DDS Topic (topic plus paritions) an implementation detail of each RMW implementation.
@@ -245,11 +244,10 @@ This further upholds the flexibility of each alternative to DDS (e.g. ZeroMQ) to
 
 A DDS topic at this point is the basename token within a ROS topic.
 The namespace of a ROS topic is implemented within the partition field of DDS.
-DDS partitions are implemented as a string array within the Subscription/Publisher QoS, allowing up to 64 items.
-The maximum size of each string has yet to be verified and may depend strongly on the implementation.
-Hereby, the partitions field is implemented as an array of strings, where each string is an individual partitions.
+DDS partitions are implemented as a string array within the Subscription/Publisher QoS, allowing up to 64 items, where each string is an idividual partition.
 This means further that every partition index is stricly unique and independent from all other items.
 Special character used within regular expressions (such as `+`, `*`, `^`) are officially not supported by the standard.
+The maximum size of each string has yet to be verified and may depend strongly on the implementation.
 
 DDS Partitions don't support a partition hierarchy.
 Each entry in the partition array is directly combined with the DDS topic and they are not sequentially combined.
@@ -274,10 +272,8 @@ warehouse/robot1/camera_left
 
 #### Remapping with DDS Partitions
 
-We have to differentiate remapping from aliasing at this point.
-As described before, aliasing implies a duplication of a topic.
-Remapping, in contrast, alters an existing topic and thus remaps one topic into another.
-This is effectively done by changing one existing partition field.
+Remapping alters an existing topic and thus remaps one topic into another.
+When changing the namespace of a topic - note, not the basename - this is effectively done by changing one existing partition field.
 However, as the complete hierarchy is illustrated within the first index of the partitions, the act of remapping resolves into a string modification.
 As partitions are part of QoS settings, it technically doesn't require a full restart of the publisher and subscription when changing the partitions field, however we cannot change the ROS basename on the fly.
 With this in mind, we may want to require a full restart of the publisher or subscription instance to have a clean transition of the remapping.
@@ -285,18 +281,12 @@ The way of modifying these strings, whether with complete string replacement or 
 
 ### ROS Topic and Service Name Length Limit
 
-The length of the DDS topic plus the length of the partition must not exceed 255 characters.
-Thus, the actual length of a ROS topic or service name is also limited in length.
-In the case of a topic, the length is governed by the following algorithm:
-
-`C + N + P <= 255`
-
-Where `P` is `8`, the maximum possible length of the ROS specific prefix, `C` is the number of characters in the topic name, and `N` is the number of name tokens in the topic name, counting the separaters ('/') as well.
-Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`), after removing any URL related syntax (e.g. without the `rostopic://` prefix).
-
-Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
-In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
-Therefore, it would be safest to assume the Service name limit to be less 8 more characters.
+The length of the DDS topic must not exceed 255 characters.
+The actual length of a partition field may be limited to 255 characters, however this varies drastically depending on the vendor.
+RTI Connext does not allow a creation of a publisher/subscription with a partition length of 248 characters, whereas FastRTPS does not have any limitation in length.
+Please bare in mind, that the length of the partition gets further diminished due to the introduction of a ros specific prefix.
+The actual length of a ROS Topic, including the namespace hierarchy and the basename of the topic, may thus be varying in length as well.
+Yet, the basename token must not exceed the length of 255 characters as this is getting mapped direclty as the DDS topic.
 
 ## Compare and Contrast with ROS 1
 
