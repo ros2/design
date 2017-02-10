@@ -70,24 +70,26 @@ Note: for each of the main bullets there is also the option of "system default",
 
 ROS 2.0 will provide QoS profiles based on the following use cases:
 
-- Default QoS settings for publishers and subscriptions ([rmw_qos_profile_default](https://github.com/ros2/rmw/blob/97008fdc646e3199c0a2f99b3307ee2ee807ede9/rmw/include/rmw/qos_profiles.h#L41-L47)).
+- Default QoS settings for publishers and subscriptions
 
   In order to make the transition from ROS1 to ROS2, exercising a similar network behavior is desirable.
-  By default, publishers and subscriptions are reliable in ROS2.
-  However, many DDS vendors don't support publishing large messages (e.g. images) with reliable connections and the common API.
-  These DDS vendors support an alternate API (asynchronous publishers) for which support will be added to ROS2.
-  Until the asynchronous API is supported by ROS2, it is advised to use the "best effort" QoS setting for reliability.
+  By default, publishers and subscriptions are reliable in ROS2, have volatile durability, and "keep last" history.
 
-- Services ([rmw_qos_profile_services_default](https://github.com/ros2/rmw/blob/97008fdc646e3199c0a2f99b3307ee2ee807ede9/rmw/include/rmw/qos_profiles.h#L49-L55)).
+- Services
 
   In the same vein as publishers and subscriptions, services are reliable.
-  The difference here is that we support some level of durability, so clients can submit requests even before a service is available.
-  The durability offered is "transient local", that is, the client's writer will be responsible of persiting the samples until the service can respond to requests.
+  It is especially important for services to use volatile durability, as otherwise service servers that re-start may receive outdated requests.
 
-- Sensor data ([rmw_qos_profile_sensor_data](https://github.com/ros2/rmw/blob/97008fdc646e3199c0a2f99b3307ee2ee807ede9/rmw/include/rmw/qos_profiles.h#L25-L31)).
+- Sensor data
 
   For sensor data, in most cases it's more important to receive readings in a timely fashion, rather than ensuring that all of them arrive.
   That is, developers want the latest samples as soon as they are captured, at the expense of maybe losing some.
+  For that reason the sensor data profile uses best effort reliability and a smaller queue depth.
+
+- Parameters
+
+  Parameters are based on services, and as such have a similar profile.
+  The difference is that parameters use a much larger queue depth so that requests do not get lost when, for example, the parameter client is unable to reach the parameter service server.
 
 Profiles allow developers to focus on their applications without worrying about every QoS setting in the DDS specification.
 
