@@ -1,13 +1,13 @@
 ### Remapping Names
 #### ROS 1
 In ROS 1 [Names](http://wiki.ros.org/Names) can be remapped to other names by passing [remapping arguments](http://wiki.ros.org/Remapping%20Arguments) via the command line.
-`roscpp` additionally allows remaps to be passed via Init as strings in STL containers.
+`roscpp` additionally allows remaps to be passed via `init()` as strings in STL containers.
 A ROS1 remap consists of two names: one that should be replaced with another.
 
-In ROS 1 remapping works on **Fully Qualified Names** (FQN).
-When a name is to be checked for remappings, it is first expanded to a FQN.
-Both parts of the remapping rule are expanded to a FQN.
-Then a name is changed to the remap's second name only if it exactly matches the first name.
+ROS 1 remapping works on **Fully Qualified Names** (FQN).
+`roscpp` [names::init()](http://docs.ros.org/api/roscpp/html/namespaceros_1_1names.html#a377ff8fede7b95398fd5d1c5cd49246b) expands both sides of a remap to FQNs before storing it.
+[names::remap()](http://docs.ros.org/api/roscpp/html/namespaceros_1_1names.html#ab2eebaf734abfbdccb4122f8e24f547f) expands a name to a FQN before checking for applicable remapping rules.
+The name is remapped to the right side only if it exactly matches the left side of a rule.
 
 #### ROS 2
 In ROS2 remapping will be more powerful.
