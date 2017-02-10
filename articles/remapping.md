@@ -11,6 +11,7 @@ Then a name is changed to the remap's second name only if it exactly matches the
 
 #### ROS 2
 In ROS2 remapping will be more powerful.
+See the requirements section below for examples.
 There are more types of remappings that will be supported:
 
 - Namespace replacement
