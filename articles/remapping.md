@@ -87,8 +87,9 @@ It must be possible to make a rule to that replaces "big/red" with "small" such 
 Node uses names `/big/dog`, `/dog/big`.
 It must be possible to make a rule to that replaces "dog" with "cat" such that the final names are `/big/cat`, `/cat/big`
 
-Node uses names `/big/red/dog`.
-It must be possible to make a rule to that replaces "/" with "_" such that the final name is `/_big_red_dog`
+Node uses names `/big/red/dog`, `/small/cat`.
+Node is run in namespace `ns`.
+It must be possible to make a rule to that replaces "/" with "_" such that the final names are `/ns/_big_red_dog`, `/ns/_small_cat`
 
 #### Static and Dynamic Remapping
 Static remapping is the ability to provide a node with remap rules prior to launching it.
