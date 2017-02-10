@@ -4,7 +4,7 @@ In ROS 1 [Names](http://wiki.ros.org/Names) can be remapped to other names by pa
 `roscpp` additionally allows remaps to be passed via Init as strings in STL containers.
 A ROS1 remap consists of two names: one that should be replaced with another.
 
-In ROS1 remapping works with FQN.
+In ROS 1 remapping works on **Fully Qualified Names** (FQN).
 When a name is to be checked for remappings, it is first expanded to a FQN.
 Both parts of the remapping rule are expanded to a FQN.
 Then a name is changed to the remap's second name only if it exactly matches the first name.
