@@ -40,6 +40,8 @@ A rule applied Pre-FQN expansion could remap just one of them.
 
 #### Requirements for remapping capabilities
 ##### 1. Namespace Replacement
+These are rules that only apply to the namespace part of the name.
+
 **A user can remap the first namespace token without replacing all namespace tokens with the same name.**
 
 *Example*
