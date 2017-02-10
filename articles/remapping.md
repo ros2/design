@@ -22,7 +22,7 @@ There are more types of remappings that will be supported:
 
  - Replace all of the basename with another basename
  
-- Arbitrary substring replacement
+- Arbitrary substring replacement ***(maybe)***
 
  - Replace any substring with another string
  
@@ -75,7 +75,7 @@ It must be possible to make a rule to that replaces "cat" with "dog" such that t
 Node uses names `/big/cat`, `/big/cat/paws`.
 It must be possible to make a rule to that replaces "/big/cat" with "/bear" such that the final names are `/bear`, `/big/cat/paws`
 
-##### 4. Arbitrary Substring Replacement
+##### 4. Arbitrary Substring Replacement ***(maybe)***
 **A user can replace any substring with another string**
 
 *Examples*
