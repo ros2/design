@@ -26,9 +26,11 @@ There are more types of remappings that will be supported:
 
  - Replace any substring with another string
  
-- Exact replacement (This is ROS 1)
+- Exact Name replacement
 
- - Replace a name with another name exactly
+ - Replace an entire name with another name
+ 
+ - *ROS 1 remapping is this case applied post-FQN expansion*
 
 ROS 2 may support remapping rules being applied either before or after the names are expanded to FQN.
 ROS 1 only supports the latter.
