@@ -89,6 +89,7 @@ It must be possible to make a rule to that replaces "/" with "_" such that the f
 Static remapping is the ability to provide a node with remap rules prior to launching it.
 A node stores this remapping rules for the duration of it's life.
 All names have remapping rules applied before they are used.
+This means the DDS interface, and maybe all of `rmw`, is ignorant of remapping.
 
 Dynamic remapping is the ability to remap a name after it has already been used.
 For a neat user experience, Dynamic remapping requires rules to be changed.
