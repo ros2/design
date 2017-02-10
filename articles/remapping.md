@@ -91,11 +91,23 @@ Node uses names `/big/red/dog`, `/small/cat`.
 Node is run in namespace `ns`.
 It must be possible to make a rule that replaces "/" with "_" such that the final names are `/ns/_big_red_dog`, `/ns/_small_cat`
 
-#### Static and Dynamic Remapping
+#### Static Remapping
 Static remapping is the ability to provide a node with remap rules prior to launching it.
 A node stores all remapping rules for the duration of it's life.
 All names have remapping rules applied before they are used.
 This means the DDS interface, and maybe all of `rmw`, is ignorant of remapping.
+
+In ROS 1 remap rules are passed into the node at startup.
+`roscpp` received remap rules as arguments to `ros::init()`.
+`rospy` loaded remap rules from `sys.argv` during `rospy.init_node()`.
+
+In ROS 2 this code can be shared between client implementations by doing it in `rcl`.
+[rcl_init()](http://docs.ros2.org/beta1/api/rcl/rcl_8h.html#a6abc5188c50b3a4a5fc41b357b49d6e5) already requires command line arguments to be passed to it.
+It could parse the rules into an intermediate representation and store it internally.
+Methods like [rcl_publisher_init()](http://docs.ros2.org/beta1/api/rcl/publisher_8h.html#a0f09bd85795259f6c96f38c875d19d13) and [rcl_subscription_init()](http://docs.ros2.org/beta1/api/rcl/subscription_8h.html#a2b8a58f9ae9fef8adba35b5a45db10a0) would apply remapping rules automatically.
+Making name remapping an automatic part of `rcl` suggests that features using names, such as parameters, would be implemented in `rcl` and not `rclcpp` and `rclpy` as indicated on [slide 31](http://roscon.ros.org/2016/presentations/ROSCon%202016%20-%20ROS%202%20Update.pdf).
+
+#### Dynamic Remapping
 
 Dynamic remapping is the ability to remap a name after it has already been used.
 For a neat user experience, Dynamic remapping requires rules to be chainable.
@@ -105,4 +117,3 @@ Dynamic remapping should take effect without requiring the user's code to be res
 #### Remapping syntax
 In ROS 1 remapping is done primarily through command line arguments, commonly via roslaunch.
 It may not be possible to use the same syntax for ROS 2 because multiple nodes can be inside of the same process, and it is desired that remap rules are node specific and not process specific.
-
