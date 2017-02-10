@@ -34,8 +34,8 @@ ROS 1 only supports the latter.
 
 #### Pre-FQN expansion remapping
 Applying rules prior to FQN expansion enables this use case.
-Say the source code for a node use two names `"cat"` and `"/ns/cat"`.
-The node is in namespace `"ns"`.
+Say the source code for a node use two names `cat` and `/ns/cat`.
+The node is in namespace `ns`.
 With just Post-FQN expantion it is impossible to remap these names individually.
 With Pre-FQN expansion remapping, a rule can be made to remap just one of them.
 
@@ -44,47 +44,47 @@ With Pre-FQN expansion remapping, a rule can be made to remap just one of them.
 **A user can remap the first namespace token without replacing all namespace tokens with the same name.**
 
 *Example*
-Node uses names `"/big/cat"`, `"/big/red/dog"`, `"/red/big/cat"`.
-It must be possible to make a rule to that replaces "big" with "small" such that the final names are `"/small/cat"`, `"/small/red/dog"`, `"/red/big/cat"`
+Node uses names `/big/cat`, `/big/red/dog`, `/red/big/cat`.
+It must be possible to make a rule to that replaces "big" with "small" such that the final names are `/small/cat`, `/small/red/dog`, `/red/big/cat`
 
 **A user can replace all matching namespace tokens without changing the basename.**
 
 *Example*
-Node uses names `"/big/cat"`, `"/red/big/dog"`, `"/dog/big"`.
-It must be possible to make a rule to that replaces "big" with "small" such that the final names are `"/small/cat"`, `"/red/small/dog"`, `"/dog/big"`
+Node uses names `/big/cat`, `/red/big/dog`, `/dog/big`.
+It must be possible to make a rule to that replaces "big" with "small" such that the final names are `/small/cat`, `/red/small/dog`, `/dog/big`
 
 **A user can replace multiple matching namespace tokens only if whole namespaces are matched.**
 
 *Example*
-Node uses names `"/big/red/dog"`, `"/very_big/red/dog"`.
-It must be possible to make a rule to that replaces "big/red" with "small" such that the final names are `"/small/dog"`, `"/very_big/red/dog"`
+Node uses names `/big/red/dog`, `/very_big/red/dog`.
+It must be possible to make a rule to that replaces "big/red" with "small" such that the final names are `/small/dog`, `/very_big/red/dog`
 
 ##### 2. Basename Replacement
 **A user can replace a full basename token with another basename token**
 
 *Example*
-Node uses names `"/big/cat"`, `"/big/cat/paws"`.
-It must be possible to make a rule to that replaces "cat" with "dog" such that the final names are `"/big/dog"`, `"/big/cat/paws"`
+Node uses names `/big/cat`, `/big/cat/paws`.
+It must be possible to make a rule to that replaces "cat" with "dog" such that the final names are `/big/dog`, `/big/cat/paws`
 
 ##### 3. Exact Replacement
 **A user can replace a full name with another name**
 
 *Example*
-Node uses names `"/big/cat"`, `"/big/cat/paws"`.
-It must be possible to make a rule to that replaces "/big/cat" with "/bear" such that the final names are `"/bear"`, `"/big/cat/paws"`
+Node uses names `/big/cat`, `/big/cat/paws`.
+It must be possible to make a rule to that replaces "/big/cat" with "/bear" such that the final names are `/bear`, `/big/cat/paws`
 
 ##### 4. Arbitrary Substring Replacement
 **A user can replace any substring with another string**
 
 *Examples*
-Node uses names `"/big/red/dog"`, `"/very_big/red/dog"`.
-It must be possible to make a rule to that replaces "big/red" with "small" such that the final names are `"/small/dog"`, `"/very_small/dog"`
+Node uses names `/big/red/dog`, `/very_big/red/dog`.
+It must be possible to make a rule to that replaces "big/red" with "small" such that the final names are `/small/dog`, `/very_small/dog`
 
-Node uses names `"/big/dog"`, `"/dog/big"`.
-It must be possible to make a rule to that replaces "dog" with "cat" such that the final names are `"/big/cat"`, `"/cat/big"`
+Node uses names `/big/dog`, `/dog/big`.
+It must be possible to make a rule to that replaces "dog" with "cat" such that the final names are `/big/cat`, `/cat/big`
 
-Node uses names `"/big/red/dog"`.
-It must be possible to make a rule to that replaces "/" with "_" such that the final name is `"/_big_red_dog"`
+Node uses names `/big/red/dog`.
+It must be possible to make a rule to that replaces "/" with "_" such that the final name is `/_big_red_dog`
 
 #### Static and Dynamic Remapping
 Static remapping is the ability to provide a node with remap rules prior to launching it.
