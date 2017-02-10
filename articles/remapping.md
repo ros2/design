@@ -33,11 +33,10 @@ ROS 2 may support remapping rules being applied either before or after the names
 ROS 1 only supports the latter.
 
 #### Pre-FQN expansion remapping
-Applying rules prior to FQN expansion enables this use case.
 Say the source code for a node use two names `cat` and `/ns/cat`.
-The node is in namespace `ns`.
-With just Post-FQN expantion it is impossible to remap these names individually.
-With Pre-FQN expansion remapping, a rule can be made to remap just one of them.
+If the node runs in namespace `ns`, the FQN of both topics will be identical: `/ns/cat`.
+No rule could remap these names individually once they have been expanded.
+A rule applied Pre-FQN expansion could remap just one of them.
 
 #### Requirements for remapping capabilities
 ##### 1. Namespace Replacement
