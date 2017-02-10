@@ -88,7 +88,7 @@ It must be possible to make a rule to that replaces "/" with "_" such that the f
 #### Static and Dynamic Remapping
 Static remapping is the ability to provide a node with remap rules prior to launching it.
 A node stores this remapping rules for the duration of it's life.
-Any names it uses get have these rules applied to it before it is used.
+All names have remapping rules applied before they are used.
 
 Dynamic remapping is the ability to remap a name after it has already been used.
 For a neat user experience, Dynamic remapping requires rules to be changed.
