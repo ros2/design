@@ -97,9 +97,9 @@ All names have remapping rules applied before they are used.
 This means the DDS interface, and maybe all of `rmw`, is ignorant of remapping.
 
 Dynamic remapping is the ability to remap a name after it has already been used.
-For a neat user experience, Dynamic remapping requires rules to be changed.
-A user should be able to remap the name they see rather than the original name that was used.
-This suggests remapping rules have an order in which they should be applied (chronological?).
+For a neat user experience, Dynamic remapping requires rules to be chainable.
+When a user dynamically remaps a name, it should apply to the name they see rather than the original name that was used.
+Dynamic remapping should take effect without requiring the user's code to be restarted.
 
 #### Remapping syntax
 In ROS 1 remapping is done primarily through command line arguments, commonly via roslaunch.
