@@ -47,12 +47,6 @@ Relative names are expanded to FQN by prepending the node's namespace to them.
 - Node uses relative name `foo/bar`
 - The FQN is `/fiz/buz/foo/bar`
 
-### Structure of a Remapping Rule
-Remapping rules have two parts:
-
-1. a part used to determine if the rule applies to a name
-2. a replacement for the names that are matched
-
 
 ### ROS 2
 Remapping in ROS 2 will likely support the following use cases:
@@ -162,6 +156,13 @@ This also implies there is a way to supply remapping rules to a node besides the
 **Rationale:**
 A developer may want to make a running node subscribe to a different source of data to see how it behaves.
 It is less work for them to change the name they see rather than digging through the source code to find the original name.
+
+
+### Structure of a Remapping Rule
+Remapping rules have two parts:
+
+1. a part used to determine if the rule applies to a name
+2. a replacement for the names that are matched
 
 
 ### Remapping Names in ROS 1
