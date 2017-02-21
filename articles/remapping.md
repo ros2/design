@@ -203,6 +203,7 @@ It does not support pre-FQN expansion remapping.
 - `~` expands to `/namespace/nodename`
 
 - `nodename|` prefixed to a rule makes it apply only to a node with that unique name
+ - If not specified, the rule applies to all nodes in the process
 
 **Examples:**
 
