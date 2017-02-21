@@ -1,8 +1,55 @@
 ### Remapping Names
-#### ROS 1
-In ROS 1 [Names](http://wiki.ros.org/Names) can be remapped to other names by passing [remapping arguments](http://wiki.ros.org/Remapping%20Arguments) via the command line.
-`roscpp` additionally allows remaps to be passed via `init()` as strings in STL containers.
-A ROS1 remap consists of two names: one that should be replaced with another.
+
+Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names).
+Names are hard coded in ROS nodes.
+Remapping is what allows names to be changed at runtime.
+It enables publisers/subscribers or service servers/clients using different names to be connected.
+Without it nodes would have to be modified and rebuilt for each application.
+
+#### Structure of a Name
+
+Names are hierarchical strings delineated by `/`.
+If they begin with `/` they are said to be **global** or **Fully Qualified Names** (FQN).
+Otherwise they are said to be **relative**.
+Here are some examples:
+
+- `/`
+- `/foo`
+- `/foo/bar`
+- `foo/bar/baz`
+- `foo/bar`
+- `bar`
+
+Each part of a name between a slash is a **token**.
+The examples above use the tokens `foo`, `bar` and `baz`.
+FQN are divided into two pieces: **namespace** and **basename**.
+The basename is the last token in a name.
+The namespace is all tokens and slashes prior to the basename in a FQN.
+Here are some example namespaces:
+
+- `/`
+- `/foo/`
+- `/foo/bar/baz/`
+
+Here are some example basenames:
+
+- ` `
+- `foo`
+
+Nodes are said to be in a **namespace**.
+This kind of namespace becomes a prefix to all relative names.
+Relative names are resolved to FQN by prepending the node's namespace to them.
+Relative names are resolved to FQN prior to being used.
+As an example:
+
+- Node is in namespace `/fiz/buz`
+- Node uses relative name `foo/bar`
+- The FQN is `/fiz/buz/foo/bar`
+
+
+#### Remapping Names in ROS 1
+In ROS 1 remapping works by passing in [arguments](http://wiki.ros.org/Remapping%20Arguments) to each node.
+A remap rule consists of two names: one that should be replaced with another.
 
 ROS 1 remapping works on **Fully Qualified Names** (FQN).
 `roscpp` [names::init()](http://docs.ros.org/api/roscpp/html/namespaceros_1_1names.html#a377ff8fede7b95398fd5d1c5cd49246b) expands both sides of a remap to FQNs before storing it.
