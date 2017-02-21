@@ -60,10 +60,11 @@ Remapping in ROS 2 will likely support the following use cases:
 
 #### A user can run multiple instances of a node using the same executable in different data paths
 This implies remapping rules are supplied to an instance of a node at runtime, and that remapping rules are specific to an instance of a node.
+
 **Rationale:**
 
 - A node may be a driver for a type of sensor
-- A robot that has multiple sensors of the same type could launch multiple instance of the same node outputting to different topics
+- A robot that has multiple sensors of the same type could launch multiple instances of the same node outputting to different topics
 ```
             +-------------+
  (Lidar 1)--> node inst 1 +-->/head_scan
@@ -109,6 +110,7 @@ It might require many remap rules to replace a token if the token is undesirable
 
 #### A user can remap just a relative name used in code
 This implies remapping prior to FQN expansion
+
 **Rationale:**
 
 - A node uses two names `cat` and `/ns/cat`
@@ -137,6 +139,7 @@ This is part of the behavior of ROS 1 remapping, so including it will ease the t
 
 #### A user can supply node specific remapping arguments via the command line
 This implies there is a way to uniquely identify a node in a process.
+
 **Rationale:**
 This is part of the behavior of ROS 1 remapping.
 It is important for ROS 2 because it supports multiple nodes in the same process.
@@ -144,6 +147,7 @@ It is important for ROS 2 because it supports multiple nodes in the same process
 
 #### A user can put a node into a specific namespace
 This implies there is a way to uniquely identify a node in a process.
+
 **Rationale:**
 ROS 1 has this feature using the environment variable `ROS_NAMESPACE` and the argument `__ns`
 These may not be sufficient in ROS 2 because it supports multiple nodes in the same process.
@@ -156,6 +160,7 @@ These may not be sufficient in ROS 2 because it supports multiple nodes in the s
 #### A user can remap a name they see on a node after it has launched
 This implies remapping rules are applied in sequence.
 This also implies there is a way to supply remapping rules to a node besides the command line (services?).
+
 **Rationale:**
 A developer may want to make a running node subscribe to a different source of data to see how it behaves.
 It is less work for them to change the name they see rather than digging through the source code to find the original name.
