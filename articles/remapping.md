@@ -193,9 +193,9 @@ It does not support pre-FQN expansion remapping.
  - During replacement it is replaced with the matched token
 
 - `%%`
- - During matching it is a wildcard that matches one or more tokens delimited by slashes
+ - During matching it is a wildcard that matches zero or more tokens with at least one slash
  - It may appear at most once on the matching side of a rule
- - During replacement it is replaced with the matched tokens
+ - During replacement it is replaced with the matched slashes and tokens
 
 - `:=` divides the two parts of a remapping rule: matching and replacement
 
@@ -222,6 +222,7 @@ It does not support pre-FQN expansion remapping.
  - FQN `/red/big/cat` gets remapped to `/blu/big/cat`
 
 - rule `%%cat:=/big/cat`
+ - FWN `/cat` gets remapped to `/big/cat`
  - FQN `/small/cat` gets remapped to `/big/cat`
  - FQN `/really/small/cat` gets remapped to `/big/cat`
 
