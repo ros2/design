@@ -86,7 +86,7 @@ One rule could remap the namespace itself.
 The token used for a basename may also be in the namespace of another name the user does not want to change.
 
 - A node uses names `/scan/head/scan`, `/scan/base/scan`, `/scan/arm/scan`
-- A user wants the node to subscribe to the same data after some processsing
+- A user wants the node to subscribe to the same data after some processing
 - The user remaps basename `scan` to `scan_filtered`
 - The final topics are `/scan/head/scan_filtered`, `/scan/base/scan_filtered`, `/scan/arm/scan_filtered`
 
@@ -99,7 +99,7 @@ It might require many remap rules to replace a token if the token is undesirable
 - A company sells a generic mobile robot base with a ROS 2 driver
 - The driver uses lots of names with the company's name in it: `UmbrellaCorp`
 - Another company incorporates the base into their product, and their customers want a ROS 2 interface
-- They don't want their inteface to contain `UmbrellaCorp`, so they remap the token to `mobile_base` when they launch the nodes for the base
+- They don't want their interface to contain `UmbrellaCorp`, so they remap the token to `mobile_base` when they launch the nodes for the base
 
 
 #### A user can remap just a relative name used in code
@@ -168,7 +168,7 @@ Remapping rules have two parts:
 ### Remapping Names in ROS 1
 Remapping is a feature that also exists in ROS 1.
 In ROS 1 remapping works by passing in [arguments](http://wiki.ros.org/Remapping%20Arguments) to each node.
-Client implementations also have APIs in code to pass remapping rules when the node is intialized.
+Client implementations also have APIs in code to pass remapping rules when the node is initialized.
 A remap rule consists of two names: one that should be replaced with another.
 
 ROS 1 remapping works on **Fully Qualified Names** (FQN).
@@ -179,7 +179,7 @@ The name is remapped to the right side only if it exactly matches the left side 
 
 ### Thoughts on ROS 2 implementation
 `rmw` is likely ignorant of remapping.
-The APIs offered by client implementations should remap names automatically to prevent creation of unremappable names.
+The APIs offered by client implementations should remap names automatically to prevent creation of names that are impossible to remap.
 
 
 ### Remapping rule command line syntax
