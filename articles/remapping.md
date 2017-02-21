@@ -130,7 +130,7 @@ This is part of the behavior of ROS 1 remapping, so including it will ease the t
 
 #### A user can remap a relative name to another name
 **Rationale:**
-This is part of the behavior of ROS 1 remapping, so including it will ease the transition to ROS 2.
+This is part of the behavior of ROS 1 remapping.
 
 - A node is in namespace `/ns/` and uses name `bar`
 - A rule is created to remap `bar` to `foo`
@@ -142,7 +142,6 @@ This implies there is a way to uniquely identify a node in a process.
 
 **Rationale:**
 This is part of the behavior of ROS 1 remapping.
-It is important for ROS 2 because it supports multiple nodes in the same process.
 
 
 #### A user can put a node into a specific namespace
