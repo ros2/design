@@ -149,7 +149,6 @@ This implies there is a way to uniquely identify a node in a process.
 
 **Rationale:**
 ROS 1 has this feature using the environment variable `ROS_NAMESPACE` and the argument `__ns`
-These may not be sufficient in ROS 2 because it supports multiple nodes in the same process.
 
 - A system has multiple robots
 - A users wants the robots systems to not interfere, so they push all topics down into a namespace
