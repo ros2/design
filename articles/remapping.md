@@ -216,7 +216,7 @@ It does not support pre-FQN expansion remapping.
 - rule `%:=cat` node in namespace `/ns/`
  - FQN `/ns/dog` gets remapped to `/ns/cat`
 
--rule `/%:=cat` node in namespace `/ns/`
+- rule `/%:=cat` node in namespace `/ns/`
  - FQN `/dog` gets remapped to `/ns/cat`
 
 - rule `/red%%:=/blu%%` node in any namespace
