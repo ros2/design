@@ -181,7 +181,7 @@ The name is remapped to the right side only if it exactly matches the left side 
 The APIs offered by client implementations should remap names automatically to prevent creation of unremappable names.
 
 
-#### Remapping rule command line syntax
+### Remapping rule command line syntax
 In ROS 1 remapping is done primarily through command line arguments, commonly via roslaunch.
 It may not be possible to use the same syntax for ROS 2 because multiple nodes can be inside of the same process, and it is desired that remap rules are node specific and not process specific.
 This syntax assumes the node's name is guaranteed to be unique in a process.
