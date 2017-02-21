@@ -48,7 +48,7 @@ Relative names are expanded to FQN by prepending the node's namespace to them.
 - The FQN is `/fiz/buz/foo/bar`
 
 
-### ROS 2
+### ROS 2 Use Cases
 Remapping in ROS 2 will likely support the following use cases:
 
 
