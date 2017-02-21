@@ -151,7 +151,7 @@ This implies there is a way to uniquely identify a node in a process.
 ROS 1 has this feature using the environment variable `ROS_NAMESPACE` and the argument `__ns`
 
 - A system has multiple robots
-- A users wants the robots systems to not interfere, so they push all topics down into a namespace
+- A users wants the robots to not interfere with each other, so each robot is put into its own namespace
 - *TODO Global topics like /tf and /tf_static must be individually remapped in ROS 1. What to do about them?*
 
 
