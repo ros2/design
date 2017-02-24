@@ -231,14 +231,14 @@ Therefore we cannot use the array of strings to represent our implied namespace 
 
 #### Hierarchy with DDS Partitions
 
-Since DDS partitions have no hierarchy or order to them array of strings, this proposal would use only one of the strings in the array to hold the entire ROS name's namespace.
-Therefore we preserve the forward slashes (`\`) that exist in the ROS name's namespace already.
+Since DDS partitions have no hierarchy or order to the array of strings, this proposal would use only one of the strings in the array to hold the entire ROS name's namespace.
+Therefore we preserve the forward slashes (`/`) that exist in the ROS name's namespace already.
 
 ### ROS Specific Namespace Prefix
 
 In order to differentiate ROS topics easily, all DDS topics created by ROS shall be automatically prefixed with a namespace like `/rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS partition `/rt/` and a DDS topic `foo`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name name `foo`.
-As another example, a topic called `/left/image_raw` would translate to a DDS partition `/rt/left/` and a DDS topic `image_raw`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name name `image_raw`.
+For example, a plain topic called `/foo` would translate to a DDS partition `/rt/` and a DDS topic `foo`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`.
+As another example, a topic called `/left/image_raw` would translate to a DDS partition `/rt/left/` and a DDS topic `image_raw`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
 On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
