@@ -226,7 +226,7 @@ You can read more about partitions in RTI's documentation:
 
 The array of strings have no hierarchy and the order does not matter.
 Each entry in the partition array is directly combined with the DDS topic and they are not sequentially combined.
-If a publisher operates on two partition entries, e.g. `foo` and `bar` with a base name of `baz`, this would result in the moral equivalent of two topics: `/foo/baz` and `/bar/baz`
+If a publisher has two partition entries, e.g. `foo` and `bar` with a base name of `baz`, this would be equivalent to having two different publishers on these topics: `/foo/baz` and `/bar/baz`.
 Therefore we cannot use the array of strings to represent our implied namespace hierarchy and we have to continue to use the forward slash to accomplish this.
 
 #### Hierarchy with DDS Partitions
