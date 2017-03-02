@@ -79,10 +79,6 @@ The content of substitutions:
 
 - must not start with a numeric character (`[0-9]`)
 
-- are unlike topic and service names in that they:
-
-  - may start with or end with underscores (`_`)
-
 ### Fully Qualified Names
 
 The topic and service name rules allow for some convenience syntax, which in some cases requires additional context to expand to the fully qualified name and then to the DDS equivalent name.
@@ -158,7 +154,7 @@ Topic and service name tokens:
 
   - rationale: it removes the chance for accidental `//` from concatenation and thereore the need to collapse `//` to `/`
 
-- may use alphanumeric characters (`[0-9|a-z|A-Z]`), single underscores (`_`), and/or balanced curly braces (`{}`)
+- may use alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), and/or balanced curly braces (`{}`)
 
 - must not start with numeric characters (`[0-9]`)
 
