@@ -197,16 +197,17 @@ Any topic or service name that contains any tokens (either namespaces or a topic
 ## Mapping of ROS 2 Topic and Service Names to DDS Concepts
 
 The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the forward slash (`/`), the tilde (`~`), and the balanced curly braces (`{}`).
-These must be substituted or otherwise removed during the process of mapping to DDS topic names.
+These must be substituted or otherwise removed during the process of converting the topic or service name to DDS concepts.
 Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
 Therefore only forward slashes (`/`) need to be addressed when converting to DDS concepts.
 
 ### ROS Namespaces with DDS Partitions
 
-The proposed strategy to address the forward slashes (`/`) which are present in ROS names, is to separate the ROS name into the "namespace" and the "base name", and then place the entire namespace into a DDS partition and the remaining base name into the DDS topic name.
+The proposed strategy to address the forward slashes (`/`) which are present in ROS names, is to separate the ROS name into the "namespace" and the "base name", and then place the namespace, stripped of leading and trailing forward slashes (`/`), into a single DDS partition entry and the remaining base name into the DDS topic name.
 This addresses the issue because the ROS name's base name will not contain any forward slashes (`/`) by definition and so there are no longer any disallowed characters in the DDS topic name.
-The DDS partition will contain the ROS name's namespace, including any forward slashes (`/`) that make up the namespace, and that is acceptable because DDS partitions allow forward slashes (`/`) unlike the DDS topics.
+The DDS partition will contain the ROS name's namespace, including any forward slashes (`/`) that make up the namespace and were not at the beginning or the end of the namespace.
+That is acceptable because DDS partitions are allowed to contain forward slashes (`/`) unlike the DDS topics.
 
 This strategy also avoids DDS partitions from being exposed to the ROS API's.
 This is because the splitting of the ROS name into namespace and base name can occur inside the implementation of the ROS middleware interface, and so the ROS topic or service name will remain intact throughout the middleware agnostic code.
@@ -237,8 +238,9 @@ Therefore we preserve the forward slashes (`/`) that exist in the ROS name's nam
 ### ROS Specific Namespace Prefix
 
 In order to differentiate ROS topics easily, all DDS topics created by ROS shall be automatically prefixed with a namespace like `/rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS partition `/rt/` and a DDS topic `foo`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`.
-As another example, a topic called `/left/image_raw` would translate to a DDS partition `/rt/left/` and a DDS topic `image_raw`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`.
+At this point it's important to remember that when the namespace part of the ROS name is put into the DDS partition it is stripped of leading and trailing forward slashes (`/`).
+For example, a plain topic called `/foo` would translate to a DDS partition `rt` and a DDS topic `foo`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`, then the namespace getting the leading and trailing forward slashes (`/`) stripped.
+As another example, a topic called `/left/image_raw` would translate to a DDS partition `rt/left` and a DDS topic `image_raw`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`, again stripping the leading and trailing forward slashes (`/`) from the namespace.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
 On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
@@ -263,9 +265,9 @@ Here are some examples of how a fully qualified ROS name would be broken down in
 
 | ROS Name                        | DDS Topic   | DDS Partition               |
 |---------------------------------|-------------|-----------------------------|
-| `/foo`                          | `foo`       | [`/rt/`]                    |
-| `rostopic:///foo/bar`           | `bar`       | [`/rt/foo/`]                |
-| `/robot1/camera_left/image_raw` | `image_raw` | [`/rt/robot1/camera_left/`] |
+| `/foo`                          | `foo`       | [`rt`]                      |
+| `rostopic:///foo/bar`           | `bar`       | [`rt/foo`]                  |
+| `/robot1/camera_left/image_raw` | `image_raw` | [`rt/robot1/camera_left`]   |
 
 ### Changing ROS Names During Runtime
 
@@ -291,30 +293,25 @@ Since all ROS topics are prefixed when being converted to DDS topic names, it ma
 For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling produced by the implicit ROS specific namespace.
 Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
 
-Additionally, all ROS topic names are made absolute automatically, e.g. `image` becomes `/image`, and so it would be impossible to subscribe to a DDS topic unless it started with a forward slash (`/`).
-Therefore the API should also provide a way to skip this step, taking the exact topic name provided.
-
 #### Examples and Ideas for Communicating with Non-ROS Topics
 
 Note that these are not part of the proposal, but only possible solutions to the issue of communicating with "native" DDS topics.
 This section should be update when/if a complete solution is found.
 
-It may be possible, through an option in the API or through some name syntax, to get a similar break down but without the ROS specific prefix and the root namespace (i.e. `/`).
+It may be possible, through an option in the API or through some name syntax, to get a similar break down but without the ROS specific prefix.
 
 For example with an option in the API:
 
 | ROS Name              | ROS Prefix | DDS Topic   | DDS Partition               |
 |-----------------------|------------|-------------|-----------------------------|
-| `rostopic://image`    | with       | `image`     | [`/rt/`]                    |
-| `rostopic://image`    | without    | `image`     | [`/`]                       |
+| `rostopic://image`    | with       | `image`     | [`rt`]                      |
+| `rostopic://image`    | without    | `image`     | [``]                        |
 
-Note that with just a single option it is not possible to express whether or not the root namespace is desired in the DDS partition.
-
-In which case, perhaps some markup might work better, for example:
+Another option would be to have some markup in the scheme name, for example:
 
 | ROS Name                              | DDS Topic           | DDS Partition               |
 |---------------------------------------|---------------------|-----------------------------|
-| `rostopic://image`                    | `image`             | [`/rt/`]                    |
+| `rostopic://image`                    | `image`             | [`rt`]                      |
 | `rostopic+exact://image`              | `image`             | []                          |
 | `rostopic+exact://camera_left/image`  | `camera_left/image` | []                          |
 
