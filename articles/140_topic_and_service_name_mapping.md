@@ -74,8 +74,6 @@ The content of substitutions:
 
 - must not be empty
 
-- the basename part of the ROS 2 topic must be not longer than 256 characters
-
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
 
 - must not start with a numeric character (`[0-9]`)
@@ -91,7 +89,7 @@ Fully qualified names have these additional restrictions:
 - must not contain tilde (`~`) or curly braces (`{}`)
 
 Note that expanded substitutions must result in a valid name and comply to the name contraints stated in the previous section.
-An example of an invalid substitution would be `{sub}/foo` and replace {sub} with a numeric value, which thus leads to a topic starting with a numeric character.
+An example of an invalid substitution would be `{sub}/foo` and replace `{sub}` with a numeric value, which thus leads to a topic starting with a numeric character.
 
 ### Uniform Resource Locators (URLs)
 
