@@ -50,7 +50,8 @@ TOPICNAME - A topic name is an identifier for a topic, and is defined as any ser
 
 *Note:* that the DDS specification has a known typo, where it says `-` are allowed, but the RTI documentation correctly lists `_` as allowed.
 
-Additionally, DDS has a hard limit on topic names of 255 characters, so an additional goal is to minimize the number of extra characters used when mapping from ROS to DDS names.
+Additionally, DDS - or more precisely the underlaying RTPS protocol - has a hard limit on topic names of 256 characters, so an additional goal is to minimize the number of extra characters used when mapping from ROS to DDS names.
+See The Real-time Publish-Subscribe Protocol (RTPS) DDS Interoperability Wire Protocol Specification, Table 9.12 for more details.
 
 ## ROS 2 Topic and Service Name Constraints
 
@@ -73,7 +74,7 @@ The content of substitutions:
 
 - must not be empty
 
-- must be not longer than 256 characters
+- the basename part of the ROS 2 topic must be not longer than 256 characters
 
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
 
@@ -89,7 +90,8 @@ Fully qualified names have these additional restrictions:
 - must start with a forward slash (`/`), i.e. they must be absolute
 - must not contain tilde (`~`) or curly braces (`{}`)
 
-Note that expanded substitutions must result in a valid name.
+Note that expanded substitutions must result in a valid name and comply to the name contraints stated in the previous section.
+An example of an invalid substitution would be `{sub}/foo` and replace {sub} with a numeric value, which thus leads to a topic starting with a numeric character.
 
 ### Uniform Resource Locators (URLs)
 
@@ -276,12 +278,12 @@ With this in mind, we may want to always require a full restart of the publisher
 
 ### ROS Topic and Service Name Length Limit
 
-The length of the DDS topic must not exceed 255 characters.
-The actual length of a partition field may be limited to 255 characters, however this varies drastically depending on the vendor.
+The length of the DDS topic must not exceed 256 characters.
+The actual length of a partition field may be limited to 256 characters, however this varies drastically depending on the vendor.
 RTI Connext does not allow a creation of a publisher/subscription with a partition length of 248 characters, whereas FastRTPS does not have any limitation in length.
 Please bare in mind, that the length of the partition gets further diminished due to the introduction of a ros specific prefix.
 The actual length of a ROS Topic, including the namespace hierarchy and the base name of the topic, may thus be varying in length as well.
-Yet, the base name token must not exceed the length of 255 characters as this is getting mapped direclty as the DDS topic.
+Yet, the base name token must not exceed the length of 256 characters as this is getting mapped direclty as the DDS topic.
 
 ### Communicating with Non-ROS Topics
 
