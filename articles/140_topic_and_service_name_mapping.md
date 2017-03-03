@@ -111,9 +111,9 @@ For example, these are valid names:
 
 But these are not valid names:
 
-| `123abc`    | `123`  | `foo bar`| ` `        | `foo//bar` | `foo/` |
-| `foo_/bar`  | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar` | `/~`   |
-| `foo/~/bar` |
+| `123abc`    | `123`  | `foo bar` | ` `        | `foo//bar` |
+| `foo_/bar`  | `~foo` | `foo~`    | `foo~/bar` | `foo/~bar` |
+| `foo/~/bar` | `foo/` | `/~`      |            |            |
 
 These are some valid fully qualified names:
 
