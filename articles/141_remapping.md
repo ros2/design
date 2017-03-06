@@ -188,7 +188,7 @@ Remapping rules have two parts:
 ### Remapping Names in ROS 1
 Remapping is a feature that also exists in ROS 1.
 In ROS 1 remapping works by passing in [arguments](http://wiki.ros.org/Remapping%20Arguments) to each node.
-Client implementations also have APIs in code to pass remapping rules when the node is initialized.
+Client libraries also have APIs in code to pass remapping rules when the node is initialized.
 A remap rule consists of two names: one that should be replaced with another.
 
 ROS 1 remapping works on **Fully Qualified Names** (FQN).
