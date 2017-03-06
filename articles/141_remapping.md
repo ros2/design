@@ -1,4 +1,24 @@
-## Remapping Names
+---
+layout: default
+title: Topic, Service, and Parameter Name Remapping
+abstract:
+  This article describes how names can be transformed at runtime. Use cases and a command line syntax are presented. 
+author: '[Shane Loretz](https://github.com/sloretz)'
+published: false
+---
+
+- This will become a table of contents (this text will be scraped).
+{:toc}
+
+# {{ page.title }}
+
+<div class="abstract" markdown="1">
+{{ page.abstract }}
+</div>
+
+Original Author: {{ page.author }}
+
+## Context
 Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names).
 Names are hard coded in ROS nodes.
 Remapping is what allows names to be changed at runtime.
