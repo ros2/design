@@ -197,11 +197,6 @@ Before a name is remapped it is also [expanded to FQN](http://docs.ros.org/api/r
 The name is remapped to the right side only if it exactly matches the left side of a rule.
 
 
-### Thoughts on ROS 2 implementation
-`rmw` is likely ignorant of remapping.
-The APIs offered by client implementations should remap names automatically to prevent creation of names that are impossible to remap.
-
-
 ### Remapping rule command line syntax
 In ROS 1 remapping is done primarily through command line arguments, commonly via roslaunch.
 It may not be possible to use the same syntax for ROS 2 because multiple nodes can be inside of the same process, and it is desired that remap rules are node specific and not process specific.
