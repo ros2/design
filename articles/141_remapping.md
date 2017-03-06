@@ -31,7 +31,7 @@ If they begin with `/` they are said to be **global** or **Fully Qualified Names
 Otherwise they are said to be **relative**.
 Relative names are resolved to FQN prior to being used.
 
-**Example names**:
+**Example names:**
 
 - `/foo`
 - `/foo/bar`
