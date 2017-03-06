@@ -22,7 +22,7 @@ Original Author: {{ page.author }}
 Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names).
 Names are hard coded in ROS nodes.
 Remapping is what allows names to be changed at runtime.
-Without remapping nodes would have to be modified and rebuilt for every application.
+Without remapping a node would have to be modified and rebuilt for every application.
 **Remapping rules** are the instructions given to a node to change the names it uses.
 
 ### Structure of a Name
