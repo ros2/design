@@ -227,9 +227,11 @@ With the different design of ament it becomes possible to implement a package si
 #### Building within a single CMake context
 
 catkin allows users to build multiple packages within a single CMake context (using `catkin_make`).
-While this significantly speeds up the process it is not scalable at large.
-This is due to the fact that all packages share the same CMake namespace.
-Therefore the package might have colliding target names or fail to build correctly due to side effects between the packages.
+While this significantly speeds up the process it has several drawbacks.
+Since all packages within a workspace share the same CMake context all targets are within the same namespace and must therefore be unique across all packages.
+The same applies to global variables, functions, macros, tests, etc.
+Furthermore a package might need to declare target level dependencies to targets in other packages to avoid CMake targets being parallelized when they ought to be sequential (but only when being built in the same CMake context).
+This requires internal knowledge about the build structure of other packages and subverts the goal of decoupling packages.
 ament does not provide that feature due to these drawbacks.
 
 ### Additional improvements in ament over catkin
