@@ -1,3 +1,23 @@
+---
+layout: default
+title: Static Remapping
+abstract:
+  This article describes the requirements, rationale, and mechanisms for remapping names in ROS2.
+author: '[Shane Loretz](https://github.com/sloretz)'
+published: false
+---
+
+- This will become a table of contents (this text will be scraped).
+{:toc}
+
+# {{ page.title }}
+
+<div class="abstract" markdown="1">
+{{ page.abstract }}
+</div>
+
+Original Author: {{ page.author }}
+
 ## Remapping Names
 Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names).
 Names are hard coded in ROS nodes.
