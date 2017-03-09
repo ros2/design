@@ -43,7 +43,7 @@ Each part of a name between a slash is a **token**.
 The examples above use the tokens `foo`, `bar` and `baz`.
 FQN are conceptually divided into two pieces: **namespace** and **basename**.
 The basename is the last token in a name.
-The namespace is all tokens and slashes prior to the basename in a FQN.
+The namespace is all tokens and slashes prior to the basename.
 
 **Example namespaces:**
 
