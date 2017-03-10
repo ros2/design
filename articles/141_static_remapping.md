@@ -1,10 +1,11 @@
 ---
 layout: default
-title: Static Remapping
+title: Remapping Names
+permalink: articles/static_remapping.html
 abstract:
-  This article describes the requirements, rationale, and mechanisms for remapping names in ROS2.
+  Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names). Names are hard coded in ROS nodes, but they can be changed at runtime through remapping. Without remapping every instance of a node would require changes in code. This article describes the requirements, rationale, and mechanisms for remapping names in ROS 2.
 author: '[Shane Loretz](https://github.com/sloretz)'
-published: false
+published: true
 ---
 
 - This will become a table of contents (this text will be scraped).
@@ -18,14 +19,22 @@ published: false
 
 Original Author: {{ page.author }}
 
-## Remapping Names
-Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names).
-Names are hard coded in ROS nodes.
-Remapping is what allows names to be changed at runtime.
-Without remapping every instance of a node would require code changes to use the right names.
-**Remapping rules** are the instructions given to a node to change the names it uses.
+## Why remap names?
+Remapping names allows reusing the same node executable in different parts of the system, and it means nodes can useful when destributed in binary form.
+A robot that has multiple sensors of the same type could launch multiple instances of the same node with outputs remapped to different topics.
 
-### Structure of a Name
+```
+            +-------------+
+ (Lidar 1)--> node inst 1 +-->/head_scan
+            +-------------+
+
+            +-------------+
+ (Lidar 2)--> node inst 2 +-->/base_scan
+            +-------------+
+```
+
+
+## Structure of a Name
 Names are hierarchical strings delineated by `/`.
 If they begin with `/` they are said to be **global** or **Fully Qualified Names** (FQN).
 Otherwise they are said to be **relative**.
@@ -68,127 +77,135 @@ Relative names are expanded to FQN by prepending the node's namespace to them.
 - The FQN is `/fiz/buz/foo/bar`
 
 
-### ROS 2 Use Cases
-Remapping in ROS 2 will likely support the following use cases:
+## Structure of a Remapping Rule
+**Remapping rules** are the instructions describing how a node should change the names it uses.
+Remapping rules have two parts.
+The first part is used to determine if the rule applies to a name.
+The second part is the replacement for a matched name.
+The act of replacing one name with another is **remapping**.
 
 
-#### A user can run multiple instances of a node using the same executable in different data paths
-This implies remapping rules are supplied to an instance of a node at runtime, and that remapping rules are specific to an instance of a node.
+## ROS 2 Remapping Requirements
+These requirements are being considered for remapping in ROS 2:
 
-**Rationale:**
+- Remap One Node in a Process
+- Change a Namespace
+- Change a Basename
+- Change a Token
+- Pre-FQN Remapping
+- Exact FQN Replacement
+- Exact Relative Name Replacement
+- Remap via Command Line
+- Change the Default Namespace
 
-- A node may be a driver for a type of sensor
-- A robot that has multiple sensors of the same type could launch multiple instances of the same node outputting to different topics
-```
-            +-------------+
- (Lidar 1)--> node inst 1 +-->/head_scan
-            +-------------+
-
-            +-------------+
- (Lidar 2)--> node inst 2 +-->/base_scan
-            +-------------+
-```
+### Remap One Node in a Process
+This is the ability to apply remap rules to one node in a process without affecting the other nodes.
+Because processes in ROS 2 can contain multiple nodes, it is possible their implementations may use the same name for different purposes. A user may want to change the name in one node without affecting the rest.
 
 
-#### A user can remap a namespace without affecting the basename
-**Rationale:**
+### Change a Namespace
+This is the ability to change the namespace of multiple names with one rule.
 A popular ROS 1 package [actionlib](http://wiki.ros.org/actionlib) creates 5 topics with the same namespace.
-Remapping an actionlib client or server means creating 5 remapping rules.
-One rule could remap the namespace itself.
+In ROS 1 remapping an actionlib client or server means creating 5 remapping rules.
+In ROS 2 just one rule could remap them all.
+
+*Example:*
 
 - Node provides an actionlib server `move_head` and checks a parameter called `move_head`
 - A rule remaps namespace `move_head` to `move_head_check_collision`
 - All 5 actionlib topics are remapped to `/move_head_check_collision`, but the parameter name remains unchanged
 
 
-#### A user can remap a basename without affecting the namespace
-**Rationale:**
-The token used for a basename may also be in the namespace of another name the user does not want to change.
+### Change a Basename
+This is the ability to change the basename of multiple names with one rule.
+It's possible a user may want to change multiple instances of a basename to another token.
 
-- A node uses names `/scan/head/scan`, `/scan/base/scan`, `/scan/arm/scan`
+*Example:*
+
+- A node uses names `/scan/head/scan`, `/base/scan`
 - A user wants the node to subscribe to the same data after some processing
 - The user remaps basename `scan` to `scan_filtered`
-- The final topics are `/scan/head/scan_filtered`, `/scan/base/scan_filtered`, `/scan/arm/scan_filtered`
+- The final topics are `/scan/head/scan_filtered`, `/base/scan_filtered`
 
 
-#### A user can remap a token regardless of where it appears in a name
-**Rationale:**
-A token may be used in many names.
-It might require many remap rules to replace a token if the token is undesirable.
+### Change a Token
+This is the ability to change a token in multiple names regardless of where it appears.
+It is possible a token is used throughout an interface, but is undesirable to the end user.
+This means it should be possible to make a rule that replaces all uses of this token.
+
+*Example:*
 
 - A company sells a generic mobile robot base with a ROS 2 driver
 - The driver uses lots of names with the company's name in it: `UmbrellaCorp`
 - Another company incorporates the base into their product, and their customers want a ROS 2 interface
-- They don't want their interface to contain `UmbrellaCorp`, so they remap the token to `mobile_base` when they launch the nodes for the base
+- The second company doesn't want their interface to contain `UmbrellaCorp`, so they remap the token to `mobile_base` when launching the driver
 
 
-#### A user can remap just a relative name used in code
-This implies remapping prior to FQN expansion
+### Pre-FQN Remapping
+This is the ability to match a name by how it is used in code.
+Doing so requires matching prior to FQN expansion.
+This could be useful when two different names expand to the same FQN.
 
-**Rationale:**
+*Example:*
 
 - A node uses two names `cat` and `/ns/cat`
 - The node is run in namespace `/ns/`, so the FQN of both names is `/ns/cat`
-- A rule remaps just `cat` to `lion`
-- The final names are `/ns/cat` and `/ns/lion`
+- A rule remaps Pre-FQN expansion `cat` to `lion`
+- The final names are `/ns/lion` and `/ns/cat`
 
 
-#### A user can remap a FQN to another name
-**Rationale:**
-This is part of the behavior of ROS 1 remapping, so including it will ease the transition to ROS 2.
+### Exact FQN Replacement
+This is the ability to replace a name by exactly matching it.
+This is part of the behavior of ROS 1 remapping, so it has proven useful and including it will ease the transition to ROS 2.
+
+*Example:*
 
 - A node uses names `/ns/bar` and `/ns/barista`
-- A rule is created to remap just `/ns/bar` to `/ns/foo`
+- A rule is created to remap `/ns/bar` to `/ns/foo`
 - The final names are `/ns/foo` and `/ns/barista`
 
 
-#### A user can remap a relative name to another name
-**Rationale:**
-This is part of the behavior of ROS 1 remapping.
+### Exact Relative Name Replacement
+This allows a user to remap a relative name to another name.
+It works by first expanding the relative name and then doing FQN replacement.
+This is also part of ROS 1 remapping.
+
+*Example:*
 
 - A node is in namespace `/ns/` and uses name `bar`
 - A rule is created to remap `bar` to `foo`
-- The final name is `/ns/foo`
+- The node's use of `bar` is expanded to `/ns/bar`
+- Both sides of the remap rule are expanded to `/ns/bar` and `/ns/foo`
+- Because the FQN match, the final name is `/ns/foo`
 
 
-#### A user can supply node specific remapping arguments via the command line
-This implies there is a way to uniquely identify a node in a process.
+### Remap via Command Line
+A user can supply node specific remapping arguments via the command line.
+Because a process can contain multiple nodes, there must be a way to uniquely identify a node in a process.
+This is a feature of ROS 1 remapping.
 
-**Rationale:**
-This is part of the behavior of ROS 1 remapping.
+*Example:*
 
-
-#### A user can put a node into a specific namespace
-This implies there is a way to uniquely identify a node in a process.
-
-**Rationale:**
-ROS 1 has this feature using the environment variable `ROS_NAMESPACE` and the argument `__ns`
-
-- A system has multiple robots
-- A users wants the robots to not interfere with each other, so each robot is put into its own namespace
-- *TODO Global topics like /tf and /tf_static must be individually remapped in ROS 1. What to do about them?*
+- Node is an executable at `/bin/my_node`
+- User wants to change `/cat` to `/dog`
+- User types `/bin/my_node /cat:=/dog`
 
 
-#### A user can remap a name they see on a node after it has launched
-This implies remapping rules are applied in sequence.
-This also implies there is a way to supply remapping rules to a node besides the command line (services?).
+### Change the Default Namespace
+The default namespace is the one in which relative names get expanded to.
+This should be changeable without affecting FQN.
+ROS 1 has this feature using either the environment variable `ROS_NAMESPACE` or the argument `__ns`.
 
-**Rationale:**
-A developer may want to make a running node subscribe to a different source of data to see how it behaves.
-It is less work for them to change the name they see rather than digging through the source code to find the original name.
+*Example:*
 
+- Node is in namespace `/ns` and uses relative name `bar`
+- User changes the default namespace to `/foo`
+- The final name is `/foo/bar`
 
-### Structure of a Remapping Rule
-Remapping rules have two parts:
-
-1. a part used to determine if the rule applies to a name
-2. a replacement for the names that are matched
-
-
-### Remapping Names in ROS 1
+## Remapping Names in ROS 1
 Remapping is a feature that also exists in ROS 1.
 In ROS 1 remapping works by passing in [arguments](http://wiki.ros.org/Remapping%20Arguments) to each node.
-Client implementations also have APIs in code to pass remapping rules when the node is initialized.
+Client libraries also have APIs in code to pass remapping rules when the node is initialized.
 A remap rule consists of two names: one that should be replaced with another.
 
 ROS 1 remapping works on **Fully Qualified Names** (FQN).
@@ -197,58 +214,128 @@ Before a name is remapped it is also [expanded to FQN](http://docs.ros.org/api/r
 The name is remapped to the right side only if it exactly matches the left side of a rule.
 
 
-### Thoughts on ROS 2 implementation
-`rmw` is likely ignorant of remapping.
-The APIs offered by client implementations should remap names automatically to prevent creation of names that are impossible to remap.
+## Remapping rule syntax
+This is a proposal for the ROS 2 remapping rule syntax.
+It attempts to be the same as ROS 1 syntax when possible, and different where it supports new features.
 
+Requirements supported by this syntax
+- Remap One Node in a Process
+- Change a Namespace
+- Change a Basename
+- Exact FQN Replacement
+- Exact Relative Name Replacement
+- Remap via Command Line
+- Change the Default Namespace
 
-### Remapping rule command line syntax
-In ROS 1 remapping is done primarily through command line arguments, commonly via roslaunch.
-It may not be possible to use the same syntax for ROS 2 because multiple nodes can be inside of the same process, and it is desired that remap rules are node specific and not process specific.
-This syntax assumes the node's name is guaranteed to be unique in a process.
-It does not support pre-FQN expansion remapping.
+Requirements not supported
+- Change a Token
+- Pre-FQN Remapping
 
-- `%`
- - During matching it is a wildcard that matches a single token
- - It may appear at most once on the matching side of a rule
- - During replacement it is replaced with the matched token
-
-- `%%`
- - During matching it is a wildcard that matches zero or more tokens with at least one slash
- - It may appear at most once on the matching side of a rule
- - During replacement it is replaced with the matched slashes and tokens
-
+Special Operators
+- `*` wild card that matches a single token
+- `**` wild card that matches at least one slash and zero or more tokens
 - `:=` divides the two parts of a remapping rule: matching and replacement
+- `~` expands to `/namespace/nodename` and may only be at the very beginning of a match or replacement
+- `__ns` matches the default namespace if used by itself on the match side of a rule
+- `nodename:` prefixed to a rule makes it apply only to a node with that name
+- `\1` - `\9` are replaced with the matched content of a wild card
 
-- `~` expands to `/namespace/nodename`
+The operators `*` and `**` are chosen to match globbing behavior in bash.
+`**` behaves similarly as it does in bash>=4.0 with the globstar option set.
+The syntax for `\[1-9]` was taken from the syntax for backreferences in POSIX BRE.
+The operators `~`, `:=`, and `__ns` have the same meaning in ROS 1.
 
-- `nodename|` prefixed to a rule makes it apply only to a node with that unique name
- - If not specified, the rule applies to all nodes in the process
+### Applications of the syntax
+The following sections explain how the syntax enables the use cases above.
 
-**Examples:**
+#### Supporting: Remap One Node in a Process
+Remapping a node in a process requires a way to uniquely identify a node.
+Assuming the node's name is unique in a process, a rule can be prefix with the name and a `:`.
+If the node name is not prefixed, the rule should be applied to all nodes in the process.
 
-- rule `dog:=cat` node in namespace `/ns/`
- - FQN `/ns/dog` gets remapped to `/ns/cat`
+*Example*
 
-- rule `/dog:=cat` node in namespace `/ns/`
- - FQN `/dog` gets remapped to `/ns/cat`
+- Multiple nodes in a process use the name `scan`
+- A rule is given to one node `node1:scan:=scan_filtered`
+- Only node1 uses the rule
 
-- rule `%:=cat` node in namespace `/ns/`
- - FQN `/ns/dog` gets remapped to `/ns/cat`
 
-- rule `/%:=cat` node in namespace `/ns/`
- - FQN `/dog` gets remapped to `/ns/cat`
+#### Supporting: Change a Namespace
+There are two cases: changing part of a namespace, and changing the entire namespace.
+The first case requires a wildcard to match the rest of a namespace.
+The second requires a wildcard to match the basename at the end.
 
-- rule `/red%%:=/blu%%` node in any namespace
- - FQN `/red/cat` gets remapped to `/blu/cat`
- - FQN `/red/big/cat` gets remapped to `/blu/big/cat`
+*Example: Partial namespace replacement*
 
-- rule `%%cat:=/big/cat`
- - FWN `/cat` gets remapped to `/big/cat`
- - FQN `/small/cat` gets remapped to `/big/cat`
- - FQN `/really/small/cat` gets remapped to `/big/cat`
+- Node uses names `/foo`, `/foo/bar/baz`
+- Node given rule `/foo**:=/fizz\1`
+- Resulting names `/foo`, `/fizz/bar/baz`
 
-- rule `node1|/dog:=/cat` with two nodes named `node1` and node2`
- - node1 using name `/dog` gets remapped to `/cat`
- - node2 using name `/dog` is unchanged
+*Example: Full namespace replacement*
+
+- Node uses names `/foo/bar/baz`, `/foo/bar/fee/biz`
+- Node given rule `/foo/bar/*:=/bar/foo/\1`
+- Resulting names `/bar/foo/baz`, `/foo/bar/fee/biz`
+
+#### Supporting: Change a Basename
+Changing a basename requires a wildcard which matches the entire namespace.
+The wildcard `**` is useful because it matches every possible namespace.
+
+*Example:*
+
+- Node uses names `/foo`, `/buz/foo`, `/biz/buz/foo`
+- Node given rule `**foo:=\1bar`
+- Resulting names `/bar`, `/buz/bar`, `/biz/buz/bar`
+
+#### Supporting: Exact FQN Replacement
+Exact FQN replacement requires no wildcards.
+This syntax is identical to ROS 1.
+
+*Examples rules:*
+
+- `/foo/bar:=/fiz/buz`
+- `/foo:=/foo/bar`
+
+#### Supporting: Exact Relative Name Replacement
+Exact relative replacement also requires no wildcards.
+It means relative names are first expanded to FQN, and then processed as during exact FQN replacement.
+This syntax is identical to ROS 1.
+
+*Examples rules:*
+
+- `foo:=/foo/bar` in namespace `/ns` is identical to `/ns/foo:=/foo/bar`
+- `foo:=bar` in namespace `/ns` is identical to `/ns/foo:=/ns/bar`
+- `/foo/bar:=foo` in namespace `/ns` is identical to `/foo/bar:=/ns/foo`
+
+
+#### Supporting: Remap via Command Line
+The syntax here can be passed to a node via the command line.
+The syntax has been chosen to not conflict with special shell characters in bash.
+For example in bash, the character `*` only has special behavior if it is surrounded by whitespace, but remap rules don't contain whitespace.
+This character may still be difficult on other shells, like zsh.
+
+#### Supporting: Change the Default Namespace
+In ROS 1 the argument `__ns:=` could be used to set the default namespace.
+This syntax treats it the same, except that it can be applied to a single node by prefixing it with the nodename.
+The replacement side is more restricted: It must be a FQN which will be treated as a namespace, it may not have any backreferences, it may not use the character `~`.
+
+*Examples:*
+
+- `__ns:=/new/namespace`
+- `node1:__ns:=/node1s/new/namespace`
+
+### Fnmatch Syntax
+A syntax like fnmatch is being considered.
+The character for the wild card `*` was chosen to match fnmatch.
+Because remapping needs to capture text to use during replacement, the C function `fnmatch()` cannot be used as the implementation.
+The extra wildcards `?` and `[]` don't appear to enable more uses cases above.
+Fnmatch syntax may or may not match text with slashes depending on the option `FNM_PATHNAME`.
+
+
+## Static Versus Dynamic Remapping
+Static remapping is giving a node remapping rules at the time it is launched.
+Dynamic remapping is the ability to remap a name while a node is running.
+It may be useful for a developer who has started a node and wants to connect it to a different source.
+Because the user will see the name after it has been remapped by static rules, dynamic rules should be applied after static ones.
+This way the new rule matches the name the user sees see rather than the original name used in code.
 
