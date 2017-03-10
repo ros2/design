@@ -69,7 +69,7 @@ The functionality to setup these environment variables can be provided by either
 In the latter case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
 
 Considering the use case that a user might want to invoke the build system of each package manually it is beneficial if the build system already provides as much of the environment setup as possible.
-That avoids that the user has to manually take care of the environment setup when not using a build tool.
+That avoids forcing the user to manually take care of the environment setup when not using a build tool.
 
 ## Existing Build Systems
 
@@ -106,7 +106,7 @@ It has been designed as the successor of `rosbuild` for ROS Fuerte.
 The tool invokes CMake only a single time and uses CMake's `include` function to process all packages in a single context.
 While this is an efficient approach since all targets across all packages can be parallelized it comes with significant disadvantages.
 Due to the single context all function names, targets and tests share a single namespace across all packages and on a larger scale this easily leads to collisions.
-The single context is also subject to side effects between the packages and sometimes requires to add additional target dependencies across package boundaries.
+The single context is also subject to side effects between the packages and sometimes requires adding additional target dependencies across package boundaries.
 
 ### catkin_make_isolated
 
