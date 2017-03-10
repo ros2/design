@@ -3,7 +3,7 @@ layout: default
 title: A universal build tool
 permalink: articles/build_tool.html
 abstract:
-  This article describes the rational for a universal build tool.
+  This article describes the rationale for a universal build tool.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 categories: Overview
@@ -38,14 +38,14 @@ It would be great if the tool could also be used to build other packages (e.g. G
 
 ### Out of Scope
 
-The build tool does not cover the steps necessary to fetch the sources of the to-be-build packages.
+The build tool does not cover the steps necessary to fetch the sources of the to-be-built packages.
 This can be done with existing tools (e.g. [rosinstall_generator](http://wiki.ros.org/rosinstall_generator), [vcstool](https://github.com/dirk-thomas/vcstool)).
 
 The build tool also does not provide a mechanism to install any dependencies required to build the packages.
 In the ROS ecosystem [rosdep](http://wiki.ros.org/rosdep) can be used for this.
 
-The build tool also does not create binaries packages (e.g. a Debian package).
-In the ROS ecosystem [bloom](http://wiki.ros.org/bloom) is used to generated the required metadata and than platform dependent tools like `dpkg-buildpackage` to build binary packages.
+The build tool also does not create binary packages (e.g. a Debian package).
+In the ROS ecosystem [bloom](http://wiki.ros.org/bloom) is used to generate the required metadata and then platform dependent tools like `dpkg-buildpackage` build binary packages.
 
 ## Build Tool vs. Build System
 
@@ -62,11 +62,11 @@ As another example for a package using `Autotools` the steps could look like `co
 
 A very important part beside the actual build of a package is the environment setup.
 For a CMake package e.g. a dependency discovered using the CMake function `find_package` needs to be either in a common location or the location must be provided through the environment variable `CMAKE_PREFIX_PATH`.
-On the other hand after a package has been build and installed the environment might need to be extended to use the package.
+On the other hand after a package has been built and installed the environment might need to be extended to use the package.
 E.g. when a package installs a shared library in a non-default location the environment variable `LD_LIBRARY_PATH` (or `PATH` on Windows) needs to be extended to include the containing folder.
 
 The functionality to setup these environment variables can be provided by either the build tool or the build system.
-In the later case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
+In the latter case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
 
 Considering the use case that a user might want to invoke the build system of each package manually it is beneficial if the build system already provides as much of the environment setup as possible.
 That avoids that the user has to manually take care of the environment setup when not using a build tool.
@@ -77,7 +77,7 @@ In the following the build systems being used in the ROS ecosystem are briefly d
 
 ### catkin
 
-[catkin](http://wiki.ros.org/catkin) is based on CMake and provides a set of convenience functions to make writing CMake package easier.
+[catkin](http://wiki.ros.org/catkin) is based on CMake and provides a set of convenience functions to make writing CMake packages easier.
 It automates the generation of CMake config files as well as pkg-config files.
 It additionally provides functions to register different kinds of tests.
 
@@ -90,7 +90,7 @@ In the context of the build tool the biggest difference is that `ament_cmake` ge
 ### Python setuptools
 
 `setuptools` is the common tool to package Python packages.
-A Python package use a `setup.py` file to describe the dependencies as well as how and what to build and install.
+A Python package uses a `setup.py` file to describe the dependencies as well as how and what to build and install.
 In ROS 2 a package can be a "vanilla" Python package whereas in ROS 1 any Python functionality is triggered from a CMake file.
 
 ## Existing Build Tools
@@ -103,10 +103,10 @@ Their method of operating is being described in the following subsections togeth
 `catkin_make` is provided by the ROS package `catkin` which contains the build system for ROS 1.
 It has been designed as the successor of `rosbuild` for ROS Fuerte.
 
-The tool invoked CMake only a single time and uses CMake's `include` function to process all packages in a single context.
-While this is an efficient approach since all targets across all packages can be parallelized it comes with a significant disadvantages.
-Due to the single context all function names, targets and tests share a single namespace across all packages and on a larger scale easily leads to collisions.
-The single context is also subject to side effect between the packages and sometimes requires to add additional target dependencies across package boundaries.
+The tool invokes CMake only a single time and uses CMake's `include` function to process all packages in a single context.
+While this is an efficient approach since all targets across all packages can be parallelized it comes with significant disadvantages.
+Due to the single context all function names, targets and tests share a single namespace across all packages and on a larger scale this easily leads to collisions.
+The single context is also subject to side effects between the packages and sometimes requires to add additional target dependencies across package boundaries.
 
 ### catkin_make_isolated
 
@@ -127,21 +127,21 @@ The tool performs an "isolated" build like `catkin_make_isolated` (one CMake inv
 
 [catkin_tools](https://catkin-tools.readthedocs.io/) is provided by a standalone Python package used to build ROS 1 packages.
 It was developed after `catkin_make` / `catkin_make_isolated` to build packages in parallel as well as provide significant usability improvements.
-The tool supports building CMake packages and builds them in isolation as well as support parallelizing the process across packages.
+The tool supports building CMake packages and builds them in isolation as well as supports parallelizing the process across packages.
 
 ### Naming
 
 The existing build tools are all named by the build system they are supporting.
 In general it should be possible for a build tool to support multiple different build systems.
-Therefore a name for a build tool being derive from a single build system might mislead the users that the tool only works for that specific build system.
+Therefore a name for a build tool being derived from a single build system might mislead the users that the tool only works for that specific build system.
 To avoid confusion of the user it would be beneficial if the build tool would have a different name to avoid implying an undesired correlation.
 
-## Rational
+## Rationale
 
 Currently each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
 Certain features are only available in some of the tools while other tools lack those.
 
-The reason to work on a single universal build tool comes down to reduce the effort necessary for development and maintenance.
+The reason to work on a single universal build tool comes down to reducing the effort necessary for development and maintenance.
 Additionally this makes new features developed for one ROS version / build system available to the other supported ROS versions / build systems.
 
 ## Requirements
@@ -202,7 +202,7 @@ The following items are possible extension points to provide custom functionalit
 
 ## Alternative Approaches
 
-Their are two different approaches possible to reach the goal of a universal build tool.
+There are two different approaches possible to reach the goal of a universal build tool.
 
 - Incrementally evolve one of the existing tools to satisfy the described goals.
 - Implement a new build tool "from scratch" (while existing building blocks can still be "copied" from the existing solutions).
