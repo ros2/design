@@ -28,7 +28,7 @@ The "manual" approach to build a set of packages consists of building all packag
 For each package the documentation usually describes what the dependencies are, how to setup the environment to build the package as well as how to setup the environment afterwards to use the package.
 From an efficiency point of view that manual process does not scale well.
 
-This article describes the steps from the current build tools to a single universal build tool which automates the process and works for various different use cases.
+This article describes the steps from the current build tools used in the ROS ecosystem to a single universal build tool which automates the process and works for various different use cases.
 
 ## Goal
 
