@@ -150,19 +150,27 @@ In ROS 2 a package can be a "vanilla" Python package whereas in ROS 1 any Python
 Several different build tools are already being used in the ROS ecosystem.
 Their method of operating is being described in the following subsections together with their advantages as well as disadvantages.
 
+### rosbuild
+
+Rosbuild was the first build system for ROS, it was based on Makefiles.
+Rosbuild did not provide any install target, and kept sources and build results in the same folder structure.
+Rosbuild was replaced because it did not support packaging, cross-compiling, and because build speed was an issue.
+
 ### catkin_make
 
-`catkin_make` is provided by the ROS package `catkin` which contains the build system for ROS 1.
-It has been designed as the successor of `rosbuild` for ROS Fuerte.
+`catkin_make` replaced rosbuild for ROS1, it is provided by the ROS package `catkin`.
+It has been designed as the successor of `rosbuild` since ROS Fuerte.
 
 The tool invokes CMake only a single time and uses CMake's `add_subdirectory` function to process all packages in a single context.
+
+The tool uses CMake's `include` function to process all packages in a single cmake context.
 While this is an efficient approach since all targets across all packages can be parallelized it comes with significant disadvantages.
 Due to the single context all function names, targets and tests share a single namespace across all packages and on a larger scale this easily leads to collisions.
 The single context is also subject to side effects between the packages and sometimes requires adding additional target dependencies across package boundaries.
 
 ### catkin_make_isolated
 
-`catkin_make_isolated` is provided by the ROS package `catkin` which contains the build system for ROS 1.
+`catkin_make_isolated` is included with `catkin`.
 It was developed after `catkin_make` to address the problems involved with building multiple packages in a single CMake context.
 
 The tool only supports CMake-based packages and builds each package in topological order using the command sequence common for CMake packages: `cmake`, `make`, `make install`.
