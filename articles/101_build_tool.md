@@ -26,8 +26,8 @@ This is in contrast to workflows where teams work on a single software package a
 Such a workflow is impracticable without a tool that automatically rebuilds many packages in topological order of dependency.
 The rosbuild tool enabled this workflow first and was a critical factor in the success of ROS.
 
-Today, the ROS1 ecosystem has the deprecated rosbuild and the catkin build systems for this purpose.
-The ROS2 ecosystem has the ament buildsystem.
+Today, the ROS1 ecosystem has the deprecated rosbuild and the catkin_make build systems for this purpose.
+The ROS2 ecosystem has the ament_tools build system.
 
 
 This article describes the steps from the current build tools used in the ROS ecosystem to a single universal build tool.
@@ -68,7 +68,7 @@ It determines the dependency graph and invokes the specific build tool for each 
 Examples are Gnu Make, cmake, python setuptools.
 
 A build tool schedules and invokes the build systems for separate source trees (packages) in topological order of dependency.
-Example are rosbuild, catkin, ament.
+Example are rosbuild, catkin_make, ament.
 
 A package manager downloads, optionally builds, then installs released packages from origin locations.
 Examples are dpkg, rpm, homebrew, portage, robotpkg.
