@@ -85,9 +85,8 @@ Examples are dpkg, rpm, homebrew, portage, robotpkg.
 | catkin_tools                                |              |      x     |
 | ament_tools                                 |              |      x     |
 
-### Environment Setup
 
-A very important part beside the actual build of a package is the environment setup.
+The following describes the essential functional requirements for a build tool, and further functional and non-functional requirements that are to be decided.
 For example, in order for a CMake project to discover a dependency using the CMake function `find_package`, the CMake module (e.g. `FindFoo.cmake`) or the CMake config file (e.g. `FooConfig.cmake`) for that dependency must either be in a prefix that CMake searches implicitly (e.g. `/usr`) or the location must be provided through the environment variable `CMAKE_PREFIX_PATH` / `CMAKE_MODULE_PATH`.
 
 In addition to building a package on top of another package (using `find_package` in the case of CMake), you may need to adjust the environment in order to run an executable from a package.
@@ -96,8 +95,33 @@ For example, when a package installs a shared library in a non-default location 
 The functionality to setup these environment variables can be provided by either the build tool or the build system.
 In the latter case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
 
-Considering the use case that a user might want to invoke the build system of each package manually it is beneficial if the build system already provides as much of the environment setup as possible.
-That avoids forcing the user to manually take care of the environment setup when not using a build tool.
+### Development Environment Setup
+
+Invoking a buildsystem for a package implies also setting up environment variables before the process.
+Examples are the `CMAKE_PREFIX_PATH` and the `LD_LIBRARY_PATH`.
+For consistency of the build result, those variables should be restricted, allowing the build to only access declared dependencies.
+
+For various reasons, it is beneficial to also allow developers to easily manually invoke the buildsystem for one package.
+This requires the buildsystem to provide the environment setup by itself.
+
+### Subtask invocation
+
+Build systems define various tasks, such as testing, compiling, generating documentation, installing.
+A build tool must provide it's own abstract set of tasks to be mapped to the tasks of different build systems.
+
+### Isolated installation
+
+For the ROS ecosystem it is important that packages can be installed to any target location in a filesystem.
+
+After a package has been built and installed to a target location, the environment might need to be extended to use the package.
+
+### Convenience features
+
+* Build Parallelity
+* Invocation from various locations, roscd
+* Workspace chaining
+* rosbuild compatibility (ROS_PACKAGE_PATH)
+
 
 ## Existing Build Systems
 
