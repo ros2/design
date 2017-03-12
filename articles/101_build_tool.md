@@ -127,6 +127,10 @@ After a package has been built and installed to a target location, the environme
 
 In the following the build systems being used in the ROS ecosystem are briefly described.
 
+### cmake
+
+cmake is a popular build system that runs on various operating systems.
+
 ### catkin
 
 [catkin](http://wiki.ros.org/catkin) is an addition to CMake and provides a set of convenience functions to make writing CMake packages easier.
