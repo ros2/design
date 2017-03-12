@@ -178,9 +178,10 @@ While each package can parallelize the build of its targets the packages are pro
 
 ### catkin_tools
 
-[catkin_tools](https://catkin-tools.readthedocs.io/) is provided by a standalone Python package used to build ROS 1 packages.
+[catkin_tools](https://catkin-tools.readthedocs.io/) is provided by a standalone Python package used to build catkin packages.
 It was developed after `catkin_make` / `catkin_make_isolated` to build packages in parallel as well as provide significant usability improvements.
 The tool supports building CMake packages and builds them in isolation as well as supports parallelizing the process across packages.
+
 
 ### ament_tools
 
