@@ -61,16 +61,17 @@ In the ROS ecosystem [rosdep](http://wiki.ros.org/rosdep) can be used for this.
 The build tool also does not create binary packages (e.g. a Debian package).
 In the ROS ecosystem [bloom](http://wiki.ros.org/bloom) is used to generate the required metadata and then platform dependent tools like `dpkg-buildpackage` build binary packages.
 
-## Build Tool vs. Build System
+## Build Tool vs. Build System vs. Package manager
 
-A build tool operates on a set of packages.
+A build system schedules and executes atomic tasks for creating runnable software from sources.
 It determines the dependency graph and invokes the specific build tool for each package in topological order.
-The build tool itself should know as little as possible about the build system used for a specific package.
-Just enough in order to know how to setup the environment for it, invoke the build, and setup the environment to use the built package.
+Examples are Gnu Make, cmake, python setuptools.
 
-The build system on the other hand operates on a single package.
-In the case a package uses e.g. `CMake` the responsibility of the tool comes down to invoke the common steps `cmake`, `make`, `make install` for this package.
-As another example for a package using `Autotools` the steps could look like `configure`, `make`, `make install`.
+A build tool schedules and invokes the build systems for separate source trees (packages) in topological order of dependency.
+Example are rosbuild, catkin, ament.
+
+A package manager downloads, optionally builds, then installs released packages from origin locations.
+Examples are dpkg, rpm, homebrew, portage, robotpkg.
 
 ### Examples of Build Tools vs. Build Systems
 
