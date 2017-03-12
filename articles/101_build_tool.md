@@ -21,13 +21,16 @@ Original Author: {{ page.author }}
 
 ## Preface
 
-ROS is developed with a federated model.
-It consists of many separately developed and maintained packages.
+In the ROS ecosystem teams typically solve problems by programming in many software packages at the same time.
+This is in contrast to workflows where teams work on a single software package at a time only, and all dependencies are installed and updated by package managers.
+Such a workflow is impracticable without a tool that automatically rebuilds many packages in topological order of dependency.
+The rosbuild tool enabled this workflow first and was a critical factor in the success of ROS.
 
-The "manual" approach to build a set of packages consists of building all packages in their topological order one by one.
-For each package the documentation usually describes what the dependencies are, how to setup the environment to build the package as well as how to setup the environment afterwards to use the package.
-From an efficiency point of view that manual process does not scale well.
+Today, the ROS1 ecosystem has the deprecated rosbuild and the catkin build systems for this purpose.
+The ROS2 ecosystem has the ament buildsystem.
 
+
+This article describes the steps from the current build tools used in the ROS ecosystem to a single universal build tool.
 ## Goal
 
 The goal of the build tool is to build a set of packages with a single invocation automating the process.
