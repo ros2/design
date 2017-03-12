@@ -129,13 +129,13 @@ In the following the build systems being used in the ROS ecosystem are briefly d
 
 ### catkin
 
-[catkin](http://wiki.ros.org/catkin) is based on CMake and provides a set of convenience functions to make writing CMake packages easier.
+[catkin](http://wiki.ros.org/catkin) is an addition to CMake and provides a set of convenience functions to make writing CMake packages easier.
 It automates the generation of CMake config files as well as pkg-config files.
 It additionally provides functions to register different kinds of tests.
 
 ### ament_cmake
 
-[ament_cmake](https://github.com/ament/ament_cmake) is an evolution of `catkin` and is also based on CMake.
+[ament_cmake](https://github.com/ament/ament_cmake) is an evolution of `catkin` and is an addition to CMake.
 The main difference between `ament_cmake` and `catkin` is described in [another article](http://design.ros2.org/articles/ament.html).
 In the context of the build tool the biggest difference is that `ament_cmake` generates package-specific files to setup the environment to use the package after it has been built and installed.
 
