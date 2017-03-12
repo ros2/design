@@ -34,9 +34,12 @@ This article describes the steps from the current build tools used in the ROS ec
 ## Goal
 
 The goal of the build tool is to build a set of packages with a single invocation automating the process.
-It should work with ROS 1 packages as well as ROS 2 packages which provide the necessary information in their manifest files.
-It should also work with packages that do not provide manifest files themselves, given that the meta information is externally provided.
-This will allow the build tool to be utilized for non-ROS dependencies of ROS packages (e.g. Gazebo including its dependencies).
+It should work with:
+* ROS 1 packages
+* ROS 2 packages
+* other software sources when sufficient meta information is externally provided.
+
+The last point allows to build non-ROS dependencies of ROS packages (e.g. Gazebo including its dependencies).
 
 In the ROS ecosystems several tools already exist which support this use case (see below).
 Each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
