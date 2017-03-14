@@ -219,7 +219,8 @@ The name is remapped to the right side only if it exactly matches the left side 
 This is a proposal for the ROS 2 remapping rule syntax.
 It attempts to be the same as ROS 1 syntax when possible, and different where it supports new features.
 
-Requirements supported by this syntax
+Requirements supported by this syntax:
+
 - Remap One Node in a Process
 - Change a Namespace
 - Change a Basename
@@ -228,11 +229,13 @@ Requirements supported by this syntax
 - Remap via Command Line
 - Change the Default Namespace
 
-Requirements not supported
+Requirements not supported:
+
 - Change a Token
 - Pre-FQN Remapping
 
-Special Operators
+Special Operators:
+
 - `*` wild card that matches a single token
 - `**` wild card that matches at least one slash and zero or more tokens
 - `:=` divides the two parts of a remapping rule: matching and replacement
@@ -251,14 +254,14 @@ The following sections explain how the syntax enables the use cases above.
 
 #### Supporting: Remap One Node in a Process
 Remapping a node in a process requires a way to uniquely identify a node.
-Assuming the node's name is unique in a process, a rule can be prefix with the name and a `:`.
-If the node name is not prefixed, the rule should be applied to all nodes in the process.
+Assuming the node's name is unique in a process, a rule can be prefixed with the name of the target node and a `:`.
+If the node name is not prefixed, the rule will be applied to all nodes in the process.
 
-*Example*
+*Example:*
 
 - Multiple nodes in a process use the name `scan`
 - A rule is given to one node `node1:scan:=scan_filtered`
-- Only node1 uses the rule
+- Only the node named `node1` uses the rule
 
 
 #### Supporting: Change a Namespace
@@ -266,13 +269,13 @@ There are two cases: changing part of a namespace, and changing the entire names
 The first case requires a wildcard to match the rest of a namespace.
 The second requires a wildcard to match the basename at the end.
 
-*Example: Partial namespace replacement*
+*Example of partial namespace replacement:*
 
 - Node uses names `/foo`, `/foo/bar/baz`
 - Node given rule `/foo**:=/fizz\1`
 - Resulting names `/foo`, `/fizz/bar/baz`
 
-*Example: Full namespace replacement*
+*Example of full namespace replacement:*
 
 - Node uses names `/foo/bar/baz`, `/foo/bar/fee/biz`
 - Node given rule `/foo/bar/*:=/bar/foo/\1`
@@ -338,5 +341,5 @@ Static remapping is giving a node remapping rules at the time it is launched.
 Dynamic remapping is the ability to remap a name while a node is running.
 It may be useful for a developer who has started a node and wants to connect it to a different source.
 Because the user will see the name after it has been remapped by static rules, dynamic rules should be applied after static ones.
-This way the new rule matches the name the user sees see rather than the original name used in code.
+This way the new rule matches against the name the user sees with introspection tools rather than the original name used in code.
 
