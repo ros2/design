@@ -40,7 +40,9 @@ This will allow the build tool to be utilized for non-ROS dependencies of ROS pa
 ### Out of Scope
 
 The build tool does not cover the steps necessary to fetch the sources of the to-be-built packages.
-This can be done with existing tools (e.g. [rosinstall_generator](http://wiki.ros.org/rosinstall_generator), [vcstool](https://github.com/dirk-thomas/vcstool)).
+There are already tools to help with this.
+For example, the list of repositories that need to be fetched is provided either by a hand crafted `.rosinstall` or `.repos` file or by using [rosinstall_generator](http://wiki.ros.org/rosinstall_generator) to generate one.
+The list of repositories can then be fetched with one of several tools, like [rosinstall](http://wiki.ros.org/rosinstall) or [wstool](http://wiki.ros.org/wstool) in the case of a `.rosinstall` file, or [vcstool](https://github.com/dirk-thomas/vcstool) in the case of a `.repos` file.
 
 The build tool also does not provide a mechanism to install any dependencies required to build the packages.
 In the ROS ecosystem [rosdep](http://wiki.ros.org/rosdep) can be used for this.
@@ -51,7 +53,7 @@ In the ROS ecosystem [bloom](http://wiki.ros.org/bloom) is used to generate the 
 ## Build Tool vs. Build System
 
 A build tool operates on a set of packages.
-It determines the dependency graph and invokes the package specific build tool of each package in topological order.
+It determines the dependency graph and invokes the specific build tool for each package in topological order.
 The build tool itself should know as little as possible about the build system used for a specific package.
 Just enough in order to know how to setup the environment for it, invoke the build, and setup the environment to use the built package.
 
@@ -59,12 +61,25 @@ The build system on the other hand operates on a single package.
 In the case a package uses e.g. `CMake` the responsibility of the tool comes down to invoke the common steps `cmake`, `make`, `make install` for this package.
 As another example for a package using `Autotools` the steps could look like `configure`, `make`, `make install`.
 
+### Examples of Build Tools vs. Build Systems
+
+|                                             | Build System | Build Tool |
+|---------------------------------------------|:------------:|:----------:|
+| CMake project                               |       x      |            |
+| catkin (CMake that calls catkin macros)     |       x      |            |
+| ament_cmake (CMake that calls ament macros) |       x      |            |
+| catkin_make                                 |              |      x     |
+| catkin_make_isolated                        |              |      x     |
+| catkin_tools                                |              |      x     |
+| ament_tools                                 |              |      x     |
+
 ### Environment Setup
 
 A very important part beside the actual build of a package is the environment setup.
-For a CMake package e.g. a dependency discovered using the CMake function `find_package` needs to be either in a common location or the location must be provided through the environment variable `CMAKE_PREFIX_PATH`.
-On the other hand after a package has been built and installed the environment might need to be extended to use the package.
-E.g. when a package installs a shared library in a non-default location the environment variable `LD_LIBRARY_PATH` (or `PATH` on Windows) needs to be extended to include the containing folder.
+For example, in order for a CMake project to discover a dependency using the CMake function `find_package`, the CMake module (e.g. `FindFoo.cmake`) or the CMake config file (e.g. `FooConfig.cmake`) for that dependency must either be in a prefix that CMake searches implicitly (e.g. `/usr`) or the location must be provided through the environment variable `CMAKE_PREFIX_PATH` / `CMAKE_MODULE_PATH`.
+
+In addition to building a package on top of another package (using `find_package` in the case of CMake), you may need to adjust the environment in order to run an executable from a package.
+For example, when a package installs a shared library in a non-default location then the environment variable `LD_LIBRARY_PATH` (or `PATH` on Windows) needs to be extended to include the containing folder before trying to run executables that load that library at runtime.
 
 The functionality to setup these environment variables can be provided by either the build tool or the build system.
 In the latter case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
@@ -104,7 +119,7 @@ Their method of operating is being described in the following subsections togeth
 `catkin_make` is provided by the ROS package `catkin` which contains the build system for ROS 1.
 It has been designed as the successor of `rosbuild` for ROS Fuerte.
 
-The tool invokes CMake only a single time and uses CMake's `include` function to process all packages in a single context.
+The tool invokes CMake only a single time and uses CMake's `add_subdirectory` function to process all packages in a single context.
 While this is an efficient approach since all targets across all packages can be parallelized it comes with significant disadvantages.
 Due to the single context all function names, targets and tests share a single namespace across all packages and on a larger scale this easily leads to collisions.
 The single context is also subject to side effects between the packages and sometimes requires adding additional target dependencies across package boundaries.
@@ -201,7 +216,7 @@ The following items are possible extension points to provide custom functionalit
 - setup the environment (e.g. `sh`, `bash`, `bat`)
 - completion (e.g. `bash`, `Powershell`)
 
-## Alternative Approaches
+## Possible Approaches
 
 There are two different approaches possible to reach the goal of a universal build tool.
 
