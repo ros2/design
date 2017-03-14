@@ -70,8 +70,8 @@ As another example for a package using `Autotools` the steps could look like `co
 | ament_cmake (CMake that calls ament macros) |       x      |            |
 | catkin_make                                 |              |      x     |
 | catkin_make_isolated                        |              |      x     |
-| ament_tools                                 |              |      x     |
 | catkin_tools                                |              |      x     |
+| ament_tools                                 |              |      x     |
 
 ### Environment Setup
 
