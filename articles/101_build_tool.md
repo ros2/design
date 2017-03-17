@@ -28,14 +28,19 @@ The "manual" approach to build a set of packages consists of building all packag
 For each package the documentation usually describes what the dependencies are, how to setup the environment to build the package as well as how to setup the environment afterwards to use the package.
 From an efficiency point of view that manual process does not scale well.
 
-This article describes the steps from the current build tools used in the ROS ecosystem to a single universal build tool which automates the process and works for various different use cases.
-
 ## Goal
 
 The goal of the build tool is to build a set of packages with a single invocation automating the process.
 It should work with ROS 1 packages as well as ROS 2 packages which provide the necessary information in their manifest files.
 It should also work with packages that do not provide manifest files themselves, given that the meta information is externally provided.
 This will allow the build tool to be utilized for non-ROS dependencies of ROS packages (e.g. Gazebo including its dependencies).
+
+In the ROS ecosystems several tools already exist which support this use case (see below).
+Each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
+As a consequence of being developed separately certain features are only available in some of the tools while other tools lack those.
+
+The reason to work on a single universal build tool comes down to reducing the effort necessary for development and maintenance.
+Additionally this makes new features developed for one ROS version / build system available to the other supported ROS versions / build systems.
 
 ### Out of Scope
 
@@ -132,38 +137,32 @@ It was developed after `catkin_make` to address the problems involved with build
 The tool only supports CMake-based packages and builds each package in topological order using the command sequence common for CMake packages: `cmake`, `make`, `make install`.
 While each package can parallelize the build of its targets the packages are processed sequentially even if they are not (recursive) dependencies of each other.
 
-### ament_tools
-
-`ament_tools` is provided by a standalone Python 3 package used to build ROS 2 packages.
-It was developed to bootstrap the ROS 2 project, is therefore only targeting Python 3, and works on Linux, MacOS and Windows.
-In addition to CMake packages it also supports building Python packages and can infer meta information without requiring an explicit package manifest.
-The tool performs an "isolated" build like `catkin_make_isolated` (one CMake invocation per package) but also parallelizes the build of packages which have no (recursive) dependencies on each other.
-
 ### catkin_tools
 
 [catkin_tools](https://catkin-tools.readthedocs.io/) is provided by a standalone Python package used to build ROS 1 packages.
 It was developed after `catkin_make` / `catkin_make_isolated` to build packages in parallel as well as provide significant usability improvements.
 The tool supports building CMake packages and builds them in isolation as well as supports parallelizing the process across packages.
 
-### Naming
+### ament_tools
+
+`ament_tools` is provided by a standalone Python 3 package used to build ROS 2 packages.
+It was developed to bootstrap the ROS 2 project, is therefore only targeting Python 3, and works on Linux, MacOS and Windows.
+In addition to CMake packages it also supports building Python packages and can infer meta information without requiring an explicit package manifest.
+The tool performs an "isolated" build like `catkin_make_isolated` and `catkin_tools` (one CMake invocation per package) and also parallelizes the build of packages which have no (recursive) dependencies on each other (like `catkin_tools`).
+
+## Naming
 
 The existing build tools are all named by the build system they are supporting.
 In general it should be possible for a build tool to support multiple different build systems.
 Therefore a name for a build tool being derived from a single build system might mislead the users that the tool only works for that specific build system.
-To avoid confusion of the user it would be beneficial if the build tool would have a different name to avoid implying an undesired correlation.
-
-## Rationale
-
-Currently each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
-Certain features are only available in some of the tools while other tools lack those.
-
-The reason to work on a single universal build tool comes down to reducing the effort necessary for development and maintenance.
-Additionally this makes new features developed for one ROS version / build system available to the other supported ROS versions / build systems.
+To avoid confusion of the user the build tool should have a different unrelated name to avoid implying an undesired correlation.
 
 ## Requirements
 
 The unified build tool should provide a superset of the functionality provided by the existing tools.
 In the following a few use cases are described as well as desired software criteria.
+
+Other use cases which are not explicitly covered but are already supported by the existing tools (e.g. cross-compilation, `DESTDIR` support, building CMake packages without a manifest) should continue to work with the unified build tool.
 
 ### Use Cases
 
@@ -172,6 +171,7 @@ The following uses cases should be satisfied by the unified build tool.
 #### Build ROS 1 workspaces
 
 The tool needs to be able to build ROS 1 workspaces which can already be built using `catkin_make_isolated` / `catkin_tools`.
+It is up to the implementation to decide if it only supports the standard CMake workflow or also the *custom devel space concept* of `catkin`.
 
 #### Build ROS 2 workspaces
 
@@ -183,7 +183,13 @@ After cloning the repositories containing Gazebo and all its dependencies (exclu
 Meta information not inferable from the sources can be provided externally without adding or modifying any files in the workspace.
 After the build a single file can be sourced / invoked to setup the environment to use Gazebo (e.g. `GAZEBO_MODEL_PATH`).
 
-## Software Criteria
+#### Mixing different build systems
+
+The build tool will support using different build systems within a single workspace.
+If these packages inter-operate with each other correctly depends also to a large degree on the build system.
+The build tool should ensure that it doesn't prevent that use case.
+
+### Software Criteria
 
 The tool aims to support a variety of build systems, use cases, and platforms.
 The above mentioned ones are mainly driven by the needs in the ROS ecosystem but the tool should also be usable outside the ROS ecosystem (e.g. for Gazebo).
