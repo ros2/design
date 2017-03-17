@@ -224,10 +224,37 @@ The following items are possible extension points to provide custom functionalit
 
 ## Possible Approaches
 
-There are two different approaches possible to reach the goal of a universal build tool.
+In terms of flexibility neither of the existing build tools can already support the superset of features described in this article.
+There are two different paths possible to reach the goal of a universal build tool:
 
-- Incrementally evolve one of the existing tools to satisfy the described goals.
-- Implement a new build tool "from scratch" (while existing building blocks can still be "copied" from the existing solutions).
+### Evolve catkin_tools
+
+One approach is to incrementally evolve one of the existing tools to satisfy the described goals.
+Since `catkin_tools` is in many aspects the most complete build tool it should be one being evolved.
+While `ament_tools` has a few features `catkin_tools` currently lacks (e.g. plain CMake support without a manifest, Windows support) the feature richness of `catkin_tools` makes it a better starting point.
+
+The following items are highlighting some of the necessary efforts (not a complete list):
+
+- Refactor the software architecture of the existing code base to support the flexibility sketched by the extension points listed above.
+- Move `catkin` specific concepts out of the core of the build tool into a catkin specific extension (e.g. manifest format, *devel space*).
+- Support for ROS 2 which includes:
+
+  - Support for Python 3 and Windows.
+  - Support for pure Python packages as well as packages without an in-source manifest file.
+  - Environment setup of `ament` packages
+
+- Rename the tool to use a name unrelated to one build system.
+- Investigate if a feature like continued support of the *devel space* is feasible since it doesn't apply to other build system and might be complicated to separate without sacrificing usability.
+
+### Start "from scratch"
+
+Another approach is to implement the necessary software architecture to enable the desired flexibility and modularity "from scratch".
+Then fill in the features step-by-step by porting existing building blocks from the existing solutions.
+Some items to highlight the necessary efforts (not a complete list):
+
+- Create the software architecture to support the flexibility sketched by the extension points listed above which will be easier "from scratch" than for an existing code base.
+- Port / reimplement many of the features existing in the other build tools. It will take a non trivial amount of time to reach the feature level of e.g. `catkin_tools`
+- Thorough test the functionality and write documentation for developers as well as users.
 
 ## Proposal
 
