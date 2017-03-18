@@ -245,9 +245,6 @@ The tool aims to support a variety of build systems, use cases, and platforms.
 The above mentioned ones are mainly driven by the needs in the ROS ecosystem but the tool should also be usable outside the ROS ecosystem (e.g. for Gazebo).
 Therefore it should be designed in a way which enables extending its functionality.
 
-Assuming that the tool will be implemented in Python (since that is the case for existing tools) the entry point mechanism provides a convenient way to make the software extensible.
-Extensions don't even have to be integrated into the Python package containing the core logic of the build tool but can easily be provided by additional Python packages.
-This approach will not only foster a modular design and promote clear interfaces but enable external contributions without requiring them to be integrated in a single monolithic package.
 
 Several well known software principles apply:
 
@@ -271,6 +268,11 @@ The following items are possible extension points to provide custom functionalit
 - output handling (e.g. console output, logfiles, status messages, notifications)
 - setup the environment (e.g. `sh`, `bash`, `bat`)
 - completion (e.g. `bash`, `Powershell`)
+
+Assuming that the tool will be implemented in Python (since that is the case for existing tools) the entry point mechanism provides a convenient way to make the software extensible.
+Extensions don't even have to be integrated into the Python package containing the core logic of the build tool but can easily be provided by additional Python packages.
+This approach will not only foster a modular design and promote clear interfaces but enable external contributions without requiring them to be integrated in a single monolithic package.
+
 
 ## Possible Approaches
 
