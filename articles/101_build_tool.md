@@ -162,7 +162,7 @@ Their method of operating is being described in the following subsections togeth
 
 ### rosbuild
 
-Rosbuild was the first build system for ROS, it was based on Makefiles.
+Rosbuild was the first combination of build system and build tool for ROS, it was based on Makefiles.
 Rosbuild did not provide any install target, and kept sources and build results in the same folder structure.
 Rosbuild was replaced because it did not support packaging, cross-compiling, and because build speed was an issue.
 
