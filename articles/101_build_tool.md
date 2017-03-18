@@ -39,8 +39,8 @@ This article describes the steps to unify the build systems of ROS1 and ROS2, bu
 
 The goal of the build tool is to build a set of packages with a single invocation automating the process.
 It should work with:
-* ROS 1 packages
-* ROS 2 packages
+* ROS 1 packages (inside a ROS1 workspace)
+* ROS 2 packages (inside a ROS2 workspace)
 * other software sources when sufficient meta information is externally provided.
 
 The last point allows to build non-ROS dependencies of ROS packages (e.g. Gazebo including its dependencies).
