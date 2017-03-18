@@ -65,6 +65,14 @@ Additionally this makes new features developed for one ROS version / build syste
 
 This phase seems realistic to achieve in predictable time because both catkin_tools and ament_tools already have a large overlap.
 
+A coarse pseudo-code looks like this
+
+1. Detect workspace folder to use (e.g. current folder, or parent folder with marker file, ...)
+2. Load workspace adapter for this workspaces buildsystem
+3. Ask plugin/wrapper for package declarations (name, folder and dependencies of each package)
+4. Create DAG of packages for building the workspace
+5. Invoke buildsystem plugin command for each package in build order
+
 ### Phase 2 goal: unify workspaces
 
 | Concept Layer         | All ROS / non-ROS                         |
