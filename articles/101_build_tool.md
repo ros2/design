@@ -91,44 +91,6 @@ Examples are dpkg, rpm, homebrew, portage, robotpkg.
 | catkin_tools                                |              |      x     |
 | ament_tools                                 |              |      x     |
 
-
-The following describes the essential functional requirements for a build tool, and further functional and non-functional requirements that are to be decided.
-For example, in order for a CMake project to discover a dependency using the CMake function `find_package`, the CMake module (e.g. `FindFoo.cmake`) or the CMake config file (e.g. `FooConfig.cmake`) for that dependency must either be in a prefix that CMake searches implicitly (e.g. `/usr`) or the location must be provided through the environment variable `CMAKE_PREFIX_PATH` / `CMAKE_MODULE_PATH`.
-
-In addition to building a package on top of another package (using `find_package` in the case of CMake), you may need to adjust the environment in order to run an executable from a package.
-For example, when a package installs a shared library in a non-default location then the environment variable `LD_LIBRARY_PATH` (or `PATH` on Windows) needs to be extended to include the containing folder before trying to run executables that load that library at runtime.
-
-The functionality to setup these environment variables can be provided by either the build tool or the build system.
-In the latter case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
-
-### Development Environment Setup
-
-Invoking a buildsystem for a package implies also setting up environment variables before the process.
-Examples are the `CMAKE_PREFIX_PATH` and the `LD_LIBRARY_PATH`.
-For consistency of the build result, those variables should be restricted, allowing the build to only access declared dependencies.
-
-For various reasons, it is beneficial to also allow developers to easily manually invoke the buildsystem for one package.
-This requires the buildsystem to provide the environment setup by itself.
-
-### Subtask invocation
-
-Build systems define various tasks, such as testing, compiling, generating documentation, installing.
-A build tool must provide it's own abstract set of tasks to be mapped to the tasks of different build systems.
-
-### Isolated installation
-
-For the ROS ecosystem it is important that packages can be installed to any target location in a filesystem.
-
-After a package has been built and installed to a target location, the environment might need to be extended to use the package.
-
-### Convenience features
-
-* Build Parallelity
-* Invocation from various locations, roscd
-* Workspace chaining
-* rosbuild compatibility (ROS_PACKAGE_PATH)
-* support cross-compilation capabilities of build systems
-
 ## Existing Build Systems
 
 In the following the build systems being used in the ROS ecosystem are briefly described.
@@ -233,22 +195,50 @@ After cloning the repositories containing Gazebo and all its dependencies (exclu
 Meta information not inferable from the sources can be provided externally without adding or modifying any files in the workspace.
 After the build a single file can be sourced / invoked to setup the environment to use Gazebo (e.g. `GAZEBO_MODEL_PATH`).
 
+### Individual features
+
+The following describes features mostly already present in the present build tools, to explain why these tools are complex to merge.
+
 #### Mixing different build systems
 
-The build tool will support using different build systems within a single workspace.
-If these packages inter-operate with each other correctly depends also to a large degree on the build system.
-The build tool should ensure that it doesn't prevent that use case.
+The build tool will support using different build systems within a single workspace, as ament_tools or catkin_tools already do.
+But there may be restrictions on which build systems can be combined in which kind of workspace (e.g. building catkin packages may not be possible in an ament workspace).
+Removing such restrictions will be an ongoing process.
 
-### Software Criteria
+#### Build Environment Setup
 
-The tool aims to support a variety of build systems, use cases, and platforms.
-The above mentioned ones are mainly driven by the needs in the ROS ecosystem but the tool should also be usable outside the ROS ecosystem (e.g. for Gazebo).
-Therefore it should be designed in a way which enables extending its functionality.
+A very important part beside the actual build of a package is the environment setup.
+
+For example, in order for a CMake project to discover a dependency using the CMake function `find_package`, the CMake module (e.g. `FindFoo.cmake`) or the CMake config file (e.g. `FooConfig.cmake`) for that dependency must either be in a prefix that CMake searches implicitly (e.g. `/usr`) or the location must be provided through the environment variable `CMAKE_PREFIX_PATH` / `CMAKE_MODULE_PATH`.
+
+In addition to building a package on top of another package (using `find_package` in the case of CMake), you may need to adjust the environment in order to run an executable from a package.
+For example, when a package installs a shared library in a non-default location then the environment variable `LD_LIBRARY_PATH` (or `PATH` on Windows) needs to be extended to include the containing folder before trying to run executables that load that library at runtime.
+
+The functionality to setup these environment variables can be provided by either the build tool or the build system.
+In the latter case the build tool only needs to know how the build system exposes the environment setup in order to reuse it.
+
+#### Development Environment Setup
+
+Invoking a buildsystem for a package implies also setting up environment variables before the process.
+Examples are the `CMAKE_PREFIX_PATH` and the `LD_LIBRARY_PATH`.
+For consistency of the build result, those variables should be restricted, allowing the build to only access declared dependencies.
+
+For various reasons, it is beneficial to also allow developers to easily manually invoke the buildsystem for one package.
+This requires the buildsystem to provide the environment setup by itself.
+
+#### Subtask invocation
+
+Build systems define various tasks, such as testing, compiling, generating documentation, installing.
+A build tool must provide it's own abstract set of tasks to be mapped to the tasks of different build systems.
+
+#### Isolated installation
+
+For the ROS ecosystem it is important that packages can be installed to any target location in a filesystem.
+
+After a package has been built and installed to a target location, the environment might need to be extended to use the package.
 
 
-
-
-### Extension Points
+#### Extension Points
 
 The following items are possible extension points to provide custom functionality:
 
@@ -265,6 +255,14 @@ The following items are possible extension points to provide custom functionalit
 Assuming that the tool will be implemented in Python (since that is the case for existing tools) the entry point mechanism provides a convenient way to make the software extensible.
 Extensions don't even have to be integrated into the Python package containing the core logic of the build tool but can easily be provided by additional Python packages.
 This approach will not only foster a modular design and promote clear interfaces but enable external contributions without requiring them to be integrated in a single monolithic package.
+
+#### Other Convenience features to consider
+
+* Build Parallelity
+* Invocation from various locations, roscd
+* Workspace chaining
+* rosbuild compatibility (ROS_PACKAGE_PATH)
+* support cross-compilation capabilities of build systems
 
 
 ## Possible Approaches
