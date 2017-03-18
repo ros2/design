@@ -127,7 +127,7 @@ After a package has been built and installed to a target location, the environme
 * Invocation from various locations, roscd
 * Workspace chaining
 * rosbuild compatibility (ROS_PACKAGE_PATH)
-
+* support cross-compilation capabilities of build systems
 
 ## Existing Build Systems
 
