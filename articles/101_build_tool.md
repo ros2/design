@@ -26,11 +26,15 @@ This is in contrast to workflows where teams work on a single software package a
 Such a workflow is impracticable without a tool that automatically rebuilds many packages in topological order of dependency.
 The rosbuild tool enabled this workflow first and was a critical factor in the success of ROS.
 
-Today, the ROS1 ecosystem has the deprecated rosbuild and the catkin_make build systems for this purpose.
-The ROS2 ecosystem has the ament_tools build system.
+The ROS1 ecosystem has catkin (and the deprecated rosbuild) for this purpose.
+The ROS2 ecosystem has ament.
 
+Both catkin and ament toolsets have 2 conceptually separate parts, a build tool part that deals with a single package at a time, and a build system part that deals with invoking build tools in the right order.
 
-This article describes the steps from the current build tools used in the ROS ecosystem to a single universal build tool.
+Both ament and catkin toolsets have largely similar code for the build system part (more details follow below), but their build tool parts are very different from each other, requiring quite different build descriptors.
+
+This article describes the steps to unify the build systems of ROS1 and ROS2, but not their build tools.
+
 ## Goal
 
 The goal of the build tool is to build a set of packages with a single invocation automating the process.
