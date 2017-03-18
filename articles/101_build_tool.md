@@ -72,7 +72,9 @@ It determines the dependency graph and invokes the specific build tool for each 
 Examples are Gnu Make, cmake, python setuptools.
 
 A build tool schedules and invokes the build systems for separate source trees (packages) in topological order of dependency.
-Example are rosbuild, catkin_make, ament.
+Example are catkin_make, ament_tools.
+
+The deprecated rosbuild made no distinction between build system and build tool, but equally had both elements.
 
 A package manager downloads, optionally builds, then installs released packages from origin locations.
 Examples are dpkg, rpm, homebrew, portage, robotpkg.
