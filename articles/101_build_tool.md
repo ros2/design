@@ -225,6 +225,32 @@ The following items are possible extension points to provide custom functionalit
 ## Possible Approaches
 
 In terms of flexibility neither of the existing build tools can already support the superset of features described in this article.
+
+### catkin_tools and ament_tools side-by-side
+
+|                                                   | catkin_tools | ament_tools | {universal tool} |
+|---------------------------------------------------|:------------:|:-----------:|:----------------:|
+| Build catkin packages                             |              |             |                  |
+| Build ament packages                              |              |             |                  |
+| Build pure cmake packages (external meta info)    |              |             |                  |
+| Build pure python packages                        |              |             |                  |
+| Run using Python3                                 |              |             |                  |
+| Run using Python2                                 |              |             |                  |
+| Run on Windows                                    |              |             |                  |
+| Extension: contribute verbs                       |              |             |                  |
+| Extension: contribute verb options                |              |             |                  |
+| Extension: dicovery of packages                   |              |             |                  |
+| Extension: identification of packages             |              |             |                  |
+| Extension: process package build                  |              |             |                  |
+| Extension: sequential and parallel processing     |              |             |                  |
+| Extension: customize output handling              |              |             |                  |
+| Extension: build / dev / run env setup(.sh, .bat) |              |             |                  |
+| Extension: tab completion                         |              |             |                  |
+| Workspace root marker file                        |              |             |                  |
+| Chain rosbuild workspace                          |              |             |                  |
+| Chain catkin workspace                            |              |             |                  |
+| support separate targets e.g. for X-compilation   |              |             |                  |
+
 There are two different paths possible to reach the goal of a universal build tool:
 
 ### Evolve catkin_tools
