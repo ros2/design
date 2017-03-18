@@ -246,14 +246,7 @@ The above mentioned ones are mainly driven by the needs in the ROS ecosystem but
 Therefore it should be designed in a way which enables extending its functionality.
 
 
-Several well known software principles apply:
 
-- Separation of concerns
-- Single Responsibility principle
-- Principle of Least Knowledge
-- Don’t repeat yourself
-- Keep it stupid simple
-- "Not paying for what you don't use"
 
 ### Extension Points
 
