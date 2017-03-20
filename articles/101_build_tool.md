@@ -225,12 +225,18 @@ The following items are possible extension points to provide custom functionalit
 ## Possible Approaches
 
 In terms of flexibility neither of the existing build tools can already support the superset of features described in this article.
-There are two different paths possible to reach the goal of a universal build tool:
+There are multiple different paths possible to reach the goal of a universal build tool which fall into two categories:
+
+- One approach is to incrementally evolve one of the existing tools to satisfy the described goals.
+- Another approach would be to start "from scratch".
+
+### Evolve catkin_make, catkin_make_isolated, or ament_tools
+
+Since neither of these three build tools has the feature richness of `catkin_tools` it is considered strictly less useful to starting building upon one of these build tools.
 
 ### Evolve catkin_tools
 
-One approach is to incrementally evolve one of the existing tools to satisfy the described goals.
-Since `catkin_tools` is in many aspects the most complete build tool it should be one being evolved.
+Since `catkin_tools` is in many aspects the most complete build tool it should be the one being evolved.
 While `ament_tools` has a few features `catkin_tools` currently lacks (e.g. plain CMake support without a manifest, Windows support) the feature richness of `catkin_tools` makes it a better starting point.
 
 The following items are highlighting some of the necessary efforts (not a complete list):
