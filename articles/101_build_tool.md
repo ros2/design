@@ -42,6 +42,50 @@ As a consequence of being developed separately certain features are only availab
 The reason to work on a single universal build tool comes down to reducing the effort necessary for development and maintenance.
 Additionally this makes new features developed for one ROS version / build system available to the other supported ROS versions / build systems.
 
+### Current Workspace and tool combinations
+
+| Concept Layer | ROS2                               | ROS1 (catkin)                  | ROS1 (rosbuild)         |
+|--------------|------------------------------------|--------------------------------|-------------------------|
+| Workspace    | ROS2 ament workspace               | ROS1 catkin workspace          | ROS1 rosbuild workspace |
+| Build tool   | ament_tools                        | catkin_tools, catkin_make, cmi | rosbuild                |
+| Build system | ament_cmake, cmake, python         | catkin, cmake                  | rosbuild                |
+| Package      | ROS2 package, cmake/python project | ROS1 package, cmake project    | ros1 rosbuild package   |
+
+(Note catkin_make cannot build pure cmake projects)
+
+### Phase 1 goal: unify build systems (not rosbuild)
+
+| Concept Layer     | ROS2                                | ROS1 (catkin)                  |
+|-------------------|-------------------------------------|--------------------------------|
+| Workspace         | ROS2 ament workspace                | ROS1 catkin workspace          |
+| Build tool        | *{universal build tool}*            | *{universal build tool}*       |
+| Workspace adapter | *ament workspace adapter*           | *catkin workspace adapter*     |
+| Build system      | ament_cmake, cmake, python          | catkin, cmake                  |
+| Package           | ROS2 package, cmake/python project  | ROS1 package, cmake project    |
+
+This phase seems realistic to achieve in predictable time because both catkin_tools and ament_tools already have a large overlap.
+
+A coarse pseudo-code looks like this
+
+1. Detect workspace folder to use (e.g. current folder, or parent folder with marker file, ...)
+2. Load workspace adapter for this workspaces buildsystem
+3. Ask plugin/wrapper for package declarations (name, folder and dependencies of each package)
+4. Create DAG of packages for building the workspace
+5. Invoke buildsystem plugin command for each package in build order
+
+### Phase 2 goal: unify workspaces
+
+| Concept Layer         | All ROS / non-ROS                         |
+|-----------------------|-------------------------------------------|
+| Build tool            | *{universal build tool}*                  |
+| Workspace             | *{universal workspace}*                   |
+| Build system adapter  | for catkin, ament, cmake, python, ...     |
+| Build system          | catkin, ament_cmake, cmake, python ...    |
+| Package               | ROS1/ROS2 packages, cmake/python projects |
+
+Note this kind of homogenous workspace would likely require a changes to catkin and the cmake makros, also requiring users to migrate.
+
+
 ### Out of Scope
 
 The build tool does not cover the steps necessary to fetch the sources of the to-be-built packages.
