@@ -85,8 +85,8 @@ The second part is the replacement for a matched name.
 The act of replacing one name with another is **remapping**.
 
 
-## ROS 2 Remapping Requirements
-These requirements are being considered for remapping in ROS 2:
+## ROS 2 Remapping Use cases
+These use cases are being considered for remapping in ROS 2:
 
 - Remap One Node in a Process
 - Change a Namespace
@@ -219,7 +219,7 @@ The name is remapped to the right side only if it exactly matches the left side 
 This is a proposal for the ROS 2 remapping rule syntax.
 It attempts to be the same as ROS 1 syntax when possible, and different where it supports new features.
 
-Requirements supported by this syntax:
+Use cases supported by this syntax:
 
 - Remap One Node in a Process
 - Change a Namespace
@@ -229,7 +229,7 @@ Requirements supported by this syntax:
 - Remap via Command Line
 - Change the Default Namespace
 
-Requirements not supported:
+Not supported:
 
 - Change a Token
 - Pre-FQN Remapping
