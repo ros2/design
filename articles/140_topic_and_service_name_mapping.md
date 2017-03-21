@@ -88,7 +88,7 @@ Fully qualified names have these additional restrictions:
 - must start with a forward slash (`/`), i.e. they must be absolute
 - must not contain tilde (`~`) or curly braces (`{}`)
 
-Note that expanded substitutions must result in a valid name and comply to the name contraints stated in the previous section.
+Note that expanded substitutions must result in a valid name and comply to the name constraints stated in the previous section.
 An example of an invalid substitution would be `{sub}/foo` and replace `{sub}` with a numeric value, which thus leads to a topic starting with a numeric character.
 
 ### Uniform Resource Locators (URLs)
@@ -152,7 +152,7 @@ Topic and service name tokens:
 
 - must not be empty, e.g. the name `//bar` is not allowed
 
-  - rationale: it removes the chance for accidental `//` from concatenation and thereore the need to collapse `//` to `/`
+  - rationale: it removes the chance for accidental `//` from concatenation and therefore the need to collapse `//` to `/`
 
 - may use alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), and/or balanced curly braces (`{}`)
 
@@ -279,9 +279,9 @@ With this in mind, we may want to always require a full restart of the publisher
 The length of the DDS topic must not exceed 256 characters.
 The actual length of a partition field may be limited to 256 characters, however this varies drastically depending on the vendor.
 RTI Connext does not allow a creation of a publisher/subscription with a partition length of 248 characters, whereas FastRTPS does not have any limitation in length.
-Please bare in mind, that the length of the partition gets further diminished due to the introduction of a ros specific prefix.
+Please bare in mind, that the length of the partition gets further diminished due to the introduction of a ROS specific prefix.
 The actual length of a ROS Topic, including the namespace hierarchy and the base name of the topic, may thus be varying in length as well.
-Yet, the base name token must not exceed the length of 256 characters as this is getting mapped direclty as the DDS topic.
+Yet, the base name token must not exceed the length of 256 characters as this is getting mapped directly as the DDS topic.
 
 ### Communicating with Non-ROS Topics
 
