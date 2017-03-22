@@ -253,7 +253,7 @@ Example rules are:
 The match part of a rule uses these operators:
 
 - `*` matches a single token, similar to `[a-zA-Z0-9_]+` in POSIX ERE
-- `**` matches a slash followed by a token zero or more times, similar to `(/[a-zA-Z0-9_]+)*`
+- `**` matches single token or a slash followed by a token zero or more times, similar to `([a-zA-Z0-9_]+)|(/[a-zA-Z0-9_]+)*`
 - `~` is replaced with the node's name anywhere it is used
 - `nodename:` prefixed to the match makes it apply only to a node with that name
 
@@ -316,9 +316,9 @@ The second requires a wildcard to match the basename at the end.
 
 *Example of partial namespace replacement:*
 
-- Node uses names `/foo`, `/foo/bar/baz`
+- Node uses names `/foo`, `/foo/bar`, `/foo/bar/baz`
 - Node given rule `/foo/**:=/fizz/\1`
-- Resulting names `/foo`, `/fizz/bar/baz`
+- Resulting names `/foo`, `/fizz/bar`, `/fizz/bar/baz`
 
 *Example of full namespace replacement:*
 
