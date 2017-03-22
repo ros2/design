@@ -20,7 +20,7 @@ published: true
 Original Author: {{ page.author }}
 
 ## Why remap names?
-Remapping names allows reusing the same node executable in different parts of the system, and it means nodes can useful when destributed in binary form.
+Remapping names allows reusing the same node executable in different parts of the system.
 A robot that has multiple sensors of the same type could launch multiple instances of the same node with outputs remapped to different topics.
 
 ```
