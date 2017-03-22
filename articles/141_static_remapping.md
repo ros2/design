@@ -97,6 +97,7 @@ These use cases are being considered for remapping in ROS 2:
 - Exact Relative Name Replacement
 - Remap via Command Line
 - Change the Default Namespace
+- Change the Node Name
 
 ### Remap One Node in a Process
 This is the ability to apply remap rules to one node in a process without affecting the other nodes.
@@ -203,6 +204,16 @@ ROS 1 has this feature using either the environment variable `ROS_NAMESPACE` or 
 - User changes the default namespace to `/foo`
 - The final name is `/foo/bar`
 
+### Change the NodeName
+The node name is used in log messages and to create private names.
+ROS 1 has this feature using the argument `__node`.
+
+*Example:*
+
+- Node is named `camera_driver` and uses a private name `camera_info`
+- User changes the node name to `left_camera_driver`
+- The final name is `/ns/left_camera_driver/camera_info` and log messages use `left_camera_driver`
+
 ## Remapping Names in ROS 1
 Remapping is a feature that also exists in ROS 1.
 In ROS 1 remapping works by passing in [arguments](http://wiki.ros.org/Remapping%20Arguments) to each node.
@@ -228,6 +239,7 @@ Use cases supported by this syntax:
 - Exact Relative Name Replacement
 - Remap via Command Line
 - Change the Default Namespace
+- Change the Node Name
 
 Not supported:
 
@@ -293,6 +305,11 @@ For example, `/bar/*:=\1/bar` with default namespace `/ns` matches the name `/ba
 The string `__ns` can be given on the match part of a rule to signal a change of the default namespace.
 On the match side `__ns` must be used by itself or with a `nodename:` prefix.
 The replacement side of a rule must have a FQN which will become the new default namespace.
+
+#### Special Rule for Changing the Node Name
+The string `__node` can be given on the match part of a rule to signal a change of the node's name.
+On the match side it may be used by itself or with a `nodename:` prefix.
+The replacement must be a single token which will become the node's new name.
 
 ### Applications of the syntax
 The following sections explain how the syntax enables the use cases above.
@@ -366,7 +383,7 @@ This character may still be difficult on other shells, like zsh.
 #### Supporting: Change the Default Namespace
 This isn't really a remapping rule, but the syntax is similar.
 In ROS 1 the argument `__ns:=` could change the default namespace.
-Here the syntax is the same, and additionally it can be prefixed nodename.
+Here the syntax is the same, and additionally it can be prefixed with a node's name.
 The replacement side must have a FQN with no special operators.
 All relative names are expanded to the new namespace before any remapping rules are applied to them.
 
@@ -374,6 +391,19 @@ All relative names are expanded to the new namespace before any remapping rules 
 
 - `__ns:=/new/namespace`
 - `node1:__ns:=/node1s/new/namespace`
+
+#### Supporting: Change the Node Name
+This also isn't a true remapping rule, but the syntax is similar.
+In ROS 1 the argument `__node:=` could change the node's name.
+Here the syntax is the same, and additionally it can be prefixed with a node's current name.
+The replacement side must have a single token.
+Log messages use the new name immediately.
+All private names are expanded to the new name before any remapping rules are applied to them.
+
+*Examples:*
+
+- `__node:=lef_camera_driver`
+- `camera_driver:__node:=left_camera_driver`
 
 #### Not Supporting: Change a Token
 The syntax can't change all uses of a token with one rule.
