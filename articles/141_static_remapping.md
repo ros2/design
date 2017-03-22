@@ -204,7 +204,7 @@ ROS 1 has this feature using either the environment variable `ROS_NAMESPACE` or 
 - User changes the default namespace to `/foo`
 - The final name is `/foo/bar`
 
-### Change the NodeName
+### Change the Node Name
 The node name is used in log messages and to create private names.
 ROS 1 has this feature using the argument `__node`.
 
