@@ -286,7 +286,7 @@ When this creates a name with `//` one slash is automatically deleted.
 For example `**/bar:=/bar/\1` matches the name `/foo/bar` with `**` capturing `/foo`, but the new name is `/bar/foo`.
 
 The replacement part is also automatically expanded to FQN.
-If the replacment name does not begin with `/` it is automatically be prefixed with `/namespace/`.
+If the replacment name does not begin with `/` it is automatically prefixed with `/namespace/`.
 For example, `/bar/*:=\1/bar` with default namespace `/ns` matches the name `/bar/foo` with `*` capturing `foo` and replacement name `/ns/foo/bar`.
 
 #### Special Rule for Changing the Default Namespace
@@ -333,14 +333,14 @@ The wildcard `**` is useful because it matches every possible namespace when com
 *Example:*
 
 - Node uses names `/foo`, `/buz/foo`, `/biz/buz/foo`
-- Node given rule `**/foo:=\1bar`
+- Node given rule `**/foo:=\1/bar`
 - Resulting names `/bar`, `/buz/bar`, `/biz/buz/bar`
 
 #### Supporting: Exact FQN Replacement
 Exact FQN replacement requires no wildcards.
 This syntax is identical to ROS 1.
 
-*Examples rules:*
+*Example rules:*
 
 - `/foo/bar:=/fiz/buz`
 - `/foo:=/foo/bar`
@@ -350,7 +350,7 @@ Exact relative replacement also requires no wildcards.
 It means relative names are first expanded to FQN, and then processed as during exact FQN replacement.
 This syntax is identical to ROS 1.
 
-*Examples rules:*
+*Example rules:*
 
 - `foo:=/foo/bar` in namespace `/ns` is identical to `/ns/foo:=/foo/bar`
 - `foo:=bar` in namespace `/ns` is identical to `/ns/foo:=/ns/bar`
