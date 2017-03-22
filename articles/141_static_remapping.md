@@ -101,7 +101,7 @@ These use cases are being considered for remapping in ROS 2:
 
 ### Remap One Node in a Process
 This is the ability to apply remap rules to one node in a process without affecting the other nodes.
-Because processes in ROS 2 can contain multiple nodes, it is possible their implementations may use the same name for different purposes.
+Because processes in ROS 2 can contain multiple nodes, it is possible multiple nodes in a process may use the same name for different purposes.
 A user may want to change the name in one node without affecting the rest.
 
 
