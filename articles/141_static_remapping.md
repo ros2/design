@@ -328,7 +328,7 @@ The second requires a wildcard to match the basename at the end.
 
 #### Supporting: Change a Basename
 Changing a basename requires a wildcard which matches the entire namespace.
-The wildcard `**` is useful because it matches every possible namespace.
+The wildcard `**` is useful because it matches every possible namespace when combined with a slash.
 
 *Example:*
 
