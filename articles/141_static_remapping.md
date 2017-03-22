@@ -333,7 +333,7 @@ The wildcard `**` is useful because it matches every possible namespace.
 *Example:*
 
 - Node uses names `/foo`, `/buz/foo`, `/biz/buz/foo`
-- Node given rule `**foo:=\1bar`
+- Node given rule `**/foo:=\1bar`
 - Resulting names `/bar`, `/buz/bar`, `/biz/buz/bar`
 
 #### Supporting: Exact FQN Replacement
