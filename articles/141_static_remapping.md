@@ -265,7 +265,7 @@ Example rules are:
 The match part of a rule uses these operators:
 
 - `*` matches a single token, similar to `[a-zA-Z0-9_]+` in POSIX ERE
-- `**` matches zero or more tokens delineated by slashes
+- `**` matches zero or more tokens delimited by slashes
 - `~` is replaced with the node's name anywhere it is used
 - `nodename:` prefixed to the match makes it apply only to a node with that name
 
