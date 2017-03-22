@@ -217,7 +217,7 @@ The name is remapped to the right side only if it exactly matches the left side 
 
 ## Remapping rule syntax
 This is a proposal for the ROS 2 remapping rule syntax.
-It attempts to be the same as ROS 1 syntax when possible, and different where it supports new features.
+It attempts to be the same as ROS 1 syntax when possible.
 
 Use cases supported by this syntax:
 
@@ -234,20 +234,65 @@ Not supported:
 - Change a Token
 - Pre-FQN Remapping
 
-Special Operators:
+### How the Syntax Works
 
-- `*` wild card that matches a single token
-- `**` wild card that matches at least one slash and zero or more tokens
-- `:=` divides the two parts of a remapping rule: matching and replacement
-- `~` expands to `/namespace/nodename` and may only be at the very beginning of a match or replacement
-- `__ns` matches the default namespace if used by itself on the match side of a rule
-- `nodename:` prefixed to a rule makes it apply only to a node with that name
-- `\1` - `\9` are replaced with the matched content of a wild card
+The structure of a remapping rule is `match:=replacement`.
+`match` tests if a name should be remapped.
+`replacement` says what the new name will be.
+`:=` behaves the same as it does in ROS 1.
 
-The operators `*` and `**` are chosen to match globbing behavior in bash.
-`**` behaves similarly as it does in bash>=4.0 with the globstar option set.
-The syntax for `\[1-9]` was taken from the syntax for backreferences in POSIX BRE.
-The operators `~`, `:=`, and `__ns` have the same meaning in ROS 1.
+Example rules are:
+
+- `foo:=bar`
+- `/foo/bar:=fiz/buzz`
+- `nodename:~/foo:=foo`
+- `**/foo:=\1/bar`
+
+#### Match Part of a Rule
+
+The match part of a rule uses these operators:
+
+- `*` matches a single token, similar to `[a-zA-Z0-9_]+` in POSIX ERE
+- `**` matches an empty string or a slash or a slash followed by a token zero or more times, similar to `/?|(/[a-zA-Z0-9_]+)*`
+- `~` is replaced with the node's name anywhere it is used
+- `nodename:` prefixed to the match makes it apply only to a node with that name
+
+The operators `*` and `**` are similar to the globbing behavior in bash.
+`**` behaves similar to its use in bash>=4.0 with the globstar option set.
+
+The operators `~`, `*`, and `**` match whole tokens only.
+`*bar` looks like it would match `foobar`, but that would mean matching a partial token.
+To avoid confusion the operators are required to be separated from tokens by a `/`.
+For example `*/bar` is allowed, but `*bar` is invalid.
+This is incompatible with the ROS 1 syntax where `~bar` is used, but now `~/bar` must be used instead.
+
+Matching works on FQN only.
+A name is expanded to a FQN prior to being tested.
+If the match part of a rule does not begin with `/`, `*`, or `**` it is prefixed with `/namespace/`.
+For example, `bar` matches `/namespace/bar`, and `~/bar` matches `/namespace/nodename/bar`.
+
+#### Replacement Part of a rule
+
+The replacement part of a rule uses these special operators:
+
+- `~` is replaced with the node's name
+- `\1` - `\9` are replaced with the matched content of a `*` or `**`
+
+The syntax for `\1` through `\9` was taken from backreferences in POSIX BRE.
+However, parenthesis are not used; the wild cards always capture.
+
+Operators are required to be separated from tokens by a `/`.
+When this creates a name with `//` one slash is automatically deleted.
+For example `**/bar:=/bar/\1` matches the name `/foo/bar` with `**` capturing `/foo`, but the new name is `/bar/foo`.
+
+The replacement part is also automatically expanded to FQN.
+If the replacment name does not begin with `/` it is automatically be prefixed with `/namespace/`.
+For example, `/bar/*:=\1/bar` with default namespace `/ns` matches the name `/bar/foo` with `*` capturing `foo` and replacement name `/ns/foo/bar`.
+
+#### Special Rule for Changing the Default Namespace
+The string `__ns` can be given on the match part of a rule to signal a change of the default namespace.
+On the match side `__ns` must be used by itself or with a `nodename:` prefix.
+The replacement side of a rule must have a FQN which will become the new default namespace.
 
 ### Applications of the syntax
 The following sections explain how the syntax enables the use cases above.
@@ -272,7 +317,7 @@ The second requires a wildcard to match the basename at the end.
 *Example of partial namespace replacement:*
 
 - Node uses names `/foo`, `/foo/bar/baz`
-- Node given rule `/foo**:=/fizz\1`
+- Node given rule `/foo/**:=/fizz/\1`
 - Resulting names `/foo`, `/fizz/bar/baz`
 
 *Example of full namespace replacement:*
@@ -319,14 +364,29 @@ For example in bash, the character `*` only has special behavior if it is surrou
 This character may still be difficult on other shells, like zsh.
 
 #### Supporting: Change the Default Namespace
-In ROS 1 the argument `__ns:=` could be used to set the default namespace.
-This syntax treats it the same, except that it can be applied to a single node by prefixing it with the nodename.
-The replacement side is more restricted: It must be a FQN which will be treated as a namespace, it may not have any backreferences, it may not use the character `~`.
+This isn't really a remapping rule, but the syntax is similar.
+In ROS 1 the argument `__ns:=` could change the default namespace.
+Here the syntax is the same, and additionally it can be prefixed nodename.
+The replacement side must have a FQN with no special operators.
+All relative names are expanded to the new namespace before any remapping rules are applied to them.
 
 *Examples:*
 
 - `__ns:=/new/namespace`
 - `node1:__ns:=/node1s/new/namespace`
+
+#### Not Supporting: Change a Token
+The syntax can't change all uses of a token with one rule.
+Supporting this use case with a single rule is not a priority.
+
+*Workaround using two rules*
+
+- First rule remaps token used in namespace `**/foobar/**:=\1/fizzbuz/\2`
+- Second rule remaps token used as basename `**/foobar:=\1/fizzbuz`
+
+#### Not Supporting: Pre-FQN Remapping
+The syntax doesn't have a way to specify that a rule should be applied Prior to FQN expansion.
+There is no workaround.
 
 ### Fnmatch Syntax
 A syntax like fnmatch is being considered.
