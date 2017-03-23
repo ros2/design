@@ -290,6 +290,16 @@ The string `__node` can be given on the match part of a rule to signal a change 
 On the match side it may be used by itself or with a `nodename:` prefix.
 The replacement must be a single token which will become the node's new name.
 
+#### Order of Applying Remapping Rules
+Rules for changing a default namespace or the name of the node get applied first before any other rule.
+All other rules are applied in the order in which the user gave them.
+
+**Example:**
+
+- a node uses a name `/foo/bar`
+- a user gives the node a rule `/*/*:=/asdf` and then `/foo/bar:=fizzbuzz`
+- the final name is `/asdf` because the name did not match the second rule after being remapped by the first rule
+
 ### Applications of the syntax
 The following sections explain how the syntax enables the use cases above.
 
