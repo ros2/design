@@ -33,49 +33,25 @@ A robot that has multiple sensors of the same type could launch multiple instanc
             +-------------+
 ```
 
-
 ## Structure of a Name
-Names are hierarchical strings delineated by `/`.
-If they begin with `/` they are said to be **global** or **Fully Qualified Names** (FQN).
-Otherwise they are said to be **relative**.
-Relative names are resolved to FQN prior to being used.
+The complete definition of a name is [here](http://design.ros2.org/articles/topic_and_service_names.html).
+It should be read before reading this article.
+
+**Quick Summary:**
+
+If a name begins with `/` it is called a **Fully Qualified Name** (FQN) otherwise it is called a **relative name**.
+The strings between slashes are called **tokens**.
+Names are conceptually divided into two pieces: **namespace** and **basename**.
+The basename is the last token in a name.
+The namespace is everything prior to the basename.
 
 **Example names:**
 
 - `/foo`
 - `/foo/bar`
-- `foo/bar/baz`
-- `foo/bar`
+- `~/foo/bar`
+- `{node}/bar`
 - `bar`
-
-Each part of a name between a slash is a **token**.
-The examples above use the tokens `foo`, `bar` and `baz`.
-FQN are conceptually divided into two pieces: **namespace** and **basename**.
-The basename is the last token in a name.
-The namespace is all tokens and slashes prior to the basename.
-
-**Example namespaces:**
-
-- `/`
-- `/foo/`
-- `/foo/bar/baz/`
-
-**Example basenames:**
-
-- `bar`
-- `foo`
-
-Nodes are said to be in a **namespace**.
-This namespace becomes a prefix to all relative names used by the node.
-Relative names are expanded to FQN by prepending the node's namespace to them.
-
-
-**Example:**
-
-- Node is in namespace `/fiz/buz`
-- Node uses relative name `foo/bar`
-- The FQN is `/fiz/buz/foo/bar`
-
 
 ## Structure of a Remapping Rule
 **Remapping rules** are the instructions describing how a node should change the names it uses.
@@ -104,9 +80,11 @@ This is the ability to apply remap rules to one node in a process without affect
 Because processes in ROS 2 can contain multiple nodes, it is possible multiple nodes in a process may use the same name for different purposes.
 A user may want to change a name used in one node without affecting the rest.
 
-
 ### Change a Namespace
-This is the ability to change the namespace of multiple names with one rule.
+Nodes are said to be in a namespace or have a **default namespace**.
+This namespace gets prepended to all relative names used by the node.
+This use case is the ability to change the namespace of multiple names with one rule.
+
 A popular ROS 1 package [actionlib](http://wiki.ros.org/actionlib) creates 5 topics with the same namespace.
 In ROS 1 remapping an actionlib client or server means creating 5 remapping rules.
 In ROS 2 just one rule could remap them all.
