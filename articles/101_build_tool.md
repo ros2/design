@@ -19,6 +19,14 @@ categories: Overview
 
 Original Author: {{ page.author }}
 
+<div class="alert alert-info" markdown="1">
+  <b>NOTE:</b>
+  The work towards a unified build tool have been reprioritized.
+  Nobody is currently planning to spend any time towards the described goals.
+
+  While the article in its current state describes the use cases, goals as well as the rational behind it, and mentions possible approaches moving forward, it does not propose a specific path forward at the moment.
+</div>
+
 ## Preface
 
 In the ROS ecosystem the software is separated into numerous packages.
@@ -326,4 +334,7 @@ Some items to highlight the necessary efforts (not a complete list):
 
 ## Proposal
 
-*to be decided*
+The decision of which approach should be selected is deferred at the moment since nobody is likely able to spend any time on this in the foreseeable future.
+It could also be considered an implementation detail - as long as the described goals are reached it doesn't matter how the unified build tool was getting there.
+
+*Hopefully to be continued in the future...*
