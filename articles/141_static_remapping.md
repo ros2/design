@@ -199,8 +199,8 @@ Client libraries also have APIs in code to pass remapping rules when the node is
 A remap rule consists of two names: one that should be replaced with another.
 
 ROS 1 remapping works on **Fully Qualified Names** (FQN).
-Both sides of a rule are [expanded to FQN](http://docs.ros.org/api/roscpp/html/namespaceros_1_1names.html#a377ff8fede7b95398fd5d1c5cd49246b).
-Before a name is remapped it is also [expanded to FQN](http://docs.ros.org/api/roscpp/html/namespaceros_1_1names.html#ab2eebaf734abfbdccb4122f8e24f547f).
+Both sides of a rule are [expanded to FQN](http://docs.ros.org/kinetic/api/roscpp/html/namespaceros_1_1names.html#a377ff8fede7b95398fd5d1c5cd49246b).
+Before a name is remapped it is also [expanded to FQN](http://docs.ros.org/kinetic/api/roscpp/html/namespaceros_1_1names.html#ab2eebaf734abfbdccb4122f8e24f547f).
 The name is remapped to the right side only if it exactly matches the left side of a rule.
 
 
