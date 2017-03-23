@@ -244,40 +244,41 @@ The match part of a rule uses these operators:
 
 - `*` matches a single token
 - `**` matches zero or more tokens delimited by slashes
-- `~` is replaced with the node's name anywhere it is used
 - `nodename:` prefixed to the match makes it apply only to a node with that name
 
 The operators `*` and `**` are similar to the globbing behavior in bash.
 `**` behaves similar to its use in bash>=4.0 with the globstar option set.
 
-The operators `~`, `*`, and `**` match whole tokens only.
+`*`, and `**` match whole tokens only.
 `*bar` looks like it would match `foobar`, but that would mean matching a partial token.
-To avoid confusion the operators are required to be separated from tokens by a `/`.
-For example `*/bar` is allowed, but `*bar` is invalid.
-This is incompatible with the ROS 1 syntax where `~bar` is used, but now `~/bar` must be used instead.
+To avoid confusion they are required to be separated from tokens, substitutions, and each other by a `/`.
+For example `*/bar` `**/*` `~/*` are allowed, but `*bar` `***` `~*` are invalid.
 
 Matching works on FQN only.
-A name is expanded to a FQN prior to being tested.
-If the match part of a rule does not begin with `/`, `*`, or `**` it is prefixed with `/namespace/`.
-For example, `bar` matches `/namespace/bar`, and `~/bar` matches `/namespace/nodename/bar`.
+When a name is to be tested the substitution operators (`~` and `{}`) in the name and in the rule are replaced with the content they stand for.
+Then the name is expanded to a FQN.
+If the match part of a rule does not begin with `/`, `*`, or `**` it is prefixed with `/namespace/` to make it a FQN.
+Finally the name is compared against the match part of the rule.
+If the name matches it is remapped.
 
 #### Replacement Part of a rule
 
-The replacement part of a rule uses these special operators:
+These special operators are unique to the replacement part of a rule:
 
-- `~` is replaced with the node's name
 - `\1` - `\9` are replaced with the matched content of a `*` or `**`
 
 The syntax for `\1` through `\9` was taken from backreferences in POSIX BRE.
 However, parenthesis are not used; the wild cards always capture.
 
-Operators are required to be separated from tokens by a `/`.
+These references are required to be separated from tokens by a `/`.
 When this creates a name with `//` one slash is automatically deleted.
 For example `**/bar:=/bar/\1` matches the name `/foo/bar` with `**` capturing `/foo`, but the new name is `/bar/foo`.
 
-The replacement part is also automatically expanded to FQN.
-If the replacment name does not begin with `/` it is automatically prefixed with `/namespace/`.
-For example, `/bar/*:=\1/bar` with default namespace `/ns` matches the name `/bar/foo` with `*` capturing `foo` and replacement name `/ns/foo/bar`.
+The substitution operators (`~` and `{}`) are replaced first.
+Afterwards the reference operators are replaced with the matched content.
+Then if the replacment name does not begin with `/` it is automatically prefixed with the node's default namespace to make it a FQN.
+Finally the name is replaced with the replacement.
+For example, `/bar/*:=\1/bar` matches the name `/bar/foo` use by a node with default namespace `/ns` with `*` capturing `foo` and replacement name `/ns/foo/bar`.
 
 #### Special Rule for Changing the Default Namespace
 The string `__ns` can be given on the match part of a rule to signal a change of the default namespace.
