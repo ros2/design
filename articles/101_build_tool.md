@@ -158,6 +158,10 @@ While this is an efficient approach since all targets across all packages can be
 Due to the single context all function names, targets and tests share a single namespace across all packages and on a larger scale this easily leads to collisions.
 The single context is also subject to side effects between the packages and sometimes requires adding additional target dependencies across package boundaries.
 
+`catkin_make` supports building the following packages:
+
+- ROS 1 `catkin` package with a `package.xml` file.
+
 ### catkin_make_isolated
 
 `catkin_make_isolated` is provided by the ROS package `catkin` which contains the build system for ROS 1.
@@ -166,11 +170,21 @@ It was developed after `catkin_make` to address the problems involved with build
 The tool only supports CMake-based packages and builds each package in topological order using the command sequence common for CMake packages: `cmake`, `make`, `make install`.
 While each package can parallelize the build of its targets the packages are processed sequentially even if they are not (recursive) dependencies of each other.
 
+`catkin_make_isolated` supports building the following packages:
+
+- ROS 1 `catkin` package with a `package.xml` file.
+- Plain CMake packages with a `package.xml` file.
+
 ### catkin_tools
 
 [catkin_tools](https://catkin-tools.readthedocs.io/) is provided by a standalone Python package used to build ROS 1 packages.
 It was developed after `catkin_make` / `catkin_make_isolated` to build packages in parallel as well as provide significant usability improvements.
 The tool supports building CMake packages and builds them in isolation as well as supports parallelizing the process across packages.
+
+`catkin_make_isolated` supports building the following packages:
+
+- ROS 1 `catkin` package with a `package.xml` file.
+- Plain CMake packages with a `package.xml` file.
 
 ### ament_tools
 
@@ -178,6 +192,14 @@ The tool supports building CMake packages and builds them in isolation as well a
 It was developed to bootstrap the ROS 2 project, is therefore only targeting Python 3, and works on Linux, MacOS and Windows.
 In addition to CMake packages it also supports building Python packages and can infer meta information without requiring an explicit package manifest.
 The tool performs an "isolated" build like `catkin_make_isolated` and `catkin_tools` (one CMake invocation per package) and also parallelizes the build of packages which have no (recursive) dependencies on each other (like `catkin_tools`).
+
+`ament_tools` supports building the following packages:
+
+- ROS 2 `ament_cmake` package with a `package.xml` file (only format 2).
+- Plain CMake package with a `package.xml` file.
+- Plain CMake package without a manifest file (extracting the package name and dependencies from the CMake files).
+- Python package with a `package.xml` file.
+- Python package without a manifest file (extracting the package name and dependencies from the `setup.py` file).
 
 ## Naming
 
