@@ -189,7 +189,7 @@ While each package can parallelize the build of its targets the packages are pro
 It was developed after `catkin_make` / `catkin_make_isolated` to build packages in parallel as well as provide significant usability improvements.
 The tool supports building CMake packages and builds them in isolation as well as supports parallelizing the process across packages.
 
-`catkin_make_isolated` supports building the following packages:
+`catkin_tools` supports building the following packages:
 
 - ROS 1 `catkin` package with a `package.xml` file.
 - Plain CMake packages with a `package.xml` file.
