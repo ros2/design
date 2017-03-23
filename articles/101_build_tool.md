@@ -21,62 +21,49 @@ Original Author: {{ page.author }}
 
 ## Preface
 
-ROS is developed with a federated model.
-It consists of many separately developed and maintained packages.
+In the ROS ecosystem the software is separated into numerous packages.
+It is very common that a developer is working on multiple packages at the same time.
+This is in contrast to workflows where a developer only works on a single software package at a time, and all dependencies are provided once but not being iterated on.
 
 The "manual" approach to build a set of packages consists of building all packages in their topological order one by one.
 For each package the documentation usually describes what the dependencies are, how to setup the environment to build the package as well as how to setup the environment afterwards to use the package.
-From an efficiency point of view that manual process does not scale well.
+Such a workflow is impracticable at scale without a tool that automates that process.
+
+A build tool performs the task of building a set of packages with a single invocation.
+For ROS 1 multiple different tools provide support for this, namely `catkin_make`, `catkin_make_isolated`, and `catkin_tools`.
+For ROS 2 the build tool providing this functionality is called `ament_tools`.
+
+This article describes the steps to unify these build tools as well as extend the field of application.
 
 ## Goal
 
-The goal of the build tool is to build a set of packages with a single invocation automating the process.
+The goal of a unified build tool is to build a set of packages with a single invocation.
 It should work with ROS 1 packages as well as ROS 2 packages which provide the necessary information in their manifest files.
 It should also work with packages that do not provide manifest files themselves, given that the meta information is externally provided.
-This will allow the build tool to be utilized for non-ROS dependencies of ROS packages (e.g. Gazebo including its dependencies).
+This will allow the build tool to be utilized for non-ROS packages (e.g. Gazebo including its dependencies).
 
 In the ROS ecosystems several tools already exist which support this use case (see below).
 Each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
 As a consequence of being developed separately certain features are only available in some of the tools while other tools lack those.
 
 The reason to work on a single universal build tool comes down to reducing the effort necessary for development and maintenance.
-Additionally this makes new features developed for one ROS version / build system available to the other supported ROS versions / build systems.
+Additionally this makes new features developed once available for all the use cases.
 
-### Out of Scope
+### Build Tool vs. Build System
 
-The build tool does not cover the steps necessary to fetch the sources of the to-be-built packages.
-There are already tools to help with this.
-For example, the list of repositories that need to be fetched is provided either by a hand crafted `.rosinstall` or `.repos` file or by using [rosinstall_generator](http://wiki.ros.org/rosinstall_generator) to generate one.
-The list of repositories can then be fetched with one of several tools, like [rosinstall](http://wiki.ros.org/rosinstall) or [wstool](http://wiki.ros.org/wstool) in the case of a `.rosinstall` file, or [vcstool](https://github.com/dirk-thomas/vcstool) in the case of a `.repos` file.
-
-The build tool also does not provide a mechanism to install any dependencies required to build the packages.
-In the ROS ecosystem [rosdep](http://wiki.ros.org/rosdep) can be used for this.
-
-The build tool also does not create binary packages (e.g. a Debian package).
-In the ROS ecosystem [bloom](http://wiki.ros.org/bloom) is used to generate the required metadata and then platform dependent tools like `dpkg-buildpackage` build binary packages.
-
-## Build Tool vs. Build System
+Since this article focuses on the build tool the distinction to a build system needs to be clarified.
 
 A build tool operates on a set of packages.
-It determines the dependency graph and invokes the specific build tool for each package in topological order.
+It determines the dependency graph and invokes the specific build system for each package in topological order.
 The build tool itself should know as little as possible about the build system used for a specific package.
 Just enough in order to know how to setup the environment for it, invoke the build, and setup the environment to use the built package.
+The existing ROS build tools are: `catkin_make`, `catkin_make_isolated`, `catkin_tools`, and `ament_tools`.
 
 The build system on the other hand operates on a single package.
-In the case a package uses e.g. `CMake` the responsibility of the tool comes down to invoke the common steps `cmake`, `make`, `make install` for this package.
-As another example for a package using `Autotools` the steps could look like `configure`, `make`, `make install`.
+Examples are `Make`, `CMake`, `Python setuptools`, or `Autotools` (which isn't used in ROS atm).
+A CMake package is e.g. build by invoking these steps: `cmake`, `make`, `make install`.
 
-### Examples of Build Tools vs. Build Systems
-
-|                                             | Build System | Build Tool |
-|---------------------------------------------|:------------:|:----------:|
-| CMake project                               |       x      |            |
-| catkin (CMake that calls catkin macros)     |       x      |            |
-| ament_cmake (CMake that calls ament macros) |       x      |            |
-| catkin_make                                 |              |      x     |
-| catkin_make_isolated                        |              |      x     |
-| catkin_tools                                |              |      x     |
-| ament_tools                                 |              |      x     |
+`catkin` as well as `ament_cmake` are based on CMake and offer some convenience functions described below.
 
 ### Environment Setup
 
@@ -92,9 +79,46 @@ In the latter case the build tool only needs to know how the build system expose
 Considering the use case that a user might want to invoke the build system of each package manually it is beneficial if the build system already provides as much of the environment setup as possible.
 That avoids forcing the user to manually take care of the environment setup when not using a build tool.
 
+### Out of Scope
+
+To clarify the scope of this article a few related topics are explicitly enumerated even though they are not being considered.
+
+#### Build System
+
+Any build system related functionality (which is not directly relevant for the build tool) is not considered in this article.
+
+##### Mixing Different Build Systems
+
+The unified build tool will support different build systems in order to satisfy the described goals.
+If packages using different build system inter-operate with each other correctly depends also to a large degree on the build system.
+While the build tool should ensure that it doesn't prevent that use case this article will not cover the use case of mixing multiple build systems in a single workspace (e.g. ROS 1 packages using `catkin` with ROS 2 packages using `ament_cmake`).
+
+#### Fetch Source Code
+
+The build tool does not cover the steps necessary to fetch the sources of the to-be-built packages.
+There are already tools to help with this.
+For example, the list of repositories that need to be fetched is provided either by a hand crafted `.rosinstall` or `.repos` file or by using [rosinstall_generator](http://wiki.ros.org/rosinstall_generator) to generate one.
+The list of repositories can then be fetched with one of several tools, like [rosinstall](http://wiki.ros.org/rosinstall) or [wstool](http://wiki.ros.org/wstool) in the case of a `.rosinstall` file, or [vcstool](https://github.com/dirk-thomas/vcstool) in the case of a `.repos` file.
+
+#### Install Dependencies
+
+The build tool also does not provide a mechanism to install any dependencies required to build the packages.
+In the ROS ecosystem [rosdep](http://wiki.ros.org/rosdep) can be used for this.
+
+#### Create Binary Packages
+
+The build tool also does not create binary packages (e.g. a Debian package).
+In the ROS ecosystem [bloom](http://wiki.ros.org/bloom) is used to generate the required metadata and then platform dependent tools like `dpkg-buildpackage` build binary packages.
+
 ## Existing Build Systems
 
 In the following the build systems being used in the ROS ecosystem are briefly described.
+
+### CMake
+
+[CMake](https://cmake.org/) is a cross-platform build system generator.
+Projects specify their build process with platform-independent `CMakeLists.txt` files.
+Users build a project by using CMake to generate a build system for a native tool on their platform, e.g. `Makefiles` or `Visual Studio projects`.
 
 ### catkin
 
@@ -102,11 +126,16 @@ In the following the build systems being used in the ROS ecosystem are briefly d
 It automates the generation of CMake config files as well as pkg-config files.
 It additionally provides functions to register different kinds of tests.
 
+A package using `catkin` specifies its meta data in a manifest file named `package.xml`.
+The format of the manifest file is specified in the [ROS REP 140](http://www.ros.org/reps/rep-0140.html).
+
 ### ament_cmake
 
 [ament_cmake](https://github.com/ament/ament_cmake) is an evolution of `catkin` and is also based on CMake.
 The main difference between `ament_cmake` and `catkin` is described in [another article](http://design.ros2.org/articles/ament.html).
 In the context of the build tool the biggest difference is that `ament_cmake` generates package-specific files to setup the environment to use the package after it has been built and installed.
+
+A package using `ament_cmake` uses the same manifest file as `catkin` (except that it only allows the newer format version 2).
 
 ### Python setuptools
 
@@ -183,11 +212,18 @@ After cloning the repositories containing Gazebo and all its dependencies (exclu
 Meta information not inferable from the sources can be provided externally without adding or modifying any files in the workspace.
 After the build a single file can be sourced / invoked to setup the environment to use Gazebo (e.g. `GAZEBO_MODEL_PATH`).
 
-#### Mixing different build systems
+### Development Environment Setup
 
-The build tool will support using different build systems within a single workspace.
-If these packages inter-operate with each other correctly depends also to a large degree on the build system.
-The build tool should ensure that it doesn't prevent that use case.
+Invoking a build system for a package implies also setting up environment variables before the process, e.g. the `CMAKE_PREFIX_PATH`.
+It should be possible for developers to manually invoke the build system for one package.
+The environment variable might be partially different from the environment variables necessary to use a package after it has been built.
+To make that convenient the tool should provide an easy to use mechanism to setup the development environment necessary to invoke the build system.
+
+### Beyond Building
+
+Building packages is only one task the build tool can perform on a set of packages.
+Additional tasks like e.g. running tests should also be covered by the build tool.
+The build tool must provide these abstract tasks and then map them to the steps necessary for each supported build system.
 
 ### Software Criteria
 
@@ -221,6 +257,10 @@ The following items are possible extension points to provide custom functionalit
 - output handling (e.g. console output, logfiles, status messages, notifications)
 - setup the environment (e.g. `sh`, `bash`, `bat`)
 - completion (e.g. `bash`, `Powershell`)
+
+Assuming that the tool will be implemented in Python (since that is the case for existing tools) the entry point mechanism provides a convenient way to make the software extensible.
+Extensions don't have to be integrated into the Python package containing the core logic of the build tool but can easily be provided by additional Python packages.
+This approach will not only foster a modular design and promote clear interfaces but enable external contributions without requiring them to be integrated in a single monolithic package.
 
 ## Possible Approaches
 
