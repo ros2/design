@@ -67,6 +67,8 @@ For convenience here is a summary of all rules for topic and service names in RO
 - must not end with a forward slash (`/`)
 - must not contain any number of repeated forward slashes (`/`)
 - must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`
+- must not end with an underscore (`_`)
+- must not contain an uderscore (`_`) preceding a forward slash (`/`)
 - must have balanced curly braces (`{}`) when used, i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`
 
 The content of substitutions, i.e. the string in side of balanced curly braces (`{}`), follow very similar rules to names.
@@ -157,6 +159,8 @@ Topic and service name tokens:
 - may use alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), and/or balanced curly braces (`{}`)
 
 - must not start with numeric characters (`[0-9]`)
+
+- must not end with an underscore (`_`)
 
 - may be a single tilde character (`~`)
 
