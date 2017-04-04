@@ -309,14 +309,14 @@ Another option would be to have some markup in the scheme name, for example:
 |---------------------------------------|---------------------|-----------------------------|
 | `rostopic://image`                    | `image`             | [`rt`]                      |
 | `rostopic+exact://image`              | `image`             | []                          |
-| `rostopic+exact://camera_left/image`  | `camera_left/image` | []                          |
+| `rostopic+exact://camera_left/image`  | `image`             | [`camera_left`]             |
 
-Considering the third case, it's not clear if the `/` should be respected or if additional syntax is required to support partitions in the case of "exact" topic names.
-You could also imagine:
+Note that since `/` is not a valid character in DDS Topic names, anything other than the last token must be necessarily mapped to the DDS Partition.
+I.e. the following is not valid:
 
 | ROS Name                                | DDS Topic           | DDS Partition               |
 |-----------------------------------------|---------------------|-----------------------------|
-| `rostopic+exact+ns://camera_left/image` | `image`             | [`camera_left`]             |
+| `rostopic+exact+ns://camera_left/image` | `camera_left/image` | []                          |
 
 ## Compare and Contrast with ROS 1
 
