@@ -103,15 +103,15 @@ A relative name `foo/bar` could would be represented (as a topic) with `rostopic
 
 For example, these are valid names:
 
-| `foo`       | `abc123`            | `_foo`               | `Foo`        | `BAR`            |
-| `~`         | `foo/bar`           | `~/foo`              | `{foo}_bar`  | `foo/{ping}/bar` |
-| `foo/_bar`  | `rosservice:///foo` | `rostopic://foo/bar` |              |                  |
+| `foo`      | `abc123`   | `_foo`  | `Foo`               | `BAR`                |
+| `~`        | `foo/bar`  | `~/foo` | `{foo}_bar`         | `foo/{ping}/bar`     |
+| `foo/_bar` | `foo_/bar` | `foo_`  | `rosservice:///foo` | `rostopic://foo/bar` |
 
 But these are not valid names:
 
 | `123abc`    | `123`  | `foo bar` | ` `        | `foo//bar` |
-| `foo_/bar`  | `~foo` | `foo~`    | `foo~/bar` | `foo/~bar` |
-| `foo/~/bar` | `foo/` | `/~`      |            |            |
+| `/~`        | `~foo` | `foo~`    | `foo~/bar` | `foo/~bar` |
+| `foo/~/bar` | `foo/` |           |            |            |
 
 These are some valid fully qualified names:
 
