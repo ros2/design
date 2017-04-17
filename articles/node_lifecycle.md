@@ -242,17 +242,25 @@ In other words, tooling shall judge if a node is managed or not by the presence 
 
 The messages used by the interface shall use the following enumeration for indicating states.
 
-    uint8 UNKNOWN=0
-    uint8 UNCONFIGURED=1
-    uint8 INACTIVE=2
-    uint8 ACTIVE=3
-    uint8 FINALIZED=4
-    uint8 CONFIGURING=10
-    uint8 CLEANING_UP=11
-    uint8 SHUTTING_DOWN=12
-    uint8 ACTIVATING=13
-    uint8 DEACTIVATING=14
-    uint8 ERROR_PROCESSING=15
+    # Primary states
+    uint8 PRIMARY_STATE_UNKNOWN = 0
+    uint8 PRIMARY_STATE_UNCONFIGURED = 1
+    uint8 PRIMARY_STATE_INACTIVE = 2
+    uint8 PRIMARY_STATE_ACTIVE = 3
+    uint8 PRIMARY_STATE_FINALIZED = 4
+
+    # Temporary intermediate states
+    uint8 TRANSITION_STATE_CONFIGURING = 10
+    uint8 TRANSITION_STATE_CLEANINGUP = 11
+    uint8 TRANSITION_STATE_SHUTTINGDOWN = 12
+    uint8 TRANSITION_STATE_ACTIVATING = 13
+    uint8 TRANSITION_STATE_DEACTIVATING = 14
+    uint8 TRANSITION_STATE_ERRORPROCESSING = 15
+
+    uint8 id
+    string label
+
+See for example the [message definition used by `RCL`](https://raw.githubusercontent.com/ros2/rcl_interfaces/master/lifecycle_msgs/msg/State.msg).
 
 ### Life cycle state changes topic
 
