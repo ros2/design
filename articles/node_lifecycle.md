@@ -228,15 +228,15 @@ They shall not be disabled by the node shifting to the `Inactive` state, for exa
 
 ### Interface namespace
 
-The interface shall be provided in a namespace named "infra/lifecycle" underneath the node's namespace.
+The interface shall be provided in a namespace named "_infra/lifecycle" underneath the node's namespace.
 
-For example, if a node named `talker` has a managed life cycle complying with the state machine described above, it shall provide topics under the namespace `/talker/infra/lifecycle`.
+For example, if a node named `talker` has a managed life cycle complying with the state machine described above, it shall provide topics under the namespace `/talker/_infra/lifecycle`.
 
 All examples in the following sections are also given assuming a node named `talker`.
 
-If the `infra/lifecycle` namespace is available under a node's namespace, then that node shall be assumed to be functioning according to the managed life cycle.
-If the node is not functioning according to the managed life cycle, the `infra/lifecycle` namespace shall not exist.
-In other words, tooling shall judge if a node is managed or not by the presence of the `infra/lifecycle` namespace.
+If the `_infra/lifecycle` namespace is available under a node's namespace, then that node shall be assumed to be functioning according to the managed life cycle.
+If the node is not functioning according to the managed life cycle, the `_infra/lifecycle` namespace shall not exist.
+In other words, tooling shall judge if a node is managed or not by the presence of the `_infra/lifecycle` namespace.
 
 ### State enumerations
 
@@ -264,7 +264,7 @@ See for example the [message definition used by `RCL`](https://raw.githubusercon
 
 ### Life cycle state changes topic
 
-When the node's life cycle changes, it shall broadcast the following message on the `infra/lifecycle/state_change` topic.
+When the node's life cycle changes, it shall broadcast the following message on the `_infra/lifecycle/state_change` topic.
 
     uint8 previous_state
     uint8 next_state
@@ -302,7 +302,7 @@ If the `talker` node transitions from the `Inactive` state to the `Unconfigured`
 
 ### Current life cycle state service
 
-The node's current life cycle state shall be available via the `infra/lifecycle/get_state` service.
+The node's current life cycle state shall be available via the `_infra/lifecycle/get_state` service.
 The service definition is:
 
     ---
@@ -328,7 +328,7 @@ The `UNKNOWN`/`unknown` value shall be assumed by clients of the service to indi
 
 ### Transition request service
 
-The service `infra/lifecycle/change_state` service shall be provided by the life cycle interface.
+The service `_infra/lifecycle/change_state` service shall be provided by the life cycle interface.
 
 When this service call is received, the node's life cycle state shall be shifted to the requested state via any appropriate intermediate states in accordance with the state diagram shown above.
 
