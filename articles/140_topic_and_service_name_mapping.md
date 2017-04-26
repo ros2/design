@@ -182,9 +182,16 @@ Note the private namespace substitution character makes the name absolute, and t
 The bracket syntax (`{substitution_name}`) may be used in non-fully qualified names to substitute useful contextual information into the name.
 The set of substitution keys (names) are not set in this document, but some reasonable examples might be: `{node}` expands to the current node's name or `{ns}` expands to the current node's namespace.
 
-Substitutions are expanded before the private namespace substitution character is expanded.
-Therefore a substitution may contain the private namespace substitution character, i.e. `~`.
-For example, given the name `{private}foo`, if there is a substitution called `{private}` that expands to `~/_`, the current node name is `my_node`, and the current node's namespace is `my_ns`, then the fully qualified name would be `/my_ns/my_node/_foo`.
+Substitutions are expanded after the private namespace substitution character is expanded.
+Therefore a substitution may not contain the private namespace substitution character, i.e. `~`.
+For example, given the name `{private}foo` and a substitution called `{private}` which expands to `~/_`, you will get an error because the `~/_` will end up in the expanded name as `/my_ns/~/_foo` which is is not allowed to have a `~` in it.
+
+Substitutions are expanded in a single pass, so substitutions should not expand to contain substitutions themselves.
+For example, given the name `/foo/{bar_baz}` where `{bar_bar}` expands to `{bar}/baz` and where `{bar}` in turn expands to `bar`, you will get `/foo/{bar}/baz` as the final result, which is invalid, and not `/foo/bar/baz` as you might expect.
+
+Substitutions are also not allowed to be nested, i.e. substitutions may not contain other substitutions in their names.
+This is implicitly enforced by the rules above that say substitution names may only contain alphanumerics and undersource (`_`).
+For example, given the name `/foo/{{bar}_baz}` would result in an error because `{` and `}` are not allowed in a substitution names and the substitution name `{bar}_baz` does contain them.
 
 ### Hidden Topic or Service Names
 
