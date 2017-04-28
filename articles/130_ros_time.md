@@ -47,14 +47,19 @@ Additionally if the simulation is paused the system can also pause using the sam
 
 A third situation arises with hardware that doesn't have a system clock chip available. 
 Nodes running there need to be notified of the current time so that they can utilize that information to time-stamp their output. 
-(We will assume that nodes running on this type of hardware have accurate frequency counters available that can assist in computing the current time when they have some base time to compound.)
+We will assume that nodes running on this type of hardware have accurate frequency counters available that can assist in computing the current time when they have some base time to compound.
+However, we strongly recommend against broadcasting time over multiple machines.
+Clock synchronization is not the intent of the ROS clock message; it is outside the scope of ROS.
+This is not a viable use case because of network latency.
+Instead, use an existing mechanism to synchronize clocks between systems.
+Even if your mixed system has node-hosting parts with no real-time clock chip, those can still host fake a clock that is synchronized to some other real clock.
+Use quality time synchronizers like chrony or TICSync.
 
 ### Challenges in using abstracted time
 
 There are many algorithms for synchronization and they can typically achieve accuracies which are better than the latency of the network communications between devices on the network.
 However, these algorithms take advantage of assumptions about the constant and continuous nature of time.
-
-Again, this is not the primary intent of synchronizing time between ROS nodes. 
+Again, this is not the primary intent of publishing time between ROS nodes. 
 We need to ensure the ability to manipulate time.
 In some cases, speeding up, slowing down, or pausing time entirely is important for debugging.
 And the ability to support pausing time requires that we not assume that the time values are always increasing.
@@ -63,7 +68,7 @@ When communicating the changes in time propagation, the latencies in the communi
 Any change in the time abstraction must be communicated to the other nodes in the graph, but will be subject to normal network communication latency.
 This inaccuracy is proportional to the latency of communications and also proportional to the increase in the real time factor.
 If very accurate timestamping is required when using the time abstraction, it can be achieved by slowing down the real time factor such that the communication latency is comparatively small.
-Of course we recommend using synchronized system clock sources for live work on nodes spread across multiple devices.
+We recommend using synchronized system clock sources for live work on nodes spread across multiple devices.
 
 The final challenge is that the time abstraction must be able to jump backwards in time, a feature that is useful for log file playback.
 This behavior is similar to a system clock after a negative date change, and requires developers using the time abstraction to make sure their algorithm can deal with the discontinuity.
