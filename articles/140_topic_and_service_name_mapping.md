@@ -191,7 +191,7 @@ For example, given the name `/foo/{bar_baz}` where `{bar_bar}` expands to `{bar}
 
 Substitutions are also not allowed to be nested, i.e. substitutions may not contain other substitutions in their names.
 This is implicitly enforced by the rules above that say substitution names may only contain alphanumerics and undersource (`_`).
-For example, given the name `/foo/{{bar}_baz}` would result in an error because `{` and `}` are not allowed in a substitution names and the substitution name `{bar}_baz` does contain them.
+For example, given the name `{% raw %}/foo/{{bar}_baz}{% endraw %}` would result in an error because `{` and `}` are not allowed in a substitution names and the substitution name `{bar}_baz` does contain them.
 
 ### Hidden Topic or Service Names
 
