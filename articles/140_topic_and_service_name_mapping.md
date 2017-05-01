@@ -187,10 +187,10 @@ Therefore a substitution may not contain the private namespace substitution char
 For example, given the name `{private}foo` and a substitution called `{private}` which expands to `~/_`, you will get an error because the `~/_` will end up in the expanded name as `/my_ns/~/_foo` which is is not allowed to have a `~` in it.
 
 Substitutions are expanded in a single pass, so substitutions should not expand to contain substitutions themselves.
-For example, given the name `/foo/{bar_baz}` where `{bar_bar}` expands to `{bar}/baz` and where `{bar}` in turn expands to `bar`, you will get `/foo/{bar}/baz` as the final result, which is invalid, and not `/foo/bar/baz` as you might expect.
+For example, given the name `/foo/{bar_baz}` where `{bar_baz}` expands to `{bar}/baz` and where `{bar}` in turn expands to `bar`, you will get `/foo/{bar}/baz` as the final result, which is invalid, and not `/foo/bar/baz` as you might expect.
 
 Substitutions are also not allowed to be nested, i.e. substitutions may not contain other substitutions in their names.
-This is implicitly enforced by the rules above that say substitution names may only contain alphanumerics and undersource (`_`).
+This is implicitly enforced by the rules above that say substitution names may only contain alphanumerics and underscores (`_`).
 For example, given the name `{% raw %}/foo/{{bar}_baz}{% endraw %}` would result in an error because `{` and `}` are not allowed in a substitution names and the substitution name `{bar}_baz` does contain them.
 
 ### Hidden Topic or Service Names
