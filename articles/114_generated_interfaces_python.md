@@ -45,7 +45,7 @@ Python files end with `.py`.
 ## Messages
 
 For a message a Python `class` with the same name as the message is generated in the file `_<my_message_name>.py`.
-The Python module `<package_name>.msg` / `<package_name>.srv` exports all message / service classes without the message module name to shorten import statements, e.g. `import <package_name>.msg.<MyMessageName`
+The Python module `<package_name>.msg` / `<package_name>.srv` exports all message / service classes without the message module name to shorten import statements, e.g. `import <package_name>.msg.<MyMessageName>`
 
 ### Types
 
