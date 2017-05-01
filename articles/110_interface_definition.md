@@ -54,8 +54,6 @@ Each of these can optionally be a dynamically or statically sized array.
 The following primitive types are defined:
 
 - `bool`
-- `byte`
-- `char`
 - `float32`, `float64`
 - `int8`, `uint8`
 - `int16`, `uint16`
@@ -71,9 +69,12 @@ The following primitive types are defined:
   <b>TODO:</b> <code>string</code> does not specify any encoding yet and the transport is agnostic to it, this means commonly it can only contain ASCII but all endpoints can also "agree" on using a specific encoding
 </div>
 
-<div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> consider removing <code>byte</code>, <code>char</code> after specifying the mapping to C++ and Python
-</div>
+#### Deprecated field types
+
+The following primitive types are deprecated:
+
+- `byte` remapped to uint8_t
+- `char` remapped to int8_t
 
 #### Non-primitive field types
 
@@ -185,14 +186,6 @@ Depending on the type the following values are valid:
 
   - `true`, `1`
   - `false`, `0`
-
-- `byte`:
-
-  - an unsigned integer value in the following interval `[0, 255]`
-
-- `char`:
-
-  - an integer value in the following interval `[-128, 127]`
 
 - `float32` and `float64`:
 

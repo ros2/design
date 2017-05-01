@@ -68,7 +68,7 @@ For each additional functionality it can be decided to include it from the first
 | -------- | ----------- |
 | bool     | bool        |
 | byte     | uint8_t     |
-| char     | char        |
+| char     | int8_t      |
 | float32  | float       |
 | float64  | double      |
 | int8     | int8_t      |

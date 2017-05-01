@@ -29,7 +29,7 @@ This article specifies the mapping between ROS interface types defined in the [i
 | -------- | ------------------ |
 | bool     | boolean            |
 | byte     | octet              |
-| char     | char               |
+| char     | octet              |
 | float32  | float              |
 | float64  | double             |
 | int8     | octet              |
