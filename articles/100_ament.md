@@ -129,7 +129,7 @@ ament provides an option to use symbolic links instead (if the platform supports
 This enables the developer to change the resources in the source space and skipping the installation step in many situations.
 
 For CMake packages this is achieved by optionally overriding the CMake `install()` function.
-For Python packages the [development mode](http://pythonhosted.org//setuptools/setuptools.html#development-mode) is used to install the package.
+For Python packages the [development mode](http://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode) is used to install the package.
 The symlinked install is an optional feature and must be enabled explicitly by the developer using the command line option `--symlink-install`.
 
 ### ament linters
