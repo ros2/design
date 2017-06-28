@@ -183,7 +183,7 @@ In ROS 2 a unified approach is being used.
 It is similar to dynamic reconfigure and a node named "global parameter server" (⏳) will accept requests to set values unconditionally.
 In ROS 1 all this information needs to be polled for changes in ROS 2 changes will be published to notify other entities.
 
-For more information please see the [parameter design](http://design.ros2.org/articles/ros_parameters.html.html) article.
+For more information please see the [parameter design](http://design.ros2.org/articles/ros_parameters.html) article.
 
 #### Actions (⏳)
 
