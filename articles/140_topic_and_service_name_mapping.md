@@ -73,9 +73,7 @@ The content of substitutions, i.e. the string in side of balanced curly braces (
 The content of substitutions:
 
 - must not be empty
-
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
-
 - must not start with a numeric character (`[0-9]`)
 
 ### Fully Qualified Names
@@ -266,11 +264,11 @@ The standard reserves the right to use up to 8 characters for the prefix in case
 
 Here are some examples of how a fully qualified ROS name would be broken down into DDS concepts:
 
-| ROS Name                        | DDS Topic   | DDS Partition               |
-|---------------------------------|-------------|-----------------------------|
-| `/foo`                          | `foo`       | [`rt`]                      |
-| `rostopic:///foo/bar`           | `bar`       | [`rt/foo`]                  |
-| `/robot1/camera_left/image_raw` | `image_raw` | [`rt/robot1/camera_left`]   |
+| ROS Name                        | DDS Topic   | DDS Partition                 |
+|---------------------------------|-------------|-------------------------------|
+| `/foo`                          | `foo`       | \[`rt`\]                      |
+| `rostopic:///foo/bar`           | `bar`       | \[`rt/foo`\]                  |
+| `/robot1/camera_left/image_raw` | `image_raw` | \[`rt/robot1/camera_left`\]   |
 
 ### Changing ROS Names During Runtime
 
@@ -305,25 +303,25 @@ It may be possible, through an option in the API or through some name syntax, to
 
 For example with an option in the API:
 
-| ROS Name              | ROS Prefix | DDS Topic   | DDS Partition               |
-|-----------------------|------------|-------------|-----------------------------|
-| `rostopic://image`    | with       | `image`     | [`rt`]                      |
-| `rostopic://image`    | without    | `image`     | [``]                        |
+| ROS Name              | ROS Prefix | DDS Topic   | DDS Partition                 |
+|-----------------------|------------|-------------|-------------------------------|
+| `rostopic://image`    | with       | `image`     | \[`rt`\]                      |
+| `rostopic://image`    | without    | `image`     | \[\]                          |
 
 Another option would be to have some markup in the scheme name, for example:
 
-| ROS Name                              | DDS Topic           | DDS Partition               |
-|---------------------------------------|---------------------|-----------------------------|
-| `rostopic://image`                    | `image`             | [`rt`]                      |
-| `rostopic+exact://image`              | `image`             | []                          |
-| `rostopic+exact://camera_left/image`  | `camera_left/image` | []                          |
+| ROS Name                              | DDS Topic           | DDS Partition                 |
+|---------------------------------------|---------------------|-------------------------------|
+| `rostopic://image`                    | `image`             | \[`rt`\]                      |
+| `rostopic+exact://image`              | `image`             | \[\]                          |
+| `rostopic+exact://camera_left/image`  | `camera_left/image` | \[\]                          |
 
 Considering the third case, it's not clear if the `/` should be respected or if additional syntax is required to support partitions in the case of "exact" topic names.
 You could also imagine:
 
-| ROS Name                                | DDS Topic           | DDS Partition               |
-|-----------------------------------------|---------------------|-----------------------------|
-| `rostopic+exact+ns://camera_left/image` | `image`             | [`camera_left`]             |
+| ROS Name                                | DDS Topic           | DDS Partition                 |
+|-----------------------------------------|---------------------|-------------------------------|
+| `rostopic+exact+ns://camera_left/image` | `image`             | \[`camera_left`\]             |
 
 ## Compare and Contrast with ROS 1
 

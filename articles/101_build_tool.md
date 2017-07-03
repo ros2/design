@@ -25,6 +25,7 @@ Original Author: {{ page.author }}
   Nobody is currently planning to spend any time towards the described goals.
 
   While the article in its current state describes the use cases, goals as well as the rational behind it, and mentions possible approaches moving forward, it does not propose a specific path forward at the moment.
+
 </div>
 
 ## Preface
@@ -312,7 +313,9 @@ While `ament_tools` has a few features `catkin_tools` currently lacks (e.g. plai
 The following items are highlighting some of the necessary efforts (not a complete list):
 
 - Refactor the software architecture of the existing code base to support the flexibility sketched by the extension points listed above.
+
 - Move `catkin` specific concepts out of the core of the build tool into a catkin specific extension (e.g. manifest format, *devel space*).
+
 - Support for ROS 2 which includes:
 
   - Support for Python 3 and Windows.
@@ -320,6 +323,7 @@ The following items are highlighting some of the necessary efforts (not a comple
   - Environment setup of `ament` packages
 
 - Rename the tool to use a name unrelated to one build system.
+
 - Investigate if a feature like continued support of the *devel space* is feasible since it doesn't apply to other build system and might be complicated to separate without sacrificing usability.
 
 ### Start "from scratch"
@@ -329,7 +333,10 @@ Then fill in the features step-by-step by porting existing building blocks from 
 Some items to highlight the necessary efforts (not a complete list):
 
 - Create the software architecture to support the flexibility sketched by the extension points listed above which will be easier "from scratch" than for an existing code base.
-- Port / reimplement many of the features existing in the other build tools. It will take a non trivial amount of time to reach the feature level of e.g. `catkin_tools`
+
+- Port / reimplement many of the features existing in the other build tools.
+  It will take a non trivial amount of time to reach the feature level of e.g. `catkin_tools`
+
 - Thorough test the functionality and write documentation for developers as well as users.
 
 ## Proposal
