@@ -83,6 +83,7 @@ In reverse custom data objects coming from the DDS implementation must be conver
 
 The definition for the middleware specific data types can be derived from the information specified in the ROS message files.
 A defined mapping between the primitive data types of ROS message and middleware specific data types ensures that a bidirectional conversion is possible.
+The functionality to convert between ROS types and the implementation specific types or API is encapsulated in the `type support` (see below for different kind of type supports).
 
     +----------------------+
     |      user land       |   1) create a ROS message
@@ -170,44 +171,19 @@ However the performance using the DynamicData API will likely always be lower co
 
 When ROS supports different middleware implementations it should be as easy and low effort as possible for users to switch between them.
 
-One obvious way will be for a user to rebuild all ROS packages from source selecting a different middleware implementation.
+#### Decide at compile time
+
+One obvious way will be for a user to build all ROS packages from source selecting a specific middleware implementation.
 While the workflow won't be too difficult (probably half a dozen command-line invocations), it still requires quite some build time.
 
-To avoid the overhead of rebuilding everything a different set of binary packages could be provided.
+To avoid the need to build from source a set of binary packages could be provided which chose the middleware implementation at build time.
 While this would reduce the effort for the user the buildfarm would need to build a completely separate set of binary packages.
-The effort to support N packages with M different middleware implementation would require significant resources for maintaining the service as well as the necessary computing power.
+The effort to support N packages with M different middleware implementation would require significant resources (M * N) for maintaining the service as well as the necessary computing power.
 
-#### Reduce the number of middleware implementation specific packages
+#### Decide at runtime
 
-One way to at least reduce the effort for building for different middleware implementations is to reduce the number of packages depending on the specific middleware implementation.
-This can, for example, be achieved using the DynamicData API mentioned before.
-Since only a few packages need to be built for each middleware implementation it would be feasible to generate binary packages for them on the buildfarm.
-
-The user could then install (one | a few) binary package(s) for a specific middleware implementation together with its specific implementation of the mapping between the message specification and the DynamicData API.
-All other binary packages would be agnostic to the selected middleware implementation.
-
-            +-----------+
-            | user land |
-            +-----------+
-                  |
-                  v
-            +-----------+           Generic binary packages
-            | msg pkgs  |           agnostic to selected
-            +-----------+           middleware implementation
-                  |
-                  ?                 Select middleware implementation
-                /   \               by installing (one | a few)
-              /       \             binary package(s)
-    +-----------+   +-----------+
-    | mw impl 1 |   | mw impl 2 |
-    +-----------+   +-----------+
-
-#### Generate "fat" binary packages
-
-Another way to enable the user to switch between middleware implementations without the need to use the DynamicData API is to embed the middleware specific generated code for all supported implementations into each binary package.
-The specific middleware implementation would then be selected, for example, at link time and only the corresponding generated code of that middleware implementation would be used.
-
-### Using single middleware implementation only
+The alternative is to support selecting a specific middleware implementation at runtime.
+This will require that the to be selected middleware implementation was available at compile time in order for the middleware specific type support to be generated for every message package.
 
 When building ROS with a single middleware implementation the result should follow the design criteria:
 
@@ -321,6 +297,14 @@ In order to ensure that these information are passed back to the same middleware
 
 The details of the interface necessary for the subscriber side are not (yet) described in this document.
 
+### Optionally exposing native handles
+
+The RMW interface only exposes middleware agnostic handles.
+But the middleware implementation can optionally provide additional API to provide native handles.
+E.g. for a given ROS publisher handle a specific implementation can provide an API to access publisher related handles specific to the implementation.
+
+While using such a feature would make the user land code specific to the middleware implementation it provides a way to use features of a middleware implementation which are not exposed through the ROS interface.
+
 ## Current implementation
 
 The described concept has been implemented in the following packages:
@@ -329,6 +313,8 @@ The described concept has been implemented in the following packages:
 
   - the functions are declared in [rms/rmw.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/rmw.h)
   - the handles are defined in [rmw/types.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h)
+
+- the package [rmw_fastrtps_cpp](https://github.com/ros2/rmw_fastrtps/tree/master/rmw_fastrtps_cpp) implements the middleware interface using [eProsima Fast-RTPS](http://www.eprosima.com/index.php/products-all/eprosima-fast-rtps) based on the introspection type support
 
 - the package [rmw_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_cpp) implements the middleware interface using [RTI Connext DDS](http://www.rti.com/products/dds/index.html) based on statically generated code
 
@@ -353,6 +339,11 @@ The described concept has been implemented in the following packages:
     - the DDS specific code based on IDL files for each message
     - additional code to enable invoking the register/create/convert/write functions for each message type
 
+- the package [rmw_implementation](https://github.com/ros2/rmw_implementation/tree/master/rmw_implementation) provides the mechanism to switch between compile time and runtime selection of the middleware implementation
+
+  - if only one implementation is available at compile time it links directly against it
+  - if multiple implementations are available it implements the middleware interface itself and acts according to the strategy pattern by loading the shared library of a specific middleware implementation identified by an environment variable at runtime and pass all calls along
+
 ### One or multiple type support generators
 
 The packages contributing to the message generation process of each message are called *type support generators*.
@@ -360,15 +351,6 @@ Their package name starts with the prefix `rosidl_typesupport_`.
 
 Each message package will contain the generated code from all type support generators which are available when the package is configured.
 This can be only one (when building against a single middleware implementation) or multiple type support generators.
-
-### User land code decides at link time
-
-The packages implementing the middleware interface are called *middleware implementations*.
-Their package name starts with the prefix `rmw_` followed by the name of the used middleware (e.g., *connext* or *opensplice*).
-
-A user land executable using ROS nodes, publishers and subscribers must link against one specific middleware implementation library.
-The used middleware implementation library will only use the corresponding type support from each message package and ignore any additionally available type supports.
-Only middleware implementations can be selected for which the corresponding type support generators have been available when building the message packages.
 
 ### Mapping between DDS and ROS concepts
 
