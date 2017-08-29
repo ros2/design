@@ -103,12 +103,12 @@ Since it is not desired to change existing `catkin` / `ament_cmake` packages to 
 ### CMake version
 
 ROS 2 requires CMake version 3.5+.
-It should be easily possible to update existing CMake code to be compatible with various versions of CMake.
+It should be easily possible to update existing ROS 1 CMake code to be compatible with various versions of CMake.
 
 ### Python version
 
 ROS 2 requires Python version 3.5+.
-It should be easily possible to update existing Python code to be compatible with Python 2.7 as well as Python 3.5+.
+It should be easily possible to update existing ROS 1 Python code to be compatible with Python 2.7 as well as Python 3.5+.
 
 ### CMake API
 
