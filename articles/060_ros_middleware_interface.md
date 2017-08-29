@@ -178,7 +178,7 @@ While the workflow won't be too difficult (probably half a dozen command-line in
 
 To avoid the need to build from source a set of binary packages could be provided which chose the middleware implementation at build time.
 While this would reduce the effort for the user the buildfarm would need to build a completely separate set of binary packages.
-The effort to support N packages with M different middleware implementation would require significant resources (M * N) for maintaining the service as well as the necessary computing power.
+The effort to support N packages with M different middleware implementations would require significant resources (M * N) for maintaining the service as well as the necessary computing power.
 
 #### Decide at runtime
 
