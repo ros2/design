@@ -77,7 +77,7 @@ If this problem would be address within `rosdep` to consider the Python version 
 This would also allow building / using / testing ROS 1 with Python 3.
 
 Another example is the mapping of `rosdep` key to the Qt 4 or Qt 5 version of a dependency.
-A package may try to avoid changing the rosdep key used for their dependencies but rosdep only considers the platform without the context of the ROS distribution.
+Package try to avoid changing the rosdep key used for their dependencies but rosdep only considers the platform without the context of the ROS distribution.
 
 **Proposal:** Change request for `rosdep` to consider information beyond the platform to determine the mapping.
 
@@ -119,6 +119,8 @@ The rational for the changes and the different name are described in [this artic
 **Idea:** Create a ROS 2 package names `catkin` which provides the same CMake API as the ROS 1 package (minus unavailable features like the devel space) by mapping the calls to `ament_cmake` API.
 In addition it is expected that existing packages need to call a new function at the end of their CMake code to account for the fact that `ament_package` needs to be invoked *after* all targets where `catkin_package` needs to be invoked *before* them.
 
+In addition to `catkin` the CMake of ROS 1 packages also uses CMake API of other package, e.g. `genmsg`, `dynamic_reconfigure`, `rostest`, etc.
+
 ### Message / service definitions
 
 In ROS 2 message / service definitions are expected to be in the subdirectory `msg` / `srv`.
@@ -147,7 +149,7 @@ At the same time updating the subdirectory name of the C++ headers would make se
 
 For backward compatibility the same API as for ROS 1 could be generated into a separate location.
 The user could opt-in to use these to reduce the migration effort but by sacrificing the dual-home support.
-In order to use those ROS 1 shim APIs the user would have to add another path to the include directories / `PYTHONPATH`.
+In order to use those ROS 1 shim APIs the user would to add another path to the include directories / `PYTHONPATH`.
 
 **Idea:** Implement these additional message generators and provide a mechanism to easily use those interfaces.
 
@@ -210,7 +212,7 @@ If yes, these two variations of the packages can be managed in different ways:
   * (-) The separation makes the packages appear less correlated.
   * (+) Changes between the two branches can be easily ported both ways.
   * (+) More obvious for users (assuming there is comparable infrastructure like distributions file, wiki, etc.).
-  * (+) It might be unclear which version reported issues are referring to.
+  * (+) Reported issues are clearly related to a specific ROS version.
 
 * Both versions are stored in separate unrelated repositories.
 
@@ -224,7 +226,7 @@ In any case it is important to try getting the current maintainers involved in t
 ### API shims
 
 As described in the above section about the [CMake API](#cmake-api) it is possible to create ROS 2 packages mimicking the same name and API as existing ROS 1 packages.
-Depending on how different the ROS 1 interface is compared to the ROS 2 interface to which it should be mapped, that becomes more or less feasible.
+Depending how different the ROS 1 interface is compared to the ROS 2 interface it should be mapped to that becomes more or less feasible.
 In the case of `catkin` and `ament_cmake` the functionality is very close and therefore an API shim is realistic.
 But even in that case some changes might be necessary as mentioned for a new required call at the end of the CMake code.
 
@@ -244,4 +246,4 @@ For each case it needs to be carefully evaluated if the effort necessary to impl
 * Apply ROS 2 specific patches.
 
 * In the future port relevant fixes from either version to the other.
-  The more significant the two branches / forks diverge the more effort / less likely these ports will become.
+  The more significant the two branches/ forks diverge the more effort / less likely these ports will become.
