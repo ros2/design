@@ -212,7 +212,7 @@ If yes, these two variations of the packages can be managed in different ways:
   * (-) The separation makes the packages appear less correlated.
   * (+) Changes between the two branches can be easily ported both ways.
   * (+) More obvious for users (assuming there is comparable infrastructure like distributions file, wiki, etc.).
-  * (+) It might be unclear which version reported issues are referring to.
+  * (+) Reported issues are clearly related to a specific ROS version.
 
 * Both versions are stored in separate unrelated repositories.
 
