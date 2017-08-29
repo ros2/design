@@ -119,6 +119,8 @@ The rational for the changes and the different name are described in [this artic
 **Idea:** Create a ROS 2 package names `catkin` which provides the same CMake API as the ROS 1 package (minus unavailable features like the devel space) by mapping the calls to `ament_cmake` API.
 In addition it is expected that existing packages need to call a new function at the end of their CMake code to account for the fact that `ament_package` needs to be invoked *after* all targets where `catkin_package` needs to be invoked *before* them.
 
+In addition to `catkin` the CMake of ROS 1 packages also uses CMake API of other package, e.g. `genmsg`, `dynamic_reconfigure`, `rostest`, etc.
+
 ### Message / service definitions
 
 In ROS 2 message / service definitions are expected to be in the subdirectory `msg` / `srv`.
