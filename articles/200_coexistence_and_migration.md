@@ -77,7 +77,7 @@ If this problem would be address within `rosdep` to consider the Python version 
 This would also allow building / using / testing ROS 1 with Python 3.
 
 Another example is the mapping of `rosdep` key to the Qt 4 or Qt 5 version of a dependency.
-Package try to avoid changing the rosdep key used for their dependencies but rosdep only considers the platform without the context of the ROS distribution.
+A package may try to avoid changing the rosdep key used for their dependencies but rosdep only considers the platform without the context of the ROS distribution.
 
 **Proposal:** Change request for `rosdep` to consider information beyond the platform to determine the mapping.
 
@@ -149,7 +149,7 @@ At the same time updating the subdirectory name of the C++ headers would make se
 
 For backward compatibility the same API as for ROS 1 could be generated into a separate location.
 The user could opt-in to use these to reduce the migration effort but by sacrificing the dual-home support.
-In order to use those ROS 1 shim APIs the user would to add another path to the include directories / `PYTHONPATH`.
+In order to use those ROS 1 shim APIs the user would have to add another path to the include directories / `PYTHONPATH`.
 
 **Idea:** Implement these additional message generators and provide a mechanism to easily use those interfaces.
 
@@ -226,7 +226,7 @@ In any case it is important to try getting the current maintainers involved in t
 ### API shims
 
 As described in the above section about the [CMake API](#cmake-api) it is possible to create ROS 2 packages mimicking the same name and API as existing ROS 1 packages.
-Depending how different the ROS 1 interface is compared to the ROS 2 interface it should be mapped to that becomes more or less feasible.
+Depending how different the ROS 1 interface is compared to the ROS 2 interface to which it should be mapped, that becomes more or less feasible.
 In the case of `catkin` and `ament_cmake` the functionality is very close and therefore an API shim is realistic.
 But even in that case some changes might be necessary as mentioned for a new required call at the end of the CMake code.
 
@@ -246,4 +246,4 @@ For each case it needs to be carefully evaluated if the effort necessary to impl
 * Apply ROS 2 specific patches.
 
 * In the future port relevant fixes from either version to the other.
-  The more significant the two branches/ forks diverge the more effort / less likely these ports will become.
+  The more significant the two branches / forks diverge the more effort / less likely these ports will become.
