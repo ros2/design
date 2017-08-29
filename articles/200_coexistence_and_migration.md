@@ -69,7 +69,7 @@ In order to work for ROS 2 it needs to depend on the Python 3 version of the pac
 
 Currently the mapping in `rosdep` only depends on the platform and doesn't consider which ROS distribution is being used.
 
-If the migration to ROS 1 requires the key to be changed to `python3-foo` that implies that any package which depends on Python packages does need a modification in the manifest.
+If the migration to ROS 2 requires the key to be changed to `python3-foo` that implies that any package which depends on Python packages does need a modification in the manifest.
 
 The same conceptional problems already exist in ROS 1.
 When being built on platforms which use Python 3 they already map the keys to Python 3 packages.
@@ -160,7 +160,7 @@ For the migration two different categories of changes need to be considered sepa
 
 If the second set of changes would be empty a package could be used as a ROS 1 package as well as ROS 2 packages using the same sources.
 Currently the previous sections mention a few different items which fall into the second category therefore it doesn't seem realistic to achieve compatibility using the exact same sources.
-The following sections assume that is not feasible to maintain a single source for the ROS 1 as well as the ROS 2 version of a package.
+The following sections assume that it is not feasible to maintain a single source for the ROS 1 as well as the ROS 2 version of a package.
 
 ### Changes applicable to ROS 1 packages
 
@@ -214,7 +214,7 @@ If yes, these two variations of the packages can be managed in different ways:
 
 * Both versions are stored in separate unrelated repositories.
 
-  * No obvious advantages over the other twp approaches.
+  * No obvious advantages over the other two approaches.
     This is likely a good choice when the ROS 2 version of the package is a "full rewrite".
 
 In any case it is important to try getting the current maintainers involved in the process to avoid alienating existing contributors.
