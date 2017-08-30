@@ -183,7 +183,7 @@ The effort to support N packages with M different middleware implementations wou
 #### Decide at runtime
 
 The alternative is to support selecting a specific middleware implementation at runtime.
-This will require that the to be selected middleware implementation was available at compile time in order for the middleware specific type support to be generated for every message package.
+This requires that the to be selected middleware implementation was available at compile time in order for the middleware specific type support to be generated for every message package.
 
 When building ROS with a single middleware implementation the result should follow the design criteria:
 
