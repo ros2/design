@@ -309,40 +309,37 @@ While using such a feature would make the user land code specific to the middlew
 
 The described concept has been implemented in the following packages:
 
-- the package [rmw](https://github.com/ros2/rmw/tree/master/rmw) defines the middleware interface
+- The package [rmw](https://github.com/ros2/rmw/tree/master/rmw) defines the middleware interface.
 
-  - the functions are declared in [rms/rmw.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/rmw.h)
-  - the handles are defined in [rmw/types.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h)
+  - The functions are declared in [rms/rmw.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/rmw.h).
+  - The handles are defined in [rmw/types.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h).
 
-- the package [rmw_fastrtps_cpp](https://github.com/ros2/rmw_fastrtps/tree/master/rmw_fastrtps_cpp) implements the middleware interface using [eProsima Fast-RTPS](http://www.eprosima.com/index.php/products-all/eprosima-fast-rtps) based on the introspection type support
+- The package [rmw_fastrtps_cpp](https://github.com/ros2/rmw_fastrtps/tree/master/rmw_fastrtps_cpp) implements the middleware interface using [eProsima Fast-RTPS](http://www.eprosima.com/index.php/products-all/eprosima-fast-rtps) based on the introspection type support.
 
-- the package [rmw_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_cpp) implements the middleware interface using [RTI Connext DDS](http://www.rti.com/products/dds/index.html) based on statically generated code
+- The package [rosidl_generator_dds_idl](https://github.com/ros2/rosidl_dds/tree/master/rosidl_generator_dds_idl) generates DDS IDL files based on ROS msg files which are being used by all DDS-based RMW implementations which use static / compile type message types.
 
-  - the package [rosidl_typesupport_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rosidl_typesupport_connext_cpp) generates
+- The package [rmw_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_cpp) implements the middleware interface using [RTI Connext DDS](http://www.rti.com/products/dds/index.html) based on statically generated code.
 
-    - the DDS specific code based on IDL files for each message
-
-      - the package [rosidl_generator_dds_idl](https://github.com/ros2/rosidl_dds/tree/master/rosidl_generator_dds_idl) generates DDS IDL files based on ROS msg files
-
-    - additional code to enable invoking the register/create/convert/write functions for each message type
-
-- the package [rmw_connext_dynamic_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_dynamic_cpp) implements the middleware interface using *RTI Connext DDS* based on the DynamicData API
-
-  - the package [rosidl_typesupport_introspection_cpp](https://github.com/ros2/rosidl_dds/tree/master/rosidl_typesupport_introspection_cpp)
-
-    - generates code which encapsulated the information from each ROS msg file in a way which makes the data structures introspectable
-
-- the package [rmw_opensplice_cpp](https://github.com/ros2/rmw_opensplice/tree/master/rmw_opensplice_cpp) implements the middleware interface using [PrismTech OpenSplice DDS](http://www.prismtech.com/opensplice) based on statically generated code
-
-  - the package [rosidl_typesupport_opensplice_cpp](https://github.com/ros2/rmw_opensplice/tree/master/rosidl_typesupport_opensplice_cpp) generates
+  - The package [rosidl_typesupport_connext_cpp](https://github.com/ros2/rmw_connext/tree/master/rosidl_typesupport_connext_cpp) generates:
 
     - the DDS specific code based on IDL files for each message
     - additional code to enable invoking the register/create/convert/write functions for each message type
 
-- the package [rmw_implementation](https://github.com/ros2/rmw_implementation/tree/master/rmw_implementation) provides the mechanism to switch between compile time and runtime selection of the middleware implementation
+- The package [rmw_connext_dynamic_cpp](https://github.com/ros2/rmw_connext/tree/master/rmw_connext_dynamic_cpp) implements the middleware interface using *RTI Connext DDS* based on the ``DynamicData`` API.
 
-  - if only one implementation is available at compile time it links directly against it
-  - if multiple implementations are available it implements the middleware interface itself and acts according to the strategy pattern by loading the shared library of a specific middleware implementation identified by an environment variable at runtime and pass all calls along
+  - The package [rosidl_typesupport_introspection_cpp](https://github.com/ros2/rosidl_dds/tree/master/rosidl_typesupport_introspection_cpp) generates code which encapsulated the information from each ROS msg file in a way which makes the data structures introspectable.
+
+- The package [rmw_opensplice_cpp](https://github.com/ros2/rmw_opensplice/tree/master/rmw_opensplice_cpp) implements the middleware interface using [PrismTech OpenSplice DDS](http://www.prismtech.com/opensplice) based on statically generated code.
+
+  - The package [rosidl_typesupport_opensplice_cpp](https://github.com/ros2/rmw_opensplice/tree/master/rosidl_typesupport_opensplice_cpp) generates:
+
+    - the DDS specific code based on IDL files for each message
+    - additional code to enable invoking the register/create/convert/write functions for each message type
+
+- The package [rmw_implementation](https://github.com/ros2/rmw_implementation/tree/master/rmw_implementation) provides the mechanism to switch between compile time and runtime selection of the middleware implementation.
+
+  - If only one implementation is available at compile time it links directly against it.
+  - If multiple implementations are available it implements the middleware interface itself and acts according to the strategy pattern by loading the shared library of a specific middleware implementation identified by an environment variable at runtime and pass all calls along.
 
 ### One or multiple type support generators
 
