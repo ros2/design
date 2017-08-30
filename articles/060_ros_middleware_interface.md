@@ -339,7 +339,7 @@ The described concept has been implemented in the following packages:
 - The package [rmw_implementation](https://github.com/ros2/rmw_implementation/tree/master/rmw_implementation) provides the mechanism to switch between compile time and runtime selection of the middleware implementation.
 
   - If only one implementation is available at compile time it links directly against it.
-  - If multiple implementations are available it implements the middleware interface itself and acts according to the strategy pattern by loading the shared library of a specific middleware implementation identified by an environment variable at runtime and pass all calls along.
+  - If multiple implementations are available at compile time it implements the middleware interface itself and acts according to the strategy pattern by loading the shared library of a specific middleware implementation identified by an environment variable at runtime and pass all calls along.
 
 ### One or multiple type support generators
 
