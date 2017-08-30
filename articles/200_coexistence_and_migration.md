@@ -142,7 +142,7 @@ In ROS 1 the header files are generated in namespace specific to the package nam
 In ROS 2 the header files are placed into a sub-namespace names `msg` / `srv`.
 Beside the different path / namespace the data structure also uses different types for e.g. the shared pointers (Boost vs. C++11).
 
-For Python that is not the case.
+For Python that is not the case which prevents packages from importing the same message for ROS 1 and ROS 2 at the same time.
 
 **Proposal:** Change the location of the generated Python modules from using `msg` / `srv` as the subdirectory to `message` / `service`.
 At the same time updating the subdirectory name of the C++ headers would make sense to be similar.
