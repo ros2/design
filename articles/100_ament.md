@@ -124,7 +124,7 @@ The `setup.*` files also consider workspaces outside of this install space (by r
 ### Optional symlinked install
 
 It is very important to maximize the efficiency of the development cycle of changing code, building, and installing it and then run it to confirm the changes.
-Commonly the installation steps involves copying some resources from the source space to their final destination in the install location.
+Commonly the installation steps involve copying some resources from the source space to their final destination in the install location.
 ament provides an option to use symbolic links instead (if the platform supports that).
 This enables the developer to change the resources in the source space and skipping the installation step in many situations.
 
@@ -144,7 +144,7 @@ E.g. [cppcheck](http://cppcheck.sourceforge.net/) is used to statically analyze 
 
 ament_auto is similar to catkin_simple.
 It aims to simplify writing CMake code for an ament package.
-It avoid repetition of dependencies by extracting them from the manifest.
+It avoids repetition of dependencies by extracting them from the manifest.
 Additionally it automates several steps by relying on conventions, e.g.:
 
 - all information from dependencies are used for compiling and linking of all target
