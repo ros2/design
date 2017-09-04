@@ -79,7 +79,7 @@ We can benefit tremendously from this approach in many ways, including:
 - we maintain less code, especially non-robotics-specific code;
 - we can take advantage of features in those libraries that are beyond the scope of what we would build ourselves;
 - we can benefit from ongoing improvements that are made by others to those libraries; and
-- we can point to existing production systems that already rely on those libraries when people ask us where ROS is "ready for prime time".
+- we can point to existing production systems that already rely on those libraries when people ask us whether ROS is "ready for prime time".
 
 ## API changes
 

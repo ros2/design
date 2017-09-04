@@ -210,6 +210,15 @@ Depending on the type the following values are valid:
 
   - a string value which can optionally be quoted with either single quotes (`'`) or double quotes (`"`)
 
+  - a double-quoted (`"`) string (respectively single-quoted (`'`)) should have any inner double quotes (respectively single quotes) escaped:
+
+    - `string my_string "I heard \"Hello\""` is valid
+    - `string my_string "I heard "Hello""` is **not** valid
+    - `string my_string "I heard 'Hello'"` is valid
+    - `string my_string 'I heard \'Hello\''` is valid
+    - `string my_string 'I heard 'Hello''` is **not** valid
+    - `string my_string 'I heard "Hello"'` is valid
+
 ### Service file format
 
 A service file contains two message definitions which are separated by a line which only contains three dashes:

@@ -16,7 +16,7 @@ categories: Middleware
 
 <div class="alert alert-warning" markdown="1">
 This article was written at a time before decisions were made to use DDS and RTPS as the underlying communication standards for ROS 2.
-For details on how ROS 2 has been implemented, see the [Core Documentation](https://github.com/ros2/ros_core_documentation/)
+For details on how ROS 2 has been implemented, see the [Core Documentation](http://docs.ros2.org/)
 </div>
 
 <div class="abstract" markdown="1">

@@ -50,7 +50,8 @@ TOPICNAME - A topic name is an identifier for a topic, and is defined as any ser
 
 *Note:* that the DDS specification has a known typo, where it says `-` are allowed, but the RTI documentation correctly lists `_` as allowed.
 
-Additionally, DDS has a hard limit on topic names of 256 characters, so an additional goal is to minimize the number of extra characters used when mapping from ROS to DDS names.
+Additionally, DDS - or more precisely the underlaying RTPS protocol - has a hard limit on topic names of 256 characters, so an additional goal is to minimize the number of extra characters used when mapping from ROS to DDS names.
+See The Real-time Publish-Subscribe Protocol (RTPS) DDS Interoperability Wire Protocol Specification, Table 9.12 for more details.
 
 ## ROS 2 Topic and Service Name Constraints
 
@@ -63,9 +64,6 @@ For convenience here is a summary of all rules for topic and service names in RO
 - may use balanced curly braces (`{}`) for substitutions
 - may start with a tilde (`~`), the private namespace substitution character
 - must not start with a numeric character (`[0-9]`)
-- must not contain any number of repeated underscores (`_`)
-- must not end with an underscore (`_`)
-- must not have an underscore (`_`) followed by a forward slash (`/`), i.e. `_/`
 - must not end with a forward slash (`/`)
 - must not contain any number of repeated forward slashes (`/`)
 - must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`
@@ -77,10 +75,6 @@ The content of substitutions:
 - must not be empty
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`)
 - must not start with a numeric character (`[0-9]`)
-- are unlike topic and service names in that they:
-
-  - may start with or end with underscores (`_`)
-  - may contain repeated underscores, e.g. `__`
 
 ### Fully Qualified Names
 
@@ -92,8 +86,8 @@ Fully qualified names have these additional restrictions:
 - must start with a forward slash (`/`), i.e. they must be absolute
 - must not contain tilde (`~`) or curly braces (`{}`)
 
-Note that expanded substitutions must result in a valid name.
-For example, a name `foo_{bar}` is not valid if `bar` is expanded as `_baz`, because that would result in a fully qualified name of `foo__baz` which contains repeated underscores (`_`).
+Note that expanded substitutions must result in a valid name and comply to the name constraints stated in the previous section.
+An example of an invalid substitution would be `{sub}/foo` and replace `{sub}` with a numeric value, which thus leads to a topic starting with a numeric character.
 
 ### Uniform Resource Locators (URLs)
 
@@ -107,16 +101,15 @@ A relative name `foo/bar` could would be represented (as a topic) with `rostopic
 
 For example, these are valid names:
 
-| `foo`       | `abc123`            | `_foo`               | `Foo`        | `BAR`            |
-| `~`         | `foo/bar`           | `~/foo`              | `{foo}_bar`  | `foo/{ping}/bar` |
-| `foo/_/bar` | `rosservice:///foo` | `rostopic://foo/bar` |              |                  |
+| `foo`      | `abc123`   | `_foo`  | `Foo`               | `BAR`                |
+| `~`        | `foo/bar`  | `~/foo` | `{foo}_bar`         | `foo/{ping}/bar`     |
+| `foo/_bar` | `foo_/bar` | `foo_`  | `rosservice:///foo` | `rostopic://foo/bar` |
 
 But these are not valid names:
 
-| `123abc`   | `123`  | `__foo`  | `foo__bar` | `foo bar`   |
-| `foo__`    | ` `    | `foo_`   | `foo//bar` | `foo/`      |
-| `foo_/bar` | `~foo` | `foo~`   | `foo~/bar` | `foo/~bar`  |
-| `/_/bar`   | `_`    | `_/_bar` | `/~`       | `foo/~/bar` |
+| `123abc`    | `123`  | `foo bar` | ` `        | `foo//bar` |
+| `/~`        | `~foo` | `foo~`    | `foo~/bar` | `foo/~bar` |
+| `foo/~/bar` | `foo/` |           |            |            |
 
 These are some valid fully qualified names:
 
@@ -132,10 +125,10 @@ Topic and service names:
 
 - must not end with a forward slash (`/`)
 
-The last token is the topic or service basename, and any preceding tokens make up the namespace of the topic or service.
+The last token is the topic or service base name, and any preceding tokens make up the namespace of the topic or service.
 
-For example, the topic name `/foo/bar/baz` is composed of a topic or service with the basename `baz` in the `/foo/bar` namespace.
-In another example, the name `/foo` splits into one token, such that it is composed of a topic or service with the basename `foo` in the `/` namespace (the root namespace).
+For example, the topic name `/foo/bar/baz` is composed of a topic or service with the base name `baz` in the `/foo/bar` namespace.
+In another example, the name `/foo` splits into one token, such that it is composed of a topic or service with the base name `foo` in the `/` namespace (the root namespace).
 
 Topic and service names:
 
@@ -157,23 +150,11 @@ Topic and service name tokens:
 
 - must not be empty, e.g. the name `//bar` is not allowed
 
-  - rationale: it removes the chance for accidental `//` from concatenation and thereore the need to collapse `//` to `/`
+  - rationale: it removes the chance for accidental `//` from concatenation and therefore the need to collapse `//` to `/`
 
-- may use alphanumeric characters (`[0-9|a-z|A-Z]`), single underscores (`_`), and/or balanced curly braces (`{}`)
+- may use alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), and/or balanced curly braces (`{}`)
 
 - must not start with numeric characters (`[0-9]`)
-
-- must not end with a single underscore (`_`)
-
-  - rationale: if tokens are allowed to end with and start with `_` then `foo_/bar` is indistinguishable from `foo/_bar` if the `/` is replaced with `__` (as proposed in the "Substitution of the Namespace Delimiter" section), i.e. both result in `foo___bar`
-
-- must not be a single underscore (`_`)
-
-  - rationale: this is a special case of "must not end with an underscore"
-
-- must not have two or more underscores (`__`) repeated anywhere
-
-  - rationale: this provides the implementation with a safe to use delimiter
 
 - may be a single tilde character (`~`)
 
@@ -199,31 +180,68 @@ Note the private namespace substitution character makes the name absolute, and t
 The bracket syntax (`{substitution_name}`) may be used in non-fully qualified names to substitute useful contextual information into the name.
 The set of substitution keys (names) are not set in this document, but some reasonable examples might be: `{node}` expands to the current node's name or `{ns}` expands to the current node's namespace.
 
-Substitutions are expanded before the private namespace substitution character is expanded.
-Therefore a substitution may contain the private namespace substitution character, i.e. `~`.
-For example, given the name `{private}foo`, if there is a substitution called `{private}` that expands to `~/_`, the current node name is `my_node`, and the current node's namespace is `my_ns`, then the fully qualified name would be `/my_ns/my_node/_foo`.
+Substitutions are expanded after the private namespace substitution character is expanded.
+Therefore a substitution may not contain the private namespace substitution character, i.e. `~`.
+For example, given the name `{private}foo` and a substitution called `{private}` which expands to `~/_`, you will get an error because the `~/_` will end up in the expanded name as `/my_ns/~/_foo` which is is not allowed to have a `~` in it.
+
+Substitutions are expanded in a single pass, so substitutions should not expand to contain substitutions themselves.
+For example, given the name `/foo/{bar_baz}` where `{bar_baz}` expands to `{bar}/baz` and where `{bar}` in turn expands to `bar`, you will get `/foo/{bar}/baz` as the final result, which is invalid, and not `/foo/bar/baz` as you might expect.
+
+Substitutions are also not allowed to be nested, i.e. substitutions may not contain other substitutions in their names.
+This is implicitly enforced by the rules above that say substitution names may only contain alphanumerics and underscores (`_`).
+For example, given the name `{% raw %}/foo/{{bar}_baz}{% endraw %}` would result in an error because `{` and `}` are not allowed in a substitution names and the substitution name `{bar}_baz` does contain them.
 
 ### Hidden Topic or Service Names
 
 Any topic or service name that contains any tokens (either namespaces or a topic or service name) that start with an underscore (`_`) will be considered hidden and tools may not show them unless explicitly asked.
 
-## Mapping of ROS 2 Topic and Service Names to DDS Topics
+## Mapping of ROS 2 Topic and Service Names to DDS Concepts
 
 The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the forward slash (`/`), the tilde (`~`), and the balanced curly braces (`{}`).
-These must be substituted or otherwise removed during the process of mapping to DDS topic names.
+These must be substituted or otherwise removed during the process of converting the topic or service name to DDS concepts.
 Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
-Therefore only forward slashes have to be substituted when converting to DDS topic names.
+Therefore only forward slashes (`/`) need to be addressed when converting to DDS concepts.
 
-### Substitution of the Namespace Delimiter
+### ROS Namespaces with DDS Partitions
 
-The namespace delimiter in ROS 2 topic and service names, a forward slash (`/`), will be replaced with double underscores (`__`).
-Note that as fully qualified ROS 2 topic and service names are absolute, there is always a leading forward slash (`/`).
+The proposed strategy to address the forward slashes (`/`) which are present in ROS names, is to separate the ROS name into the "namespace" and the "base name", and then place the namespace, stripped of leading and trailing forward slashes (`/`), into a single DDS partition entry and the remaining base name into the DDS topic name.
+This addresses the issue because the ROS name's base name will not contain any forward slashes (`/`) by definition and so there are no longer any disallowed characters in the DDS topic name.
+The DDS partition will contain the ROS name's namespace, including any forward slashes (`/`) that make up the namespace and were not at the beginning or the end of the namespace.
+That is acceptable because DDS partitions are allowed to contain forward slashes (`/`) unlike the DDS topics.
 
-### ROS Specific Name Prefix
+This strategy also avoids DDS partitions from being exposed to the ROS API's.
+This is because the splitting of the ROS name into namespace and base name can occur inside the implementation of the ROS middleware interface, and so the ROS topic or service name will remain intact throughout the middleware agnostic code.
+This means that if someone chooses to implement ROS 2 on top of something other than DDS, then this strategy will not impact that implementation, as it applies only to DDS implementations.
 
-In order to differentiate ROS topics easily, all DDS topic names created by ROS shall be prefixed with `rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS topic named `rt__foo`, which is the result of concatenating the prefix `rt` for being a ROS topic, with `__` for the leading `/`, and the topic name `foo`.
+#### DDS Partitions Characteristics
+
+DDS partitions are implemented as an array of strings within the `DDS::Publisher` and `DDS::Subscriber` QoS settings.
+The array allows up to 64 items, and each string in the array is an individual partition.
+This means that every string of the array is an independently matchable entity when paired with the topic name and the other QoS settings.
+Put another way, a DDS DataWriter and DataReader will not connect to one another unless at least one of the partition strings in the array match, even if the topic names match.
+Sometimes special characters are used in the partition strings to express regular expressions matching (such as `+`, `*`, `^`), but they are not officially supported by the standard.
+The maximum size of each string in the array may depend on the DDS or RTPS implementation.
+You can read more about partitions in RTI's documentation:
+
+- [PARTITION_QosPolicy](https://community.rti.com/static/documentation/connext-dds/5.2.3/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/PARTITION_QosPolicy.htm)
+
+The array of strings have no hierarchy and the order does not matter.
+Each entry in the partition array is directly combined with the DDS topic and they are not sequentially combined.
+If a publisher has two partition entries, e.g. `foo` and `bar` with a base name of `baz`, this would be equivalent to having two different publishers on these topics: `/foo/baz` and `/bar/baz`.
+Therefore we cannot use the array of strings to represent our implied namespace hierarchy and we have to continue to use the forward slash to accomplish this.
+
+#### Hierarchy with DDS Partitions
+
+Since DDS partitions have no hierarchy or order to the array of strings, this proposal would use only one of the strings in the array to hold the entire ROS name's namespace.
+Therefore we preserve the forward slashes (`/`) that exist in the ROS name's namespace already.
+
+### ROS Specific Namespace Prefix
+
+In order to differentiate ROS topics easily, all DDS topics created by ROS shall be automatically prefixed with a namespace like `/rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
+At this point it's important to remember that when the namespace part of the ROS name is put into the DDS partition it is stripped of leading and trailing forward slashes (`/`).
+For example, a plain topic called `/foo` would translate to a DDS partition `rt` and a DDS topic `foo`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`, then the namespace getting the leading and trailing forward slashes (`/`) stripped.
+As another example, a topic called `/left/image_raw` would translate to a DDS partition `rt/left` and a DDS topic `image_raw`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`, again stripping the leading and trailing forward slashes (`/`) from the namespace.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
 On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
@@ -239,41 +257,71 @@ Here is a non-exhaustive list of prefixes:
 | ROS Parameter        | rp     |
 | ROS Action           | ra     |
 
-While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `__`, can be considered part of the prefix.
+While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `/`, can be considered part of the prefix.
 The standard reserves the right to use up to 8 characters for the prefix in case additional prefix space is needed in the future.
+
+### Examples of ROS Names to DDS Concepts
+
+Here are some examples of how a fully qualified ROS name would be broken down into DDS concepts:
+
+| ROS Name                        | DDS Topic   | DDS Partition                 |
+|---------------------------------|-------------|-------------------------------|
+| `/foo`                          | `foo`       | \[`rt`\]                      |
+| `rostopic:///foo/bar`           | `bar`       | \[`rt/foo`\]                  |
+| `/robot1/camera_left/image_raw` | `image_raw` | \[`rt/robot1/camera_left`\]   |
+
+### Changing ROS Names During Runtime
+
+If the ROS name needs to be changed during runtime (after the publisher or subscriber has already been created and is in use), then some details about DDS partitions might be useful to consider.
+
+Since this proposal splits the ROS name into namespace and base name, we'll consider how that might affect DDS partitions and DDS topic names respectively.
+When changing the namespace of a ROS name, i.e. everything but the base name, then this could be done by changing just the existing partition string.
+As partitions are part of QoS settings, it technically doesn't require a full restart of the publisher and subscription when changing the partitions field, however we cannot change the DDS topic name on the fly.
+With this in mind, we may want to always require a full restart of the publisher or subscription instance to avoid inconsistency in how these changes behave from the ROS user's perspective.
+
+### ROS Topic and Service Name Length Limit
+
+The length of the DDS topic must not exceed 256 characters.
+The actual length of a partition field may be limited to 256 characters, however this varies drastically depending on the vendor.
+RTI Connext does not allow a creation of a publisher/subscription with a partition length of 248 characters, whereas FastRTPS does not have any limitation in length.
+Please bare in mind, that the length of the partition gets further diminished due to the introduction of a ROS specific prefix.
+The actual length of a ROS Topic, including the namespace hierarchy and the base name of the topic, may thus be varying in length as well.
+Yet, the base name token must not exceed the length of 256 characters as this is getting mapped directly as the DDS topic.
 
 ### Communicating with Non-ROS Topics
 
 Since all ROS topics are prefixed when being converted to DDS topic names, it makes it impossible to subscribe to existing DDS topics which do not follow the same naming pattern.
-For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling.
+For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling produced by the implicit ROS specific namespace.
 Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
 
-### ROS to DDS Name Conversion Examples
+#### Examples and Ideas for Communicating with Non-ROS Topics
 
-Here are some examples of translations between ROS topic names and the corresponding DDS topic names:
+Note that these are not part of the proposal, but only possible solutions to the issue of communicating with "native" DDS topics.
+This section should be update when/if a complete solution is found.
 
-| ROS Name          | Subsystem | DDS Name               |
-|-------------------|-----------|------------------------|
-| `/foo`            | Topic     | `rt__foo`              |
-| `/foo/bar`        | Topic     | `rt__foo__bar`         |
-| `/_foo/bar`       | Topic     | `rt___foo__bar`        |
-| `/foo/_bar`       | Topic     | `rt__foo___bar`        |
-| `/_foo/_bar`      | Topic     | `rt___foo___bar`       |
-| `/_foo/_bar/_baz` | Topic     | `rt___foo___bar___baz` |
+It may be possible, through an option in the API or through some name syntax, to get a similar break down but without the ROS specific prefix.
 
-### ROS Topic and Service Name Length Limit
+For example with an option in the API:
 
-Because DDS topic names must be limited to 255 characters, the length of a ROS topic or service name is also limited in length.
-In the case of a topic, the length is governed by the following algorithm:
+| ROS Name              | ROS Prefix | DDS Topic   | DDS Partition                 |
+|-----------------------|------------|-------------|-------------------------------|
+| `rostopic://image`    | with       | `image`     | \[`rt`\]                      |
+| `rostopic://image`    | without    | `image`     | \[\]                          |
 
-`C + N + P <= 255`
+Another option would be to have some markup in the scheme name, for example:
 
-Where `P` is `8`, the maximum possible length of the ROS specific prefix, `C` is the number of characters in the topic name, and `N` is the number of name tokens in the topic name.
-Note that this algorithm must be applied on a fully qualified name, i.e. after expanding all substitutions and the private namespace substitution character (`~`), after removing any URL related syntax (e.g. without the `rostopic://` prefix).
+| ROS Name                              | DDS Topic           | DDS Partition                 |
+|---------------------------------------|---------------------|-------------------------------|
+| `rostopic://image`                    | `image`             | \[`rt`\]                      |
+| `rostopic+exact://image`              | `image`             | \[\]                          |
+| `rostopic+exact://camera_left/image`  | `camera_left/image` | \[\]                          |
 
-Services are governed by the same algorithm, but in some implementations may require additional characters to be subtracted from the limit depending on how the request and response topics are created by the middleware.
-In the specific case of RTI Connext's Request-Reply implementation, they append the `Request` and `Reply` strings to the topic names.
-Therefore, it would be safest to assume the Service name limit to be less 8 more characters.
+Considering the third case, it's not clear if the `/` should be respected or if additional syntax is required to support partitions in the case of "exact" topic names.
+You could also imagine:
+
+| ROS Name                                | DDS Topic           | DDS Partition                 |
+|-----------------------------------------|---------------------|-------------------------------|
+| `rostopic+exact+ns://camera_left/image` | `image`             | \[`camera_left`\]             |
 
 ## Compare and Contrast with ROS 1
 
@@ -338,12 +386,28 @@ For the substitutions to be useful, then all implementations that process topic 
 
 This compromise was made so that when more work is done on substitutions, it would hopefully not require changes to the name syntax, but instead revolve around what substitutions to support and whether or not that support is optional.
 
-### Alternative ROS to DDS Mapping
+### Alternative ROS to DDS Mappings
 
 There was some discussion of alternatives and concerns with respect to the ROS -> DDS translation.
 
+#### Alternative Substitute the Namespace Delimiter
+
+A previous proposal was to substitute the namespace delimiter, i.e. forward slash (`/`), with something that is allowed in DDS topic names, and then only use the DDS topic name to represent the full ROS name.
+For example in the simplest case, a topic `/foo/bar/baz` might become `__foo__bar__baz`, where the forward slash (`/`) is being replaced with a double underscore (`__`) and double underscores (`__`) were not allowed in ROS topic and service names.
+
+Trade-offs (in comparison to the use of DDS partitions):
+
+- Has a tighter length limit, since it limited by just the DDS topic name and does not benefit from part of the ROS topic name going into the DDS partition.
+- The replacement for the forward slash (`/`) had to be more than one character since all usable characters were already in allowed in both the ROS names and DDS topic names, so each namespace further reduced the topic length limit.
+- Implementation requires string replacement and validation afterwards, which is moderately complicated.
+
+Rationale:
+
+The DDS partition proposal is preferred over this alternative because it allows for longer total ROS names and because it is simpler to implement, i.e. splitting the string into base name and namespace is simpler than replacing the forward slashes (`/`) with double underscores (`__`) and then redoing length limit testing afterwards.
+
 #### Capital Letter Substitution Alternative
 
+This is another alternative that was proposed in the context of the alternative described in the above section called "Alternative Substitute the Namespace Delimiter".
 Since the forward slash (`/`) is replaced with double underscores (`__`) when translating to DDS from ROS topic names, two characters out of the 256 character limit are lost with each additional namespace.
 One proposed alternative was to add a constraint that ROS topic names could not use capital letters, and then capital letters could be used as the stand in for the forward slashes (`/`).
 
@@ -358,6 +422,7 @@ Preventing users from using capital letters was too constraining for the added b
 
 #### ROS Prefix with Single Underscore
 
+This is another variation that was proposed in the context of the alternative described in the above section called "Alternative Substitute the Namespace Delimiter".
 This alternative differs only in that it uses a single underscore in the prefix, i.e. `rt_` rather than `rt__` (`rt` + the leading `/`).
 
 Trade-offs:
@@ -370,6 +435,8 @@ Rationale:
 Slight preference given to the more consistent alternative.
 
 #### Limited Prefixes Alternative
+
+This is another variation that was proposed in the context of the alternative described in the above section called "Alternative Substitute the Namespace Delimiter".
 
 This alternative would:
 
@@ -398,6 +465,8 @@ Also, the workaround for separating ROS created topics from other DDS topics was
 
 #### Suffix Alternative
 
+This is another variation that was proposed in the context of the alternative described in the above section called "Alternative Substitute the Namespace Delimiter".
+
 This alternative would:
 
 - not prefix topics
@@ -421,6 +490,8 @@ This alternative was not selected over the prefix solution because of a lack of 
 Also, it typically took one more character to express (`rt` versus `_rt_`; unless you also drop the implicit first namespace `/` then it's `rt__` versus `_rt_`) and the potential issues with ambiguity when the DDS implementation handles Request-Reply (added suffixes).
 
 #### Limited Suffix Alternative
+
+This is another variation that was proposed in the context of the alternative described in the above section called "Alternative Substitute the Namespace Delimiter".
 
 This alternative is the same as the "Suffix Alternative" except:
 

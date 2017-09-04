@@ -124,12 +124,12 @@ The `setup.*` files also consider workspaces outside of this install space (by r
 ### Optional symlinked install
 
 It is very important to maximize the efficiency of the development cycle of changing code, building, and installing it and then run it to confirm the changes.
-Commonly the installation steps involves copying some resources from the source space to their final destination in the install location.
+Commonly the installation steps involve copying some resources from the source space to their final destination in the install location.
 ament provides an option to use symbolic links instead (if the platform supports that).
 This enables the developer to change the resources in the source space and skipping the installation step in many situations.
 
 For CMake packages this is achieved by optionally overriding the CMake `install()` function.
-For Python packages the [development mode](http://pythonhosted.org//setuptools/setuptools.html#development-mode) is used to install the package.
+For Python packages the [development mode](http://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode) is used to install the package.
 The symlinked install is an optional feature and must be enabled explicitly by the developer using the command line option `--symlink-install`.
 
 ### ament linters
@@ -144,7 +144,7 @@ E.g. [cppcheck](http://cppcheck.sourceforge.net/) is used to statically analyze 
 
 ament_auto is similar to catkin_simple.
 It aims to simplify writing CMake code for an ament package.
-It avoid repetition of dependencies by extracting them from the manifest.
+It avoids repetition of dependencies by extracting them from the manifest.
 Additionally it automates several steps by relying on conventions, e.g.:
 
 - all information from dependencies are used for compiling and linking of all target
@@ -227,9 +227,11 @@ With the different design of ament it becomes possible to implement a package si
 #### Building within a single CMake context
 
 catkin allows users to build multiple packages within a single CMake context (using `catkin_make`).
-While this significantly speeds up the process it is not scalable at large.
-This is due to the fact that all packages share the same CMake namespace.
-Therefore the package might have colliding target names or fail to build correctly due to side effects between the packages.
+While this significantly speeds up the process it has several drawbacks.
+Since all packages within a workspace share the same CMake context all targets are within the same namespace and must therefore be unique across all packages.
+The same applies to global variables, functions, macros, tests, etc.
+Furthermore a package might need to declare target level dependencies to targets in other packages to avoid CMake targets being parallelized when they ought to be sequential (but only when being built in the same CMake context).
+This requires internal knowledge about the build structure of other packages and subverts the goal of decoupling packages.
 ament does not provide that feature due to these drawbacks.
 
 ### Additional improvements in ament over catkin

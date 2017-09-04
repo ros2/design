@@ -31,6 +31,11 @@ To separate the generated code from other code within the package it is defined 
 - namespace for ROS messages: `<package_name>::msg`.
 - namespace for ROS services: `<package_name>::srv`.
 
+<div class="alert alert-info" markdown="1">
+  <b>NOTE:</b> Using the additional sub namespace ensures that the symbols are different and don't overlap with the ROS 1 symbols.
+  That allows to include both in a single compilation unit like the <code>ros1_bridge</code>.
+</div>
+
 ## Generated files
 
 Following the C++ style guide of ROS 2 the namespace hierarchy is mapped to a folder structure.
