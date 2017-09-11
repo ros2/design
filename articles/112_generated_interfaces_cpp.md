@@ -41,7 +41,7 @@ To separate the generated code from other code within the package it is defined 
 Following the C++ style guide of ROS 2 the namespace hierarchy is mapped to a folder structure.
 The filenames use lowercase alphanumeric characters with underscores for separating words and end with either `.hpp` or `.cpp`.
 
-## Messages
+## <a name="Messages"></a>Messages
 
 For a message a templated `struct` with the same name followed by an underscore is generated.
 The single template argument is the allocator for the data structure.
@@ -103,8 +103,10 @@ All other constants are declared as `static const` members in the struct and the
 
 ### Constructors
 
-The *default constructor* initializes all members with their default value.
-Optionally the constructor can be invoked with an allocator.
+Currently the *default constructor* does no initialization of member fields.
+This means that the user is responsible for ensuring that all fields are initialized before use, otherwise undefined behavior may result.
+In a future release, the *default constructor* will initialize all fields.
+Optionally the constructor can be invoked with an allocator as discussed [above](#Messages).
 
 The struct has no constructor with positional arguments for the members.
 The short reason for this is that if code would rely on positional arguments to construct data objects changing a message definition would break existing code in subtle ways.
