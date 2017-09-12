@@ -209,14 +209,14 @@ A few to highlight:
 There are several ways to load parameters at startup including command line arguments, roslaunch arguments, and potentially parameter files.
 This is something which should be addressed in conjunction with the new launch system.
 
-### Support for arrays of primatives
+### Support for arrays of primitives
 
-During the API discussions supporting arrays of primatives was discussed and deferred.
+During the API discussions supporting arrays of primitives was discussed and deferred.
 Adding support for arrays in the interface is relatively straight forward.
 It slightly increases the complexity of the API for users, but can support several use cases.
 A use case for arrays of numbers is expressing a matrix or vector, addressing each position in a matrix by some sort of row-column naming scheme can get very cumbersome.
 
 ### Predeclared interface to support static checking/validation
 
-The ability to declare an API which can help with static checks and prevent logical errors which arrise from setting the wrong parameter based on a typo.
+The ability to declare an API which can help with static checks and prevent logical errors which arise from setting the wrong parameter based on a typo.
 The node could enforce this by rejecting unexpected names, but there are some cases where knowing the expected parameter names would be useful for developer tools.
