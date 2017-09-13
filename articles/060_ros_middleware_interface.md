@@ -314,7 +314,7 @@ The described concept has been implemented in the following packages:
   - The functions are declared in [rms/rmw.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/rmw.h).
   - The handles are defined in [rmw/types.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h).
 
-- The package [rosidl_typesupport_introspection_cpp](https://github.com/ros2/rosidl_dds/tree/master/rosidl_typesupport_introspection_cpp) generates code which encapsulated the information from each ROS msg file in a way which makes the data structures introspectable from C++ code.
+- The package [rosidl_typesupport_introspection_cpp](https://github.com/ros2/rosidl/tree/master/rosidl_typesupport_introspection_cpp) generates code which encapsulated the information from each ROS msg file in a way which makes the data structures introspectable from C++ code.
 
 - The package [rmw_fastrtps_cpp](https://github.com/ros2/rmw_fastrtps/tree/master/rmw_fastrtps_cpp) implements the middleware interface using [eProsima Fast-RTPS](http://www.eprosima.com/index.php/products-all/eprosima-fast-rtps) based on the introspection type support.
 
