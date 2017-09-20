@@ -304,6 +304,7 @@ But the middleware implementation can optionally provide additional API to provi
 E.g. for a given ROS publisher handle a specific implementation can provide an API to access publisher related handles specific to the implementation.
 
 While using such a feature would make the user land code specific to the middleware implementation it provides a way to use features of a middleware implementation which are not exposed through the ROS interface.
+See [this](https://github.com/ros2/demos/tree/master/demo_nodes_cpp_native) demo for an example.
 
 ## Current implementation
 
