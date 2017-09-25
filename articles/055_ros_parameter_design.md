@@ -9,6 +9,7 @@ author: '[Tully Foote](https://github.com/tfoote)'
 published: true
 ---
 
+- This will become a table of contents (this text will be scraped).
 {:toc}
 
 # {{ page.title }}
