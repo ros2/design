@@ -109,17 +109,28 @@ Each parameter consists of a key and a value.
 The key is a string value.
 The value can be one of the following datatypes:
 
-- `float64`
-- `int64`
-- `string`
 - `bool`
-- `bytes[]`
+- `int64`
+- `float64`
+- `string`
+- `byte[]`
+- `bool[]`
+- `int64[]`
+- `float64[]`
+- `string[]`
 
-The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](articles/interface_definition.html)
+The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](interface_definition.html)
 The full complement of datatypes of different bitdepth and unsigned types are avoided to allow interpretation from text based configuration files.
 
-`bytes` are included to allow the storage of binary blobs.
-It's use is not recommended but can be very convenient, and explicitly supporting it is better than having people try to abuse other datatypes such as strings.
+Array data types support a variety of use cases, e.g.,
+- `byte[]` is included to allow the storage of binary blobs.
+Its use is not recommended but can be very convenient, and explicitly supporting it is better than having people try to abuse other datatypes such as strings.
+- `bool[]` can be useful as a mask for other array parameters.
+- `int64[]` and `float64[]` can be used to express numerical vector and matrix parameters.
+- `string[]` can be used to express groups of names, such as a set of robots in a multi-robot context.
+
+While the use of array parameters increases the complexity of the API, their omission would necessitate complex naming schemes for parameters like matrices, which are common in robotics.
+They should not be abused, however; users should rely on namespacing and explicit variable names wherever possible.
 
 ### Required functionality
 
@@ -209,13 +220,6 @@ A few to highlight:
 
 There are several ways to load parameters at startup including command line arguments, roslaunch arguments, and potentially parameter files.
 This is something which should be addressed in conjunction with the new launch system.
-
-### Support for arrays of primitives
-
-During the API discussions supporting arrays of primitives was discussed and deferred.
-Adding support for arrays in the interface is relatively straight forward.
-It slightly increases the complexity of the API for users, but can support several use cases.
-A use case for arrays of numbers is expressing a matrix or vector, addressing each position in a matrix by some sort of row-column naming scheme can get very cumbersome.
 
 ### Predeclared interface to support static checking/validation
 
