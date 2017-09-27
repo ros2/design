@@ -115,7 +115,7 @@ The value can be one of the following datatypes:
 - `bool`
 - `bytes[]`
 
-The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](articles/interface_definition.html)
+The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](http://design.ros2.org/articles/interface_definition.html)
 The full complement of datatypes of different bitdepth and unsigned types are avoided to allow interpretation from text based configuration files.
 
 `bytes` are included to allow the storage of binary blobs.
