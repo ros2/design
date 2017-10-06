@@ -39,6 +39,16 @@ Slower than real time simulation is necessary for complicated systems where accu
 Often the simulation is the limiting factor for the system and as such the simulator can be a time source for faster or slower playback.
 Additionally if the simulation is paused the system can also pause using the same mechanism.
 
+## Approach
+
+To provide a simplified time interface we will provide a ROS time and duration datatype.
+To query for the latest time a ROS Clock interface will be provided.
+A TimeSource can manage one or more Clock instances.
+
+
+## Clock
+
+
 ### Challenges in using abstracted time
 
 There are many algorithms for synchronization and they can typically achieve accuracies which are better than the latency of the network communications between devices on the network.
@@ -70,18 +80,19 @@ For convenience in these cases we will also provide the same API as above, but u
 
 `SystemTime` will be directly tied to the system clock.
 
+#### ROS Time
+
+The `ROSTime` will report the same as `SystemTime` when an ROS Time Source is not active.
+When the ROS time source is active `ROSTime` will return the latest value reported by the Time Source.
+`ROSTime` is considered active when the parameter `using_sim_time` is set on the node.
+
 #### Steady Time
 
 Example use cases for this include hardware drivers which are interacting with peripherals with hardware timeouts.
 
 In nodes which require the use of `SteadyTime` or `SystemTime` for interacting with hardware or other peripherals it is expected that they do a best effort to isolate any `SystemTime` or `SteadyTime` information inside their implementation and translate external interfaces to use the ROS time abstraction when communicating over the ROS network.
 
-#### ROS Time
-
-The `ROSTime` will report the same as `SystemTime` when an ROS Time Source is not active.
-When the ROS time source is active `ROSTime` will return the latest value reported by the Time Source.
-
-### ROS Time Sources
+### ROS Time Source
 
 #### Default Time Source
 
@@ -100,7 +111,7 @@ The developer has the opportunity to register callbacks with the handler to clea
 
 The frequency of publishing the `/clock` as well as the granularity are not specified as they are application specific.
 
-##### No Advanced Estimating Clock
+##### No Advanced Estimating Clock By Default
 
 There are more advanced techniques which could be included to attempt to estimate the propagation properties and extrapolate between time ticks.
 However all of these techniques will require making assumptions about the future behavior of the time abstraction.
@@ -115,23 +126,41 @@ It is possible that the user may have access to an out of band time source which
 It might be possible that for their use case a more advanced algorithm would be needed to propagate the simulated time with adequate precision or latency with restricted bandwidth or connectivity.
 The user will be able to switch out the time source for either each instance of their Time object as well as have the ability to override the default for the process.
 
-It is possible to use an external time source such as GPS in as a ROSTime source, but it is recommended to integrate a time source like that using standard ntp integrations with the system clock since that is already an established mechanism and will not need to deal with more complicated changes such as time jumps.
+It is possible to use an external time source such as GPS in as a ROSTime source, but it is recommended to integrate a time source like that using standard NTP integrations with the system clock since that is already an established mechanism and will not need to deal with more complicated changes such as time jumps.
+
+For the current implementation a `TimeSource` API will be defined such that it can be overridden in code.
+If in the future a common implementation is found that would be generally useful it could be extended to optionally dynamically select the alternative TimeSource via a parameter similar to enabling the simulated time.
 
 ## Implementation
 
 The `SystemTime`, `SteadyTime`, and `ROSTime` API's will be provided by each client library in an idiomatic way, but they may share a common implementation, e.g. provided by `rcl`.
 However, if a client library chooses to not use the shared implementation then it must implement the functionality itself.
 
+`SteadyTime` will be typed differently than the interchangable `SystemTime` and `ROSTime`.
+This is because SystemTime and ROSTime have a common base class with runtime checks that they are valid to compare against each other.
+However SteadyTime is never comparable to SystemTime or SteadyTime so it would actually have a separate implementation of the same API.
+Thus you could get protection from misusing them at compile time (in compiled languages) instead of only catching it at runtime.
+
 ### Public API
 
-In each implementation will provide `Time`, `Duration`, and `Rate` datatypes, for all three time source abstraction..
-The `Duration` will support a `sleep_for` function as well as a `sleep_until` method.
+In each implementation will provide `Time`, `Duration`, and `Rate` datatypes, for all three time source abstractions.
+
+The `Clock` will support a `sleep_for` function as well as a `sleep_until` method using a `Duration` or `Time` argument respectively.
 The implementation will also provide a `Timer` object which will provide periodic callback functionality for all the abstractions.
+
+It will also support registering callback before and after a time jump.
+The first callback will be to allow proper preparations for a time jump.
+The latter will allow code to respond to the change in time and include the new time specifically as well as a quantification of the jump.
+
+Any API which is blocking will allow a set of flags to indicate the appropriate behavior in case of time jump.
+This will allow the user to choose to error immediately on a time jump or choose to ignore.
+When registering a callback for jumps a filter for the minimum backwards or forwards distance will be possible and well as whether a clock change is to be included.
 
 ### RCL implementation
 
 In `rcl` there will be datatypes and methods to implement each of the three time abstractions for each of the core datatypes.
-However at the `rcl` level the implementation will be incomplete as it will not have a threading model and will rely on the higher level implementation to provide any threading functionality such as is required by sleep methods.
+However at the `rcl` level the implementation will be incomplete as it will not have a threading model and will rely on the higher level implementation to provide any threading functionality which is required by sleep methods.
+It also will require appropriate threading to support the reception of `TimeSource` data.
 
 It will provide implementations parallel to the public datastructures and storage which the client library can depend upon and to which it can delegate.
 The underlying datatypes will also provide ways to register notifications, however it is the responsibility of the client library implementation to collect and dispatch user callbacks.
