@@ -37,14 +37,14 @@ The following subsections will describe two different use cases how dependencies
 ### (1) Need at least one "Provider"
 
 A package might want to declare that at least one dependency from a group needs to be present (called `satisfy-at-least-one`).
-Compared to "normal" dependencies it is not requires that all dependencies of that group need to be present to satisfy the dependency group.
+Compared to "normal" dependencies it is not required that all dependencies of that group need to be present to satisfy the dependency group.
 
 An example for this is the `rmw_implementation` package.
-Currently it depends on all RMW implementation packages in order to ensure that it may only be build after all RMW implementation packages have been built.
+Currently it depends on all RMW implementation packages (e.g. `rmw_fastrtps_cpp`, `rmw_connext_cpp`, etc.) in order to ensure that it may only be built after all RMW implementation packages have been built.
 The goal would be that at least one RMW implementation needs to be present in order to build or use the `rmw_implementation` package.
-It would be acceptable if more or even all RMW implementations are available but that is not required.
+It would be acceptable if more than one or even all RMW implementations are available but that is not required.
 
-In case multiple package declare to be part of that dependency group the `rmw_implementation` package might want to provide an order list of preferred names which should be considered in that order.
+In case multiple package declare to be part of that dependency group the `rmw_implementation` package might want to provide an ordered list of preferred names which should be considered in that order.
 
 ### (2) All packages of a specific "type"
 
@@ -55,7 +55,7 @@ An example for this is the `ros1_bridge` package.
 Currently it depends on a manually selected set of message packages.
 The goal would be that it can declare that it depends on *all* packages which provide messages.
 
-Since the `ros1_bridge` manifest only contains the name of the group dependency in doesn't control which packages declare that they are part of that group.
+Since the `ros1_bridge` manifest only contains the name of the group dependency, it doesn't control which packages declare that they are part of that group.
 It might want to exclude specific packages to be considered even though they are in the group.
 
 ## Processes
@@ -77,7 +77,7 @@ For the `satisfy-all` semantic it can simply generate dependencies on all packag
 For the `satisfy-at-least-one` semantic the release tool could either use a platform specific mechanism like `provides` in Debian control files or simply expand the group to all packages (same as `satisfy-all`).
 This design document doesn't aim to specify what the "best" behavior for the release tool is since the decision is likely platform dependent.
 
-Since the release tool expands the dependency groups when being invoked packages which join the group after that release won't be used until the package defining the group dependency is being re-released.
+Since the release tool expands the dependency groups when being invoked, packages which join the group after that release won't be used until the package defining the group dependency is being re-released.
 
 ### rosinstall_generator
 
@@ -90,13 +90,13 @@ It could either match the behavior of the build tool or of the release tool or e
 To provide the necessary metadata for the build and release tools the following information must be provided by the manifest:
 
 * (A) A specific package declares a group dependency and uses a name to identify the group.
-  The dependency can be of any type specified in [REP 140](http://www.ros.org/reps/rep-0140.html): e.g. `build`, `exec`, `test`, `doc`.
+  The dependency can be of any type specified in [REP 140](http://www.ros.org/reps/rep-0140.html): e.g. `build`, `exec`, `test`, `doc`, etc.
 
 * (B) The semantic of the group dependency needs to be defined (in case (1) `satisfy-at-least-one`, in case (2) `satify-all`).
 
 * (C) A list of preferred / excluded packages can be enumerated for each dependency group.
 
-* (D) Any package can declare that it is part of that group.
+* (D) Any package can declare that it is part of a group by name.
 
 ### Possible Format Extensions
 
