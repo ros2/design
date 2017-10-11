@@ -23,16 +23,15 @@ Original Author: {{ page.author }}
 
 In the ROS ecosystem a ROS package provides information about its dependencies in the manifest.
 The latest format is specified in the [REP 140](http://www.ros.org/reps/rep-0140.html).
-It supports different kind of dependencies (`build`, `exec`, `test`, `doc`, etc.).
-But each dependency is mandatory and needs to satisfied on its own.
+It supports different kinds of dependencies (`build`, `exec`, `test`, `doc`, etc.) but each dependency is mandatory and needs to satisfied on its own.
 
 This article describes the concept of "dependency groups" which could be used for different purposes.
 In terms of terminology a dependency group is a set of dependencies identified by the name of the group.
-For such a group a different semantic can then be applied (instead of just satisfy each dependency on its own).
+For such a group a different semantic can then be applied (instead of just satisfying each dependency on its own).
 
 ## Use Cases
 
-The following subsections will describe two different use cases how dependencies could be used.
+The following subsections will describe how dependencies could be used in two different use cases.
 
 ### (1) Need at least one "Provider"
 
