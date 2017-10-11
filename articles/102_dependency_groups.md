@@ -79,6 +79,11 @@ This design document doesn't aim to specify what the "best" behavior for the rel
 
 Since the release tool expands the dependency groups when being invoked, packages which join the group after that release won't be used until the package defining the group dependency is being re-released.
 
+### Buildfarm
+
+Since the buildfarm uses the topological order to trigger downstream binary jobs it needs to consider the dependency groups.
+The same interpretation of the `satify` semantic as for `bloom` applies.
+
 ### rosinstall_generator
 
 The `rosinstall_generator` already utilized all manifests from the `rosdistro` to decide which packages / repositories should be fetched.
