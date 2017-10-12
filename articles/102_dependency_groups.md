@@ -23,7 +23,7 @@ Original Author: {{ page.author }}
 
 In the ROS ecosystem a ROS package provides information about its dependencies in the manifest.
 The latest format is specified in the [REP 140](http://www.ros.org/reps/rep-0140.html).
-It supports different kinds of dependencies (`build`, `exec`, `test`, `doc`, etc.) but each dependency is mandatory and needs to satisfied on its own.
+It supports different kinds of dependencies (`build`, `exec`, `test`, `doc`, etc.) but each dependency is mandatory and needs to be satisfied on its own.
 
 This article describes the concept of "dependency groups" which could be used for different purposes.
 In terms of terminology a dependency group is a set of dependencies identified by the name of the group.
@@ -59,12 +59,12 @@ It might want to exclude specific packages to be considered even though they are
 
 ## Processes
 
-The following two processes need to be update to consider dependency groups.
+The following processes need to be updated to consider dependency groups.
 
 ### Build tool
 
 The build tool needs to consider the declared dependency groups when computing the topological order.
-Since it operates on a set packages in a workspace it has all manifests for all of these packages available.
+Since it operates on a set of packages in a workspace it has all manifests for all of these packages available.
 Independent of the semantic of the dependency group (satisfy-all vs. satisfy-at-least-one) the build tool can simply expand a dependency group to all packages of the set.
 
 ### Release tool
