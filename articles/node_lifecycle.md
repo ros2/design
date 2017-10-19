@@ -59,7 +59,7 @@ There are 7 transitions exposed to a supervisory process, they are:
 - `configure`
 - `cleanup`
 - `activate`
-- `deactive`
+- `deactivate`
 - `shutdown`
 - `destroy`
 
