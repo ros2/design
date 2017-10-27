@@ -100,7 +100,7 @@ Any managed service requests to a node in the inactive state will not be answere
 This is the main state of the node's life cycle.
 While in this state, the node performs any processing, responds to service requests, reads and processes data, produces output, etc.
 
-If an error that cannot be handled by the node/system occurs in this state, the transition to the `fatal error` state is taken.
+If an error that cannot be handled by the node/system occurs in this state, the node will transition to `ErrorProcessing`.
 
 #### Valid transitions out of Active
 
