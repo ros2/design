@@ -105,7 +105,7 @@ All other constants are declared as `static const` members in the struct and the
 
 The *default constructor* initializes all members with their default value; if a field doesn't have a default value, then the field is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization).
 In some cases this may not be desirable, since these fields will often be immediately overwritten with user-provided values.
-Therefore, the constructor takes an optional directive of type `rosidl_runtime_cpp::MessageInitialization` to control how initialization is done:
+Therefore, the constructor takes an optional directive of type `rosidl_generator_cpp::MessageInitialization` to control how initialization is done:
 
 - `MessageInitialization::ALL` - Initialize all members with their default value; if a field doesn't have a default value, then the field is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization)
   - The safest option, and also the default (used if not passing any argument to the constructor).
