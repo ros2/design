@@ -103,10 +103,20 @@ All other constants are declared as `static const` members in the struct and the
 
 ### Constructors
 
-Currently the *default constructor* does no initialization of member fields.
-This means that the user is responsible for ensuring that all fields are initialized before use, otherwise undefined behavior may result.
-In a future release, the *default constructor* will initialize all fields by default.
-Optionally the constructor can be invoked with an allocator as discussed [above](#messages).
+The *default constructor* initializes all members with their default value; if a field doesn't have a default value, then the field is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization).
+In some cases this may not be desirable, since these fields will often be immediately overwritten with user-provided values.
+Therefore, the constructor takes an optional directive of type `rosidl_generator_cpp::MessageInitialization` to control how initialization is done:
+
+- `MessageInitialization::ALL` - Initialize all members with their default value; if a field doesn't have a default value, then the field is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization)
+  - The safest option, and also the default (used if not passing any argument to the constructor).
+- `MessageInitialization::SKIP` - Don't initialize any members; it is the user's responsibility to ensure that all fields get initialized with some value, otherwise undefined behavior may result
+  - Used for maximum performance if the user is setting all of the members themselves.
+- `MessageInitialization::ZERO` - Zero initialize all members; this differs from `MessageInitialization::ALL` in that all members will be [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization), and default values from the message definition will be ignored
+  - Used when the user doesn't want the overhead of initializing potentially complex or large default values, but still wants to ensure that all variables are properly initialized.
+- `MessageInitialization::DEFAULTS_ONLY` - Default initialize only fields that have default values assigned to individual members; all other fields will be left uninitialized
+  - Minimal initialization which ensures that existing code has correctly initialized members when a new field with a default value is added to the IDL later.
+
+Optionally the constructor can be invoked with an allocator.
 
 The struct has no constructor with positional arguments for the members.
 The short reason for this is that if code would rely on positional arguments to construct data objects changing a message definition would break existing code in subtle ways.
