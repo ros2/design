@@ -119,10 +119,10 @@ The value can be one of the following datatypes:
 - `float64[]`
 - `string[]`
 
-The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](interface_definition.html)
+The datatypes are chosen as non-complex datatypes, as defined in the [interface definitions article](interface_definition.html).
 The full complement of datatypes of different bitdepth and unsigned types are avoided to allow interpretation from text based configuration files.
 
-Array data types support a variety of use cases, e.g.,
+Array datatypes support a variety of use cases, e.g.,
 - `byte[]` is included to allow the storage of binary blobs.
 Its use is not recommended but can be very convenient, and explicitly supporting it is better than having people try to abuse other datatypes such as strings.
 - `bool[]` can be useful as a mask for other array parameters.
@@ -130,7 +130,10 @@ Its use is not recommended but can be very convenient, and explicitly supporting
 - `string[]` can be used to express groups of names, such as a set of robots in a multi-robot context.
 
 While the use of array parameters increases the complexity of the API, their omission would necessitate complex naming schemes for parameters like matrices, which are common in robotics.
-They should not be abused, however; users should rely on namespacing and explicit variable names wherever possible.
+
+Only homogenous arrays of datatypes will be supported. This is to avoid the unnecessary complexity of the introspection needed to handle multidimensionality and heterogeneity within the arrays.
+
+Arrays should not be abused, however; users should rely on namespacing and explicit variable names wherever possible.
 
 ### Required functionality
 
