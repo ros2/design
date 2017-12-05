@@ -66,7 +66,7 @@ It is not required to use the dynamic discovery mechanism, however, as multiple 
 DDS got its start as a group of companies which had similar middleware frameworks and became a standard when common customers wanted to get better interoperability between the vendors.
 The DDS standard was created by the Object Management Group, which are the same people that brought us UML, CORBA, SysML, and other generic software related standards.
 Now, depending on your perspective, this may be a positive endorsement or a negative endorsement.
-On the one hand you have a standards committee which is perennial and clearly has huge influence on the software engineering community, but on the other hand you have a slow moving body which is slow to adapt to changes and therefore arguably doesn't always keep up with the latest trends in software engineering.
+On the one hand you have a standards committee which is perennial and clearly has a huge influence on the software engineering community, but on the other hand you have a slow moving body which is slow to adapt to changes and therefore arguably doesn't always keep up with the latest trends in software engineering.
 
 DDS was originally several similar middlewares which eventually became so close to one another that writing a standard to unify them made sense.
 So in this way, even though the DDS specification has been written by a committee, it has evolved to its current form by reacting to the needs of its users.
@@ -172,7 +172,7 @@ Research has shown that making code which is vendor agnostic is possible if not 
 
 DDS comes out of a set of companies which are decades old, was laid out by the OMG which is an old-school software engineering organization, and is used largely by government and military users.
 So it comes as no surprise that the community for DDS looks very different from the ROS community and that of similar modern software projects like ZeroMQ.
-Though RTI has a respectable on-line presence, the questions asked by community members are almost always answered by an employee of RTI and though technically open source, neither RTI nor OpenSplice have spent time to provide packages for Ubuntu or Homebrew or any other modern package manager.
+Though RTI has a respectable on-line presence, the questions asked by community members are almost always answered by an employee of RTI and though technically open source, neither RTI nor OpenSplice has spent time to provide packages for Ubuntu or Homebrew or any other modern package manager.
 They do not have extensive user-contributed wikis or an active Github repository.
 
 This staunch difference in ethos between the communities is one of the most concerning issues with depending on DDS.
