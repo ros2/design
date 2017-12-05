@@ -57,7 +57,7 @@ If the resulting artifacts are installed into `/usr`, for example, it might not 
 
 [ament_tools](https://github.com/ament/ament_tools) is a Python package which provides the command line tool `ament` to build, test, install, and uninstall packages.
 It is similar to [catkin_tools](https://github.com/catkin/catkin_tools) and builds each package in a workspace in topological order.
-Support for different build systems is integrated through extension points which allows to contribute support for other build types without change the ament tool itself.
+Support for different build systems is integrated through extension points which allows support for other build types to be added without changing the ament tool itself.
 
 While it currently does not build packages in parallel that feature will be added in the future to speed up the build process.
 The goal is to reuse common functionality from catkin_tools by making it available through a third package which can be used by both tools.
