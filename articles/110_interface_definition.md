@@ -111,9 +111,11 @@ A field of type `array` can optionally specify a default value.
 - default values for an array must start with an opening square bracket (`[`) and end with a closing square bracket (`]`)
 - each value within the array must be separated with a comma (`,`)
 
-Additional rule for string arrays:
+Additional rule for `string` arrays:
+- string arrays must contain only `string`s respecting the following rules:
+  - a string value which can optionally be quoted with either single quotes (`'`) or double quotes (`"`)
 
-- every element of a string array must be quoted using either single quote (`'`) or double quote (`"`)
+  - a double-quoted (`"`) string (respectively single-quoted (`'`)) should have any inner double quotes (respectively single quotes) escaped
 
 <div class="alert alert-warning" markdown="1">
   <b>TODO:</b> default values are currently not supported for <i>complex</i> fields
