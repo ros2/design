@@ -66,6 +66,7 @@ For convenience here is a summary of all rules for topic and service names in RO
 - must not start with a numeric character (`[0-9]`)
 - must not end with a forward slash (`/`)
 - must not contain any number of repeated forward slashes (`/`)
+- must not contain any number of repeated underscores (`_`)
 - must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`
 - must have balanced curly braces (`{}`) when used, i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`
 
@@ -107,9 +108,9 @@ For example, these are valid names:
 
 But these are not valid names:
 
-| `123abc`    | `123`  | `foo bar` | ` `        | `foo//bar` |
-| `/~`        | `~foo` | `foo~`    | `foo~/bar` | `foo/~bar` |
-| `foo/~/bar` | `foo/` |           |            |            |
+| `123abc`    | `123`  | `foo bar`  | ` `        | `foo//bar` |
+| `/~`        | `~foo` | `foo~`     | `foo~/bar` | `foo/~bar` |
+| `foo/~/bar` | `foo/` | `foo__bar` |            |            |
 
 These are some valid fully qualified names:
 
