@@ -290,7 +290,7 @@ If there are processes with non-deterministic blocking behavior running in the s
 
 A more precise way to measure the scheduling jitter in a program is to instrument the periodic real-time update loop of existing code to record scheduling jitter.
 
-A proposed header for a minimal library for real-time code instrumentation can be found here: [rttest.h](https://github.com/jacquelinekay/rttest/blob/master/include/rttest/rttest.h).
+A proposed header for a minimal library for real-time code instrumentation can be found here: [rttest.h](https://github.com/ros2/realtime_support/blob/master/rttest/include/rttest/rttest.h).
 
 ### Pagefaults
 
