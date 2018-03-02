@@ -3,7 +3,7 @@ layout: default
 title: ROS 2 Launch System
 permalink: articles/roslaunch.html
 abstract:
-  The launch system in ROS is responsible for helping the user describe the configuration of their system and then execute it as described. The configuration of the system includes what programs to run, what arguments to pass them, and ROS specific conventions which make it easy to reuse components throughout the system through configuration. Also, because the launch system is the entity that executes processes, it is also responsible for monitoring the state of processes in the system, then reporting and/or reacting to changes in the state of those processes.
+  The launch system in ROS is responsible for helping the user describe the configuration of their system and then execute it as described. The configuration of the system includes what programs to run, what arguments to pass them, and ROS specific conventions which make it easy to reuse components throughout the system by giving them each different configurations. Also, because the launch system is the process (or the set of processes) which executes the user's processes, it is responsible for monitoring the state of the processes it launched, as well as reporting and/or reacting to changes in the state of those processes.
 author: '[William Woodall](https://github.com/wjwwood)'
 published: true
 ---
@@ -21,9 +21,183 @@ Original Author: {{ page.author }}
 
 ## Context
 
+This article describes the launch system for ROS 2, and as the successor to the launch system in ROS 1 it makes sense to summarize the features and roles of `roslaunch` from ROS 1 and compare them to the goals of the launch system for ROS 2.
+
+### Description of `roslaunch` from ROS 1
+
+From the description of `roslaunch` from the wiki ([https://wiki.ros.org/roslaunch](https://wiki.ros.org/roslaunch)):
+
+> roslaunch is a tool for easily launching multiple ROS nodes locally and remotely via SSH, as well as setting parameters on the Parameter Server. It includes options to automatically respawn processes that have already died. roslaunch takes in one or more XML configuration files (with the .launch extension) that specify the parameters to set and nodes to launch, as well as the machines that they should be run on.
+
+This description lays out the main roles of `roslaunch` from ROS 1 as:
+
+- launch nodes
+- launching nodes remotely via SSH
+- setting parameters on the parameter server
+- automatic respawning of processes that die
+- static, XML based description of the nodes to launch, parameters to set, and where to run them
+
+Further more the wiki goes on to say ([https://wiki.ros.org/roslaunch/Architecture](https://wiki.ros.org/roslaunch/Architecture)):
+
+> roslaunch was designed to fit the ROS architecture of complexity via composition: write a simple system first, then combine it with other simple systems to make more complex systems. In roslaunch, this is expressed through several mechanisms:
+
+> 1. `<include>`s: you can easily include other .launch files and also assign them a namespace so that their names do not confict with yours.
+
+> 2. `<group>`s: you can group together a collection of nodes to give them the same name remappings.
+
+> 3. aliased `<machine>`s: you can separate machine definitions and node definitions into separate .launch files and use aliases to define which machines get used at runtime. This allows you to reuse the same node definitions for multiple robots. For example, instead of saying that a laser_assembler runs on 'foo.willowgarage.com', you can say that it runs on the 'tilt-laser' machine. The machine definitions then take care of which host is the 'tilt-laser' machine.
+
+> roslaunch also contains a variety of tools to help you write your .launch files as portably as possible. You can use the `<env>` tag to specify environment variables that need to be set for a particular machine or node. The $(find pkg) syntax let you specify file paths relative to a ROS package, instead of specifying their location on a particular machine. You can also use the $(env ENVIRONMENT_VARIABLE) syntax within include tags to load in .launch files based on environment variables (e.g. MACHINE_NAME).
+
+From this, there are a few more design goals and roles for `roslaunch` from ROS 1:
+
+- composition of systems into systems of systems to manage complexity
+- use include semantic to reuse fragments rather than writing each from scratch
+- use groups to apply settings (e.g. remappings) to collections of nodes/processes/included launch files
+  - also use groups with namespaces to form hierarchies
+- portability through abstraction of operating system concepts, e.g. environment variables
+- utilities to locate files on the filesystem in a relocatable and portable way, e.g. `$(find <package_name>)`
+
+That covers most of the features and design goals of `roslaunch` from ROS 1, but in the next subsection we'll discuss what is different for the launch system in ROS 2 due to changes in ROS 2 and how it might improve on the launch system from ROS 1.
+
+### Differences in ROS 2
+
+One of the objectives of the launch system in ROS 2 is to emulate the features of the launch system in ROS 1, but due to architectural changes in ROS 2, some of the features, goals, and terminology need to change.
+
+#### Relationship Between Nodes and Processes
+
+In ROS 1, there could only ever be one node per process and so the goals of `roslaunch` from ROS 1 reflect that by using "ROS nodes" and "processes" almost interchangeably.
+
+Even for the ROS 1 feature called 'nodelet' (where you could emulate having more than one node per process), the conceptual mapping from node or nodelet to process was preserved by proxy processes.
+For example, you would run a "NodeletManager" and then run a process for each nodelet you wanted to run in that manager.
+This allowed nodelet's which exited to be detected by `roslaunch` from ROS 1, as well as allowing them to respond to signals that it sent to the proxy process.
+
+Since you can have many nodes per process in ROS 2, it is no longer necessary to conflate nodes and processes.
+Due to this, the design and documentation for the launch system in ROS 2 will need to be clearer when talking about processes and nodes.
+Additionally, the way that configuration (e.g. parameters and remappings) get passed to nodes by the launch system needs to be adapted, though this part overlaps with the design documents for static remapping[^static_remapping] and for parameters[^parameters].
+
+Also, since there can be multiple nodes per process, shutting down a node no longer always means sending a unix signal to a single process.
+Other mechanisms might need to be used to have more granular shutdown control in multi-node processes.
+
+#### Launching Nodes (Processes) Remotely and Portability
+
+The launch system in ROS 1 only really ever was supported on Linux and other Unix-like operating systems like BSD and macOS.
+These machines all have SSH, which is the mechanism which is specifically called out to be used when launching processes on remote machines.
+It also played a role in defining what you specified and how when configuring `roslaunch` from ROS 1 to be able to launch processes on remote machines.
+
+In ROS 2, Windows has been added to the list of targeted platforms, and as of the writing of this document it does not support SSH natively.
+So unless that changes (more possible than it sounds), a different, more portable mechanism might be required to support this feature everywhere.
+At the very least, an alternative solution would need to be used on Windows even if SSH was still used on Unix-like operating systems.
+
+#### Parameters
+
+In ROS 1, there was a global parameter server which stored all parameters and nodes would get and set all parameters through this server.
+The server was tightly integrated into `roslaunch` from ROS 1, and was also used by the other kind of parameters from ROS 1, which were called "dynamic reconfigure parameters".
+
+In ROS 2, there are only one kind of parameters and they work differently.
+In general they work more like "dynamic reconfigure parameters" from ROS 1, in that they are node specific (no truly global parameters) and they are managed by the node (the node can refuse changes and parameters can only be read and changed while the node is running).
+More details can be found in the parameters design document[^parameters].
+
+There can (and probably will) still be a "global parameter server" in ROS 2, but it will simply be implemented as a node which accepts all changes and could be run along with the launch system automatically or could be invoked explicitly by the user (a la `roscore` from ROS 1), but it should not be required for basic functionality.
+
+This fundamental difference in how parameters work will affect both the architecture of the launch system in ROS 2 and how users specify parameters for nodes via the launch system.
+
+#### Process Related Events and Responses
+
+In `roslaunch` from ROS 1 there were only a few ways that it could react to changes in the system, and they were both related to a process "dieing" (either a clean or unclean exit):
+
+- respawn a process if it died
+- shutdown the whole launch system if a required process died
+
+This is somewhere that the launch system in ROS 2 can hopefully improve on what `roslaunch` from ROS 1 had to offer, and it can do so by providing not only these common reactions to processes exiting, but also by providing more granular information about the process exit (and other events), and by letting the user specify arbitrary responses to these type of events.
+
 <div class="alert alert-warning" markdown="1">
-TODO: Fill out some context with respect to ROS 1's `roslaunch` and other similar tools which exist in OS's.
+RFC:
+
+This is very much still a point for debate in my opinion.
+I think there is a valid argument against arbitrary event handling and restricting it to "canned" responses to a limited set of events, and leaving everything else to external programs.
+I especially feel this way about changes in node state and nodes exiting even when their process does not, but I don't feel as strongly when it comes to reporting and reacting to events related to the process itself, e.g. the return code, stdout/stderr/stdin, etc...
+Mostly because no other process can observe these things, so they should definitely be exported in some way by the launch system, and if you're already doing that then it might just be much more convenient to let the user tell the launch system what to do rather than having to have a separate process that monitors what the launch system is reporting and then has to react, mostly likely by asking the launch system to do something else.
 </div>
+
+#### Deterministic Startup
+
+In the ROS 1 wiki for `rosluanch`, it says ([https://wiki.ros.org/roslaunch/Architecture](https://wiki.ros.org/roslaunch/Architecture)):
+
+> roslaunch does not guarantee any particular order to the startup of nodes -- although this is a frequently requested feature, it is not one that has any particular meaning in the ROS architecture as there is no way to tell when a node is initialized.
+
+Hopefully this is another case on which the launch system for ROS 2 can improve, at least for nodes with a lifecycle, a.k.a. Managed Nodes[^lifecycle].
+For Managed Nodes, it would not be possible to apply constraints on when something is launched, rather than how it is in `roslaunch` from ROS 1, where things are run in a non-deterministic order.
+
+In order to do this, the launch system in ROS 2 will need to model the dependencies between processes and/or nodes where they exist, and the constraints on those dependencies.
+For example, a user might express that an image processing node has a dependency on a camera driver node with the constraint that it should not be launched (what ever the action to do that might be, e.g. run a process or something else) until the camera driver node reaches the "Active" state.
+These constraints can be arbitrarily defined by the user or common constraints could be modeled directly by the launch system.
+
+Also, these constraints don't have to be related to 
+For example, a user might express that plain process should be launch (in this case executed as a subprocess) after another process has been running for ten seconds.
+The launch system in ROS 2, could either choose to let the user define a predicate which satisfied that constraint, or it could provide a generic constraint like: "launch N seconds after another process".
+
+<div class="alert alert-warning" markdown="1">
+RFC:
+
+This is also very much still a point for debate in my opinion.
+I'm not sure if this kind of arbitrary constraint is a good idea, either because it doesn't provide enough value given the complexity, or because it allows users to any manner of dangerous or unexpected things in the predicate.
+</div>
+
+#### Node Related Events and Responses
+
+Also leveraging Managed Nodes when possible, the launch system in ROS 2 could export, aggregate and export, or react to lifecycle events of nodes.
+For example, it might be possible to say that a node, rather than a process, is "required" such that the launch system shutdowns if that node's state ends up in the "Finalized" state, which would be similar to a process exiting with the "required=true" setting for `roslaunch` from ROS 1.
+
+<div class="alert alert-warning" markdown="1">
+RFC:
+
+There is still a gray area for me here as to where to drawn the line between the launch system and general purpose "supervision" of managed nodes (we've called this the "lifecycle manager" in the past).
+It seems ok for the launch system to use the manage node's state information for deterministic startup and for the above kind of "require node" feature, but it's hard for me to say exactly to what degree the launch system should be required or tied into the long running supervision of system of managed ros nodes.
+As opposed to what I always imagined which was a completely user written program which would monitor the lifecycle event system (and possibly other things like devices, the diagnostics system, etc...), would have domain and application specific knowledge, as well as knowledge about the ROS graph layout, and could react to certain events.
+
+I didn't really think that would be implemented as a series of event handlers within the launch system, and I'm still not convinced that's a good idea.
+On the other hand, I also have a hard time thinking that simple events which result in an action only the launch system can take, things like "respawn=true" and "required=true" for nodes, should be a separate program rather than just a user defined reaction within the launch system itself.
+So I don't know where the line is, or if we should try to define it.
+We could choose to support reacting to lifecycle events in both the launch system and externally, or we could choose to not utilize them at all in the launch system, but my gut reaction at the moment is to allow them to be used in the launch system and also not try to restrict their complexity, simply because I don't see a good way to do that or how to decide what should and should not be allowed.
+
+I'm very interested to see what others think of this question.
+</div>
+
+#### Static Description and Programmatic API
+
+Most users of `roslaunch` from ROS 1 used it by defining a static XML description of what they wanted executed and which parameters they wanted to set.
+There is an API for `roslaunch` in ROS 1, but in our experience few people use this interface.
+We can only speculate as to why, but the API is not very well documented and is not prevalent in the tutorials and examples.
+Sticking strictly to the XML description has caused two different approaches to dynamic behavior/configuration to become more popular:
+
+- preprocessing with an XML preprocessor, like `xacro` or some other general purpose templating system
+- more sophisticated expressions as XML tags in the `roslaunch` from ROS 1 syntax, e.g. `$(eval expression)` (added in ROS Kinetic) or the `if=$(arg ...)` and `unless=$(arg ...)` attributes
+
+Often when these kind of "dynamic" features are discussed the question of "why is roslaunch (from ROS 1) a static description and not a script"?
+The direct answer is that "it doesn't have to be", but the API for doing it programmatically is not very well documented or easy to use.
+
+There are pro's and con's to both scripted launch files as well as static, declarative launch files, but that will be covered in its own section later in this article.
+But even if the preference is for a static launch file format like is common in ROS 1, it's a goal of the launch system in ROS 2 to have a more accessible public API which is used to execute that static launch file, so a programmatic approach will always be an option.
+
+#### Locating Files
+
+It's often the case that you need to express the location of a file when describing your system to the launch system, whether it be an executable to run, a file to be passed as an argument, or a file from which to load parameters.
+In the launch system for ROS 2, like the launch system for ROS 1 the concept of packages is used to group related resources and programs together to make this easier, but it will also support some other kinds of relative paths (other than just package share folders).
+But where ROS 1 and ROS 2 differ in this topic is how the packages will be found, which folders a package can be associated with, and therefore probably also the syntax for how to get that relative path.
+
+### Similarities with ROS 1
+
+The previous subsection dealt with what may be different for the launch system in ROS 2, but in this subsection the similarities will be enumerated (not necessarily exhaustively).
+The launch system in ROS 2 will:
+
+- convert common ROS concepts like remapping and changing the namespace into appropriate command line arguments and configurations for nodes so the user doesn't have to do so
+- manage complexity through composition of simpler systems (launch files)
+- allow including of other launch files
+- use groups to apply settings to collections of nodes and processes
+- provide operating system portability where possible
+
+and possibly other things, all of which it will share in common with `roslaunch` from ROS 1.
 
 ## Separation of Concern
 
@@ -31,18 +205,18 @@ The launch system can be considered in parts, separated by concern.
 The coarse breakdown is like so:
 
 - Calling Conventions for Processes and Various Styles of Nodes
-- Reporting System for Event
+- Reporting System for Events
 - System Description and Static Analysis
 - Execution and Verification of the System Description
 - Testing
 
-The purpose of the following sections is to enumerate what the launch system could interact with or do, but is not the requirements list for the launch system in ROS 2.
+The purpose of the following sections is to enumerate what the launch system could do and the things with which it could interact, but is not the requirements list for the launch system in ROS 2.
 The requirements for the launch system will be enumerated in section below based on what's possible in these sections.
 
 ## Calling Conventions
 
 In order for the launch system to execute a described system, it needs to understand how it can achieve the description.
-This is an existing phrase in Computer Science[^calling_convention_wikipedia], but this section is not talking specifically about the compiler defined calling convention, through it is appropriating the term to describe a similar relationship.
+The phrase "calling conventions" is an existing phrase in Computer Science[^calling_convention_wikipedia], but this section is not talking specifically about the compiler defined calling convention, through it is appropriating the term to describe a similar relationship.
 In this case, the phrase "calling conventions" is meant to describe the "interface" or "contract" the launch system has with the entities it is executing and monitoring.
 This contract covers initial execution, activity during runtime, signal handling and behavior of the launch system, and shutdown.
 
@@ -336,10 +510,33 @@ Basically how do you describe the system in a way that is flexible, but also ver
 I have compare and contrast like notes for other systems like upstart, systemd, and launchd.
 </div>
 
+## Execution and Verification of the System Description
+
+<div class="alert alert-warning" markdown="1">
+TODO: Restructure notes on this and put them here.
+
+Temporary summary:
+
+Whether described via static file or programmatically, once the system is described it has to be executed, and this section will cover all of that.
+Most of this is already covered in the "calling conventions" section, but this section will also cover some more details about execution, and then add on to that verification (starting another discussion about what the launch system should and should not do itself).
+Verification is runtime assertion that mirrors the static analysis that can be done off-line.
+</div>
+
+## Testing
+
+<div class="alert alert-warning" markdown="1">
+TODO: Restructure notes on this and put them here.
+
+Temporary summary:
+
+In ROS 1, `rostest` is an important extension of `roslaunch`, and so far in ROS 2 we're already using the foundation of launching (executing processes and reacting to their exit, return codes, and stdout/stderr), called `ros2/launch_testing` right now, to implement some tests.
+This section will cover how that happens and how it integrates with the static description files as well as the programmatic API, adding ROS specific concepts to what we're already doing with `ros2/launch_testing`.
+</div>
+
 ## Requirements
 
 <div class="alert alert-warning" markdown="1">
-TODO: Reformat requirements list, possibly combine/reconcile with "separation of concerns section"
+TODO: Reformat requirements list, possibly combine/reconcile with "separation of concerns section" (consider dropping in favor of renaming to something that implies requirements as well)
 </div>
 
 ## Reference Implementation Proposal
@@ -360,5 +557,6 @@ TODO: Anything we choose not to support in the requirements vs. the "separation 
 [^logging_wiki]: [https://github.com/ros2/ros2/wiki/Logging#console-output-configuration](https://github.com/ros2/ros2/wiki/Logging#console-output-configuration)
 [^static_remapping]: [http://design.ros2.org/articles/static_remapping.html#remapping-rule-syntax](http://design.ros2.org/articles/static_remapping.html#remapping-rule-syntax)
 [^lifecycle]: [http://design.ros2.org/articles/node_lifecycle.html](http://design.ros2.org/articles/node_lifecycle.html)
+[^parameters]: [http://design.ros2.org/articles/ros_parameters.html](http://design.ros2.org/articles/ros_parameters.html)
 *[operating system process]: Operating System Process
 *[operating system processes]: Operating System Processes
