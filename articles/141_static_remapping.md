@@ -77,6 +77,7 @@ These use cases are being considered for remapping in ROS 2:
 - Remap via Command Line
 - Change the Default Namespace
 - Change the Node Name
+- Remap Topic and Service Names Separately
 
 ### Remap One Node in a Process
 
@@ -198,6 +199,16 @@ ROS 1 has this feature using the argument `__node`.
 - User changes the node name to `left_camera_driver`
 - The final name is `/ns/left_camera_driver/camera_info` and log messages use `left_camera_driver`
 
+### Remap Topic and Service Names Separately
+
+This is the ability to create a rule that will remap only topics or only services.
+
+*Example:*
+
+- Node subscribes to a topic `/map` and offers a service `/map`
+- User changes the topic name to `/map_stream`
+- The node is subscribed to topic `/map_stream` and offers a service `/map`
+
 ## Remapping Names in ROS 1
 
 Remapping is a feature that also exists in ROS 1.
@@ -225,6 +236,7 @@ Use cases supported by this syntax:
 - Remap via Command Line
 - Change the Default Namespace
 - Change the Node Name
+- Remap Topic and Service Names Separately
 
 Not supported:
 
@@ -251,10 +263,16 @@ The match part of a rule uses these operators:
 
 - `*` matches a single token
 - `**` matches zero or more tokens delimited by slashes
+- `rosservice://` prefixed to the match makes the rule apply to only services
+- `rostopic://` prefixed to the match makes the rule apply to only topics
 - `nodename:` prefixed to the match makes it apply only to a node with that name
 
 The operators `*` and `**` are similar to the globbing behavior in bash.
 `**` behaves similar to its use in bash>=4.0 with the globstar option set.
+
+The URL schemes `rosservice://` and `rostopic://` may only be given to topic or service name rules.
+They may not be prefixed to a node name or namespace replacement rule (`__node` or `__ns`).
+If both a node name prefix and URL scheme are given, the node name prefix must come first.
 
 `*`, and `**` match whole tokens only.
 `*bar` looks like it would match `foobar`, but that would mean matching a partial token.
@@ -280,6 +298,9 @@ However, parenthesis are not used; the wild cards always capture.
 These references are required to be separated from tokens by a `/`.
 When this creates a name with `//` one slash is automatically deleted.
 For example `**/bar:=/bar/\1` matches the name `/foo/bar` with `**` capturing `/foo`, but the new name is `/bar/foo`.
+
+The replacement part of a rule may not have a URL scheme.
+This is to avoid a mismatch between the scheme type of the match side and of the replacement side.
 
 The substitution operators (`~` and `{}`) are replaced first.
 Afterwards the reference operators are replaced with the matched content.
@@ -410,6 +431,16 @@ All private names are expanded to the new name before any remapping rules are ap
 
 - `__node:=lef_camera_driver`
 - `camera_driver:__node:=left_camera_driver`
+
+#### Supporting: Remap Topic and Service Names Separately
+Specifying a URL scheme on the match side of the rule makes it exclusive to one type of name.
+If no URL scheme is given then the rule applies to both topics and services.
+
+*Examples:*
+
+- `rosservice:///foo/bar:=/bar/foo`
+- `rostopic://foo/bar:=bar/foo`
+- `nodename:rosservice://~/left:=~/right`
 
 #### Not Supporting: Change a Token
 
