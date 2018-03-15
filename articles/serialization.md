@@ -232,3 +232,6 @@ Under the assumption that a method-based access is not significantly impacting t
 With the decision to build ROS 2 on top of DDS the Pipeline B will be used.
 The previous conclusion to switch from member to method based access has been revisited.
 Since we do not have the need to make the storage backend exchangeable anymore and we might prefer keeping the member based access of messages to keep it similar with ROS 1.
+
+Please add a short paragraph about "Binary compatibility of message revisions" in the current DDS implementation.
+For me the most relevant question is whether it will be possible to preserve backward compatibility if messages are extended, e.g. will addition of fields (or even constants) break compatibility as in ROS 1.0 (e.g. as between Indigo and Jade https://github.com/ros/common_msgs/commit/7e116353e9562885cb5e0e568864971fa27d65df)?
