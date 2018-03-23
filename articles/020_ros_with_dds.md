@@ -124,7 +124,7 @@ The OMG defined the DDS specification with several companies which are now the m
 Popular DDS vendors include:
 
 - RTI
-- PrismTech
+- ADLINK Technology (formerly PrismTech)
 - Twin Oaks Software
 
 Amongst these vendors is an array of reference implementations with different strategies and licenses.
