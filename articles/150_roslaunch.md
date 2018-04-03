@@ -3,7 +3,7 @@ layout: default
 title: ROS 2 Launch System
 permalink: articles/roslaunch.html
 abstract:
-  The launch system in ROS is responsible for helping the user describe the configuration of their system and then execute it as described. The configuration of the system includes what programs to run, what arguments to pass them, and ROS specific conventions which make it easy to reuse components throughout the system by giving them each different configurations. Also, because the launch system is the process (or the set of processes) which executes the user's processes, it is responsible for monitoring the state of the processes it launched, as well as reporting and/or reacting to changes in the state of those processes.
+  The launch system in ROS is responsible for helping the user describe the configuration of their system and then execute it as described. The configuration of the system includes what programs to run, where to run them, what arguments to pass them, and ROS specific conventions which make it easy to reuse components throughout the system by giving them each different configurations. Also, because the launch system is the process (or the set of processes) which executes the user's processes, it is responsible for monitoring the state of the processes it launched, as well as reporting and/or reacting to changes in the state of those processes.
 author: '[William Woodall](https://github.com/wjwwood)'
 published: true
 ---
@@ -17,7 +17,7 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
 
 ## Context
 
@@ -133,8 +133,8 @@ In order to do this, the launch system in ROS 2 will need to model the dependenc
 For example, a user might express that an image processing node has a dependency on a camera driver node with the constraint that it should not be launched (what ever the action to do that might be, e.g. run a process or something else) until the camera driver node reaches the "Active" state.
 These constraints can be arbitrarily defined by the user or common constraints could be modeled directly by the launch system.
 
-Also, these constraints don't have to be related to 
-For example, a user might express that plain process should be launch (in this case executed as a subprocess) after another process has been running for ten seconds.
+Also, these constraints don't have to be related to ROS specific events like lifecycle state changes.
+For example, a user might express that a plain process should be launched (in this case executed as a subprocess) after another process has been running for ten seconds.
 The launch system in ROS 2, could either choose to let the user define a predicate which satisfied that constraint, or it could provide a generic constraint like: "launch N seconds after another process".
 
 <div class="alert alert-warning" markdown="1">
@@ -480,22 +480,66 @@ The other way to implement a process which dynamically instantiates ROS nodes, i
 So the "container" process would start up and provide a service (ROS Service or otherwise) that lets external processes request a node be instantiated with a given set of configurations.
 
 One form this can take is by providing a "proxy" process which doesn't actually run the node, but instead loads it into an already running container and just stays running until the node is shutdown in the remote container.
-This pattern is used by the "nodelet's" in ROS 1.
+This pattern is used by the "nodelets" in ROS 1.
 It's a useful pattern when you're running nodes by hand but you want them to share a process and don't want to write your own program to do that.
 
 There are a few other forms this can take, but the common thread between them is that a process instantiates nodes dynamically based on asynchronous input from external actors (proxy's), and that the configuration for those nodes is communicated through something other than command line arguments and environment variables.
 
-## Event System
+## Event Subsystem
 
-<div class="alert alert-warning" markdown="1">
-TODO: Restructure notes on this and put them here.
+This section of the article covers the event subsystem within the launch system, which is responsible for generating events and reporting them to users and itself so that those events can be handled.
 
-Temporary summary:
+### Categories of Events by Source
 
-The launch system is responsible for executing processes (according to calling convention below) and exposing information that only it, as the parent process, has access to via events, e.g. things like stdout/stderr, return code.
-The "reporting responsibility" could also extend to ROS specific things in the form of aggregation, i.e. allow the user to say "do X when nodes A, B, and C all reach the inactive state", but this could also be done on top of roslaunch.
-This event system would also be reused (in combination with other sources of information) by the launch system to implement things like verification.
-</div>
+Events produced by the event subsystem of the launch system can fall broadly into two categories: events that only the launch system can directly observe and events that the launch system may relay for convenience but is directly observable by other systems too.
+Therefore, the events that only the launch system can observe must be exposed via the event system if we want them to be used by other applications or users.
+
+Another way to categorize events is by their source.
+
+#### Launch System Events
+
+The most basic events are related solely to things that happen within the launch system itself.
+This can be as simple as a timed event, either a specific amount of time has passed, or a specific time of day has passed, or an "idle" event which might be used to implement a "call later" type of callback.
+
+However, these events can be more specific to the launch system, like when a launch description is included, or when the launch system needs to shutdown.
+These events might also contain pertinent information like why a launch description was included, e.g. given as an argument to the launch system, included by another launch file, requested to be included by asynchronous request (maybe via a ROS service call), or in the case of a shutting down event, maybe why the launch system is shutting down, e.g. a required process exited, or it received the SIGINT signal.
+
+#### Operating System Events
+
+Other events will be specific to any process that is executed by the launch system, like when a process is started or when a process exits.
+You could also imagine events which get fired when `stdout` or `stderr` data is received from the process by the launch system, assuming it captures that information.
+
+#### ROS Specific Events
+
+TODO
+
+### Reporting and Handling of Events
+
+Without getting into implementation details (e.g. libraries and class hierarchies), this subsection will try to express what information should be contained within events, and how they can be accessed and what the behavior of the event system is with respect to delivery.
+
+#### Information Provided by Events
+
+Like many other event systems, the events should be capable of not only notifying that an event has occurred, but it should be able to communicate data associated with the event.
+
+A simple example of an event without extra data might be an event for "call later", where it doesn't matter who initiated the "call later" or how long it has been since that occurred (though it could include that if it wished), and so this events existence is sufficient to notify waiting actions to proceed.
+
+A simple example of an event with extra data might be a "process exited" event, which would include enough information to identify which process it was as well as the return code of the process.
+
+Again, like many other event systems, the events should have a type (either as an attribute or as a child class) which can be used to filter events to particular handlers.
+
+#### Event Handlers
+
+Events can be handled by registering an event handler with the launch system.
+This could be something like a callback within the launch system itself, a "lambda" defined in the description of the launch file, or even a built-in handler which publishes the events as ROS messages
+In the last case, it could be either be a subscription to a topic or a service call which was registered with the launch system a priori.
+So if it is a topic, the subscription could be considered an event handler.
+In the case of a service, which would be called by the launch system and handled by a user defined service server, the service server (and it's response) would be considered the event handler.
+
+#### Handling of Events
+
+By default, events are passed to all event handlers and there is no way for an event handler to "claim" an event to prevent it from being delivered to other events.
+This could be realized by putting extra state in the events (events are not immutable for event handlers).
+While event handlers have no comparison between one another, the delivery of events to event handlers should be deterministic and in the reverse order of registration.
 
 ## System Description
 
