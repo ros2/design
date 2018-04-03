@@ -541,6 +541,21 @@ By default, events are passed to all event handlers and there is no way for an e
 This could be realized by putting extra state in the events (events are not immutable for event handlers).
 While event handlers have no comparison between one another, the delivery of events to event handlers should be deterministic and in the reverse order of registration.
 
+##### Event Filters
+
+Like the Qt event system, it will be possible to create even filters, which emulate the ability to accept events and prevent them from being sent "downstream". [^qt_event_filters]
+
+Unlike the Qt event system, an event filter is simply like any other event handler, and will not prevent other event handlers from receiving the event.
+Instead, each event filter will have its own list of event handlers, each of which can accept or reject an event, allowing or denying further processing of the event within the event filter, respectively.
+
+Any event handler can be added to an event filter, but "pure event sinks" are unable to accept an event, e.g. things like a ROS topic.
+This is because there is no feedback mechanism, i.e. a subscription to a topic has no way of indicating if an event has been accepted or rejected as it does not have a return type.
+Whereas, other event handlers which are functions or lambda's withing the launch system itself or ROS service calls can have a return type and therefore can accept or reject an event.
+
+#### Sending Events
+
+It should be possible for users of the launch system send events, in addition to the system being able to do so itself.
+
 ## System Description
 
 <div class="alert alert-warning" markdown="1">
@@ -602,5 +617,6 @@ TODO: Anything we choose not to support in the requirements vs. the "separation 
 [^static_remapping]: [http://design.ros2.org/articles/static_remapping.html#remapping-rule-syntax](http://design.ros2.org/articles/static_remapping.html#remapping-rule-syntax)
 [^lifecycle]: [http://design.ros2.org/articles/node_lifecycle.html](http://design.ros2.org/articles/node_lifecycle.html)
 [^parameters]: [http://design.ros2.org/articles/ros_parameters.html](http://design.ros2.org/articles/ros_parameters.html)
+[^qt_event_filters]: [https://doc.qt.io/archives/qt-4.8/eventsandfilters.html#event-filters]
 *[operating system process]: Operating System Process
 *[operating system processes]: Operating System Processes
