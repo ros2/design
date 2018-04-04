@@ -537,9 +537,10 @@ In the case of a service, which would be called by the launch system and handled
 
 #### Handling of Events
 
-By default, events are passed to all event handlers and there is no way for an event handler to "claim" an event to prevent it from being delivered to other events.
-This could be realized by putting extra state in the events (events are not immutable for event handlers).
-While event handlers have no comparison between one another, the delivery of events to event handlers should be deterministic and in the reverse order of registration.
+By default, events are passed to all event handlers and there is no way for an event handler to "accept" an event to prevent it from being delivered to other events.
+
+While event handlers have no comparison operators between one another (so no sorting), the order of delivery of events to event handlers should be deterministic and should be in the reverse order of registration, i.e. "first registered, last delivered".
+Note that delivery to asynchronous event handlers (e.g. a subscription to a ROS topic for events, sent via a ROS publisher), will be sent in order, but not necessarily delivered in order.
 
 ##### Event Filters
 
