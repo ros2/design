@@ -394,7 +394,7 @@ For option **B)** the follow items should be considered:
 - Support `DESTDIR`.
 - Support a feature similar to the `profile` verb of `catkin_tools`.
 
-## Decision
+## Summary and Decision
 
 Based on the above information we made the not easy decision to pick `colcon` as the universal build tool.
 
@@ -407,3 +407,26 @@ The necessary up front development effort for `catkin_tools` to achieve the goal
 While the short term advantages are certainly a main reason why we decided in favor of `colcon` they are not the only ones.
 The cleaner architecture, modularity and extensibility as well as Python 3.5 code base will be valuable long term benefits when developing this tool in the future.
 The separation of the build tool name from the supported build systems as well as the separation from being a "ROS-only" tool will hopefully also help users to understand the difference and attract new users and potential contributors.
+
+### Next steps
+
+The following next steps will happen before the next ROS 2 release *Bouncy*.
+
+- The instructions in the ROS 2 wiki to build from source will be updated to use `colcon` instead.
+- The `ament_tools` repository will be archive, removed from the `ros2.repos` file, and won't be released into *Bouncy*.
+- The ROS 2 buildfarm(s) will be updated to use `colcon` and provide devel / PR / prerelease jobs for the *Bouncy* release.
+
+### Implications
+
+The following items briefly enumerate what This means for ROS developers and users:
+
+- **No CMake code** of any ROS 2 (or ROS 1) package **needs to be changed** for this transition.
+- When building and testing ROS 2 the command `colcon build` / `colcon test` will be used instead of `ament build` / `ament test`.
+  Please see the [documentation](http://colcon.readthedocs.io/en/latest/migration/ament_tools.html) how to map `ament_tools` command line arguments to `colcon` arguments.
+- For ROS 1 nothing is changing at this point in time.
+
+### Outlook
+
+- Since `colcon` can be used to build ROS 1 early adopters can try to use it to build ROS 1 from source.
+  While there is documentation how to migrate from [catkin_make_isolated](http://colcon.readthedocs.io/en/latest/migration/catkin_make_isolated.html) and [catkin_tools](http://colcon.readthedocs.io/en/latest/migration/catkin_tools.html) `colcon` won't be the recommended build tool in ROS 1 for the foreseeable future.
+- If a test buildfarm using `colcon` proofs to deliver the exact same results as the ROS 1 buildfarm using `catkin_make_isolated` it might be changed to use `colcon` in the future to benefit from the features `colcon` provides (like non-interleaved output per package when building in parallel, per package log files, etc.).
