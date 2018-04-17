@@ -135,7 +135,7 @@ The latest format of the manifest file is specified in the [ROS REP 149](http://
 The main difference between `ament_cmake` and `catkin` is described in [another article](http://design.ros2.org/articles/ament.html).
 In the context of the build tool the biggest difference is that `ament_cmake` generates package-specific files to setup the environment to use the package after it has been built and installed.
 
-A package using `ament_cmake` uses the same manifest file as `catkin` (except that it format version 2 or higher).
+A package using `ament_cmake` uses the same manifest file as `catkin` (except that it requires format version 2 or higher).
 
 ### Python setuptools
 
@@ -192,7 +192,7 @@ The tool supports building CMake packages and builds them in isolation as well a
 It was developed to bootstrap the ROS 2 project, is therefore only targeting Python 3, and works on Linux, MacOS and Windows.
 In addition to CMake packages it also supports building Python packages and can infer meta information without requiring an explicit package manifest (which is e.g. used for the FastRTPS package).
 The tool performs an "isolated" build like `catkin_make_isolated` and `catkin_tools` (one CMake invocation per package) and also parallelizes the build of packages which have no (recursive) dependencies on each other (like `catkin_tools`).
-While is coveres more build systems and platforms than `catkin_tools` it doesn't have any of `catkin_tools`s usability features like profiles, output handling, etc.
+While it covers more build systems and platforms than `catkin_tools` it doesn't have any of `catkin_tools`s usability features like profiles, output handling, etc.
 
 `ament_tools` supports building the following packages:
 
