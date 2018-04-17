@@ -355,14 +355,14 @@ Termination of a ROS Node (the node, not the process) is not externally observab
 
 ### Managed ROS Nodes
 
-For ROS nodes that have a lifecylce, a.k.a. Managed ROS Nodes[^lifecycle], each node will have additional runtime state, which the launch system could access and either utilize directly, pass through to the event system, or aggregate before passing it through the event system.
+For ROS nodes that have a lifecycle, a.k.a. Managed ROS Nodes[^lifecycle], each node will have additional runtime state, which the launch system could access and either utilize directly, pass through to the event system, or aggregate before passing it through the event system.
 
 Building yet again on previous entities, the "Managed ROS Nodes" inherits all of the execution, runtime, and termination characteristics from normal ROS nodes and therefore operating system processes.
 
 #### Execution
 
 Managed ROS Nodes do not add any additional inputs or specific configurations at execution time on top of what "plain" ROS nodes add, at least not at this time.
-In the future this might change, so reference the design doc[^lifecylce] or future documentation on the subject.
+In the future this might change, so reference the design doc[^lifecycle] or future documentation on the subject.
 
 #### Runtime
 
@@ -400,7 +400,7 @@ This will come up again in the "System Description" section, because I believe t
 
 Managed ROS Nodes have some additional observable effects when terminating (the node, not necessarily the process containing it).
 A managed node enters the `Finalized` state after passing through the `ShuttingDown` transition state on termination.
-Since these are state transitions, they are observable via the lifecylce event system, at least through the ROS topic `lifecycle_state` (subject to change, always reference the managed nodes design document[^lifecylce]).
+Since these are state transitions, they are observable via the lifecycle event system, at least through the ROS topic `lifecycle_state` (subject to change, always reference the managed nodes design document[^lifecycle]).
 
 ### Process with a Single Node
 
@@ -618,6 +618,6 @@ TODO: Anything we choose not to support in the requirements vs. the "separation 
 [^static_remapping]: [http://design.ros2.org/articles/static_remapping.html#remapping-rule-syntax](http://design.ros2.org/articles/static_remapping.html#remapping-rule-syntax)
 [^lifecycle]: [http://design.ros2.org/articles/node_lifecycle.html](http://design.ros2.org/articles/node_lifecycle.html)
 [^parameters]: [http://design.ros2.org/articles/ros_parameters.html](http://design.ros2.org/articles/ros_parameters.html)
-[^qt_event_filters]: [https://doc.qt.io/archives/qt-4.8/eventsandfilters.html#event-filters]
+[^qt_event_filters]: [https://doc.qt.io/archives/qt-4.8/eventsandfilters.html#event-filters](https://doc.qt.io/archives/qt-4.8/eventsandfilters.html#event-filters)
 *[operating system process]: Operating System Process
 *[operating system processes]: Operating System Processes
