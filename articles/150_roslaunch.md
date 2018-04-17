@@ -530,8 +530,11 @@ Again, like many other event systems, the events should have a type (either as a
 #### Event Handlers
 
 Events can be handled by registering an event handler with the launch system.
-This could be something like a callback within the launch system itself, a "lambda" defined in the description of the launch file, or even a built-in handler which publishes the events as ROS messages
-In the last case, it could be either be a subscription to a topic or a service call which was registered with the launch system a priori.
+The only required form of event handler is one that is a function, registered locally with the launch system.
+
+Other kinds of event handlers could be supported by building on a locally defined function.
+They could be something like a user-defined "lambda" defined in the description of the launch file, or even a built-in event handler function which just publishes the events as ROS messages.
+In the latter case, it could be either be a subscription to a topic (which needs no a priori registration with the launch system) or a service call (which was registered with the launch system a priori).
 So if it is a topic, the subscription could be considered an event handler.
 In the case of a service, which would be called by the launch system and handled by a user defined service server, the service server (and it's response) would be considered the event handler.
 
@@ -541,6 +544,12 @@ By default, events are passed to all event handlers and there is no way for an e
 
 While event handlers have no comparison operators between one another (so no sorting), the order of delivery of events to event handlers should be deterministic and should be in the reverse order of registration, i.e. "first registered, last delivered".
 Note that delivery to asynchronous event handlers (e.g. a subscription to a ROS topic for events, sent via a ROS publisher), will be sent in order, but not necessarily delivered in order.
+
+<div class="alert alert-warning" markdown="1">
+RFC:
+
+With respect to the delivery order, I think first registered, last delivered makes the most sense, but I could be convinced otherwise.
+</div>
 
 ##### Event Filters
 
@@ -559,16 +568,204 @@ It should be possible for users of the launch system send events, in addition to
 
 ## System Description
 
+The system description is a declarative set of actions and reactions that describe what the user wants to launch in a format that the launch system can interpret.
+
+The goal of the system description is to capture the intentions of the user describing the system to be launched, with as few side effects as possible.
+The reason for doing this is so that a launch description can be visualized and statically analyzed without actually launching the described system.
+Having a tool that can allow a developer to visualize and modify the launch description in a WYSIWYG (what you see is what you get) editor is guiding use case for the system description.
+
+First this section will describe in a programming language, or text markup, agnostic way what can be expressed in the system description and how it maps to the calling conventions and event handling described in previous sections, as well as how it maps to launch system specific behaviors.
+After that, it will suggest how this agnostic system description can be applied to Python and XML, but also how it might be able to be extended to support other languages and markups.
+
+### Launch Descriptions
+
+The system is described in parts which we'll refer to here as "Launch Descriptions".
+Launch descriptions are made of up of an ordered list of actions and groups of actions.
+It may also contain substitutions throughout the description, which are used to add some flexibility and configuration to the descriptions in a structured way.
+
+#### Actions
+
+Actions may be one of several things, and each action has a type (associated with the action's function) and may also contain arbitrary configurations.
+Actions represent an intention to do something, but a launch description is parsed first, then actions are taken in order of definition later.
+This allows actions to be interpreted and then statically introspected without actually executing any of them unless desired.
+
+By separating the declaration of an action from the execution of an action, tools may use the launch descriptions to do things like visualize what a launch description will do without actually doing it.
+The launch system will simply use the interpreted actions in the launch descriptions to actually execute the actions.
+
+Basic actions include being able to:
+
+- include another launch description
+- modify the launch system configurations at the current scope
+- execute a process
+- register/unregister an event handler
+- emit an event
+- additional actions defined by extensions to the launch system
+
+Actions may also yield more actions and groups rather than perform an actual task.
+For example, an action to "run a node" may end up resulting in "executing two process" or in "executing a process and registering an event".
+These kind of actions could be thought of a launch description generators or macros, since they effectively generate the same contents as a launch description, but look like an action to the user.
+
+This allows for more complex actions which might include, but not be limited to:
+
+- include a launch description from a file with a certain markup type
+- set an environment variable
+- run a single-node process
+- run a multi-node process
+- run a node container
+- run a node proxy to load into a node container
+- run a process on a remote computer
+- declare launch description arguments
+  - exposed as either:
+    - command line arguments for top-level launch descriptions
+    - or additional arguments to the "include another launch description" action
+  - stored in "launch system configuration"
+- various OS actions, e.g. touch a file, read a file, write to a file, etc...
+
+Each of these actions would be able to generate one or more other actions.
+This can be used to run one or more processes with a single action statement, or to simply provide some "syntactic sugar"
+For example, a "run a single-node process" action might take ROS specific configurations, then expand them to generic configurations for one of the basic actions like the "execute a process" action.
+
+##### Including Another Launch Description
+
+One of the simplest actions is to include another launch description.
+This launch description is process in its entirety, including parsing of any launch descriptions included recursively.
+Therefore processing of launch descriptions is in order, and depth first.
+
+Included launch descriptions inherit all configurations of the current launch description, and any changes to the launch system configurations made in the included launch description will affect actions after the include action.
+
 <div class="alert alert-warning" markdown="1">
-TODO: Restructure notes on this and put them here.
+RFC:
 
-Temporary summary:
+This is a departure from roslaunch in ROS 1, where the include statement is not only scoped (changes in "sublaunch" are not reflected in higher scope) but also do not automatically inherit from the parent scope. All variables used in the included launch file need to be explicitly forwarded when including. Though recently a "pass all args" option was made to opt into the new behavior:
 
-This is the section where the Python API in `ros2/launch` and the XML file format from ROS 1 overlap.
-Basically how do you describe the system in a way that is flexible, but also verifiable and ideally can also be statically analyzed (at least for something like the XML format).
+https://github.com/ros/ros_comm/pull/710
 
-I have compare and contrast like notes for other systems like upstart, systemd, and launchd.
+In the new system I'd prefer to make that the default behavior (with an opt in to the old behavior for easier porting of existing roslaunch logic).
+
+Also, changes in the launch file will, by default, be reflected in the including description, unless a scoped group is used.
 </div>
+
+##### Launch System Configuration
+
+The "modify the launch system configurations at the current scope" action mentioned above is able to mutate a local scope of configurations which can affect other actions which come after the modification.
+Actions may use this local state to uniformly apply certain settings to themselves.
+
+For example, the environment variables which are set when running an operating system process would be taken from the launch system configuration, and therefore can be modified with an action.
+Then any "execute a process" actions which come after it will be affected by the configuration change.
+
+Changes to the local state by included launch descriptions persist, as they should be thought of as truly included in the same file, as if you had copied the contents of the included launch description in place of the include action.
+To avoid this, a group without a namespace could be used to produce a push-pop effect on the launch configurations.
+
+##### Execute a Process
+
+Another basic action would be to execute a subprocess, with arguments and emitted events, as described in the calling conventions section under "operating system process".
+
+This action will take a few required arguments, a few optional requirements, and also take settings from the launch system configurations if they're not explicitly given.
+The signature of this action should be similar to the API of Python's `subprocess.run` function[^subprocess_run].
+Basically taking things like the executable file, arguments, working directory, environment, etc. as input and reporting the return code, stdout and stderr, and any errors as emitted events.
+
+Also, every executed process will automatically setup a few event handlers, so that the user can emit events to ask the launch system to terminate the process (following the signal escalation described in previous sections), signal the process explicitly, or write to the `stdin` of the process.
+More sophisticated calling conventions which are based on the "operating system process" may include other default event handlers.
+
+##### Event Handlers
+
+The launch description can also contain event handlers.
+An event handler is essentially a function which takes an event as input and returns a launch description to be included at the location of the event handler registration.
+The event handler will be executed asynchronously when the associated event is emitted.
+
+There are two actions associated with event handlers, registering one and unregistering one.
+How event types and event handlers are represented and tracked depends on the implementation of the launch system.
+However, as an example, a "launch file" written in Python might represent event's as classes which inherit from a base class.
+If instead the "launch file" is written in XML, event types might be expressed as a string, with launch system events using a "well-known name" and with user definable events being represented with unique strings as well.
+Similarly, the Python based "launch file" might use instances of objects to represent registered event handlers, therefore you might need that object to perform the unregister action.
+And in the XML based "launch file" the user might be required to give a unique name to all registered event handlers, so that they can unregistered with the same name later.
+
+When an event handler finishes, it is able to return a launch description which is implicitly given to the include action at the location of the event handler's registration.
+This allows an event handler to cause any action upon completion, e.g. include another launch description, unregister an event handler, emit another event, run a process, start the termination of a process by emitting an event, etc...
+
+The lowest level of event handlers is the function which takes an event and returns a launch description.
+For example, a user defined event handler might look like this in Python:
+
+```python
+# This is a made up example of an API, consider it pseudo code...
+
+launch_description = LaunchDescription(...)
+# ...
+
+def my_process_exit_logger_callback(event: ProcessExitedEvent) -> LaunchDescription:
+    print(f"process with pid '{event.pid}' exited with return code '{event.return_code}'")
+
+launch_description.register_event_handler(
+    ProcessExitedEvent, my_process_exit_logger_callback, name='my_process_exit_logger')
+```
+
+However, to remove boilerplate code or to avoid programming in markup descriptions, common event handler patterns can be encapsulated in different event handler signatures.
+
+For example, there might be the `on_event` event handler signature, which then returns a given set of actions or groups the user provides.
+This signature might be useful to after ten seconds start a node or include another launch file, and in XML it might look like this:
+
+```xml
+<!-- This is a made up example of a markup, consider it pseudo code... -->
+<!-- Also this could be made even simpler by just having a tag which lets -->
+<!-- you specify the extra actions directly, rather than emitting an event and -->
+<!-- handling it, but this demonstrates the custom event handler signature -->
+
+<emit_event after="10" type="my_custom_timer_event" />
+
+<on_event event_type="my_custom_timer_event">
+  <!-- actions to be included when this event occurs -->
+  <include file="$(package-share my_package)/something.launch.xml" />
+  <node pkg="my_package" executable="my_exec" />
+  <group namespace="my_ns">
+    <node pkg="my_package" executable="my_exec" />
+  </group>
+</on_event>
+```
+
+<div class="alert alert-warning" markdown="1">
+RFC:
+
+Should there be user defined event handler signatures (types?, same thing not sure on naming)?
+
+By user defined, I mean specifically defined within the description.
+There will be a way for packages to provide new actions, events, and event handlers through an extension point of some kind, but those would probably be in the programming language of the launch system itself and not in the launch description, whether it be XML or something else.
+
+Personally, I think it's too much, the actions are not meant to be touring complete... The closest equivalent, however, would be something like xacro's macros:
+
+https://wiki.ros.org/xacro#Macros
+
+So, the analogy to what I'm proposing (by leaving out user defined event handlers) would be to remove macros from xacro and instead make it possible to add new tags to xacro from a Python API (xacro is written in Python).
+
+I think this is the best course of action, and I also think that some future package could add something like xacro's macros to the launch system later using the aforementioned extension points to add a new action that does this.
+</div>
+
+##### Emitting Events
+
+Another basic action that the launch system should support is the ability to emit events and if necessary declare new kinds of events before emitting them.
+
+This feature could be used by users to filter a launch system event and then dispatch it to other user defined event handlers, or to create new or modified events based on existing events.
+
+How events are defined is up to the implementation, but it should be possible to model the events so they can be emitted and then handled by registered event handlers.
+
+#### Groups
+
+TODO:
+  - can be broken into:
+    - "namespace" (like roslaunch),
+    - conditionals (`if` and `unless`) (see: https://wiki.ros.org/roslaunch/XML#if_and_unless_attributes), and
+    - scope (push-pop for configurations)
+
+#### Substitutions
+
+TODO:
+  - equivalent to substitutions in ROS 1, see: https://wiki.ros.org/roslaunch/XML#substitution_args
+
+### Mapping to Programming Languages and Markup Languages
+
+TODO:
+  - Explain in general how the features described in the previous sections would map to a programming language and/or markup language and any considerations therein.
+  - How it would map to Python (likely implementation)
+  - How it would map to XML (likely first markup language)
 
 ## Execution and Verification of the System Description
 
@@ -619,5 +816,6 @@ TODO: Anything we choose not to support in the requirements vs. the "separation 
 [^lifecycle]: [http://design.ros2.org/articles/node_lifecycle.html](http://design.ros2.org/articles/node_lifecycle.html)
 [^parameters]: [http://design.ros2.org/articles/ros_parameters.html](http://design.ros2.org/articles/ros_parameters.html)
 [^qt_event_filters]: [https://doc.qt.io/archives/qt-4.8/eventsandfilters.html#event-filters](https://doc.qt.io/archives/qt-4.8/eventsandfilters.html#event-filters)
+[^subprocess_run]: [https://docs.python.org/3.6/library/subprocess.html#subprocess.run](https://docs.python.org/3.6/library/subprocess.html#subprocess.run)
 *[operating system process]: Operating System Process
 *[operating system processes]: Operating System Processes
