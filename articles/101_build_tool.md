@@ -334,7 +334,7 @@ Both of the considered options have unique and valuable features and there are g
 Since both are written in Python either of the two tools could be "transformed" to cover the pros of the other one.
 So the two important criteria for the decision are:
 
-- the effort it takes to so (in the short term as well as in the long term) and
+- the effort it takes to do (in the short term as well as in the long term) and
 - the difference of the resulting code base after the "transformation" is completed.
 
 ### Immediate goals
