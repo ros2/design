@@ -321,14 +321,14 @@ Since it hasn't been used by many people yet more advanced features like cross c
 
 ## Decision process
 
-For the decision process we are only considering the following two options based on the rational described above:
+For the decision process only the following two options are being considering based on the rational described above:
 
 A.  Use `catkin_tools` as a starting point
 B.  Use `colcon` as a starting point
 
-We acknowledge that if this topic would have been addressed earlier that some of the duplicate effort could have been avoided.
+If this topic would have been addressed earlier some of the duplicate effort could have likely been avoided.
 When the work towards a universal build tool was suspended over a year ago it was a conscious decision based on available resources.
-Nevertheless we have to move forward with a decision in order to avoid further uncertainty and duplication.
+Nevertheless move forward with a decision now will at least avoid further uncertainty and duplication.
 
 Both of the considered options have unique and valuable features and there are good arguments to build our future development on either of the two tools.
 Since both are written in Python either of the two tools could be "transformed" to cover the pros of the other one.
@@ -396,7 +396,7 @@ For option **B)** the follow items should be considered:
 
 ## Summary and Decision
 
-Based on the above information we made the not easy decision to pick `colcon` as the universal build tool.
+Based on the above information a decision has been made to pick `colcon` as the universal build tool which was not an easy one.
 
 To elaborate on the rational one significant advantage of `colcon` is that it is ready to be deployed for ROS 2 right now and it covers our current use cases.
 Another argument leaning towards `colcon` is the expected little effort to provide devel / PR / prerelease jobs on build.ros2.org across all targeted platforms for the upcoming *Bouncy* release.
@@ -404,7 +404,7 @@ While some additional feature and usability options are still missing they can b
 
 The necessary up front development effort for `catkin_tools` to achieve the goals described for  *Bouncy* would distract the ROS 2 team from spending their time on feature development and bug fixing of ROS 2 itself.
 
-While the short term advantages are certainly a main reason why we decided in favor of `colcon` they are not the only ones.
+While the short term advantages are certainly a main reason for the decision in favor of `colcon` they are not the only ones.
 The cleaner architecture, modularity and extensibility as well as Python 3.5 code base will be valuable long term benefits when developing this tool in the future.
 The separation of the build tool name from the supported build systems as well as the separation from being a "ROS-only" tool will hopefully also help users to understand the difference and attract new users and potential contributors.
 
