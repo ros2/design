@@ -347,7 +347,7 @@ For the last ROS 2 release *Ardent* the buildfarm [build.ros.org](http://build.r
 Neither *devel* jobs or *pull request* jobs are available nor is it supported to build a local *prerelease*.
 For the coming ROS 2 release *Bouncy* these job types should be available to support maintainers.
 
-In ROS 2 *Bouncy* the univeral build tool will be the only supported option and `ament_tools` will be archived.
+In ROS 2 *Bouncy* the universal build tool will be the only supported option and `ament_tools` will be archived.
 
 #### Necessary work
 
