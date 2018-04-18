@@ -365,7 +365,7 @@ For option **A)** the follow items would need to be addressed:
 - Support for Windows using `.bat` files.
 - Support for the package manifest format version 3.
 
-For option **B)** the follow items would need to be addressed.
+For option **B)** the follow items would need to be addressed:
 
 - Address user feedback when the tool is being used by a broader audience.
 
