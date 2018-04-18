@@ -205,7 +205,7 @@ While it covers more build systems and platforms than `catkin_tools` it doesn't 
 ### colcon
 
 When the first draft of this article was written the conclusion was to not to spend any resources towards a universal build tool.
-As a consequence the author of this article went ahead and developed [colcon](https://github.com/colcon/) as a personal project.
+Meanwhile the author of this article went ahead and developed [colcon](https://github.com/colcon/) as a personal project.
 Therefore its feature set is closely aligned with the following requirements.
 
 ## Naming
