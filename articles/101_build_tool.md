@@ -438,6 +438,7 @@ The following items briefly enumerate what This means for ROS developers and use
   - `colcon` will not support the *devel space* and will require packages to have install rules
   - `catkin` will likely still support the *devel space*, though it might be removed at some point (that has not been decided yet)
   - Therefore, it is possible that the default build tool for ROS 1 may not support the *devel space*, though legacy tools will continue to support it.
+  - Note that it is already the case that individual ROS 1 catkin packages may either not have installation rules but support the *devel space*, or they might have installation rules but not properly support the *devel space*.
 
 ### Outlook
 
