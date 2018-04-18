@@ -396,7 +396,10 @@ For option **B)** the follow items should be considered:
 
 ## Summary and Decision
 
-Based on the above information a decision has been made to pick `colcon` as the universal build tool which was not an easy one.
+Based on the above information a decision has been made to pick `colcon` as the universal build tool.
+
+The decision was made after considering the input of ROS 2 team members and some ROS 1 users.
+The decision was not easy, as it was not unanimous, but the vast majority of input was either pro `colcon` or ambivalent.
 
 To elaborate on the rational one significant advantage of `colcon` is that it is ready to be deployed for ROS 2 right now and it covers our current use cases.
 Another argument leaning towards `colcon` is the expected little effort to provide devel / PR / prerelease jobs on build.ros2.org across all targeted platforms for the upcoming *Bouncy* release.
