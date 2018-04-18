@@ -233,7 +233,7 @@ It is up to the implementation to decide if it only supports the standard CMake 
 
 In ROS 2 the concept of the *devel space* has intentionally been removed.
 In the future it might be feasible to provide the concept of *symlinked installs* in ROS 1 to provide a similar benefit without the downsides.
-Therefore not supporting this concept in the universal build tool is considered a viable path forward.
+However, this design document will assume that the *devel space* will remain in ROS 1.
 
 #### Build ROS 2 workspaces
 
@@ -387,6 +387,7 @@ For option **A)** the follow items should be considered:
 - Update code base to Python 3.5+.
 - Refactor code base to reduce coupling (e.g. separate [API](https://github.com/catkin/catkin_tools/blob/2cae17f8f32b0193384d2c7734afee1c60c4add2/catkin_tools/execution/controllers.py#L183-L205) for output handling).
 - Additional functionality to build Gazebo including its dependencies.
+- Whether or not to continue supporting the *devel space*.
 
 For option **B)** the follow items should be considered:
 
@@ -433,6 +434,10 @@ The following items briefly enumerate what This means for ROS developers and use
 - When building and testing ROS 2 the command `colcon build` / `colcon test` will be used instead of `ament build` / `ament test`.
   Please see the [documentation](http://colcon.readthedocs.io/en/latest/migration/ament_tools.html) how to map `ament_tools` command line arguments to `colcon` arguments.
 - For ROS 1 nothing is changing at this point in time.
+- In the future `colcon` will replace `catkin_make_isolated` and `catkin_make` as the recommended build tool for ROS 1.
+  - `colcon` will not support the *devel space* and will require packages to have install rules
+  - `catkin` will likely still support the *devel space*, though it might be removed at some point (that has not been decided yet)
+  - Therefore, it is possible that the default build tool for ROS 1 may not support the *devel space*, though legacy tools will continue to support it.
 
 ### Outlook
 
