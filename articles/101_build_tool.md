@@ -393,6 +393,12 @@ For option **B)** the follow items should be considered:
 - Support cross compilation.
 - Support `DESTDIR`.
 - Support a feature similar to the `profile` verb of `catkin_tools`.
+- Support for a shared GNU Make job sever.
+- Support for `GNUInstallDirs`
+  - Not sure about the status of this, it would be in `colcon`'s generated shell files if anywhere.
+  - Should have a test for this case.
+- Test for, and fix if necessary, correct topological order with dependencies across workspaces.
+  - See: [https://github.com/ros/catkin/pull/590](https://github.com/ros/catkin/pull/590)
 
 ## Summary and Decision
 
