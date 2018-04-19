@@ -321,7 +321,7 @@ Since it hasn't been used by many people yet more advanced features like cross c
 
 ## Decision process
 
-For the decision process only the following two options are being considering based on the rational described above:
+For the decision process only the following two options are being considering based on the rationale described above:
 
 A.  Use `catkin_tools` as a starting point
 B.  Use `colcon` as a starting point
@@ -398,7 +398,7 @@ For option **B)** the follow items should be considered:
 
 Based on the above information a decision has been made to pick `colcon` as the universal build tool which was not an easy one.
 
-To elaborate on the rational one significant advantage of `colcon` is that it is ready to be deployed for ROS 2 right now and it covers our current use cases.
+To elaborate on the rationale one significant advantage of `colcon` is that it is ready to be deployed for ROS 2 right now and it covers our current use cases.
 Another argument leaning towards `colcon` is the expected little effort to provide devel / PR / prerelease jobs on build.ros2.org across all targeted platforms for the upcoming *Bouncy* release.
 While some additional feature and usability options are still missing they can be added in the future whenever there is time and/or demand for them.
 
@@ -413,7 +413,7 @@ The separation of the build tool name from the supported build systems as well a
 The following next steps will happen before the next ROS 2 release *Bouncy*.
 
 - The instructions in the ROS 2 wiki to build from source will be updated to use `colcon` instead.
-- The `ament_tools` repository will be archive, removed from the `ros2.repos` file, and won't be released into *Bouncy*.
+- The `ament_tools` repository will be archived, removed from the `ros2.repos` file, and won't be released into *Bouncy*.
 - The ROS 2 buildfarm(s) will be updated to use `colcon` and provide devel / PR / prerelease jobs for the *Bouncy* release.
 
 ### Implications
