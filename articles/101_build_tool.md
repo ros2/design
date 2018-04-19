@@ -233,7 +233,6 @@ It is up to the implementation to decide if it only supports the standard CMake 
 
 In ROS 2 the concept of the *devel space* has intentionally been removed.
 In the future it might be feasible to provide the concept of *symlinked installs* in ROS 1 to provide a similar benefit without the downsides.
-However, this design document will assume that the *devel space* will remain in ROS 1.
 
 #### Build ROS 2 workspaces
 
