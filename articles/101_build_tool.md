@@ -233,7 +233,6 @@ It is up to the implementation to decide if it only supports the standard CMake 
 
 In ROS 2 the concept of the *devel space* has intentionally been removed.
 In the future it might be feasible to provide the concept of *symlinked installs* in ROS 1 to provide a similar benefit without the downsides.
-Therefore not supporting this concept in the universal build tool is considered a viable path forward.
 
 #### Build ROS 2 workspaces
 
@@ -347,7 +346,7 @@ For the last ROS 2 release *Ardent* the buildfarm [build.ros.org](http://build.r
 Neither *devel* jobs or *pull request* jobs are available nor is it supported to build a local *prerelease*.
 For the coming ROS 2 release *Bouncy* these job types should be available to support maintainers.
 
-In ROS 2 *Bouncy* the univeral build tool will be the only supported option and `ament_tools` will be archived.
+In ROS 2 *Bouncy* the universal build tool will be the only supported option and `ament_tools` will be archived.
 
 #### Necessary work
 
@@ -365,7 +364,7 @@ For option **A)** the follow items would need to be addressed:
 - Support for Windows using `.bat` files.
 - Support for the package manifest format version 3.
 
-For option **B)** the follow items would need to be addressed.
+For option **B)** the follow items would need to be addressed:
 
 - Address user feedback when the tool is being used by a broader audience.
 
@@ -387,16 +386,26 @@ For option **A)** the follow items should be considered:
 - Update code base to Python 3.5+.
 - Refactor code base to reduce coupling (e.g. separate [API](https://github.com/catkin/catkin_tools/blob/2cae17f8f32b0193384d2c7734afee1c60c4add2/catkin_tools/execution/controllers.py#L183-L205) for output handling).
 - Additional functionality to build Gazebo including its dependencies.
+- Whether or not to continue supporting the *devel space*.
 
 For option **B)** the follow items should be considered:
 
 - Support cross compilation.
 - Support `DESTDIR`.
 - Support a feature similar to the `profile` verb of `catkin_tools`.
+- Support for a shared GNU Make job sever.
+- Support for `GNUInstallDirs`
+  - Not sure about the status of this, it would be in `colcon`'s generated shell files if anywhere.
+  - Should have a test for this case.
+- Test for, and fix if necessary, correct topological order with dependencies across workspaces.
+  - See: [https://github.com/ros/catkin/pull/590](https://github.com/ros/catkin/pull/590)
 
 ## Summary and Decision
 
-Based on the above information a decision has been made to pick `colcon` as the universal build tool which was not an easy one.
+Based on the above information a decision has been made to pick `colcon` as the universal build tool.
+
+The decision was made after considering the input of ROS 2 team members and some ROS 1 users.
+The decision was not easy, as it was not unanimous, but the vast majority of input was either pro `colcon` or ambivalent.
 
 To elaborate on the rationale one significant advantage of `colcon` is that it is ready to be deployed for ROS 2 right now and it covers our current use cases.
 Another argument leaning towards `colcon` is the expected little effort to provide devel / PR / prerelease jobs on build.ros2.org across all targeted platforms for the upcoming *Bouncy* release.
@@ -424,6 +433,11 @@ The following items briefly enumerate what This means for ROS developers and use
 - When building and testing ROS 2 the command `colcon build` / `colcon test` will be used instead of `ament build` / `ament test`.
   Please see the [documentation](http://colcon.readthedocs.io/en/latest/migration/ament_tools.html) how to map `ament_tools` command line arguments to `colcon` arguments.
 - For ROS 1 nothing is changing at this point in time.
+- In the future `colcon` will replace `catkin_make_isolated` and `catkin_make` as the recommended build tool for ROS 1.
+  - `colcon` will not support the *devel space* and will require packages to have install rules
+  - `catkin` will likely still support the *devel space*, though it might be removed at some point (that has not been decided yet)
+  - Therefore, it is possible that the default build tool for ROS 1 may not support the *devel space*, though legacy tools will continue to support it.
+  - Note that it is already the case that individual ROS 1 catkin packages may either not have installation rules but support the *devel space*, or they might have installation rules but not properly support the *devel space*.
 
 ### Outlook
 
