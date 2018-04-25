@@ -390,7 +390,6 @@ For option **A)** the follow items should be considered:
 
 For option **B)** the follow items should be considered:
 
-- Support cross compilation.
 - Support `DESTDIR`.
 - Support a feature similar to the `profile` verb of `catkin_tools`.
 - Support for a shared GNU Make job sever.
