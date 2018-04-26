@@ -198,17 +198,17 @@ Any topic or service name that contains any tokens (either namespaces or a topic
 
 ## Mapping of ROS 2 Topic and Service Names to DDS Concepts
 
-The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the, the tilde (`~`), and the balanced curly braces (`{}`).
+The ROS topic and service name constraints allow more types of characters than the DDS topic names because ROS additionally allows the forward slash (`/`), the tilde (`~`), and the balanced curly braces (`{}`).
 These must be substituted or otherwise removed during the process of converting the topic or service name to DDS concepts.
 Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
-Previously forward slashes (`/`) were disallowed in DDS topic names, now the restriction has been lifted and therefore the ROS topic names are first prefixed with ROS Specific Namespace prefix (described below) are then mapped directly into DDS topic names.  
+Previously forward slashes (`/`) were disallowed in DDS topic names, now the restriction has been lifted(see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore the ROS topic names are first prefixed with ROS Specific Namespace prefix (described below) are then mapped directly into DDS topic names.
 
 ### ROS Specific Namespace Prefix
 
 In order to differentiate ROS topics easily, all DDS topics created by ROS shall be automatically prefixed with a namespace like `/rX`, where `X` is a single character that indicates to which subsystem of ROS the topic belongs.
-For example, a plain topic called `/foo` would translate to a DDS topic `rt/foo`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`.
-As another example, a topic called `/left/image_raw` would translate to a DDS topic `/rt/left/image_raw`, which is the result of implicitly adding `/rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`.
+For example, a plain topic called `/foo` would translate to a DDS topic `rt/foo`, which is the result of implicitly adding `rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`.
+As another example, a topic called `/left/image_raw` would translate to a DDS topic `rt/left/image_raw`, which is the result of implicitly adding `rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
 On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
@@ -242,26 +242,30 @@ Here are some examples of how a fully qualified ROS name would be broken down in
 
 The length of the DDS topic must not exceed 256 characters. Therefore the length of a ROS Topic, including the namespace hierarchy, the base name of the topic and any ros specific prefixes must not exceed 256 characters since this is mapped directly as DDS topic.
 
+The length of service name has tighter limits than the length of the ROS Topics.
+In underlying RMW-DDS implementation, because the way in which services are implemented vary for different DDS vendors, and hence imposes the limit on actual service names that can be used.
+For example, in RTI connext, the service names are suffixed with the GUID value of the DDS participant, and a content filtered topic(max length 256 characters) is created which is mapped from the suffixed service name.
+Therefore with rmw_connext implementation, service name cannot be greater than 185 characters including namespace hierarchy and any ros specific prefixes.
+
 ### Communicating with Non-ROS Topics
 
 Since all ROS topics are prefixed when being converted to DDS topic names, it makes it impossible to subscribe to existing DDS topics which do not follow the same naming pattern.
 For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling produced by the implicit ROS specific namespace.
 Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
 
-#### Examples and Ideas for Communicating with Non-ROS Topics
+#### Communicating with Non-ROS Topics
 
-Note that these are not part of the proposal, but only possible solutions to the issue of communicating with "native" DDS topics.
-This section should be updated when/if a complete solution is found.
+Now, There is an option in the API, a boolean `avoid_ros_namespace_convention` in the qos_profile which can be set to `false` to use ROS prefix and `true` to not using ROS namespace prefixing.
 
-It may be possible, through an option in the API or through some name syntax, to get a similar break down but without the ROS specific prefix.
+For example:
 
-For example with an option in the API:
+| ROS Name              | avoid_ros_namespace_conventions    | DDS Topic   |
+|-----------------------|------------------------------------|-------------|
+| `rostopic://image`    | `false`                            | `rt/image`  |
+| `rostopic://image`    | `true`                             | `image`     |
 
-| ROS Name              | ROS Prefix | DDS Topic   |
-|-----------------------|------------|-------------|
-| `rostopic://image`    | with       | `rt/image`  |
-| `rostopic://image`    | without    | `image`     |
-
+Alternative(Idea):
+Note that the alternative below is not part of the proposal, but only possible solutions to the issue of communicating with "native" DDS topics.
 Another option would be to have some markup in the scheme name, for example:
 
 | ROS Name                              | DDS Topic           |
@@ -357,11 +361,12 @@ Trade-offs (in comparison to using the whole ROS name along with the namespaces)
 
 - Splitting the ROS name into "namespace" and "base name", and placing the complete namespace into a single partition seemed un-natural.
 - In general partitions are recommended to be used as a spare, but using partitions for all ROS names suggested otherwise.
-- Major concern was reported in this [issue](https://github.com/ros2/rmw_connext/issues/234), Where having two topics with same base name, although different namespace and different ypes caused problem. For example: topicA is `/camera/data` of type `Image` and topicB is `/imu/data` of type `Imu`. The base names for both topicA and topicB is `data`, generated errors as described in the [issue](https://github.com/ros2/rmw_connext/issues/234).
+- Major concern was reported in this [issue](https://github.com/ros2/rmw_connext/issues/234), where having two topics with same base name, although different namespace and different ypes caused problem. For example: topicA is `/camera/data` of type `Image` and topicB is `/imu/data` of type `Imu`. The base names for both topicA and topicB is `data`, generated errors as described in the [issue](https://github.com/ros2/rmw_connext/issues/234).
+- Newer standards such as XRCE DDS might not have partitions at all.
 - Using the complete ROS name in the later strategy will cause a tighter length limit on base name because the DDS topic name would contain ROS prefix, namespace along with the base name which should not exceed DDS topic name limitation which is  256 characters.
 
 Rationale:
-- With the decision form the DDS vendors to allow forward slashes (`/`) in DDS topic names, using the complete ROS name seemed simple and more intuitive than using partitions.
+- With the decision from the DDS vendors to allow forward slashes (`/`) in DDS topic names, using the complete ROS name seemed simple and more intuitive than using partitions.
 
 #### Alternative Substitute the Namespace Delimiter
 
