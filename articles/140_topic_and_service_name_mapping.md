@@ -253,7 +253,6 @@ Since all ROS topics are prefixed when being converted to DDS topic names, it ma
 For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling produced by the implicit ROS specific namespace.
 Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
 
-#### Communicating with Non-ROS Topics
 
 There is an option in the API, a boolean `avoid_ros_namespace_convention` in the qos_profile which can be set to `false` to use ROS prefix and `true` to not using ROS namespace prefixing.
 
@@ -264,7 +263,8 @@ For example:
 | `rostopic://image`    | `false`                            | `rt/image`  |
 | `rostopic://image`    | `true`                             | `image`     |
 
-Alternative(Idea):
+#### Alternative(Idea)
+
 Note that the alternative below is not part of the proposal, but only possible solutions to the issue of communicating with "native" DDS topics.
 Another option would be to have some markup in the scheme name, for example:
 
