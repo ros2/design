@@ -255,7 +255,7 @@ Therefore to allow ROS programs to interoperate with "native" DDS topic names th
 
 #### Communicating with Non-ROS Topics
 
-Now, There is an option in the API, a boolean `avoid_ros_namespace_convention` in the qos_profile which can be set to `false` to use ROS prefix and `true` to not using ROS namespace prefixing.
+There is an option in the API, a boolean `avoid_ros_namespace_convention` in the qos_profile which can be set to `false` to use ROS prefix and `true` to not using ROS namespace prefixing.
 
 For example:
 
