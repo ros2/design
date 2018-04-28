@@ -202,7 +202,7 @@ The ROS topic and service name constraints allow more types of characters than t
 These must be substituted or otherwise removed during the process of converting the topic or service name to DDS concepts.
 Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
-Previously forward slashes (`/`) were disallowed in DDS topic names, now the restriction has been lifted(see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore the ROS topic names are first prefixed with ROS Specific Namespace prefix (described below) are then mapped directly into DDS topic names.
+Previously forward slashes (`/`) were disallowed in DDS topic names, now the restriction has been lifted (see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore the ROS topic names are first prefixed with ROS Specific Namespace prefix (described below) are then mapped directly into DDS topic names.
 
 ### ROS Specific Namespace Prefix
 
