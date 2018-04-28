@@ -277,7 +277,7 @@ Another option would be to have some markup in the scheme name, for example:
 
 ## Compare and Contrast with ROS 1
 
-In order to support a mapping to a little more restrictive DDS topic name rules, these rules are in some ways more constraining than the rules for ROS 1.
+In order to support a mapping to the - slightly more - restrictive DDS topic name rules, these rules are in some ways more constraining than the rules for ROS 1.
 Other changes have been proposed for convenience or to remove a point of confusion that existed in ROS 1.
 In ROS 2, topic and service names differ from ROS 1 in that they:
 
