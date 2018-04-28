@@ -361,8 +361,8 @@ Trade-offs (in comparison to using the whole ROS name along with the namespaces)
 
 - Splitting the ROS name into "namespace" and "base name", and placing the complete namespace into a single partition seemed un-natural.
 - In general partitions are recommended to be used as a spare, but using partitions for all ROS names suggested otherwise.
-- Major concern was reported in this [issue](https://github.com/ros2/rmw_connext/issues/234), where having two topics with same base name, although different namespace and different ypes caused problem. For example: topicA is `/camera/data` of type `Image` and topicB is `/imu/data` of type `Imu`. The base names for both topicA and topicB is `data`, generated errors as described in the [issue](https://github.com/ros2/rmw_connext/issues/234).
-- Newer standards such as XRCE DDS might not have partitions at all.
+- Major concern was reported in this [issue](https://github.com/ros2/rmw_connext/issues/234), where having two topics with same base name, although different namespace and different types caused problem. For example: topicA is `/camera/data` of type `Image` and topicB is `/imu/data` of type `Imu`. The base names for both topicA and topicB is `data`, generated errors as described in the [issue](https://github.com/ros2/rmw_connext/issues/234).
+- Newer standards such as [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE) might not have partitions at all.
 - Using the complete ROS name in the later strategy will cause a tighter length limit on base name because the DDS topic name would contain ROS prefix, namespace along with the base name which should not exceed DDS topic name limitation which is  256 characters.
 
 Rationale:
