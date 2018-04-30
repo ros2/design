@@ -202,7 +202,7 @@ The ROS topic and service name constraints allow more types of characters than t
 These must be substituted or otherwise removed during the process of converting the topic or service name to DDS concepts.
 Since ROS 2 topic and service names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
 Additionally any URL related syntax, e.g. the `rostopic://` prefix, will be removed once parsed.
-Previously forward slashes (`/`) were disallowed in DDS topic names, now the restriction has been lifted(see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore the ROS topic names are first prefixed with ROS Specific Namespace prefix (described below) are then mapped directly into DDS topic names.
+Previously forward slashes (`/`) were disallowed in DDS topic names, now the restriction has been lifted (see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore the ROS topic names are first prefixed with ROS Specific Namespace prefix (described below) are then mapped directly into DDS topic names.
 
 ### ROS Specific Namespace Prefix
 
@@ -253,9 +253,8 @@ Since all ROS topics are prefixed when being converted to DDS topic names, it ma
 For example, if an existing DDS program is publishing on the `image` topic (and is using the DDS equivalent to the ROS message type) then a ROS program could not subscribe to it because of the name mangling produced by the implicit ROS specific namespace.
 Therefore to allow ROS programs to interoperate with "native" DDS topic names the API should provide a way to skip the ROS specific prefixing.
 
-#### Communicating with Non-ROS Topics
 
-Now, There is an option in the API, a boolean `avoid_ros_namespace_convention` in the qos_profile which can be set to `false` to use ROS prefix and `true` to not using ROS namespace prefixing.
+There is an option in the API, a boolean `avoid_ros_namespace_convention` in the qos_profile which can be set to `false` to use ROS prefix and `true` to not using ROS namespace prefixing.
 
 For example:
 
@@ -264,7 +263,8 @@ For example:
 | `rostopic://image`    | `false`                            | `rt/image`  |
 | `rostopic://image`    | `true`                             | `image`     |
 
-Alternative(Idea):
+#### Alternative(Idea)
+
 Note that the alternative below is not part of the proposal, but only possible solutions to the issue of communicating with "native" DDS topics.
 Another option would be to have some markup in the scheme name, for example:
 
@@ -277,7 +277,7 @@ Another option would be to have some markup in the scheme name, for example:
 
 ## Compare and Contrast with ROS 1
 
-In order to support a mapping to a little more restrictive DDS topic name rules, these rules are in some ways more constraining than the rules for ROS 1.
+In order to support a mapping to the - slightly more - restrictive DDS topic name rules, these rules are in some ways more constraining than the rules for ROS 1.
 Other changes have been proposed for convenience or to remove a point of confusion that existed in ROS 1.
 In ROS 2, topic and service names differ from ROS 1 in that they:
 
@@ -359,10 +359,10 @@ You can read more about partitions in RTI's documentation:
 
 Trade-offs (in comparison to using the whole ROS name along with the namespaces):
 
-- Splitting the ROS name into "namespace" and "base name", and placing the complete namespace into a single partition seemed un-natural.
+- Splitting the ROS name into "namespace" and "base name", and placing the complete namespace into a field designed for another purpose seemed incorrect.
 - In general partitions are recommended to be used as a spare, but using partitions for all ROS names suggested otherwise.
-- Major concern was reported in this [issue](https://github.com/ros2/rmw_connext/issues/234), where having two topics with same base name, although different namespace and different ypes caused problem. For example: topicA is `/camera/data` of type `Image` and topicB is `/imu/data` of type `Imu`. The base names for both topicA and topicB is `data`, generated errors as described in the [issue](https://github.com/ros2/rmw_connext/issues/234).
-- Newer standards such as XRCE DDS might not have partitions at all.
+- Major concern was reported in this [issue](https://github.com/ros2/rmw_connext/issues/234), where having two topics with same base name, although different namespace and different types caused problem. For example: topicA is `/camera/data` of type `Image` and topicB is `/imu/data` of type `Imu`. The base names for both topicA and topicB is `data`, generated errors as described in the [issue](https://github.com/ros2/rmw_connext/issues/234).
+- Newer standards such as [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE) might not have partitions at all.
 - Using the complete ROS name in the later strategy will cause a tighter length limit on base name because the DDS topic name would contain ROS prefix, namespace along with the base name which should not exceed DDS topic name limitation which is  256 characters.
 
 Rationale:
