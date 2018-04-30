@@ -25,11 +25,12 @@ Original Author: {{ page.author }}
 This article specifies how we will deal with conflicting fields and constants for different languages.
 In the use of the IDL (TODO (tfoote) reference) there will inevitably be conflicting symbols, keywords, or definitions.
 
-## Background
+## Background and Motivation
 
 This has come up specifically as we're adding support for Windows for ROS2.
 `winnt.h` defines several macros that conflict with existing enumerations. 
 It is also expected to happen as support for new languages are added.
+We cannot know all the potential future keywords and restrictions from a language which is selected to add support for in the future so we must have a generic solution which will allow future languages to be added without disrupting the existing usages.
 
 ## New constants
 
