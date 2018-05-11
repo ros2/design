@@ -211,7 +211,7 @@ For example, a plain topic called `/foo` would translate to a DDS topic `rt/foo`
 As another example, a topic called `/left/image_raw` would translate to a DDS topic `rt/left/image_raw`, which is the result of implicitly adding `rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`.
 
 For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
-On systems where the implementation is handled for us by DDS (like with Connext), we use `rs` as the common prefix.
+On systems where Services are handled explicitly implemented, we consider a separate prefix, e.g. `rs`.
 
 Here is a non-exhaustive list of prefixes:
 
@@ -242,10 +242,13 @@ Here are some examples of how a fully qualified ROS name would be broken down in
 
 The length of the DDS topic must not exceed 256 characters. Therefore the length of a ROS Topic, including the namespace hierarchy, the base name of the topic and any ros specific prefixes must not exceed 256 characters since this is mapped directly as DDS topic.
 
-The length of service name has tighter limits than the length of the ROS Topics.
-In underlying RMW-DDS implementation, because the way in which services are implemented vary for different DDS vendors, and hence imposes the limit on actual service names that can be used.
-For example, in RTI connext, the service names are suffixed with the GUID value of the DDS participant, and a content filtered topic(max length 256 characters) is created which is mapped from the suffixed service name.
-Therefore with rmw_connext implementation, service name cannot be greater than 185 characters including namespace hierarchy and any ros specific prefixes.
+#### Considerations for RTI Connext
+
+While testing our implementation with Connext, we encountered some additional limitations when it comes to the topic length.
+That is, for example the length of a service name has tighter limits than the length of the ROS Topics.
+The RTI Connext implementation for service names are suffixed with the GUID value of the DDS participant for the service response topic.
+Additionally, a content filtered topic (max length 256 characters) is created which is mapped from the suffixed service name.
+Therefore when linking against `rmw_connext_c` or `rmw_connext_cpp`, service names cannot be longer than 185 characters including the namespace hierarchy and any ros specific prefixes.
 
 ### Communicating with Non-ROS Topics
 
