@@ -40,7 +40,7 @@ This article describes the steps to unify these build tools as well as extend th
 The goal of a unified build tool is to build a set of packages with a single invocation.
 It should work with ROS 1 packages as well as ROS 2 packages which provide the necessary information in their manifest files.
 It should also work with packages that do not provide manifest files themselves, given that the necessary meta information is provided externally.
-This will allow the build tool to be utilized for non-ROS packages (e.g. Gazebo including its ignition dependencies).
+This will allow the build tool to be utilized for non-ROS packages (e.g. Gazebo including its ignition dependencies, sdformat, etc.).
 
 In the ROS ecosystems several tools already exist which support this use case (see below).
 Each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
@@ -381,12 +381,12 @@ For option **A)** the follow items should be considered:
 
 - Support for Python packages using a `setup.cfg` file.
 - Support for `PowerShell` to work around length limitations for environment variable on Windows.
+- Support for `Pytest` to run Python tests (instead of using `nose`).
 - Support to pass package specific argument.
-- Remove support for the *devel space* concept in ROS 1.
 - Update code base to Python 3.5+.
 - Refactor code base to reduce coupling (e.g. separate [API](https://github.com/catkin/catkin_tools/blob/2cae17f8f32b0193384d2c7734afee1c60c4add2/catkin_tools/execution/controllers.py#L183-L205) for output handling).
 - Additional functionality to build Gazebo including its dependencies.
-- Whether or not to continue supporting the *devel space*.
+- Whether or not to continue supporting the *devel space* concept in ROS 1.
 
 For option **B)** the follow items should be considered:
 
@@ -420,9 +420,9 @@ The separation of the build tool name from the supported build systems as well a
 
 The following next steps will happen before the next ROS 2 release *Bouncy*.
 
+- The ROS 2 buildfarm(s) will be updated to use `colcon` and provide devel / PR / prerelease jobs for the *Bouncy* release.
 - The instructions in the ROS 2 wiki to build from source will be updated to use `colcon` instead.
 - The `ament_tools` repository will be archived, removed from the `ros2.repos` file, and won't be released into *Bouncy*.
-- The ROS 2 buildfarm(s) will be updated to use `colcon` and provide devel / PR / prerelease jobs for the *Bouncy* release.
 
 ### Implications
 
