@@ -438,6 +438,18 @@ The following items briefly enumerate what This means for ROS developers and use
   - Therefore, it is possible that the default build tool for ROS 1 may not support the *devel space*, though legacy tools will continue to support it.
   - Note that it is already the case that individual ROS 1 catkin packages may either not have installation rules but support the *devel space*, or they might have installation rules but not properly support the *devel space*.
 
+### Progress
+
+#### ROS 2
+
+- ci.ros2.org has been [updated](https://github.com/ros2/ci/pull/132)
+- build.ros2.org will use [this branch](https://github.com/ros-infrastructure/ros_buildfarm/pull/548) of `ros_buildfarm`
+
+#### ROS 1
+
+- `catkin` has been [updated](https://github.com/ros/catkin/pull/940) to avoid writting the same file concurrently in workspaces which use a merged install space.
+- The changes to the `ros_buildfarm` used to provide devel / PR jobs for ROS 2 should be applicable to ROS 1 as-is but will need further testing.
+
 ### Outlook
 
 - Since `colcon` can be used to build ROS 1 early adopters can try to use it to build ROS 1 from source.
