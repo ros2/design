@@ -249,7 +249,7 @@ After the build a single file can be sourced / invoked to setup the environment 
 Invoking a build system for a package implies also setting up environment variables before the process, e.g. the `CMAKE_PREFIX_PATH`.
 It should be possible for developers to manually invoke the build system for one package.
 The environment variable might be partially different from the environment variables necessary to use a package after it has been built.
-To make that convenient the tool should provide an easy to use mechanism to setup the development environment necessary to manually invoke the build system.
+To make that convenient the tool should provide an easy-to-use mechanism to setup the development environment necessary to manually invoke the build system.
 
 ### Beyond Building
 
@@ -327,7 +327,7 @@ B.  Use `colcon` as a starting point
 
 If this topic would have been addressed earlier some of the duplicate effort could have likely been avoided.
 When the work towards a universal build tool was suspended over a year ago it was a conscious decision based on available resources.
-Nevertheless move forward with a decision now will at least avoid further uncertainty and duplication.
+Nevertheless moving forward with a decision now will at least avoid further uncertainty and effort duplication.
 
 Both of the considered options have unique and valuable features and there are good arguments to build our future development on either of the two tools.
 Since both are written in Python either of the two tools could be "transformed" to cover the pros of the other one.
@@ -426,7 +426,7 @@ The following next steps will happen before the next ROS 2 release *Bouncy*.
 
 ### Implications
 
-The following items briefly enumerate what This means for ROS developers and users:
+The following items briefly enumerate what this decision means for ROS developers and users:
 
 - **No CMake code** of any ROS 2 (or ROS 1) package **needs to be changed** for this transition.
 - When building and testing ROS 2 the command `colcon build` / `colcon test` will be used instead of `ament build` / `ament test`.
