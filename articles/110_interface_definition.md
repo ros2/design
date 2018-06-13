@@ -183,7 +183,7 @@ The removal of any protected keywords should be avoided if at all possible as it
 There are a number of known conflicts with the existing ROS1 codebase.
 In these few cases we will undefine the matching C/C++ preprocessor macros which are conflicting in the definition and define the old value.
 This will be done only inside the declaration header and the definition will be restored before returning to the user's code.
-If you are using the legacy defines it's required to use the namespaced reference instead of using a shorthand version as those are know to conflict.
+If you are using the legacy defines it's required to use the namespaced reference instead of using a shorthand version as those are known to conflict.
 
 For an easy migration path.
 The mangled version of the constants will be made available in ROS Melodic by manually defining them in parallel so that code can be ported and use the same constant values while the codebase is spanning ROS1 and ROS2 implementations.
