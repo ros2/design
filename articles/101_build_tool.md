@@ -346,7 +346,7 @@ For the last ROS 2 release *Ardent* the buildfarm [build.ros.org](http://build.r
 Neither *devel* jobs or *pull request* jobs are available nor is it supported to build a local *prerelease*.
 For the coming ROS 2 release *Bouncy* these job types should be available to support maintainers.
 
-In ROS 2 *Bouncy* the universal build tool will be the only supported option and `ament_tools` will be archived.
+In ROS 2 *Bouncy* the universal build tool will be the recommended option.
 
 #### Necessary work
 
@@ -422,7 +422,8 @@ The following next steps will happen before the next ROS 2 release *Bouncy*.
 
 - The ROS 2 buildfarm(s) will be updated to use `colcon` and provide devel / PR / prerelease jobs for the *Bouncy* release.
 - The instructions in the ROS 2 wiki to build from source will be updated to use `colcon` instead.
-- The `ament_tools` repository will be archived, removed from the `ros2.repos` file, and won't be released into *Bouncy*.
+
+After the Bouncy release the `ament_tools` repository will be archived, removed from the `ros2.repos` file, and won't be released into future ROS 2 distributions.
 
 ### Implications
 
