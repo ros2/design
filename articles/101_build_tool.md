@@ -39,7 +39,7 @@ This article describes the steps to unify these build tools as well as extend th
 
 The goal of a unified build tool is to build a set of packages with a single invocation.
 It should work with ROS 1 packages as well as ROS 2 packages which provide the necessary information in their manifest files.
-It should also work with packages that do not provide manifest files themselves, given that the necessary meta information is provided externally.
+It should also work with packages that do not provide manifest files themselves, given that the necessary meta information can be inferred and/or is provided externally.
 This will allow the build tool to be utilized for non-ROS packages (e.g. Gazebo including its ignition dependencies, sdformat, etc.).
 
 In the ROS ecosystems several tools already exist which support this use case (see below).
