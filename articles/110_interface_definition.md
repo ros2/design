@@ -103,9 +103,26 @@ If no default value is specified a common default value is used:
 - for `bool` it is `false`
 - for *numeric* types it is a `0` value
 - for `string` it is an *empty* string
+- for *static size arrays* it is an array of N elements with its fields zero-initialized
+- for *bounded size arrays* and *dynamic size arrays* it is an empty array `[]`
+
+#### Array default values
+
+A field of type `array` can optionally specify a default value.
+
+- default values for an array must start with an opening square bracket (`[`) and end with a closing square bracket (`]`)
+- each value within the array must be separated with a comma (`,`)
+- all values in the array must be of the same type as the field
+- there cannot be a comma `,` before the first value of the array
+- a trailing comma after the last element of the array is ignored
+
+Additional rule for `string` arrays:
+- string arrays must contain only `string`s respecting the following rules:
+  - a string value which can optionally be quoted with either single quotes (`'`) or double quotes (`"`)
+  - a double-quoted (`"`) string (respectively single-quoted (`'`)) should have any inner double quotes (respectively single quotes) escaped
 
 <div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> default values are currently not supported for <code>string array</code> fields and <i>complex</i> fields
+  <b>TODO:</b> default values are currently not supported for <i>complex</i> fields
 </div>
 
 ### Constants
