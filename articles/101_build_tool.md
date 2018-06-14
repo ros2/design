@@ -3,7 +3,7 @@ layout: default
 title: A universal build tool
 permalink: articles/build_tool.html
 abstract:
-  This article describes a universal build tool for ROS 1 and ROS 2.
+  This article describes the rationale for a universal build tool.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 categories: Overview
