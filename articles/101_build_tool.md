@@ -19,15 +19,6 @@ categories: Overview
 
 Original Author: {{ page.author }}
 
-<div class="alert alert-info" markdown="1">
-  <b>NOTE:</b>
-  The work towards a unified build tool have been reprioritized.
-  Nobody is currently planning to spend any time towards the described goals.
-
-  While the article in its current state describes the use cases, goals as well as the rational behind it, and mentions possible approaches moving forward, it does not propose a specific path forward at the moment.
-
-</div>
-
 ## Preface
 
 In the ROS ecosystem the software is separated into numerous packages.
@@ -40,7 +31,7 @@ Such a workflow is impracticable at scale without a tool that automates that pro
 
 A build tool performs the task of building a set of packages with a single invocation.
 For ROS 1 multiple different tools provide support for this, namely `catkin_make`, `catkin_make_isolated`, and `catkin_tools`.
-For ROS 2 the build tool providing this functionality is called `ament_tools`.
+For ROS 2 up to the Ardent release the build tool providing this functionality is called `ament_tools`.
 
 This article describes the steps to unify these build tools as well as extend the field of application.
 
@@ -48,15 +39,15 @@ This article describes the steps to unify these build tools as well as extend th
 
 The goal of a unified build tool is to build a set of packages with a single invocation.
 It should work with ROS 1 packages as well as ROS 2 packages which provide the necessary information in their manifest files.
-It should also work with packages that do not provide manifest files themselves, given that the meta information is externally provided.
-This will allow the build tool to be utilized for non-ROS packages (e.g. Gazebo including its dependencies).
+It should also work with packages that do not provide manifest files themselves, given that the necessary meta information can be inferred and/or is provided externally.
+This will allow the build tool to be utilized for non-ROS packages (e.g. Gazebo including its ignition dependencies, sdformat, etc.).
 
 In the ROS ecosystems several tools already exist which support this use case (see below).
 Each of the existing tools performs similar tasks and duplicates a significant amount of the logic.
 As a consequence of being developed separately certain features are only available in some of the tools while other tools lack those.
 
-The reason to work on a single universal build tool comes down to reducing the effort necessary for development and maintenance.
-Additionally this makes new features developed once available for all the use cases.
+The reason to use a single universal build tool comes down to reducing the effort necessary for development and maintenance.
+Additionally this makes newly developed features available for all the use cases.
 
 ### Build Tool vs. Build System
 
@@ -136,7 +127,7 @@ It automates the generation of CMake config files as well as pkg-config files.
 It additionally provides functions to register different kinds of tests.
 
 A package using `catkin` specifies its meta data in a manifest file named `package.xml`.
-The format of the manifest file is specified in the [ROS REP 140](http://www.ros.org/reps/rep-0140.html).
+The latest format of the manifest file is specified in the [ROS REP 149](http://www.ros.org/reps/rep-0149.html).
 
 ### ament_cmake
 
@@ -144,7 +135,7 @@ The format of the manifest file is specified in the [ROS REP 140](http://www.ros
 The main difference between `ament_cmake` and `catkin` is described in [another article](http://design.ros2.org/articles/ament.html).
 In the context of the build tool the biggest difference is that `ament_cmake` generates package-specific files to setup the environment to use the package after it has been built and installed.
 
-A package using `ament_cmake` uses the same manifest file as `catkin` (except that it only allows the newer format version 2).
+A package using `ament_cmake` uses the same manifest file as `catkin` (except that it requires format version 2 or higher).
 
 ### Python setuptools
 
@@ -199,8 +190,9 @@ The tool supports building CMake packages and builds them in isolation as well a
 
 `ament_tools` is provided by a standalone Python 3 package used to build ROS 2 packages.
 It was developed to bootstrap the ROS 2 project, is therefore only targeting Python 3, and works on Linux, MacOS and Windows.
-In addition to CMake packages it also supports building Python packages and can infer meta information without requiring an explicit package manifest.
+In addition to CMake packages it also supports building Python packages and can infer meta information without requiring an explicit package manifest (which is e.g. used for the FastRTPS package).
 The tool performs an "isolated" build like `catkin_make_isolated` and `catkin_tools` (one CMake invocation per package) and also parallelizes the build of packages which have no (recursive) dependencies on each other (like `catkin_tools`).
+While it covers more build systems and platforms than `catkin_tools` it doesn't have any of `catkin_tools`s usability features like profiles, output handling, etc.
 
 `ament_tools` supports building the following packages:
 
@@ -210,9 +202,15 @@ The tool performs an "isolated" build like `catkin_make_isolated` and `catkin_to
 - Python package with a `package.xml` file.
 - Python package without a manifest file (extracting the package name and dependencies from the `setup.py` file).
 
+### colcon
+
+When the first draft of this article was written the conclusion was to not to spend any resources towards a universal build tool.
+Meanwhile the author of this article went ahead and developed [colcon](https://github.com/colcon/) as a personal project.
+Therefore its feature set is closely aligned with the following requirements.
+
 ## Naming
 
-The existing build tools are all named by the build system they are supporting.
+The existing build tools in ROS are all named by the build system they are supporting.
 In general it should be possible for a build tool to support multiple different build systems.
 Therefore a name for a build tool being derived from a single build system might mislead the users that the tool only works for that specific build system.
 To avoid confusion of the user the build tool should have a different unrelated name to avoid implying an undesired correlation.
@@ -233,6 +231,9 @@ The following uses cases should be satisfied by the unified build tool.
 The tool needs to be able to build ROS 1 workspaces which can already be built using `catkin_make_isolated` / `catkin_tools`.
 It is up to the implementation to decide if it only supports the standard CMake workflow or also the *custom devel space concept* of `catkin`.
 
+In ROS 2 the concept of the *devel space* has intentionally been removed.
+In the future it might be feasible to provide the concept of *symlinked installs* in ROS 1 to provide a similar benefit without the downsides.
+
 #### Build ROS 2 workspaces
 
 The tool needs to be able to build ROS 2 workspaces which can already be built using `ament_tools`.
@@ -248,7 +249,7 @@ After the build a single file can be sourced / invoked to setup the environment 
 Invoking a build system for a package implies also setting up environment variables before the process, e.g. the `CMAKE_PREFIX_PATH`.
 It should be possible for developers to manually invoke the build system for one package.
 The environment variable might be partially different from the environment variables necessary to use a package after it has been built.
-To make that convenient the tool should provide an easy to use mechanism to setup the development environment necessary to invoke the build system.
+To make that convenient the tool should provide an easy-to-use mechanism to setup the development environment necessary to manually invoke the build system.
 
 ### Beyond Building
 
@@ -262,7 +263,7 @@ The tool aims to support a variety of build systems, use cases, and platforms.
 The above mentioned ones are mainly driven by the needs in the ROS ecosystem but the tool should also be usable outside the ROS ecosystem (e.g. for Gazebo).
 Therefore it should be designed in a way which enables extending its functionality.
 
-Assuming that the tool will be implemented in Python (since that is the case for existing tools) the entry point mechanism provides a convenient way to make the software extensible.
+Assuming that the tool will be implemented in Python (since that is the case for all existing ROS build tools) the entry point mechanism provides a convenient way to make the software extensible.
 Extensions don't even have to be integrated into the Python package containing the core logic of the build tool but can easily be provided by additional Python packages.
 This approach will not only foster a modular design and promote clear interfaces but enable external contributions without requiring them to be integrated in a single monolithic package.
 
@@ -289,59 +290,169 @@ The following items are possible extension points to provide custom functionalit
 - setup the environment (e.g. `sh`, `bash`, `bat`)
 - completion (e.g. `bash`, `Powershell`)
 
-Assuming that the tool will be implemented in Python (since that is the case for existing tools) the entry point mechanism provides a convenient way to make the software extensible.
-Extensions don't have to be integrated into the Python package containing the core logic of the build tool but can easily be provided by additional Python packages.
-This approach will not only foster a modular design and promote clear interfaces but enable external contributions without requiring them to be integrated in a single monolithic package.
-
 ## Possible Approaches
 
-In terms of flexibility neither of the existing build tools can already support the superset of features described in this article.
-There are multiple different paths possible to reach the goal of a universal build tool which fall into two categories:
+When the first draft of this article was written neither of the existing build tools supported the superset of features described in this article.
+There were multiple different paths possible to reach the goal of a universal build tool which fall into two categories:
 
 - One approach is to incrementally evolve one of the existing tools to satisfy the described goals.
 - Another approach would be to start "from scratch".
 
+Since then the new project `colcon` has been developed which covers most of the enumerated requirements and represents the second category.
+
 ### Evolve catkin_make, catkin_make_isolated, or ament_tools
 
 Since neither of these three build tools has the feature richness of `catkin_tools` it is considered strictly less useful to starting building upon one of these build tools.
+Therefore neither of these are being considered as a foundation for a universal build tool.
 
 ### Evolve catkin_tools
 
-Since `catkin_tools` is in many aspects the most complete build tool it should be the one being evolved.
+Since `catkin_tools` is in many aspects the most complete ROS build tool it should be the one being evolved.
 While `ament_tools` has a few features `catkin_tools` currently lacks (e.g. plain CMake support without a manifest, Windows support) the feature richness of `catkin_tools` makes it a better starting point.
 
-The following items are highlighting some of the necessary efforts (not a complete list):
+### Start "from scratch" / colcon
 
-- Refactor the software architecture of the existing code base to support the flexibility sketched by the extension points listed above.
+Since the first draft of this article the `colcon` project has been developed with the goals and requirements of a universal build tool in mind.
+In its current form it is already able to build ROS 1 workspaces, ROS 2 workspaces, as well as Gazebo including its ignition dependencies.
+It uses Python 3.5+ and targets all platforms supported by ROS: Linux, macOS, and Windows.
 
-- Move `catkin` specific concepts out of the core of the build tool into a catkin specific extension (e.g. manifest format, *devel space*).
+Since it hasn't been used by many people yet more advanced features like cross compilation, `DESTDIR`, etc. hasn't been tested (and will therefore likely not work yet).
 
-- Support for ROS 2 which includes:
+## Decision process
 
-  - Support for Python 3 and Windows.
-  - Support for pure Python packages as well as packages without an in-source manifest file.
-  - Environment setup of `ament` packages
+For the decision process only the following two options are being considering based on the rationale described above:
 
-- Rename the tool to use a name unrelated to one build system.
+A.  Use `catkin_tools` as a starting point
+B.  Use `colcon` as a starting point
 
-- Investigate if a feature like continued support of the *devel space* is feasible since it doesn't apply to other build system and might be complicated to separate without sacrificing usability.
+If this topic would have been addressed earlier some of the duplicate effort could have likely been avoided.
+When the work towards a universal build tool was suspended over a year ago it was a conscious decision based on available resources.
+Nevertheless moving forward with a decision now will at least avoid further uncertainty and effort duplication.
 
-### Start "from scratch"
+Both of the considered options have unique and valuable features and there are good arguments to build our future development on either of the two tools.
+Since both are written in Python either of the two tools could be "transformed" to cover the pros of the other one.
+So the two important criteria for the decision are:
 
-Another approach is to implement the necessary software architecture to enable the desired flexibility and modularity "from scratch".
-Then fill in the features step-by-step by porting existing building blocks from the existing solutions.
-Some items to highlight the necessary efforts (not a complete list):
+- the effort it takes to do (in the short term as well as in the long term) and
+- the difference of the resulting code base after the "transformation" is completed.
 
-- Create the software architecture to support the flexibility sketched by the extension points listed above which will be easier "from scratch" than for an existing code base.
+### Immediate goals
 
-- Port / reimplement many of the features existing in the other build tools.
-  It will take a non trivial amount of time to reach the feature level of e.g. `catkin_tools`
+A ROS 2 developer currently builds a steadily growing workspace with ROS 2 packages.
+The same is happening in the monolithic Jenkins jobs on [ci.ros2.org](https://ci.ros2.org) (with the advantage to test changes across repositories easily).
+Therefore features to easily filter the packages which need to be build are eagerly awaited to improve the development process.
 
-- Thorough test the functionality and write documentation for developers as well as users.
+For the last ROS 2 release *Ardent* the buildfarm [build.ros.org](http://build.ros2.org) only provides jobs to generate Debian packages.
+Neither *devel* jobs or *pull request* jobs are available nor is it supported to build a local *prerelease*.
+For the coming ROS 2 release *Bouncy* these job types should be available to support maintainers.
 
-## Proposal
+In ROS 2 *Bouncy* the universal build tool will be the recommended option.
 
-The decision of which approach should be selected is deferred at the moment since nobody is likely able to spend any time on this in the foreseeable future.
-It could also be considered an implementation detail - as long as the described goals are reached it doesn't matter how the unified build tool was getting there.
+#### Necessary work
 
-*Hopefully to be continued in the future...*
+For either option **A)** or **B)** the follow items would need to be addressed:
+
+- The jobs and scripts on *ci.ros2.org* need to be updated to invoke the universal build tool instead of `ament_tools`.
+- The `ros_buildfarm` package needs to be updated to invoke the universal build tool instead of `catkin_make_isolated`.
+  The ROS 2 buildfarm would use this modification for the upcoming ROS 2 *Bouncy* release.
+  The ROS 1 buildfarm could use the same modification in the future.
+
+For option **A)** the follow items would need to be addressed:
+
+- Support for setup files generated by `ament_cmake`.
+- Support additional packages types: plain Python packages, CMake packages without a manifest.
+- Support for Windows using `.bat` files.
+- Support for the package manifest format version 3.
+
+For option **B)** the follow items would need to be addressed:
+
+- Address user feedback when the tool is being used by a broader audience.
+
+### Future
+
+The long term goal is that the universal build tool will be used in ROS 1, in ROS 2 as well as other non-ROS projects.
+There is currently no time line when the tool will be used on the ROS 1 build or be recommended to ROS 1 users.
+This solely depends on the resources available for ROS 1.
+
+Beside that for both options there is follow up work beyond the immediate goals.
+The following enumerates a few of them but is by no means exhaustive:
+
+For option **A)** the follow items should be considered:
+
+- Support for Python packages using a `setup.cfg` file.
+- Support for `PowerShell` to work around length limitations for environment variable on Windows.
+- Support for `Pytest` to run Python tests (instead of using `nose`).
+- Support to pass package specific argument.
+- Update code base to Python 3.5+.
+- Refactor code base to reduce coupling (e.g. separate [API](https://github.com/catkin/catkin_tools/blob/2cae17f8f32b0193384d2c7734afee1c60c4add2/catkin_tools/execution/controllers.py#L183-L205) for output handling).
+- Additional functionality to build Gazebo including its dependencies.
+- Whether or not to continue supporting the *devel space* concept in ROS 1.
+
+For option **B)** the follow items should be considered:
+
+- Support `DESTDIR`.
+- Support a feature similar to the `profile` verb of `catkin_tools`.
+- Support for a shared GNU Make job sever.
+- Support for `GNUInstallDirs`
+  - Not sure about the status of this, it would be in `colcon`'s generated shell files if anywhere.
+  - Should have a test for this case.
+- Test for, and fix if necessary, correct topological order with dependencies across workspaces.
+  - See: [https://github.com/ros/catkin/pull/590](https://github.com/ros/catkin/pull/590)
+
+## Summary and Decision
+
+Based on the above information a decision has been made to pick `colcon` as the universal build tool.
+
+The decision was made after considering the input of ROS 2 team members and some ROS 1 users.
+The decision was not easy, as it was not unanimous, but the vast majority of input was either pro `colcon` or ambivalent.
+
+To elaborate on the rationale one significant advantage of `colcon` is that it is ready to be deployed for ROS 2 right now and it covers our current use cases.
+Another argument leaning towards `colcon` is the expected little effort to provide devel / PR / prerelease jobs on build.ros2.org across all targeted platforms for the upcoming *Bouncy* release.
+While some additional feature and usability options are still missing they can be added in the future whenever there is time and/or demand for them.
+
+The necessary up front development effort for `catkin_tools` to achieve the goals described for  *Bouncy* would distract the ROS 2 team from spending their time on feature development and bug fixing of ROS 2 itself.
+
+While the short term advantages are certainly a main reason for the decision in favor of `colcon` they are not the only ones.
+The cleaner architecture, modularity and extensibility as well as Python 3.5 code base will be valuable long term benefits when developing this tool in the future.
+The separation of the build tool name from the supported build systems as well as the separation from being a "ROS-only" tool will hopefully also help users to understand the difference and attract new users and potential contributors.
+
+### Next steps
+
+The following next steps will happen before the next ROS 2 release *Bouncy*.
+
+- The ROS 2 buildfarm(s) will be updated to use `colcon` and provide devel / PR / prerelease jobs for the *Bouncy* release.
+- The instructions in the ROS 2 wiki to build from source will be updated to use `colcon` instead.
+
+After the Bouncy release the `ament_tools` repository will be archived, removed from the `ros2.repos` file, and won't be released into future ROS 2 distributions.
+
+### Implications
+
+The following items briefly enumerate what this decision means for ROS developers and users:
+
+- **No CMake code** of any ROS 2 (or ROS 1) package **needs to be changed** for this transition.
+- When building and testing ROS 2 the command `colcon build` / `colcon test` will be used instead of `ament build` / `ament test`.
+  Please see the [documentation](http://colcon.readthedocs.io/en/latest/migration/ament_tools.html) how to map `ament_tools` command line arguments to `colcon` arguments.
+- For ROS 1 nothing is changing at this point in time.
+- In the future `colcon` will replace `catkin_make_isolated` and `catkin_make` as the recommended build tool for ROS 1.
+  - `colcon` will not support the *devel space* and will require packages to have install rules
+  - `catkin` will likely still support the *devel space*, though it might be removed at some point (that has not been decided yet)
+  - Therefore, it is possible that the default build tool for ROS 1 may not support the *devel space*, though legacy tools will continue to support it.
+  - Note that it is already the case that individual ROS 1 catkin packages may either not have installation rules but support the *devel space*, or they might have installation rules but not properly support the *devel space*.
+
+### Progress
+
+#### ROS 2
+
+- ci.ros2.org has been [updated](https://github.com/ros2/ci/pull/132)
+- build.ros2.org will use [this branch](https://github.com/ros-infrastructure/ros_buildfarm/pull/548) of `ros_buildfarm`
+
+#### ROS 1
+
+- `catkin` has been [updated](https://github.com/ros/catkin/pull/940) to avoid writting the same file concurrently in workspaces which use a merged install space.
+- The changes to the `ros_buildfarm` used to provide devel / PR jobs for ROS 2 should be applicable to ROS 1 as-is but will need further testing.
+
+### Outlook
+
+- Since `colcon` can be used to build ROS 1, early adopters can try to use it to build ROS 1 from source.
+  While there is documentation how to migrate from [catkin_make_isolated](http://colcon.readthedocs.io/en/latest/migration/catkin_make_isolated.html) and [catkin_tools](http://colcon.readthedocs.io/en/latest/migration/catkin_tools.html) `colcon` won't be the recommended build tool in ROS 1 for the foreseeable future.
+- If a test buildfarm using `colcon` proofs to deliver the exact same results as the ROS 1 buildfarm using `catkin_make_isolated` it might be changed to use `colcon` in the future to benefit from the features `colcon` provides (like non-interleaved output per package when building in parallel, per package log files, etc.).
