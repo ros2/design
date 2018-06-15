@@ -453,6 +453,6 @@ The following items briefly enumerate what this decision means for ROS developer
 
 ### Outlook
 
-- Since `colcon` can be used to build ROS 1 early adopters can try to use it to build ROS 1 from source.
+- Since `colcon` can be used to build ROS 1, early adopters can try to use it to build ROS 1 from source.
   While there is documentation how to migrate from [catkin_make_isolated](http://colcon.readthedocs.io/en/latest/migration/catkin_make_isolated.html) and [catkin_tools](http://colcon.readthedocs.io/en/latest/migration/catkin_tools.html) `colcon` won't be the recommended build tool in ROS 1 for the foreseeable future.
 - If a test buildfarm using `colcon` proofs to deliver the exact same results as the ROS 1 buildfarm using `catkin_make_isolated` it might be changed to use `colcon` in the future to benefit from the features `colcon` provides (like non-interleaved output per package when building in parallel, per package log files, etc.).
