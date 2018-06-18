@@ -1,9 +1,9 @@
 ---
 layout: default
-title: The meta build system "ament"
+title: The build system "ament_cmake" and the meta build tool "ament_tools"
 permalink: articles/ament.html
 abstract:
-  This article describes the meta build system "ament".
+  This article describes the build system "ament_cmake" and the meta build tool "ament_tools".
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 categories: Overview
@@ -18,6 +18,13 @@ categories: Overview
 </div>
 
 Original Author: {{ page.author }}
+
+<div class="alert alert-warning" markdown="1">
+When this article was originally written `ament_tools` was the ROS 2 specific build tool.
+The reason was that it needed to be side-by-side installable with existing ROS 1 packages which was a problem due to different targeted Python versions.
+In the meantime the problem due to different Python versions has been addressed in shared dependencies like `catkin_pkg`.
+As of ROS 2 Bouncy `ament_tools` has been superseded by `colcon` as described in the [universal build tool](http://design.ros2.org/articles/build_tool.html) article.
+</div>
 
 ## Preface
 
