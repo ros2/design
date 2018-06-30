@@ -322,8 +322,8 @@ Since it hasn't been used by many people yet more advanced features like cross c
 
 For the decision process only the following two options are being considering based on the rationale described above:
 
-A.  Use `catkin_tools` as a starting point
-B.  Use `colcon` as a starting point
+- option **A)**  Use `catkin_tools` as a starting point
+- option **B)**  Use `colcon` as a starting point
 
 If this topic would have been addressed earlier some of the duplicate effort could have likely been avoided.
 When the work towards a universal build tool was suspended over a year ago it was a conscious decision based on available resources.
