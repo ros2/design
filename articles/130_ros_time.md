@@ -109,7 +109,6 @@ If the time on the clock jumps backwards, a callback handler will be invoked and
 Calls that come in before that must block.
 The developer has the opportunity to register callbacks with the handler to clear any state from their system if necessary before time will be in the past.
 
-Messages published on `/clock` must be delivered in order.
 The frequency of publishing the `/clock` as well as the granularity are not specified as they are application specific.
 
 ##### No Advanced Estimating Clock By Default
