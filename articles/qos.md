@@ -103,6 +103,14 @@ However, this mechanism will not be added into the common ROS2 API so as to keep
 To honor the QoS settings of the system, developers can use the `rmw_qos_profile_system_default` QoS profile which delegates the responsibility of the QoS machinery to the underlying DDS vendor.
 This allows developers to deploy ROS2 applications and use DDS vendor tools to configure the QoS settings.
 
+## Integration with non DDS RMW Implementations
+
+There is no QoS setting that affects the order messages may be received.
+Instead an RMW implementation must implement the same behavior as DDS.
+Once a subscriber takes a message from the RMW implementation it must not be allowed to take an earlier message from the same publisher.
+If the connection is Reliable then newer messages should be kept in the History until all older messages are received.
+A best effort connection should drop an older message if it has already received a newer one.
+
 ## Open questions
 
 How should the integration of the QoS machinery with intraprocess communication be like.
