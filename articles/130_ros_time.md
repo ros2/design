@@ -138,7 +138,7 @@ However, if a client library chooses to not use the shared implementation then i
 
 `SteadyTime` will be typed differently than the interchangable `SystemTime` and `ROSTime`.
 This is because SystemTime and ROSTime have a common base class with runtime checks that they are valid to compare against each other.
-However SteadyTime is never comparable to SystemTime or SteadyTime so it would actually have a separate implementation of the same API.
+However SteadyTime is never comparable to SystemTime or ROSTime so it would actually have a separate implementation of the same API.
 Thus you could get protection from misusing them at compile time (in compiled languages) instead of only catching it at runtime.
 
 ### Public API
