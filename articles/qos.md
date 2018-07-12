@@ -109,7 +109,7 @@ There is no QoS setting that affects the order messages may be received.
 Instead an RMW implementation must implement the same behavior as DDS.
 Once a subscriber takes a message from the RMW implementation it must not be allowed to take an earlier message from the same publisher.
 If the connection is Reliable then newer messages should be kept in the History until all older messages are received.
-A best effort connection should drop an older message if it has already received a newer one.
+A best effort connection should drop an older message if a subscriber has taken a newer one.
 
 ## Open questions
 
