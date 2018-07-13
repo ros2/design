@@ -84,7 +84,7 @@ For convenience in these cases we will also provide the same API as above, but u
 
 The `ROSTime` will report the same as `SystemTime` when an ROS Time Source is not active.
 When the ROS time source is active `ROSTime` will return the latest value reported by the Time Source.
-`ROSTime` is considered active when the parameter `using_sim_time` is set on the node.
+`ROSTime` is considered active when the parameter `use_sim_time` is set on the node.
 
 #### Steady Time
 
