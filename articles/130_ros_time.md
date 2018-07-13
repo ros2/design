@@ -26,6 +26,11 @@ To this end we require that nodes running in the ROS network have a synchronized
 
 There are however several use cases where being able to control the progress of the system is important.
 
+### Real Time vs real-time computing
+
+In this article the term 'real time' is used to express the true rate of progression of time.
+This is not connected to 'real-time' computing with deterministic deadlines.
+
 ## Use cases requiring time abstraction
 
 When playing back logged data it is often very valuable to support accelerated, slowed, or stepped control over the progress of time.
@@ -61,7 +66,7 @@ The ability to support pausing time requires that we not assume that the time va
 
 When communicating the changes in time propagation, the latencies in the communication network becomes a challenge.
 Any change in the time abstraction must be communicated to the other nodes in the graph, but will be subject to normal network communication latency.
-This inaccuracy is proportional to the latency of communications and also proportional to the increase in the real time factor.
+This inaccuracy is proportional to the latency of communications and also proportional to the increase in the rate at which simulated time advances compared to real time (the "real time factor").
 If very accurate timestamping is required when using the time abstraction, it can be achieved by slowing down the real time factor such that the communication latency is comparatively small.
 
 The final challenge is that the time abstraction must be able to jump backwards in time, a feature that is useful for log file playback.
@@ -82,9 +87,9 @@ For convenience in these cases we will also provide the same API as above, but u
 
 #### ROS Time
 
-The `ROSTime` will report the same as `SystemTime` when an ROS Time Source is not active.
+The `ROSTime` will report the same as `SystemTime` when a ROS Time Source is not active.
 When the ROS time source is active `ROSTime` will return the latest value reported by the Time Source.
-`ROSTime` is considered active when the parameter `using_sim_time` is set on the node.
+`ROSTime` is considered active when the parameter `use_sim_time` is set on the node.
 
 #### Steady Time
 
@@ -124,9 +129,9 @@ Tuning the parameters for the `/clock` topic lets you trade off time for computa
 
 It is possible that the user may have access to an out of band time source which can provide better performance than the default source the `/clock` topic.
 It might be possible that for their use case a more advanced algorithm would be needed to propagate the simulated time with adequate precision or latency with restricted bandwidth or connectivity.
-The user will be able to switch out the time source for either each instance of their Time object as well as have the ability to override the default for the process.
+The user will be able to switch out the time source for the instance of their Time object as well as have the ability to override the default for the process.
 
-It is possible to use an external time source such as GPS in as a ROSTime source, but it is recommended to integrate a time source like that using standard NTP integrations with the system clock since that is already an established mechanism and will not need to deal with more complicated changes such as time jumps.
+It is possible to use an external time source such as GPS as a ROSTime source, but it is recommended to integrate a time source like that using standard NTP integrations with the system clock since that is already an established mechanism and will not need to deal with more complicated changes such as time jumps.
 
 For the current implementation a `TimeSource` API will be defined such that it can be overridden in code.
 If in the future a common implementation is found that would be generally useful it could be extended to optionally dynamically select the alternative TimeSource via a parameter similar to enabling the simulated time.
@@ -143,12 +148,12 @@ Thus you could get protection from misusing them at compile time (in compiled la
 
 ### Public API
 
-In each implementation will provide `Time`, `Duration`, and `Rate` datatypes, for all three time source abstractions.
+The implementation from client library will provide `Time`, `Duration`, and `Rate` datatypes, for all three time source abstractions.
 
 The `Clock` will support a `sleep_for` function as well as a `sleep_until` method using a `Duration` or `Time` argument respectively.
 The implementation will also provide a `Timer` object which will provide periodic callback functionality for all the abstractions.
 
-It will also support registering callback before and after a time jump.
+It will also support registering callbacks for before and after a time jump.
 The first callback will be to allow proper preparations for a time jump.
 The latter will allow code to respond to the change in time and include the new time specifically as well as a quantification of the jump.
 
@@ -177,11 +182,6 @@ For more information on the implementation in ROS 1.0 see:
 - [ROS Clock Documentation](http://wiki.ros.org/Clock)
 - [rospy Time Documentation](http://wiki.ros.org/rospy/Overview/Time)
 - [roscpp Time Documentation](http://wiki.ros.org/roscpp/Overview/Time)
-
-### Real Time
-
-In this article the term 'real time' is used to express the true rate of progression of time.
-This is not connected to 'real-time' computing with deterministic deadlines.
 
 [`std::chrono`]: http://en.cppreference.com/w/cpp/chrono
 [`steady_clock`]: http://en.cppreference.com/w/cpp/chrono/steady_clock
