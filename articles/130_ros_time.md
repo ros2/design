@@ -87,7 +87,7 @@ For convenience in these cases we will also provide the same API as above, but u
 
 #### ROS Time
 
-The `ROSTime` will report the same as `SystemTime` when an ROS Time Source is not active.
+The `ROSTime` will report the same as `SystemTime` when a ROS Time Source is not active.
 When the ROS time source is active `ROSTime` will return the latest value reported by the Time Source.
 `ROSTime` is considered active when the parameter `use_sim_time` is set on the node.
 
@@ -129,9 +129,9 @@ Tuning the parameters for the `/clock` topic lets you trade off time for computa
 
 It is possible that the user may have access to an out of band time source which can provide better performance than the default source the `/clock` topic.
 It might be possible that for their use case a more advanced algorithm would be needed to propagate the simulated time with adequate precision or latency with restricted bandwidth or connectivity.
-The user will be able to switch out the time source for either each instance of their Time object as well as have the ability to override the default for the process.
+The user will be able to switch out the time source for the instance of their Time object as well as have the ability to override the default for the process.
 
-It is possible to use an external time source such as GPS in as a ROSTime source, but it is recommended to integrate a time source like that using standard NTP integrations with the system clock since that is already an established mechanism and will not need to deal with more complicated changes such as time jumps.
+It is possible to use an external time source such as GPS as a ROSTime source, but it is recommended to integrate a time source like that using standard NTP integrations with the system clock since that is already an established mechanism and will not need to deal with more complicated changes such as time jumps.
 
 For the current implementation a `TimeSource` API will be defined such that it can be overridden in code.
 If in the future a common implementation is found that would be generally useful it could be extended to optionally dynamically select the alternative TimeSource via a parameter similar to enabling the simulated time.
@@ -148,12 +148,12 @@ Thus you could get protection from misusing them at compile time (in compiled la
 
 ### Public API
 
-In each implementation will provide `Time`, `Duration`, and `Rate` datatypes, for all three time source abstractions.
+The implementation from client library will provide `Time`, `Duration`, and `Rate` datatypes, for all three time source abstractions.
 
 The `Clock` will support a `sleep_for` function as well as a `sleep_until` method using a `Duration` or `Time` argument respectively.
 The implementation will also provide a `Timer` object which will provide periodic callback functionality for all the abstractions.
 
-It will also support registering callback before and after a time jump.
+It will also support registering callbacks for before and after a time jump.
 The first callback will be to allow proper preparations for a time jump.
 The latter will allow code to respond to the change in time and include the new time specifically as well as a quantification of the jump.
 
