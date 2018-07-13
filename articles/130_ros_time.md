@@ -61,7 +61,7 @@ The ability to support pausing time requires that we not assume that the time va
 
 When communicating the changes in time propagation, the latencies in the communication network becomes a challenge.
 Any change in the time abstraction must be communicated to the other nodes in the graph, but will be subject to normal network communication latency.
-This inaccuracy is proportional to the latency of communications and also proportional to the increase in the real time factor.
+This inaccuracy is proportional to the latency of communications and also proportional to the increase in the rate at which simulated time advances compared to real time (the "real time factor").
 If very accurate timestamping is required when using the time abstraction, it can be achieved by slowing down the real time factor such that the communication latency is comparatively small.
 
 The final challenge is that the time abstraction must be able to jump backwards in time, a feature that is useful for log file playback.
