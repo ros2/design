@@ -26,6 +26,11 @@ To this end we require that nodes running in the ROS network have a synchronized
 
 There are however several use cases where being able to control the progress of the system is important.
 
+### Real Time vs real-time computing
+
+In this article the term 'real time' is used to express the true rate of progression of time.
+This is not connected to 'real-time' computing with deterministic deadlines.
+
 ## Use cases requiring time abstraction
 
 When playing back logged data it is often very valuable to support accelerated, slowed, or stepped control over the progress of time.
@@ -177,11 +182,6 @@ For more information on the implementation in ROS 1.0 see:
 - [ROS Clock Documentation](http://wiki.ros.org/Clock)
 - [rospy Time Documentation](http://wiki.ros.org/rospy/Overview/Time)
 - [roscpp Time Documentation](http://wiki.ros.org/roscpp/Overview/Time)
-
-### Real Time
-
-In this article the term 'real time' is used to express the true rate of progression of time.
-This is not connected to 'real-time' computing with deterministic deadlines.
 
 [`std::chrono`]: http://en.cppreference.com/w/cpp/chrono
 [`steady_clock`]: http://en.cppreference.com/w/cpp/chrono/steady_clock
