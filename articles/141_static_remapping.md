@@ -322,14 +322,31 @@ The replacement must be a single token which will become the node's new name.
 
 #### Order of Applying Remapping Rules
 
-Rules for changing a default namespace or the name of the node get applied first before any other rule.
-All other rules are applied in the order in which the user gave them.
+Remapping rules are applied in the following order:
 
-**Example:**
+1. Node name remapping
+1. Namespace remapping
+1. All other rules
+
+Within each category, the rules are applied in the order in which the user gave them.
+
+**Example of topic/service remapping order:**
 
 - a node uses a name `/foo/bar`
 - a user gives the node a rule `/*/*:=/asdf` and then `/foo/bar:=fizzbuzz`
 - the final name is `/asdf` because the name did not match the second rule after being remapped by the first rule
+
+**Example of node/namespace remapping order:**
+
+- A node has name `talker`
+- A user gives the rules `talker:__ns:=/my_namespace` then `talker:__node:=foo`
+- The final namespace is the default `/` because the node name remap is applied before the namespace remap
+
+**Example of a default and node specific namespace remap:**
+
+- A node has name `talker`
+- A user gives the rules `talker:__ns:=/foo` then `__ns:=/bar`
+- talker's namespace is `/foo` because that rule was given first
 
 ### Applications of the syntax
 
