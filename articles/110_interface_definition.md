@@ -37,6 +37,16 @@ A single data structure is called *message*.
 Each message has a *name*.
 Together with the name of the *package* a message can be uniquely identified.
 
+for example:
+
+```shell
+$ cat Message.msg # the Message.msg is a package
+
+string msg # message name
+```
+
+The `#` here is a comment that can be used to describe the particular message field
+
 ### Services
 
 For request / reply style communication the two exchanged data structures are related.
@@ -193,6 +203,15 @@ The *array specifier* can be one of the following:
 - a static array is described by the suffix `[N]` where `N` is the fixed size of the array
 - an unbounded dynamic array is described by the suffix `[]`
 - a bounded dynamic array is described by the suffix `[<=N]`  where `N` is the maximum size of the array
+
+- enumerations are not available, but one can simulate the enumeration by defining a set of values to the field. For ex:
+
+```shell
+    uint8 BRAKE_ON = 1 # brake is active
+    uint8 BRAKE_OFF = 2 # brake is not active
+    
+    uint8 brakestatus # brake status is one of the above two values BRAKE_ON or BRAKE_OFF
+```
 
 #### Values
 
