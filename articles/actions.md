@@ -110,6 +110,7 @@ uint32 total_dishes_cleaned
 # Define a feedback message that will be published during action execution.
 float32 percent_complete
 uint32 number_dishes_cleaned
+```
 
 
 ## API
