@@ -105,7 +105,8 @@ All other constants are declared as `static const` members in the struct and the
 
 In the following discussion, "member" refers to the class member in the C++ class while "field" refers to the field definition in the IDL file.
 
-The *default constructor* initializes all members with their default value; if a field doesn't have a default value, then the member is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization).
+The *default constructor* initializes all members with their default value if they have one, either from the field's default in the IDL file, or the [ROS default for the field type](http://design.ros2.org/articles/interface_definition.html#default-values).
+If a field doesn't have a default value, then the member is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization).
 In some cases this may not be desirable, since these fields will often be immediately overwritten with user-provided values.
 Therefore, the constructor takes an optional directive of type `rosidl_generator_cpp::MessageInitialization` to control how initialization is done:
 
