@@ -109,7 +109,7 @@ The *default constructor* initializes all members with the default value specife
 In some cases this may not be desirable, since these fields will often be immediately overwritten with user-provided values.
 Therefore, the constructor takes an optional directive of type `rosidl_generator_cpp::MessageInitialization` to control how initialization is done:
 
-- `MessageInitialization::ALL` - Initialize each member with the field's default value; if a field doesn't have a default value, then the member is [value-initialized](http://en.cppreference.com/w/cpp/language/value_initialization)
+- `MessageInitialization::ALL` - Initialize each member with the field's default value specifed in the IDL file, or otherwise with the common default for the field type [as defined in this article](http://design.ros2.org/articles/interface_definition.html#default-values) (note: `char` fields are considered numeric for C++).
   - The safest option, and also the default (used if not passing any argument to the constructor).
 - `MessageInitialization::SKIP` - Don't initialize any members; it is the user's responsibility to ensure that all members get initialized with some value, otherwise undefined behavior may result
   - Used for maximum performance if the user is setting all of the members themselves.
