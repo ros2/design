@@ -22,14 +22,14 @@ Original Author: {{ page.author }}
 ## Background
 
 ROS2 currently supports the concept of strings, which are sequences of single-byte characters.
-When working with ROS 2.0 topic data, some users would like to use multi-byte characters (e.g. UTF-8) for their topic data.
+When working with ROS 2 topic data, some users would like to use multi-byte characters (e.g. UTF-8) for their topic data.
 This article explores the problem and the possible solutions.
 Note that this article specifically does not talk about binary data, as that is already handled by using uint8_t arrays.
 It also does not talk about using multi-byte characters for the topic *names*, as this is disallowed by the DDS specification.
 
 ## Multi-byte character background
 
-Before delving into ROS 2.0 specifics, some time should be spent discussing multi-byte characters in general.
+Before delving into ROS 2 specifics, some time should be spent discussing multi-byte characters in general.
 What is meant by multi-byte characters?
 The original ASCII character set only provided for printable characters using binary sequences 0 to 127.
 Several extensions were made to this to use 128-255, but that approach only extended the character set to be able to cover a few more languages.
@@ -49,12 +49,12 @@ For more information, the following links provide introductory material:
 The rest of this document is generally going to assume Unicode, unless stated otherwise.
 
 ## Introducing Wide Strings
-To support multi-byte characters, ROS 2.0 will introduce the concept of a wide string.
-There are a few basic questions to answer on how a wide string will be integrated into ROS 2.0:
+To support multi-byte characters, ROS 2 will introduce the concept of a wide string.
+There are a few basic questions to answer on how a wide string will be integrated into ROS 2:
 
 * What is the size impact of the wide string?
 * What is the encoding of the wide string?
-* What does the API look like to a user of ROS 2.0?
+* What does the API look like to a user of ROS 2?
 
 Each of these questions will be examined in more detail below.
 
@@ -80,16 +80,16 @@ Dealing with wide strings puts more strain on the software of a system, both in 
 This is felt most acutely when talking about small microcontrollers, where both flash size (code space) and performance (processor speed) are at a premium.
 Some of the common encodings (including UTF-8) are defined as being variable width, meaning that a character can take 1, 2, or 4 characters to represent.
 These encoding also typically have the ability to combine one character with the next in non-trivial ways.
-As one of the goals of ROS 2.0 is to support small, constrained systems, dealing with wide strings may be out of the question.
-Thus, the current ROS 2.0 design for wide strings makes them optional, defines them as a separate type from regular strings, and recommends against using them for common messages.
+As one of the goals of ROS 2 is to support small, constrained systems, dealing with wide strings may be out of the question.
+Thus, the current ROS 2 design for wide strings makes them optional, defines them as a separate type from regular strings, and recommends against using them for common messages.
 
 ### What is the encoding of the wide string?
 
-There are two main ways that ROS 2.0 can provide for the encoding of a wide string.
-Either ROS 2.0 can define exactly what the encoding will be for all strings, or it can allow the user to specify the encoding when handing it to ROS 2.0.
+There are two main ways that ROS 2 can provide for the encoding of a wide string.
+Either ROS 2 can define exactly what the encoding will be for all strings, or it can allow the user to specify the encoding when handing it to ROS 2.
 There are pros and cons to each approach.
 
-**ROS 2.0 defines the encoding**
+**ROS 2 defines the encoding**
 
 Pros:
 
@@ -97,7 +97,7 @@ Pros:
 
 Cons:
 
-* If the user-level code uses a different encoding, the user is responsible for doing a conversion to the ROS 2.0 defined encoding.
+* If the user-level code uses a different encoding, the user is responsible for doing a conversion to the ROS 2 defined encoding.
   This can involve some runtime cost.
 
 **User defines the encoding**
@@ -108,9 +108,9 @@ Pros:
 
 Cons:
 
-* The user must always tell ROS 2.0 what encoding the data is in.
+* The user must always tell ROS 2 what encoding the data is in.
 * The encoding needs to be transmitted on the wire to the other side.
-* It is not clear how ROS 2.0 will transmit the encoding.
+* It is not clear how ROS 2 will transmit the encoding.
   Fixed list?
   Which encodings go into the list?
 
@@ -118,17 +118,17 @@ While a user defined encoding looks somewhat attractive at first, the downsides 
 The downsides also mean that any program that wants to parse ROS 2 messages (or bag files) may potentially have to deal with many different encodings.
 Additionally, Unicode (and in particular, UTF-8) are very commonplace now, while other encodings are becoming more esoteric.
 Even earlier Unicode (UTF-16 and UTF-32) encodings are essentially deprecated in favor of UTF-8.
-For these reasons, the current design of the ROS 2.0 wide string is to use a UTF-8 encoding for all strings.
+For these reasons, the current design of the ROS 2 wide string is to use a UTF-8 encoding for all strings.
 
-### What does the API look like to a user of ROS 2.0?
+### What does the API look like to a user of ROS 2?
 
 #### Python 3
 
 Python 3 splits byte arrays from strings pretty cleanly.
 Thus, in Python 3, a string is a sequence of characters, where each character can take 1 or more bytes.
 Byte arrays are sequences of bytes.
-Thus, the ROS 2.0 API for dealing with wide strings (such as the publish API) will take just a string type in, and encode it as utf-8.
-The ROS 2.0 API for dealing with regular strings will take a string type in, and encode it as ASCII.
+Thus, the ROS 2 API for dealing with wide strings (such as the publish API) will take just a string type in, and encode it as utf-8.
+The ROS 2 API for dealing with regular strings will take a string type in, and encode it as ASCII.
 
 **Example**
 
@@ -176,7 +176,7 @@ Thus, the API looks exactly the same as it would for the String type.
 
 C++ doesn't have good built-in support for wide strings.
 Using wchar_t is generally not a good option, as wchar_t has different sizes on different platforms (2 bytes on Windows, 4 bytes on Linux).
-Thus, ROS 2.0 will define a new type to deal with wide strings.
+Thus, ROS 2 will define a new type to deal with wide strings.
 The APIs that deal with wide strings will expect this new type to be passed in.
 
 **Example**
@@ -224,7 +224,7 @@ The publisher takes in types of utf8_string, and generates the correct data on t
 ### Bounded wide strings
 
 A note on bounded wide strings.
-ROS 2.0 allows for "bounded" strings and wide strings.
+ROS 2 allows for "bounded" strings and wide strings.
 These are strings that can be no longer than their bounded number.
 In the case of strings, the width of a character == the width of a byte in most cases, so the number of bytes in a bounded string is generally the bound (plus 1 for the NULL-termination).
 Wide strings are a little bit different.
@@ -233,7 +233,7 @@ Thus the maximum number of bytes the bounded wide string can be may be, and most
 
 ## Summary
 
-To summarize, the current ROS 2.0 design for wide strings:
+To summarize, the current ROS 2 design for wide strings:
 
 * Maps wide characters onto the DDS type wchar.
   This in turn maps wide strings on the DDS type wstring.
@@ -242,4 +242,4 @@ To summarize, the current ROS 2.0 design for wide strings:
 * Recommends against using wide strings for common messages.
 * Defines the encoding for all wide string to be UTF-8.
 * For python the APIs that deal with wstrings will take a regular str type in.
-* For C++, ROS 2.0 will define a new type to deal with wstrings.
+* For C++, ROS 2 will define a new type to deal with wstrings.
