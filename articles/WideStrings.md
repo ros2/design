@@ -125,7 +125,6 @@ Code in the subscriber callback should stop processing a message when it encount
 ### Python 3
 
 In Python 3 a string is a sequence of characters where each character can take 1 or more bytes.
-Byte arrays are sequences of bytes.
 Thus the ROS 2 API for dealing with `wstring` will take a string type in internally and convert it to UTF-16.
 
 **Example**
