@@ -59,18 +59,20 @@ This purpose is to allow ROS 2 nodes to comminicate with non-ROS DDS entities us
 The encoding of data in this type should be UTF-16 to match DDS-XTYPES 1.2.
 Since both UTF-8 and UTF-16 can encode the same code points, new ROS 2 messages should prefer `string` over `wstring`.
 
-## Encodings are Recommendations
-The choice of UTF-8 or UTF-16 for `string` and `wstring` are recommendations.
-A `string` or `wstring` field is allowed to be populated and published with an unknown encoding.
-If subscriber receives a string containing an unknown ncoding then it is up to the subscriber how to handle it.
-It could decode it using an encoding that has been agreed to out of band.
+## Encodings are Required but not Guaranteed to be Enforced
+The choice of UTF-8 or UTF-16 for `string` and `wstring` are required, but it is up to the rmw implementation to enfoce them.
+They are not guaranteed to be enforced because it is unknown if it would be a significant performance hit on resource constrained systems.
+Further, users writing defensive code would already check that a string contains valid data after receiving it.
+
+If a `string` or `wstring` field is populated with the wrong encoding then the behavior is undefined.
+It is possible the middleware may allow invalid data to be passed through to subscribers.
+Each subscriber is responsible for detecting and deciding how to handle it.
+For example, it could decode it using an encoding that has been agreed to out of band.
 Other subscribers like `ros2 topic echo` may echo the bytes in hexadecimal.
 
-In practice using different encodings may not be possible.
 The IDL specification forbids `string` from containing `NULL` values.
 For compatibility a ROS message `string` field must not contain zero bytes, and a `wstring` field must not contain zero words.
-An encoding like UTF-32 cannot be used since it may have zero bytes or words in a code point.
-If UTF-32 encoded strings need to be transmitted then one should either convert to UTF-8 and use a `string` or use a `uint32` array.
+This restriction is enforced.
 
 <div class="alert alert-warning" markdown="1">
   <b>TODO:</b> Can ROS 1 publish a string with NULL bytes?
