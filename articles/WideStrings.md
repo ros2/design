@@ -92,9 +92,11 @@ Both UTF-8 and UTF-16 are variable width encodings.
 To minimize the amount of memory used, the `string` and `wstring` types are to be stored in client libraries according to the smallest possible code point.
 This means `string` must be specified as a sequence of bytes, and `wstring` is to be specified as a sequence of words.
 
-Some DDS implementations use 32bit types to store wide strings values.
-This may be due to DDS-XTYPES 1.1 spec saying `wchar` is a 32bit value.
-ROS 2 will instead aim to be compatible with DDS-XTYPES 1.2 and use 16bit storage for wide characters.
+Some DDS implementations currently use 32bit types to store wide strings values.
+This may be due to DDS-XTYPES 1.1 section 7.3.1.5 specifying `wchar` as a 32bit value.
+However this changes in DDS-XTYPES 1.2 section 7.3.1.4 to be a 16bit value.
+It is expected that most DDS implementations will switch to 16bit character storage in the future.
+ROS 2 will aim to be compatible with DDS-XTYPES 1.2 and use 16bit storage for wide characters.
 Generated code for ROS 2 messages will automatically handle the conversion when a message is serialized or deserialized.
 
 ### Bounded wide strings
