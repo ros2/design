@@ -99,7 +99,7 @@ Generated code for ROS 2 messages will automatically handle the conversion when 
 
 ### Bounded wide strings
 
-Embedded systems accepting strings may use message definitions that restrict the maximum size of a string.
+Message definitions may restrict the maximum size of a string.
 These are referred to as bounded strings.
 Their purpose is to restrinct the amount of memory used, so the bounds must be specified as units of memory.
 If a `string` field is bounded then the size is given in bytes.
