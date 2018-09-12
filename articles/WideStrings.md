@@ -117,8 +117,8 @@ Some wide string operations like splitting a string on a user perceived characte
 
 However, whole string equality checking is the same whether using wide strings or not.
 Further splitting a UTF-8 string on an ASCII character is identical to splitting an ASCII character on an ASCII string.
-If a microcontroller must do other types of string manipluation, then a `string` type should still be used.
-Code in the subscriber callback should stop processing a message when it encounters a byte greater than 127 in a `string` field.
+If code on a microcontroller must do string manipluation then it could assert that a `string` only contains ASCII data.
+It should be computationally inexpensive for it to stop processing a string when it encounters a byte greater than 127.
 
 ## What does the API look like to a user of ROS 2?
 
