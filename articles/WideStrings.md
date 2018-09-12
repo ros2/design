@@ -48,87 +48,83 @@ For more information, the following links provide introductory material:
 
 The rest of this document is generally going to assume Unicode, unless stated otherwise.
 
+## Unicode Characters in Strings
+ROS 1 says string fields are to contain ASCII encoded data, but allows UTF-8.
+DDS-XTYPES mandates UTF-8 be used as the encoding of IDL type `string`.
+To be compatible with ROS 1 and DDS-XTYPES, in ROS 2 the content of a `string` is expected to be UTF-8.
+
 ## Introducing Wide Strings
-To support multi-byte characters, ROS 2 will introduce the concept of a wide string.
-There are a few basic questions to answer on how a wide string will be integrated into ROS 2:
+ROS 2 messages will have a new [primitive field type](/articles/interface_definition.html) `wstring`.
+This purpose is to allow ROS 2 nodes to comminicate with non-ROS DDS entities using an IDL containing a `wstring` field.
+The encoding of data in this type should be UTF-16 to match DDS-XTYPES 1.2.
+Since both UTF-8 and UTF-16 can encode the same code points, new ROS 2 messages should prefer `string` over `wstring`.
 
-* What is the size impact of the wide string?
-* What is the encoding of the wide string?
-* What does the API look like to a user of ROS 2?
+## Encodings are Recommendations
+The choice of UTF-8 or UTF-16 for `string` and `wstring` are recommendations.
+A `string` or `wstring` field is allowed to be populated and published with an unknown encoding.
+If subscriber receives a string containing an unknown ncoding then it is up to the subscriber how to handle it.
+It could decode it using an encoding that has been agreed to out of band.
+Other subscribers like `ros2 topic echo` may echo the bytes in hexadecimal.
 
-Each of these questions will be examined in more detail below.
+In practice using different encodings may not be possible.
+The IDL specification forbids `string` from containing `NULL` values.
+For compatibility a ROS message `string` field must not contain zero bytes, and a `wstring` field must not contain zero words.
+An encoding like UTF-32 cannot be used since it may have zero bytes or words in a code point.
+If UTF-32 encoded strings need to be transmitted then one should either convert to UTF-8 and use a `string` or use a `uint32` array.
 
-### What is the size impact of the wide string?
+<div class="alert alert-warning" markdown="1">
+  <b>TODO:</b> Can ROS 1 publish a string with NULL bytes?
+</div>
 
-There are 2 parts to this question.
-One is how the wide string is mapped onto the underlying DDS implementation, which defines how large messages will be on-the-wire (and on disk).
-The other part of the question deals with the runtime impact (in terms of speed and code size) of having to deal with wide strings.
+## Unicode Strings Across ROS 1 Bridge
+Since ROS 1 and 2 both allow `string` to be UTF-8, the ROS 1 bridge will pass values unmodified between them.
+If a message sent from ROS 2 to ROS 1 fails to serialize because a string contains values that are not legal UTF-8 then it won't be published by the bridge.
 
-**Mapping onto the DDS implementation**
+If a ROS 2 message has a field of type `wstring` then the bridge will attempt to convert it from UTF-16 to UTF-8.
+The resulting UTF-8 encoded string will be published as a `string` type.
+If the conversion fails then the bridge will not publish the message.
 
-There are a couple of different ways that a wide string could be mapped onto a DDS implementation.
-The first way it could be mapped is onto a uint8_t byte array.
-While this would work, it has the downside that the byte array would be "opaque", and any introspection tools into DDS wouldn't see anything but a stream of bytes.
-The second way it could be mapped is onto the "wchar/wstring" type defined by the DDS specification.
-The DDS specification itself doesn't define a size for wchar, but the X-Types specification (for DDS introspection) does say that a wchar should be mapped onto a Char32.
-Thus, all known encodings would fit into a wchar, and DDS introspection tools could look into wstrings.
-Thus, the current design of wide strings map onto wchar DDS types.
+## Size of a Wide String
 
-**Runtime impact of wide string**
+Both UTF-8 and UTF-16 are variable width encodings.
+To minimize the amount of memory used, the `string` and `wstring` types are to be stored in client libraries according to the smallest possible code point.
+This means `string` must be specified as a sequence of bytes, and `wstring` is to be specified as a sequence of words.
 
-Dealing with wide strings puts more strain on the software of a system, both in terms of speed and in terms of code size.
-This is felt most acutely when talking about small microcontrollers, where both flash size (code space) and performance (processor speed) are at a premium.
-Some of the common encodings (including UTF-8) are defined as being variable width, meaning that a character can take 1, 2, or 4 characters to represent.
-These encoding also typically have the ability to combine one character with the next in non-trivial ways.
-As one of the goals of ROS 2 is to support small, constrained systems, dealing with wide strings may be out of the question.
-Thus, the current ROS 2 design for wide strings makes them optional, defines them as a separate type from regular strings, and recommends against using them for common messages.
+Some DDS implementations use 32bit types to store wide strings values.
+This may be due to DDS-XTYPES 1.1 spec saying `wchar` is a 32bit value.
+ROS 2 will instead aim to be compatible with DDS-XTYPES 1.2 and use 16bit storage for wide characters.
+Generated code for ROS 2 messages will automatically handle the conversion when a message is serialized or deserialized.
 
-### What is the encoding of the wide string?
+### Bounded wide strings
 
-There are two main ways that ROS 2 can provide for the encoding of a wide string.
-Either ROS 2 can define exactly what the encoding will be for all strings, or it can allow the user to specify the encoding when handing it to ROS 2.
-There are pros and cons to each approach.
+Embedded systems accepting strings may use message definitions that restrict the maximum size of a string.
+These are referred to as bounded strings.
+Their purpose is to restrinct the amount of memory used, so the bounds must be specified as units of memory.
+If a `string` field is bounded then the size is given in bytes.
+Similarly the size of a bounded `wstring` is to be specified in words.
+It is the responsibility of whoever populates a bounded `string` or `wstring` to make sure it contains whole code points only.
+Partial code points are indistinuguishable from unknown encodings, so a bounded string whose last code point is incomplete will be published without error.
 
-**ROS 2 defines the encoding**
+## Runtime impact of wide string
 
-Pros:
+Dealing with wide strings puts more strain on the software of a system, both in terms of speed and code size.
+UTF-8 and UTF-16 are both variable width encodings, meaning a code point can take 1 (UTF-8 only), 2, or 4 bytes to represent.
+It may take multiple code points to represent a single user perceived character.
+One of the goals of ROS 2 is to support microcontrollers that are contrained by both code size and processor speed.
+Some wide string operations like splitting a string on a user perceived character may not be possible on these devices.
 
-* All strings known to be in the same encoding.
+However, whole string equality checking is the same whether using wide strings or not.
+Further splitting a UTF-8 string on an ASCII character is identical to splitting an ASCII character on an ASCII string.
+If a microcontroller must do other types of string manipluation, then a `string` type should still be used.
+Code in the subscriber callback should stop processing a message when it encounters a byte greater than 127 in a `string` field.
 
-Cons:
+## What does the API look like to a user of ROS 2?
 
-* If the user-level code uses a different encoding, the user is responsible for doing a conversion to the ROS 2 defined encoding.
-  This can involve some runtime cost.
+### Python 3
 
-**User defines the encoding**
-
-Pros:
-
-* No conversions necessary for user-to-ROS 2 API.
-
-Cons:
-
-* The user must always tell ROS 2 what encoding the data is in.
-* The encoding needs to be transmitted on the wire to the other side.
-* It is not clear how ROS 2 will transmit the encoding.
-  Fixed list?
-  Which encodings go into the list?
-
-While a user defined encoding looks somewhat attractive at first, the downsides to it make it difficult to determine exactly which encodings are in use.
-The downsides also mean that any program that wants to parse ROS 2 messages (or bag files) may potentially have to deal with many different encodings.
-Additionally, Unicode (and in particular, UTF-8) are very commonplace now, while other encodings are becoming more esoteric.
-Even earlier Unicode (UTF-16 and UTF-32) encodings are essentially deprecated in favor of UTF-8.
-For these reasons, the current design of the ROS 2 wide string is to use a UTF-8 encoding for all strings.
-
-### What does the API look like to a user of ROS 2?
-
-#### Python 3
-
-Python 3 splits byte arrays from strings pretty cleanly.
-Thus, in Python 3, a string is a sequence of characters, where each character can take 1 or more bytes.
+In Python 3 a string is a sequence of characters where each character can take 1 or more bytes.
 Byte arrays are sequences of bytes.
-Thus, the ROS 2 API for dealing with wide strings (such as the publish API) will take just a string type in, and encode it as utf-8.
-The ROS 2 API for dealing with regular strings will take a string type in, and encode it as ASCII.
+Thus the ROS 2 API for dealing with `wstring` will take a string type in internally and convert it to UTF-16.
 
 **Example**
 
@@ -168,26 +164,23 @@ if __name__ == '__main__':
     main()
 ```
 
-Notice that this code looks almost identical to the same demo for String.
-That's because in python, the characters in the string and the byte representation are cleanly separated.
-Thus, the API looks exactly the same as it would for the String type.
+This code looks almost identical to the same demo for String.
 
-#### C++
+### C++
 
-C++ doesn't have good built-in support for wide strings.
-Using wchar_t is generally not a good option, as wchar_t has different sizes on different platforms (2 bytes on Windows, 4 bytes on Linux).
-Thus, ROS 2 will define a new type to deal with wide strings.
-The APIs that deal with wide strings will expect this new type to be passed in.
+In c++ wsing `wchar_t` has different sizes on different platforms (2 bytes on Windows, 4 bytes on Linux).
+Instead ROS 2 will use `char16_t` for characters of wide strings, and `std::u16string` for wide strings themselves.
 
 **Example**
 
 ```
+#include <codecvt>
 #include <iostream>
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "std_msgs/msg/w_string.hpp"
+#include "std_msgs/msg/wstring.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -204,9 +197,10 @@ int main(int argc, char * argv[])
 
   auto msg = std::make_shared<std_msgs::msg::WString>();
   auto i = 1;
+  std::wstring_convert<std::codecvt<char16_t, char, std::mbstate_t>, char16_t> convert_to_u16;
 
   while (rclcpp::ok()) {
-    utf8_string hello("Hello World: " + std::to_string(i++));
+    std::u16string hello(u"Hello World: " + convert_to_u16.from_bytes(std::to_string(i++)));
     msg->data = hello;
     std::cout << "Publishing: '" << msg->data.cpp_str() << "'" << std::endl;
     chatter_pub->publish(msg);
@@ -217,29 +211,3 @@ int main(int argc, char * argv[])
   return 0;
 }
 ```
-
-Here, ROS 2 has implemented a new type called "utf8_string" (this is still to be implemented, and the name may change).
-The publisher takes in types of utf8_string, and generates the correct data on the wire.
-
-### Bounded wide strings
-
-A note on bounded wide strings.
-ROS 2 allows for "bounded" strings and wide strings.
-These are strings that can be no longer than their bounded number.
-In the case of strings, the width of a character == the width of a byte in most cases, so the number of bytes in a bounded string is generally the bound (plus 1 for the NULL-termination).
-Wide strings are a little bit different.
-When dealing with bounded wide strings, the bound is on the number of characters, not bytes.
-Thus the maximum number of bytes the bounded wide string can be may be, and most likely will be, larger than the number of characters.
-
-## Summary
-
-To summarize, the current ROS 2 design for wide strings:
-
-* Maps wide characters onto the DDS type wchar.
-  This in turn maps wide strings on the DDS type wstring.
-* Allows them to be optionally supported by an implementation.
-* Defines wide strings as a separate type from strings.
-* Recommends against using wide strings for common messages.
-* Defines the encoding for all wide string to be UTF-8.
-* For python the APIs that deal with wstrings will take a regular str type in.
-* For C++, ROS 2 will define a new type to deal with wstrings.
