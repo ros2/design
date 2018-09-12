@@ -105,7 +105,7 @@ Their purpose is to restrinct the amount of memory used, so the bounds must be s
 If a `string` field is bounded then the size is given in bytes.
 Similarly the size of a bounded `wstring` is to be specified in words.
 It is the responsibility of whoever populates a bounded `string` or `wstring` to make sure it contains whole code points only.
-Partial code points are indistinuguishable from unknown encodings, so a bounded string whose last code point is incomplete will be published without error.
+Partial code points are indistinuguishable from invalid code points, so a bounded string whose last code point is incomplete is not guaranteed to be published.
 
 ## Runtime impact of wide string
 
