@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Interface definition
-permalink: articles/interface_definition.html
+permalink: articles/legacy_interface_definition.html
 abstract:
   This article specifies the file format describing the data structures exchanged by ROS 2 components to interact with each other.
-published: true
+published: false
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 categories: Interfaces
 ---
