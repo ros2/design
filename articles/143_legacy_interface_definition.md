@@ -241,3 +241,34 @@ Depending on the type the following values are valid:
 A service file contains two message definitions which are separated by a line which only contains three dashes:
 
     ---
+
+## Conversion to IDL
+Code is generated for defined interfaces to be usable by different client libraries.
+Interfaces described using the legacy format are first converted to [IDL](articles/idl_interface_definition.html).
+Code generation uses the generated file.
+
+### Mapping to IDL types
+
+| ROS type | IDL type           |
+| -------- | ------------------ |
+| bool     | boolean            |
+| byte     | octet              |
+| char     | char               |
+| float32  | float              |
+| float64  | double             |
+| int8     | octet              |
+| uint8    | octet              |
+| int16    | short              |
+| uint16   | unsigned short     |
+| int32    | long               |
+| uint32   | unsigned long      |
+| int64    | long long          |
+| uint64   | unsigned long long |
+| string   | string             |
+
+| ROS type                | IDL type       |
+| ----------------------- | -------------- |
+| static array            | T\[N\]         |
+| unbounded dynamic array | sequence<T>    |
+| bounded dynamic array   | sequence<T, N> |
+| bounded string          | string<N>      |
