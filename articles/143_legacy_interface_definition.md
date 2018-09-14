@@ -266,9 +266,9 @@ Code generation uses the generated file.
 | uint64   | unsigned long long |
 | string   | string             |
 
-| ROS type                | IDL type       |
-| ----------------------- | -------------- |
-| static array            | T\[N\]         |
-| unbounded dynamic array | sequence<T>    |
-| bounded dynamic array   | sequence<T, N> |
-| bounded string          | string<N>      |
+| ROS type                | IDL type         |
+| ----------------------- | ---------------- |
+| static array            | array            |
+| unbounded dynamic array | sequence         |
+| bounded dynamic array   | bounded sequence |
+| bounded string          | bounded string   |
