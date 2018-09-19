@@ -137,6 +137,7 @@ Each file contains a single message or service.
 Message files use the extension `.msg`, service files use the extension `.srv`.
 
 Both file names must use an upper camel case name and only consist of alphanumeric characters.
+Note that some message files are permitted to deviate from this pattern (such as `MyService_Request.msg` and `MyService_Response.msg` which are generated automatically from `MyService.srv`), but the exceptions are only intended for internally-generated message files, not those written by users.
 
 ### Naming of fields
 
