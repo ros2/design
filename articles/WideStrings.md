@@ -131,43 +131,29 @@ Bytes of a known encoding should be converted to a `str` using [bytes.decode](ht
 
 **Example**
 
-```
+```python
 import sys
 from time import sleep
 
 import rclpy
-
 from rclpy.qos import qos_profile_default
-
 from std_msgs.msg import WString
 
-def main(args=None):
-    if args is None:
-        args = sys.argv
 
-    rclpy.init(args)
+if __name__ == '__main__':
+    rclpy.init(sys.argv)
 
     node = rclpy.create_node('talker')
 
     chatter_pub = node.create_publisher(WString, 'chatter', qos_profile_default)
 
-    msg = String()
-
-    i = 1
-    while True:
-        msg.data = 'Hello World: {0}'.format(i)
-        i += 1
-        print('Publishing: "{0}"'.format(msg.data))
-        chatter_pub.publish(msg)
-        # TODO(wjwwood): need to spin_some or spin_once with timeout
-        sleep(1)
-
-
-if __name__ == '__main__':
-    main()
+    msg = WString()
+    msg.data = 'Hello World' + bytes([0x00, 0x00, 0x26, 0x3A]).decode('utf-32-be')
+    print('Publishing: "{0}"'.format(msg.data))
+    chatter_pub.publish(msg)
+    node.destroy_node()
+    rclpy.shutdown()
 ```
-
-This code looks almost identical to the same demo for String.
 
 ### C++
 
