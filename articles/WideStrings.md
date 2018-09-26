@@ -69,7 +69,7 @@ Other strategies like replacing invalid bytes could unintentionally change the m
 
 If a ROS 2 message has a field of type `wstring` then the bridge will attempt to convert it from UTF-16 to UTF-8.
 The resulting UTF-8 encoded string will be published as a `string` type.
-If the conversion fails then the bridge will not publish the message.
+If the conversion fails then the bridge will by default not publish the message.
 
 ## Size of a Wide String
 
