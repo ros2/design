@@ -21,7 +21,7 @@ Original Author: {{ page.author }}
 
 ## Background
 
-Some users would like to send text data in languages that cannot be represented by ascii characters.
+Some users would like to send text data in languages that cannot be represented by ASCII characters.
 Currently ROS 1 only supports ASCII data in the string field but [allows users to populate it with UTF-8](http://wiki.ros.org/msg).
 
 Note that topic names cannot use multi-byte characters as they are disallowed by the DDS specification.
