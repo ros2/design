@@ -79,7 +79,8 @@ This restriction is enforced.
 
 ## Unicode Strings Across ROS 1 Bridge
 Since ROS 1 and 2 both allow `string` to be UTF-8, the ROS 1 bridge will pass values unmodified between them.
-If a message sent from ROS 2 to ROS 1 fails to serialize because a string contains values that are not legal UTF-8 then it won't be published by the bridge.
+If a message with a string field fails to serialize because the content is not legal UTF-8 then the default behavior will be to drop the entire message.
+Other strategies like replacing invalid bytes could unintentionally change the meaning, so they will be opt-in if available at all.
 
 If a ROS 2 message has a field of type `wstring` then the bridge will attempt to convert it from UTF-16 to UTF-8.
 The resulting UTF-8 encoded string will be published as a `string` type.
