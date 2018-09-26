@@ -20,32 +20,22 @@ Original Author: {{ page.author }}
 
 ## Background
 
-ROS2 currently supports the concept of strings, which are sequences of single-byte characters.
-When working with ROS 2 topic data, some users would like to use multi-byte characters (e.g. UTF-8) for their topic data.
-This article explores the problem and the possible solutions.
-Note that this article specifically does not talk about binary data, as that is already handled by using uint8_t arrays.
-It also does not talk about using multi-byte characters for the topic *names*, as this is disallowed by the DDS specification.
+Some users would like to send text data in languages that cannot be represented by ascii characters.
+Currently ROS 1 only supports ASCII data in the string field but [allows users to populate it with UTF-8](http://wiki.ros.org/msg).
+This article describes how ROS 2 will support sending multi-byte character data using the [Unicode](https://en.wikipedia.org/wiki/Unicode) standard.
+It also describes how such data will be sent over the ROS 1 bridge.
 
-## Multi-byte character background
+Note that topic names cannot use multi-byte characters as they are disallowed by the DDS specification.
+See the [topic and service name](/articles/topic_and_service_names.html) design document for more information.
 
-Before delving into ROS 2 specifics, some time should be spent discussing multi-byte characters in general.
-What is meant by multi-byte characters?
-The original ASCII character set only provided for printable characters using binary sequences 0 to 127.
-Several extensions were made to this to use 128-255, but that approach only extended the character set to be able to cover a few more languages.
-Several other encodings were created as the need arose, and it became clear by the 1990's that a worldwide standard was required.
-Thus, Unicode was created to be a single specification that could cover all of the languages of the world.
-The early versions of Unicode actually failed to live up to this expectation, and some of those early versions of Unicode are still baked into widely used software (Microsoft Windows, Java, etc).
-Later on, the Unicode standard evolved to truly be able to cover the languages of the entire world, and this is what should generally be used for new designs.
-As a side benefit, the newer versions of Unicode (UTF-8) are backwards compatible with ASCII.
-There is a lot of history here, and things are much more complicated then the brief introduction above.
-For more information, the following links provide introductory material:
+The following links have more information about multi-byte characters and the history of character encodings.
 
 * [http://kunststube.net/encoding/](http://kunststube.net/encoding/)
 * [http://stackoverflow.com/questions/4588302/why-isnt-wchar-t-widely-used-in-code-for-linux-related-platforms](http://stackoverflow.com/questions/4588302/why-isnt-wchar-t-widely-used-in-code-for-linux-related-platforms)
 * [http://www.diveintopython3.net/strings.html](http://www.diveintopython3.net/strings.html)
 * [http://stackoverflow.com/questions/402283/stdwstring-vs-stdstring](http://stackoverflow.com/questions/402283/stdwstring-vs-stdstring)
+* [https://utf8everywhere.org/](http://utf8everywhere.org/)
 
-The rest of this document is generally going to assume Unicode, unless stated otherwise.
 
 ## Unicode Characters in Strings
 ROS 1 says string fields are to contain ASCII encoded data, but allows UTF-8.
