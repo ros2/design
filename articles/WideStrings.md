@@ -99,7 +99,7 @@ Partial code points are indistinuguishable from invalid code points, so a bounde
 Dealing with wide strings puts more strain on the software of a system, both in terms of speed and code size.
 UTF-8 and UTF-16 are both variable width encodings, meaning a code point can take 1 to 4 bytes depending on the encoding.
 It may take multiple code points to represent a single user perceived character.
-One of the goals of ROS 2 is to support microcontrollers that are contrained by both code size and processor speed.
+One of the goals of ROS 2 is to support microcontrollers that are constrained by both code size and processor speed.
 Some wide string operations like splitting a string on a user perceived character may not be possible on these devices.
 
 However, whole string equality checking is the same whether using wide strings or not.
