@@ -126,8 +126,8 @@ It should be computationally inexpensive for it to stop processing a string when
 
 ### Python 3
 
-In Python 3 a string is a sequence of characters where each character can take 1 or more bytes.
-Thus the ROS 2 API for dealing with `wstring` will take a string type in internally and convert it to UTF-16.
+In Python the `str` type will be used for both strings and wide strings.
+Bytes of a known encoding should be converted to a `str` using [bytes.decode](https://docs.python.org/3/library/stdtypes.html#bytes.decode) before being assigned to a field.
 
 **Example**
 
