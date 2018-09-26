@@ -1,9 +1,8 @@
 ---
 layout: default
-title: WideStrings
+title: Unicode Support
 abstract:
-  Some ROS2 users would like to use multi-byte characters for topic data, suitable for supporting multi-byte languages.
-  This article lays out the problem, and explores potential solutions to this problem.
+  This article desribes how ROS 2 will support multi-byte character sets.
 author: '[Chris Lalancette](https://github.com/clalancette)'
 published: true
 ---
