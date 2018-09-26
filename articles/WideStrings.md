@@ -54,8 +54,8 @@ Since ROS 2 is targeting resource constrained systems, it is left to the rmw imp
 Further, since many users will write code to check that a string contains valid data, checking again in lower layers may not be necessary in some cases.
 
 If a `string` or `wstring` field is populated with the wrong encoding then the behavior is undefined.
-It is possible the rmw implementation may allow invalid data to be passed through to subscribers.
-Each subscriber is responsible for detecting invalid data and deciding how to handle it.
+It is possible the rmw implementation may allow invalid strings to be passed through to subscribers.
+Each subscriber is responsible for detecting invalid strings and deciding how to handle them.
 For example, subscribers like `ros2 topic echo` may echo the bytes in hexadecimal.
 
 The IDL specification forbids `string` from containing `NULL` values.
