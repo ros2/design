@@ -59,12 +59,8 @@ Each subscriber is responsible for detecting invalid data and deciding how to ha
 For example, subscribers like `ros2 topic echo` may echo the bytes in hexadecimal.
 
 The IDL specification forbids `string` from containing `NULL` values.
-For compatibility a ROS message `string` field must not contain zero bytes, and a `wstring` field must not contain zero words.
+To be compatible, a ROS message `string` field must not contain zero bytes, and a `wstring` field must not contain zero words.
 This restriction will be enforced.
-
-<div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> Can ROS 1 publish a string with NULL bytes?
-</div>
 
 ## Unicode Strings Across ROS 1 Bridge
 Since ROS 1 and 2 both allow `string` to be UTF-8, the ROS 1 bridge will pass values unmodified between them.
