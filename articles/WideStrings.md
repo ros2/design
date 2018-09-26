@@ -38,30 +38,30 @@ The following links have more information about multi-byte characters and the hi
 
 
 ## Unicode Characters in Strings
+Two goals for ROS 2 strings are to be compatible with ROS 1 strings, and compatible with the DDS wire format.
 ROS 1 says string fields are to contain ASCII encoded data, but allows UTF-8.
 DDS-XTYPES mandates UTF-8 be used as the encoding of IDL type `string`.
-To be compatible with ROS 1 and DDS-XTYPES, in ROS 2 the content of a `string` is expected to be UTF-8.
+To be compatibile with both, in ROS 2 the content of a `string` is expected to be UTF-8.
 
-## Introducing Wide Strings
+## Wide Strings
 ROS 2 messages will have a new [primitive field type](/articles/interface_definition.html) `wstring`.
 This purpose is to allow ROS 2 nodes to comminicate with non-ROS DDS entities using an IDL containing a `wstring` field.
 The encoding of data in this type should be UTF-16 to match DDS-XTYPES 1.2.
 Since both UTF-8 and UTF-16 can encode the same code points, new ROS 2 messages should prefer `string` over `wstring`.
 
 ## Encodings are Required but not Guaranteed to be Enforced
-The choice of UTF-8 or UTF-16 for `string` and `wstring` are required, but it is up to the rmw implementation to enfoce them.
-They are not guaranteed to be enforced because it is unknown if it would be a significant performance hit on resource constrained systems.
-Further, users writing defensive code would already check that a string contains valid data after receiving it.
+`string` and `wstring` are required to be UTF-8 and UTF-16, but the requirement may not be enforced.
+Since ROS 2 is targeting resource constrained systems, it is left to the rmw implementation to choose whether or not to enforce the encoding.
+Further, since many users will write code to check check that a string contains valid data, checking the encoding may not be necessary in some cases.
 
 If a `string` or `wstring` field is populated with the wrong encoding then the behavior is undefined.
-It is possible the middleware may allow invalid data to be passed through to subscribers.
-Each subscriber is responsible for detecting and deciding how to handle it.
-For example, it could decode it using an encoding that has been agreed to out of band.
-Other subscribers like `ros2 topic echo` may echo the bytes in hexadecimal.
+It is possible the rmw implementation may allow invalid data to be passed through to subscribers.
+Each subscriber is responsible for detecting invalid data and deciding how to handle it.
+For example, subscribers like `ros2 topic echo` may echo the bytes in hexadecimal.
 
 The IDL specification forbids `string` from containing `NULL` values.
 For compatibility a ROS message `string` field must not contain zero bytes, and a `wstring` field must not contain zero words.
-This restriction is enforced.
+This restriction will be enforced.
 
 <div class="alert alert-warning" markdown="1">
   <b>TODO:</b> Can ROS 1 publish a string with NULL bytes?
