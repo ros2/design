@@ -88,7 +88,7 @@ Generated code for ROS 2 messages will automatically handle the conversion when 
 
 Message definitions may restrict the maximum size of a string.
 These are referred to as bounded strings.
-Their purpose is to restrinct the amount of memory used, so the bounds must be specified as units of memory.
+Their purpose is to restrict the amount of memory used, so the bounds must be specified as units of memory.
 If a `string` field is bounded then the size is given in bytes.
 Similarly the size of a bounded `wstring` is to be specified in words.
 It is the responsibility of whoever populates a bounded `string` or `wstring` to make sure it contains whole code points only.
