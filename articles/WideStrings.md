@@ -2,7 +2,8 @@
 layout: default
 title: Unicode Support
 abstract:
-  This article desribes how ROS 2 will support multi-byte character sets.
+  This article describes how ROS 2 will support sending multi-byte character data using the [Unicode](https://en.wikipedia.org/wiki/Unicode) standard.
+  It also describes how such data will be sent over the ROS 1 bridge.
 author: '[Chris Lalancette](https://github.com/clalancette)'
 published: true
 ---
@@ -22,8 +23,6 @@ Original Author: {{ page.author }}
 
 Some users would like to send text data in languages that cannot be represented by ascii characters.
 Currently ROS 1 only supports ASCII data in the string field but [allows users to populate it with UTF-8](http://wiki.ros.org/msg).
-This article describes how ROS 2 will support sending multi-byte character data using the [Unicode](https://en.wikipedia.org/wiki/Unicode) standard.
-It also describes how such data will be sent over the ROS 1 bridge.
 
 Note that topic names cannot use multi-byte characters as they are disallowed by the DDS specification.
 See the [topic and service name](/articles/topic_and_service_names.html) design document for more information.
