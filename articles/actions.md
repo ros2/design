@@ -113,6 +113,15 @@ uint32 number_dishes_cleaned
 ```
 
 
+## Goal Identifiers
+
+In ROS 1 Action clients are responsible for creating a goal ID when submitting a goal.
+This leads to a race condition between goal creation and cancellation.
+If a client submits a goal and immediatly tries to cancel it, the cancelation may fail if it is received by the action server prior to the goal being accepted.
+
+In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
+It won't be possible for the client to cancel the goal until after it has received the goal ID.
+
 ## API
 
 Actions are a first-class citizen in the ROS API, alongside topics and services.
