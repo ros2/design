@@ -299,6 +299,9 @@ The purpose of this service is to get the final result of a service.
 After a goal has been accepted the client should call this service to receive the result.
 The result will indicate the final status of the goal and any user defined data.
 
+Once the server sends the result to the client it should free up any resources used by the action.
+If the client never asks for the result then the server should discard the result after a timeout period.
+
 #### Goal Status Topic
 
 * **Direction**: Server publishes
