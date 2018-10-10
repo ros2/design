@@ -25,7 +25,7 @@ This article documents requirements, design ideas and related works on this unde
 
 ## Requirements
 
-
+*   Very basic requirements only: modularity, device classes to aim at, middleware interoperability, ...
 
 *   Link to OFERA requirements deliverable for details
 
