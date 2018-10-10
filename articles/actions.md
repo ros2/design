@@ -291,7 +291,7 @@ The cancel request policy is the same as in ROS 1.
 
 #### Get Result Service
 
-* **Direction**: Client call Server
+* **Direction**: Client calls Server
 * **Request**: Goal ID
 * **Response**: Status of goal and user defined result
 
