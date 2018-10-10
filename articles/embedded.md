@@ -27,7 +27,7 @@ This article documents requirements, design ideas and related works on this unde
 
 *   Very basic requirements only: modularity, device classes to aim at, middleware interoperability, ...
 
-*   Link to OFERA requirements deliverable for details
+For details also add link to OFERA requirements deliverable (on ofera.eu).
 
 
 
