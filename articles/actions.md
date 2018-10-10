@@ -179,18 +179,84 @@ It does provide for receiving both a return value from a request and, at the sam
 This means that an implementation of actions cannot simply be a DDS-style RPC.
 The implementation must separately provide status/feedback and control channels.
 
-An asynchronous service is used to provide the initial action request channel and the final result.
-The action server shall create a server for this service upon construction.
-The action client shall create a client for this service upon construction.
+### Topics and Services Used
 
-A topic is used to provide the feedback channel.
-The action server shall publish this topic upon construction.
-The action client shall subscribe to this topic upon construction.
+In ROS 1 an action is defined entirely using topics.
+In ROS 2 an action is the combination of the following services and topics.
 
-A topic is used to provide the control channel.
-The action server shall publish this topic upon construction.
-The action client shall subscribe to this topic upon construction.
+#### Goal Submission Service
 
-### Topic and service naming
+* **Direction**: Client calls Server
+* **Request**: Description of goal
+* **Response**: Whether goal was accepted or rejected, and a unique identifier for the goal, and time goal was accepted.
 
-The topic and service used to provide an action are named as follows.
+The purpose of this service is to submit a goal to the action server.
+It is the first service called to begin an action.
+A user-define description of the goal is sent as the request.
+The response is a standard action message indicating whether or not the goal was accepted, and if so the identifier the server will use to describe the goal.
+
+#### Cancel Request Service
+
+* **Direction**: Client calls Server
+* **Request**: Goal identifier, time stamp
+* **Response**: Goals that will be attempted to be cancelled
+
+The purpose of this service is to request to cancel one or more goals on the action server.
+A cancellation request may cancel multiple goals.
+The result indicates which goals will be attempted to be cancelled.
+Whether or not a goal is actually cancelled is indicated by the status topic and the result service.
+
+The cancel request policy is the same as in ROS 1.
+
+* If the goal ID is empty and time is zero, cancel all goals
+* If the goal ID is empty and time is not zero, cancel all goals accepted before the time stamp
+* If the goal ID is not empty and time is not zero, cancel the goal with the given id regardless of the time it was accepted
+* If the goal ID is not empty and time is zero, cancel the goal with the given id and all goals accepted before the time stamp
+
+#### Get Result Service
+
+* **Direction**: Client call Server
+* **Request**: Goal ID
+* **Response**: Status of goal and user defined result
+
+The purpose of this service is to get the final result of a service.
+After a goal has been accepted the client should call this service to receive the result.
+The result will indicate the final status of the goal and any user defined data.
+
+#### Goal Status Topic
+
+* **Direction**: Server publishes
+* **Content**: Goal id, time it was accepted, and an enum indicating the status of this goal.
+
+This topic is published by the server to broadcast the status of goals it has accepted.
+The purpose of the topic is for introspection; it is not used by the action client.
+Messages are published when transitions from one status to another occur.
+
+The possible statuses are:
+
+* *Accepted*
+  * The goal has been accepted by the action server
+  * Next status *Executing* or *Accepted Cancellation*
+* *Executing*
+  * The action server is attempting to reach the goal
+  * Next status *Accepted Cancellation*, *Succeeded*, *Aborted*
+* *Accepted Cancellation*
+  * The action server will try to cancel the indicated goal
+  * Next status *Cancelled*, *Succeeded*, *Aborted*
+* Cancelled
+  * The action server successfully canceled the goal
+  * No more statuses will be published
+* Succeeded
+  * The action server successfully reached the goal
+  * No more statuses will be published
+* Aborted
+  * The action server failed reached the goal
+  * No more statuses will be published
+
+#### Feedback Topic
+
+* **Direction**: Server publishes
+* **Content**: Goal id, user defined feedback message
+
+This topic is published by the server to send application specific progress about the goal.
+It is up to the author of the action server to decide how often to publish the feedback.
