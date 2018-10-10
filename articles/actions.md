@@ -293,13 +293,13 @@ The possible statuses are:
 * *Accepted Cancellation*
   * The action server will try to cancel the indicated goal
   * Next status *Cancelled*, *Succeeded*, *Aborted*
-* Cancelled
+* *Cancelled*
   * The action server successfully canceled the goal
   * No more statuses will be published
-* Succeeded
+* *Succeeded*
   * The action server successfully reached the goal
   * No more statuses will be published
-* Aborted
+* *Aborted*
   * The action server failed reached the goal
   * No more statuses will be published
 
