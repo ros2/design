@@ -245,6 +245,9 @@ It is the first service called to begin an action.
 A user-define description of the goal is sent as the request.
 The response is a standard action message indicating whether or not the goal was accepted, and if so the identifier the server will use to describe the goal.
 
+The QoS settings of this service must be set the so the client is guaranteed to receive a response.
+Otherwise it is possible for an action to be executed without a client being aware of it.
+
 #### Cancel Request Service
 
 * **Direction**: Client calls Server
