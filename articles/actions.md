@@ -209,9 +209,9 @@ Whether or not a goal is actually cancelled is indicated by the status topic and
 The cancel request policy is the same as in ROS 1.
 
 * If the goal ID is empty and time is zero, cancel all goals
-* If the goal ID is empty and time is not zero, cancel all goals accepted before the time stamp
+* If the goal ID is empty and time is not zero, cancel all goals accepted at or before the time stamp
 * If the goal ID is not empty and time is not zero, cancel the goal with the given id regardless of the time it was accepted
-* If the goal ID is not empty and time is zero, cancel the goal with the given id and all goals accepted before the time stamp
+* If the goal ID is not empty and time is zero, cancel the goal with the given id and all goals accepted at or before the time stamp
 
 #### Get Result Service
 
