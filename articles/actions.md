@@ -149,6 +149,29 @@ Publishes a message matching the action feedback type as defined in the specific
 
 ### API for action clients
 
+Action clients are created with the node interface:
+
+- **create\_action\_client** - This requires the action *type* (specification) and action *name*.
+Optionally, handlers for action *feedback* and action *results* can be registered.
+
+Handlers:
+
+- **handle_feedback** - Called when the action server publishes a feedback message.
+Contains the goal ID associated with the feedback.
+- **handle_result** - Called when the action server invokes *set_canceled*, *set_succeeded*, or *set_aborted*.
+Contains a result message and the goal ID.
+
+Once created, an action client provides the following commands:
+
+- **send_goal** - Send a goal request and get a response (accepted or rejected).
+If accepted, then the response contains the goal ID.
+- **cancel_goal** - Send a cancel request for a goal and get a response (accepted or rejected).
+- **get_result** - Convenience method for getting the result for a particular goal ID (if a result exists).
+- **get_status** - Get the current status of a goal.
+Can be: *ACTIVE*, *CANCELING*, *CANCELED*, *SUCCEEDED*, *ABORTED*, or *INVALID* (goal ID is not tracked).
+
+TODO: state diagram
+
 ### Example usage
 
 Disclaimer: These examples show how we **imagine** actions to be used, but it is subject to change.
