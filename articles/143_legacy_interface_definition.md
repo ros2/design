@@ -253,7 +253,7 @@ Code generation uses the generated file.
 | -------- | ------------------ |
 | bool     | boolean            |
 | byte     | octet              |
-| char     | int8               |
+| char     | uint8              |
 | float32  | float              |
 | float64  | double             |
 | int8     | int8               |
