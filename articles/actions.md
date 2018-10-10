@@ -169,15 +169,23 @@ This is irrespective of the implementation, which may use several topics or serv
 
 ## Middleware implementation
 
-In ROS 1, actions are implemented using a set of topics under a namespace taken from the action name.
+### ROS 1 Background
+In ROS 1, actions are implemented as a separate library using a set of topics under a namespace taken from the action name.
 This implementation was chosen because ROS services are inherently synchronous, and so incompatible with the asynchronous nature of the action concept.
 There is also a need for a status/feedback channel and a control channel.
 
-The Remote Procedure Call over DDS (DDS-RPC) specification does not explicitly provide facilities for interrupting service calls or receiving feedback on their progress.
-It does provide for receiving both a return value from a request and, at the same time, an indication of whether the request was successful or raised an exception, with the exception type included in this information.
+### ROS 2
 
-This means that an implementation of actions cannot simply be a DDS-style RPC.
-The implementation must separately provide status/feedback and control channels.
+Actions will be implemented on top of topics an services.
+However, they will be included in all client libraries in ROS 2 with a common implmentation in C.
+This reduces the work to implement actions at the client library level since existing middlewares do not need to be updated.
+
+It is possible actions could be implemented in the middlware layer in the future.
+One option for DDS middlewares is Remote Procedure Call (DDS-RPC).
+However, DDS-RPC does not provide facilities for interrupting service calls or receiving feedback on their progress.
+It does provide for receiving a return value from a request and an indication of whether the request was successful.
+Unsuccessful requests are returned with an exception.
+A DDS based middlware would still need to separately provide status and feedback channels.
 
 ### Topics and Services Used
 
