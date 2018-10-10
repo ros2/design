@@ -129,61 +129,44 @@ If a client submits a goal and immediatly tries to cancel it, the cancelation ma
 In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
 It won't be possible for the client to cancel the goal until after it has received the goal ID.
 
+## Goal States
+
+![Action Server State Machine](../img/action_server_state_machine.png)
+
+The action server is responsible for accepting (or rejecting) goals requested by clients.
+The action server is also responsible for maintaining a separate state for each accepted goal.
+
+There are two intermediate states:
+
+- **ACTIVE** - The goal has been accepted and is currently being processed by the action server.
+- **CANCELING** - The client has requested that the goal be canceled and the action server has accepted the cancel request.
+
+And three terminal states:
+
+- **SUCCEEDED** - The goal was achieved successfully by the action server.
+- **ABORTED** - The goal was terminated by the action server without an external request.
+- **CANCELED** - The goal was canceled after an external request from an action client.
+
+State transitions triggered by the action server:
+
+- **set_succeeded** - Notify that the goal completed successfully.
+- **set_aborted** - Notify that an error was encountered during processing of the goal and it had to be aborted.
+- **set_canceled** - Notify that canceling the goal completed successfully.
+
+State transitions triggered by the action client:
+
+- **send_goal** - A goal is sent to the action server.
+The state machine is only started if the action server *accepts* the goal.
+- **cancel_goal** - Request that the action server stop processing the goal.
+This transition only occurs if the action server *accepts* the request to cancel the goal.
+
 ## API
-
-This is a high-level overview of how to interact with action servers and action clients.
-
-### API for action servers
-
-Action servers are created with the node interface:
-
-- **create\_action\_server** - This requires the action *type* (specification), action *name* (topic string), and a *callback* for handling goals.
-Optionally, a callback for **cancel** requests can also be registered.
-
-Handlers:
-
-- **handle_goal** - *Accepts* or *rejects* a goal request.
-- **handle_cancel** - *Accepts* or *rejects* a cancel request for a given goal ID.
-Note, 'accepting' does not mean the goal is canceled, but signals to the client that the goal will be canceled (ie. preempting).
-
-Once created, an action server provides the following commands:
-
-- **publish_feedback** - Provide feedback for a goal.
-Publishes a message matching the action feedback type as defined in the specification.
-- **set_canceled** - Termiante an active goal with a cancel result message.
-- **set_succeeded** - Terminate an active goal with a successful result message.
-- **set_aborted** - Terminate an active goal with an aborted result message.
-
-### API for action clients
-
-Action clients are created with the node interface:
-
-- **create\_action\_client** - This requires the action *type* (specification) and action *name*.
-Optionally, handlers for action *feedback* and action *results* can be registered.
-
-Handlers:
-
-- **handle_feedback** - Called when the action server publishes a feedback message.
-Contains the goal ID associated with the feedback.
-- **handle_result** - Called when the action server invokes *set_canceled*, *set_succeeded*, or *set_aborted*.
-Contains a result message and the goal ID.
-
-Once created, an action client provides the following commands:
-
-- **send_goal** - Send a goal request and get a response (accepted or rejected).
-If accepted, then the response contains the goal ID.
-- **cancel_goal** - Send a cancel request for a goal and get a response (accepted or rejected).
-- **get_result** - Convenience method for getting the result for a particular goal ID (if a result exists).
-- **get_status** - Get the current status of a goal.
-Can be: *ACTIVE*, *CANCELING*, *CANCELED*, *SUCCEEDED*, *ABORTED*, or *INVALID* (goal ID is not tracked).
-
-TODO: state diagram
-
-### Example usage
 
 Disclaimer: These examples show how we **imagine** actions to be used, but it is subject to change.
 
 ### C++
+
+TODO
 
 #### Action server usage
 
@@ -194,6 +177,8 @@ TODO
 TODO
 
 ### Python
+
+TODO
 
 #### Action server usage
 
