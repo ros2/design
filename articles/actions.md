@@ -321,23 +321,15 @@ Messages are published when transitions from one status to another occur.
 The possible statuses are:
 
 * *Accepted*
-  * The goal has been accepted by the action server
-  * Next status *Executing* or *Accepted Cancellation*
-* *Executing*
-  * The action server is attempting to reach the goal
-  * Next status *Accepted Cancellation*, *Succeeded*, *Aborted*
-* *Accepted Cancellation*
+  * The goal has been accepted by the action server and may now be executing
+* *Cancelling*
   * The action server will try to cancel the indicated goal
-  * Next status *Cancelled*, *Succeeded*, *Aborted*
 * *Cancelled*
   * The action server successfully canceled the goal
-  * No more statuses will be published
 * *Succeeded*
   * The action server successfully reached the goal
-  * No more statuses will be published
 * *Aborted*
   * The action server failed reached the goal
-  * No more statuses will be published
 
 #### Feedback Topic
 
