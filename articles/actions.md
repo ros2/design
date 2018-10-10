@@ -112,6 +112,13 @@ float32 percent_complete
 uint32 number_dishes_cleaned
 ```
 
+### Namespacing
+
+Multiple message and service definitions are generated from a single action definition.
+In ROS 1 the generated messages were prefixed with the name of the action to avoid conflicts with other messages and services.
+In ROS 2 the generated service and message definitions should be namespaced so it is impossible to conflict.
+For example, in python the code generated from the generated definitions should be in the module `action` instead of `srv` and `msg`.
+In C++ the generated code should be in the namespace and folder `action` instead of `srv` and `msg.
 
 ## Goal Identifiers
 
