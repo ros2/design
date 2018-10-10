@@ -124,12 +124,54 @@ It won't be possible for the client to cancel the goal until after it has receiv
 
 ## API
 
-Actions are a first-class citizen in the ROS API, alongside topics and services.
-Action servers and clients are created using the node interface.
+This is a high-level overview of how to interact with action servers and action clients.
 
 ### API for action servers
 
+Action servers are created with the node interface:
+
+- **create\_action\_server** - This requires the action *type* (specification), action *name* (topic string), and a *callback* for handling goals.
+Optionally, a callback for **cancel** requests can also be registered.
+
+Handlers:
+
+- **handle_goal** - *Accepts* or *rejects* a goal request.
+- **handle_cancel** - *Accepts* or *rejects* a cancel request for a given goal ID.
+Note, 'accepting' does not mean the goal is canceled, but signals to the client that the goal will be canceled (ie. preempting).
+
+Once created, an action server provides the following commands:
+
+- **publish_feedback** - Provide feedback for a goal.
+Publishes a message matching the action feedback type as defined in the specification.
+- **set_canceled** - Termiante an active goal with a cancel result message.
+- **set_succeeded** - Terminate an active goal with a successful result message.
+- **set_aborted** - Terminate an active goal with an aborted result message.
+
 ### API for action clients
+
+### Example usage
+
+Disclaimer: These examples show how we **imagine** actions to be used, but it is subject to change.
+
+### C++
+
+#### Action server usage
+
+TODO
+
+#### Action client usage
+
+TODO
+
+### Python
+
+#### Action server usage
+
+TODO
+
+#### Action client usage
+
+TODO
 
 ### Real-time actions
 
