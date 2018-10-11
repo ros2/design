@@ -119,15 +119,6 @@ In ROS 2, the generated service and message definitions should be namespaced so 
 In Python, the code from the generated definitions should be in the module `action` instead of `srv` and `msg`.
 In C++, the generated code should be in the namespace and folder `action` instead of `srv` and `msg`.
 
-## Goal Identifiers
-
-In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
-This leads to a race condition between goal creation and cancellation.
-If a client submits a goal and immediatly tries to cancel it, the cancellation may fail if it is received by the action server prior to the goal being accepted.
-
-In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
-It won't be possible for the client to cancel the goal until after it has received the goal ID.
-
 ## Goal States
 
 ![Action Server State Machine](../img/action_server_state_machine.png)
@@ -229,6 +220,17 @@ However, DDS-RPC does not provide facilities for interrupting service calls or r
 It does provide for receiving a return value from a request and an indication of whether the request was successful.
 Unsuccessful requests are returned with an exception.
 A DDS based middlware would still need to separately provide status and feedback channels.
+
+### Goal Identifiers
+
+In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
+In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
+
+One reason is the server is better equiped to generate a unique goal id than the client because there may be multiple clients.
+Another is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
+In ROS 1 if a client submits a goal and immediatly tries to cancel it then the cancelation may or may not happen.
+If the cancelation was received first then `actionlib` will ignore the cancellation request without notifying the action server.
+Then when the goal creation request comes in the server will begin executing it.
 
 ### Topics and Services Used
 
