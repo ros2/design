@@ -181,7 +181,36 @@ If the ROS 2 server does not know of the goal, then the bridge will notify the R
 
 ### Bridging ROS 1 Action Server and ROS 2 Action Client
 
-TODO
+If either a ROS 1 action server or a ROS 2 action client exist then the bridge will create:
+
+1. a ROS 1 action client
+2. a ROS 2 action server
+
+#### Goal submission
+
+When the ROS 2 action client submits a goal the bridge will check if a ROS 1 action server exists.
+If it does not exist the bridge will reject the goal, otherwise it will submit the goal to the ROS 1 server.
+The same goal ID is to be used for both ROS 1 and ROS 2.
+
+Goals sent to the bridge from ROS 2 are always immediately accepted by the bridge.
+The bridge will then submit the goal to the ROS 1 server.
+The reason for instantly accepting the goal is that if the ROS 1 action server never responds to a goal request then the bridge cannot return a result.
+Goals that are rejected by ROS 1 action servers will be reported as cancelled to ROS 2 action clients.
+
+#### Goal Cancellation
+
+When a ROS 2 client tries to cancel a goal the bridge will immediately accept the cancellation request.
+It will then try to cancel the request on the ROS 1 action server.
+If the cancellation request is rejected by the ROS 1 server then the ROS 2 bridge will stay in the *CANCELLING* state until the result of the goal is known.
+
+#### Feedback
+
+Since the goal ID is the same for both ROS 1 and ROS 2, the bridge will always publish feedback from ROS 1 servers to the ROS 2 feedback topic.
+
+#### Result
+
+When the ROS 1 action server publishes a result it will be set as the result on the ROS 1 bridge.
+If the ROS 2 action client never calls the service to get the result then it is subject to the same timeout as if it were a normal ROS 2 action server.
 
 ## Goal States
 
