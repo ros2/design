@@ -212,14 +212,11 @@ There is also a need for a status/feedback channel and a control channel.
 
 Actions will be implemented on top of topics and services.
 However, they will be included in all client libraries in ROS 2 with a common implmentation in C.
-This reduces the work to implement actions at the client library level since existing middlewares do not need to be updated.
 
-It is possible actions could be implemented in the middlware layer in the future.
-One option for DDS middlewares is Remote Procedure Call (DDS-RPC).
-However, DDS-RPC does not provide facilities for interrupting service calls or receiving feedback on their progress.
-It does provide for receiving a return value from a request and an indication of whether the request was successful.
-Unsuccessful requests are returned with an exception.
-A DDS based middlware would still need to separately provide status and feedback channels.
+An alternative option is to implement actions in the rmw layer.
+This would enable using middleware specific features better suited actions.
+However, there don't appear to be any features in DDS that are better for actions than what are already in use for services and topics.
+Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
 
 ### Goal Identifiers
 
