@@ -47,7 +47,7 @@ In the EU project OFERA, we compiled a longer list of requirements to an embedde
 
 ### EU project OFERA
 
-The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS2 rmw, rcl and rclcpp layers as-is on the micro-XRCE implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS.
+The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS2 rmw, rcl and rclcpp layers as-is on the micro-XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS.
 
 *   [ofera.eu](http://ofera.eu/) -- project website
 *   [github.com/microROS](https://github.com/microROS) -- first project results, including extensions for NuttX for various communication protocols and micro-XRCE
@@ -68,9 +68,10 @@ The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a 
 *   [mROS](https://github.com/tlk-emb/mROS/) -- a new work on bringing ROS1 concepts (including nodes and the ROS1 middleware) on stronger MCUs, cf. also
     *Hideki Takase, Tomoya Mori, Kazuyoshi Takagi and Naofumi Takagi: 'Work-in-Progress: Design Concept of a Lightweight Runtime Environment for Robot Software Components onto Embedded Devices' in Proc. of ESWEEK, Torino, Italy, September 2018.*
 
-
 ## First Design Ideas
 
-... *diagram from last OFERA meeting* ...
+* This is our porposed architecture:
+
+![micro-ROS](/img/embedded/micro-ROS_proposed_architecture.png)
 
 ... *possibly also the diagram with the API features and the vertical bars indicating the depth of implementation* ...
