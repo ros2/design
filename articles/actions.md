@@ -223,8 +223,8 @@ Additionally implementing actions in the rmw implementations increases the compl
 In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
 In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
 
-One reason is the server is better equiped to generate a unique goal id than the client because there may be multiple clients.
-Another is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
+The server is better equiped to generate a unique goal id than the client because there may be multiple clients who could independently generate the same goal id.
+Another reason is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
 In ROS 1 if a client submits a goal and immediatly tries to cancel it then the cancelation may or may not happen.
 If the cancelation was received first then `actionlib` will ignore the cancellation request without notifying the action server.
 Then when the goal creation request comes in the server will begin executing it.
