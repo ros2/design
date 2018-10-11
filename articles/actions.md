@@ -22,14 +22,14 @@ Original Author: {{ page.author }}
 
 ## Background
 
-ROS services, which provide synchronous Remote Procedure Calls, are a useful concept for sending a request and getting a rapid reply.
-But in robotics there are many instances where a reply may take a significant length of time.
+ROS services, which provide synchronous Remote Procedure Calls (RPC), are a useful concept for sending a request and getting a rapid reply.
+But in robotics, there are many instances where a reply may take a significant length of time.
 Additionally, there are occasions when it is useful to send a request to do some processing or perform some action in the world, where the result is less important than the effect of carrying it out.
-The progress of such requests often needs to be tracked, success or failure must be known in addition to receiving back information produced, and the request may need to be cancelled or altered before it completes.
+The progress of such requests often needs to be tracked, success or failure must be known in addition to receiving back information produced, and the request may need to be canceled or altered before it completes.
 These requirements cannot be fulfilled by a simple RPC mechanism, whether or not it is asynchronous.
 
 To satisfy these use cases, ROS provides a third communication paradigm known as "actions".
-An action is a goal-oriented request that occurs asynchronously to the requester, is typically (but not necessarily) longer-running than immediate, can be cancelled or replaced during execution, and has a server that provides feedback on execution progress.
+An action is a goal-oriented request that occurs asynchronously to the requester, is typically (but not necessarily) longer-running than immediate, can be canceled or replaced during execution, and has a server that provides feedback on execution progress.
 
 This document defines how actions are specified in the ROS Message IDL, how they will be created and used by ROS users (node developers and system integrators), and how they will be communicated by the middleware.
 
@@ -115,16 +115,16 @@ uint32 number_dishes_cleaned
 ### Namespacing
 
 Multiple message and service definitions are generated from a single action definition.
-In ROS 1 the generated messages were prefixed with the name of the action to avoid conflicts with other messages and services.
-In ROS 2 the generated service and message definitions should be namespaced so it is impossible to conflict.
-For example, in python the code generated from the generated definitions should be in the module `action` instead of `srv` and `msg`.
-In C++ the generated code should be in the namespace and folder `action` instead of `srv` and `msg.
+In ROS 1, the generated messages were prefixed with the name of the action to avoid conflicts with other messages and services.
+In ROS 2, the generated service and message definitions should be namespaced so it is impossible to conflict.
+In Python, the code from the generated definitions should be in the module `action` instead of `srv` and `msg`.
+In C++, the generated code should be in the namespace and folder `action` instead of `srv` and `msg`.
 
 ## Goal Identifiers
 
-In ROS 1 Action clients are responsible for creating a goal ID when submitting a goal.
+In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
 This leads to a race condition between goal creation and cancellation.
-If a client submits a goal and immediatly tries to cancel it, the cancelation may fail if it is received by the action server prior to the goal being accepted.
+If a client submits a goal and immediatly tries to cancel it, the cancellation may fail if it is received by the action server prior to the goal being accepted.
 
 In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
 It won't be possible for the client to cancel the goal until after it has received the goal ID.
@@ -220,7 +220,7 @@ There is also a need for a status/feedback channel and a control channel.
 
 ### ROS 2
 
-Actions will be implemented on top of topics an services.
+Actions will be implemented on top of topics and services.
 However, they will be included in all client libraries in ROS 2 with a common implmentation in C.
 This reduces the work to implement actions at the client library level since existing middlewares do not need to be updated.
 
@@ -233,14 +233,14 @@ A DDS based middlware would still need to separately provide status and feedback
 
 ### Topics and Services Used
 
-In ROS 1 an action is defined entirely using topics.
-In ROS 2 an action is the combination of the following services and topics.
+In ROS 1, an action is defined entirely using topics.
+In ROS 2, an action is the combination of the following services and topics.
 
 #### Goal Submission Service
 
 * **Direction**: Client calls Server
 * **Request**: Description of goal
-* **Response**: Whether goal was accepted or rejected, and a unique identifier for the goal, and time goal was accepted.
+* **Response**: Whether goal was accepted or rejected, a unique identifier for the goal, and the time when the goal was accepted.
 
 The purpose of this service is to submit a goal to the action server.
 It is the first service called to begin an action.
@@ -254,12 +254,12 @@ Otherwise it is possible for an action to be executed without a client being awa
 
 * **Direction**: Client calls Server
 * **Request**: Goal identifier, time stamp
-* **Response**: Goals that will be attempted to be cancelled
+* **Response**: Goals that will be attempted to be canceled
 
 The purpose of this service is to request to cancel one or more goals on the action server.
 A cancellation request may cancel multiple goals.
-The result indicates which goals will be attempted to be cancelled.
-Whether or not a goal is actually cancelled is indicated by the status topic and the result service.
+The result indicates which goals will be attempted to be canceled.
+Whether or not a goal is actually canceled is indicated by the status topic and the result service.
 
 The cancel request policy is the same as in ROS 1.
 
@@ -284,7 +284,7 @@ If the client never asks for the result then the server should discard the resul
 #### Goal Status Topic
 
 * **Direction**: Server publishes
-* **Content**: Goal id, time it was accepted, and an enum indicating the status of this goal.
+* **Content**: Goal ID, time it was accepted, and an enum indicating the status of this goal.
 
 This topic is published by the server to broadcast the status of goals it has accepted.
 The purpose of the topic is for introspection; it is not used by the action client.
@@ -359,7 +359,7 @@ When it gets the result the bridge will call
 
 If the bridge notices the ROS 2 action server disappears from the node graph then bridge will wait for the result indefinitely.
 When the bridge reappears the bridge will try to get the result from the goal again.
-If the ROS 2 server does not know of the goal, then the bridge will notify the ROS 1 client that the goal was cancelled.
+If the ROS 2 server does not know of the goal, then the bridge will notify the ROS 1 client that the goal was canceled.
 
 ### Bridging ROS 1 Action Server and ROS 2 Action Client
 
@@ -377,13 +377,13 @@ The same goal ID is to be used for both ROS 1 and ROS 2.
 Goals sent to the bridge from ROS 2 are always immediately accepted by the bridge.
 The bridge will then submit the goal to the ROS 1 server.
 The reason for instantly accepting the goal is that if the ROS 1 action server never responds to a goal request then the bridge cannot return a result.
-Goals that are rejected by ROS 1 action servers will be reported as cancelled to ROS 2 action clients.
+Goals that are rejected by ROS 1 action servers will be reported as canceled to ROS 2 action clients.
 
 #### Goal Cancellation
 
 When a ROS 2 client tries to cancel a goal the bridge will immediately accept the cancellation request.
 It will then try to cancel the request on the ROS 1 action server.
-If the cancellation request is rejected by the ROS 1 server then the ROS 2 bridge will stay in the *CANCELLING* state until the result of the goal is known.
+If the cancellation request is rejected by the ROS 1 server then the ROS 2 bridge will stay in the *CANCELING* state until the result of the goal is known.
 
 #### Feedback
 
