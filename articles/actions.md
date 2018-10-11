@@ -223,6 +223,9 @@ Disclaimer: These examples show how we **imagine** actions to be used, but it is
 Creating an action server:
 
 ```c++
+#include "example_interfaces/action/fibonacci.hpp"
+using Fibonacci = example_interfaces::action::Fibonacci;
+...
 auto node = rclcpp::Node::make_shared("my_node");
 auto server = node->create_action_server<Fibonacci>("fibonacci", handle_goal, handle_cancel);
 ```
