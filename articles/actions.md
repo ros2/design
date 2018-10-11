@@ -22,11 +22,10 @@ Original Author: {{ page.author }}
 
 ## Background
 
-ROS services, which provide synchronous Remote Procedure Calls (RPC), are a useful concept for sending a request and getting a rapid reply.
-But in robotics, there are many instances where a reply may take a significant length of time.
-Additionally, there are occasions when it is useful to send a request to do some processing or perform some action in the world, where the result is less important than the effect of carrying it out.
-The progress of such requests often needs to be tracked, success or failure must be known in addition to receiving back information produced, and the request may need to be canceled or altered before it completes.
-These requirements cannot be fulfilled by a simple RPC mechanism, whether or not it is asynchronous.
+ROS services are useful for sending a request with some information and getting a response indicating if the request was successful along with any other information.
+But, in robotics there are many instances where a response may take a significant length of time.
+In addition, often the progress of a request needs to be tracked, and the request may need to be canceled or altered before it completes.
+These requirements cannot be fulfilled by a ROS service mechanism, whether or not it is asynchronous.
 
 To satisfy these use cases, ROS provides a third communication paradigm known as "actions".
 An action is a goal-oriented request that occurs asynchronously to the requester, is typically (but not necessarily) longer-running than immediate, can be canceled or replaced during execution, and has a server that provides feedback on execution progress.
