@@ -75,6 +75,6 @@ The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a 
 
 * This is our porposed architecture:
 
-![micro-ROS](/img/embedded/micro-ROS_proposed_architecture.svg)
+![micro-ROS](/img/embedded/micro-ROS_proposed_architecture.png)
 
 ... *possibly also the diagram with the API features and the vertical bars indicating the depth of implementation* ...
