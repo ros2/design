@@ -328,7 +328,62 @@ Other features from ROS 1 Simple Action Server could also be incorporated in the
 
 #### Action client usage
 
-TODO
+Creating an action client:
+
+```c++
+#include "example_interfaces/action/fibonacci.hpp"
+using Fibonacci = example_interfaces::action::Fibonacci;
+...
+auto node = rclcpp::Node::make_shared("my_node");
+auto action_client = node->create_action_client<Fibonacci>("fibonacci");
+```
+
+Sending a goal:
+
+```c++
+// Populate goal request
+auto goal_msg = Fibonacci::Goal();
+// ...
+
+// Send goal (synchronous)
+std::shared_ptr<rclcpp::GoalID> goal_id = action_client->send_goal(goal_msg);
+
+// Check if accepted
+if (goal_id)
+{
+  // Goal accepted!
+}
+else
+{
+  // Goal rejected :(
+}
+```
+
+Similar to ROS services, sending a goal is synchronous.
+
+Optionally, callbacks for goal feedback and goal results can be registered:
+
+```c++
+// Send goal (synchronous)
+std::shared_ptr<rclcpp::GoalID> goal_id = action_client->send_goal(goal_msg, feedback_callback, result_callback);
+```
+
+RFC: Alternatively, a future could be used in replace of the result callback (and feedback callback?).
+
+
+Requesting a goal be canceled:
+
+```c++
+// Synchronous
+if (action_client->cancel_goal(goal_id))
+{
+  // Accepted
+}
+else
+{
+  // Rejected :(
+}
+```
 
 ### Python
 
