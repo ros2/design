@@ -173,7 +173,7 @@ C++:
 
 Python:
 
-TODO
+- [examples/rclpy/actions](https://github.com/ros2/examples/tree/actions_proposal/rclpy/actions)
 
 ### Real-time actions
 
