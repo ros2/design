@@ -240,26 +240,6 @@ void handle_goal(const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> goal)
 
 Just like in ROS 1, the `GoalHandle` encapsulates a state machine for each goal and offers methods for triggering transitions.
 
-Restricting the server to handle one goal at a time (e.g. [SimpleActionServer](http://wiki.ros.org/actionlib/DetailedDescription#Simple_Action_Server) from ROS 1):
-
-```c++
-const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> g_current_goal = nullptr;
-
-void handle_goal(const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> goal)
-{
-  // Only allow one goal active at a time
-  if (g_current_goal)
-  {
-    g_current_goal->set_canceled("New goal recevied, canceled previous goal.");
-    // Alternatively, the new goal could be rejected in favor of the previous
-    // goal->reject();
-  }
-  goal->accept();
-  g_current_goal = goal
-}
-```
-
-Syntactic sugar could be added by wrapping `rclcpp::ActionServer` and the above logic into a new class `rclcpp::SimpleActionServer`.
 
 RFC(jacobperron): Alternatvely, we could make the API look more like the service that it is.
 I think this would be more intuitive and ensure that implementers don't forget to accept/reject the request (the same goes for the cancel request).
@@ -318,6 +298,30 @@ auto result_msg = Fibonacci::Result();
 // ...
 goal->set_canceled(result_msg);
 ```
+
+#### "Simple Action Server"
+
+Similar to the [SimpleActionServer](http://wiki.ros.org/actionlib/DetailedDescription#Simple_Action_Server) from ROS 1, we can restrict the server to handle one goal at a time:
+
+```c++
+std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> g_current_goal = nullptr;
+
+void handle_goal(const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> goal)
+{
+  // Only allow one goal active at a time
+  if (g_current_goal)
+  {
+    g_current_goal->set_canceled("New goal recevied, canceled previous goal.");
+    // Alternatively, the new goal could be rejected in favor of the previous
+    // goal->reject();
+  }
+  goal->accept();
+  g_current_goal = goal
+}
+```
+
+Syntactic sugar could be added by wrapping `rclcpp::ActionServer` and the above logic into a new class `rclcpp::SimpleActionServer`.
+Other features from ROS 1 Simple Action Server could also be incorporated in the wrapper too.
 
 #### Action client usage
 
