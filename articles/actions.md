@@ -244,12 +244,11 @@ In ROS 2, an action is the combination of the following services and topics.
 * **Response**: Whether goal was accepted or rejected, a unique identifier for the goal, and the time when the goal was accepted.
 
 The purpose of this service is to submit a goal to the action server.
-It is the first service called to begin an action.
+It is the first service called to begin an action, and is expected to return quickly.
 A user-define description of the goal is sent as the request.
-The response is a standard action message indicating whether or not the goal was accepted, and if so the identifier the server will use to describe the goal.
+The response indicates whether or not the goal was accepted, and if so the identifier the server will use to describe the goal.
 
-The QoS settings of this service must be set the so the client is guaranteed to receive a response.
-Otherwise it is possible for an action to be executed without a client being aware of it.
+The QoS settings of this service should be set the so the client is guaranteed to receive a response or an action could be executed without a client being aware of it.
 
 #### Cancel Request Service
 
