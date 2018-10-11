@@ -219,10 +219,11 @@ If the ROS 2 action client never calls the service to get the result then it is 
 The action server is responsible for accepting (or rejecting) goals requested by clients.
 The action server is also responsible for maintaining a separate state for each accepted goal.
 
-There are two intermediate states:
+There are two active states:
 
-- **ACTIVE** - The goal has been accepted and is currently being processed by the action server.
+- **EXECUTING** - The goal has been accepted and is currently being executed by the action server.
 - **CANCELING** - The client has requested that the goal be canceled and the action server has accepted the cancel request.
+This state is useful for any "clean up" that the action server may have to do.
 
 And three terminal states:
 
@@ -241,7 +242,8 @@ State transitions triggered by the action client:
 - **send_goal** - A goal is sent to the action server.
 The state machine is only started if the action server *accepts* the goal.
 - **cancel_goal** - Request that the action server stop processing the goal.
-This transition only occurs if the action server *accepts* the request to cancel the goal.
+A transition only occurs if the action server *accepts* the request to cancel the goal.
+The goal may transition to CANCELING or CANCELED depending on the action server implementation.
 
 ## API
 
