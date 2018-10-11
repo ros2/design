@@ -218,11 +218,106 @@ Disclaimer: These examples show how we **imagine** actions to be used, but it is
 
 ### C++
 
-TODO
-
 #### Action server usage
 
-TODO
+Creating an action server:
+
+```c++
+auto node = rclcpp::Node::make_shared("my_node");
+auto server = node->create_action_server<Fibonacci>("fibonacci", handle_goal, handle_cancel);
+```
+
+Goal handler:
+
+```c++
+void handle_goal(const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> goal)
+{
+  goal->accept();
+  // or reject for some reason
+  // goal->reject();
+}
+```
+
+Just like in ROS 1, the `GoalHandle` encapsulates a state machine for each goal and offers methods for triggering transitions.
+
+Restricting the server to handle one goal at a time (e.g. [SimpleActionServer](http://wiki.ros.org/actionlib/DetailedDescription#Simple_Action_Server) from ROS 1):
+
+```c++
+const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> g_current_goal = nullptr;
+
+void handle_goal(const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> goal)
+{
+  // Only allow one goal active at a time
+  if (g_current_goal)
+  {
+    g_current_goal->set_canceled("New goal recevied, canceled previous goal.");
+    // Alternatively, the new goal could be rejected in favor of the previous
+    // goal->reject();
+  }
+  goal->accept();
+  g_current_goal = goal
+}
+```
+
+Syntactic sugar could be added by wrapping `rclcpp::ActionServer` and the above logic into a new class `rclcpp::SimpleActionServer`.
+
+RFC(jacobperron): Alternatvely, we could make the API look more like the service that it is.
+I think this would be more intuitive and ensure that implementers don't forget to accept/reject the request (the same goes for the cancel request).
+
+Service-like API example:
+
+```c++
+void handle_goal(
+    const std::shared_ptr<Fibonacci::GoalRequest> request,
+    const std::shared_ptr<Fibonacci::GoalResponse> response)
+{
+  // Get the goal handle from the request to save for later
+  goal = request->goal_handle;
+
+  // Populate response
+  response->accepted = true;
+}
+```
+
+Accepting/aborting a goal can be accomplished with a reference to the goal handle:
+
+```c++
+auto result_msg = Fibonacci::Result();
+// Populate result message
+// ...
+goal->set_succeeded(result_msg);
+...
+goal->set_aborted(result_msg);
+```
+
+Feedback can be provided, again with a reference to the goal handle:
+
+```c++
+auto feedback_msg = Fibonacci::Feedback();
+// Populate feedback message
+// ...
+goal->publish_feedback(feedback_msg);
+```
+
+Cancel handler:
+
+```c++
+void handle_cancel(const std::shared_ptr<rclcpp::GoalHandle<Fibonacci>> goal)
+{
+  goal->accept_cancel();
+  // or reject for some reason
+  // goal->rejected_cancel();
+}
+```
+
+After a cancel request has been accepted, the goal can be transitioned to the `CANCELED` state after any cleanup:
+
+```c++
+auto result_msg = Fibonacci::Result();
+// Populate result message
+// ...
+goal->set_canceled(result_msg);
+```
 
 #### Action client usage
 
