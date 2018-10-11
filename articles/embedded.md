@@ -25,23 +25,19 @@ This article documents requirements, design ideas and related works on this unde
 
 ## Requirements
 
-*   **Seamless integration with ROS2**
-    *   ...
+*   **Seamless integration with ROS2:** The embedded ROS2 stack shall integrate seamlessly with standard ROS2 stacks and nodes running on stronger microprocessors. For a standard ROS2 node, communication (topics, services) from and to software running on the embedded ROS2 stack should be transparent. The same should hold for other core concepts such as parameters, graph introspection, and run-time reconfiguration by the node lifecycle.
 
-*   **Portability of ROS2-based software**
-    *   ...
+*   **Portability of ROS2-based software:** The embedded ROS2 stack shall resemble or directly use the ROS2 API -- more precisely the rclcpp API -- to facilitate porting standard ROS2 nodes to MCUs.
 
-*   **Support of a broad spectrum of device classes**
-    *   ...
+*   **Support of a broad spectrum of device classes and RTOS:** The embedded ROS2 stack shall support a broad range of MCU device classes, starting from a few tens kilobyte of RAM. This implies suitable abstractions to be able to adapt the stack to specific hardware features/mechanisms as well as to replace modules or layers with optimized implementations.
 
-*   **Support of prevalent communication protocols**
-    *   ...
+    Similarly, the stack shall be adaptable to different RTOS (e.g., NuttX, FreeRTOS, Zephyr) and provide abstractions with regard to the application software to facilitate porting application components to between RTOSs.
 
-*   **Modularity**
-    *   ...
+*   **Support of prevalent communication technologies:** To cover the broad range of use-cases for MCUs in robotics, the embedded ROS2 stack shall be usable with the default ROS2 middleware standard DDS, simple (custom) serial communication protocols just as common wireless technologies like Bluetooth Low Energy
 
-*   **MCU-specific base functionalities**
-    *   ...
+*   **High Modularity:** The embedded ROS2 stack shall be highly modular, not only to allow for adaptation to specific hardware features and different RTOS, but also to allow the integration with existing frameworks and to be able to create customized sub-stacks. For example, it shall be usable in the style of rosserial, thus bringing basically the message serialization to the MCU only. Similarly, it should be possible to derive a sub-stack that provides node graph features and publish/subscribe but no parameters and services, and so on.
+
+*   **MCU-specific core functionalities and mechanisms:** Finally, the embedded ROS2 stack shall include novel core functionalities and mechanisms that are specific for MCUs. These include power management functionalities and mechanisms for static initialization and memory management.
 
 In the EU project OFERA, we compiled a longer list of requirements to an embedded ROS2 stack, which might serve as a good basis for the discussion. Please see Section 5 in [ofera.eu/deliverables/D1.7_Requirements.pdf](http://ofera.eu/deliverables/D1.7_Requirements.pdf).
 
@@ -68,6 +64,7 @@ The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a 
 ### ROS1-based approaches
 
 *   [rosserial](http://wiki.ros.org/rosserial) -- well-known and widely used in the ROS community ...
+
 *   [mROS](https://github.com/tlk-emb/mROS/) -- a new work on bringing ROS1 concepts (including nodes and the ROS1 middleware) on stronger MCUs, cf. also
     *Hideki Takase, Tomoya Mori, Kazuyoshi Takagi and Naofumi Takagi: 'Work-in-Progress: Design Concept of a Lightweight Runtime Environment for Robot Software Components onto Embedded Devices' in Proc. of ESWEEK, Torino, Italy, September 2018.*
 
