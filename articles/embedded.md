@@ -45,21 +45,10 @@ In the EU project OFERA, we compiled a longer list of requirements to an embedde
 
 ## Prior and on-going works
 
-### EU project OFERA
+### ROS2-based approaches
+*   [EU project OFERA](http://ofera.eu/): The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the micro-XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS. Beyond the project page, additional details of the project results can be found at [http://micro-ros.com](http://micro-ros.com).
 
-The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the micro-XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS.
-
-*   [ofera.eu](http://ofera.eu/) -- project website
-*   [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/) -- overview to the micro-ROS stack created in the project
-*   [github.com/microROS](https://github.com/microROS) -- repositories with first project results, including NuttX extensions for various communication protocols and micro-XRCE
-*   [github.com/eProsima/Micro-XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) -- the implementation of XRCE-DSS standard by the project partner eProsima
-
-
-### ROS 2 library for OpenCR by ROBOTIS
-
-... *add description* ...
-
-*   [github.com/ROBOTIS-GIT/OpenCR/tree/feature-ROS 2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS 2](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ROS 2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS 2)
+*   [ROS 2 library for OpenCR by ROBOTIS](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ROS2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2)
 
 
 ### ROS1-based approaches
@@ -68,6 +57,9 @@ The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a 
 
 *   [mROS](https://github.com/tlk-emb/mROS/) -- a new work on bringing ROS1 concepts (including nodes and the ROS1 middleware) on stronger MCUs, cf. also
     *Hideki Takase, Tomoya Mori, Kazuyoshi Takagi and Naofumi Takagi: 'Work-in-Progress: Design Concept of a Lightweight Runtime Environment for Robot Software Components onto Embedded Devices' in Proc. of ESWEEK, Torino, Italy, September 2018.*
+*   [freeRTPS](TODO): TODO
+
+*   [ros2_embedded_nuttx](TODO): TODO
 
 ## First Design Ideas
 
