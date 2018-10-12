@@ -100,7 +100,7 @@ In ROS 2, the generated service and message definitions will exist in a differen
 For example, in Python the code from the generated definitions should be in the module `action` instead of `srv` and `msg`.
 In C++, the generated code should be in the namespace and folder `action` instead of `srv` and `msg`.
 
-## Action specification
+## Action Interface Definition
 
 Actions are specified using a form of the ROS Message IDL.
 The specification contains three sections, each of which is a message specification:
