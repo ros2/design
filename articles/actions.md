@@ -53,7 +53,7 @@ It is responsible for
 ### Action Client
 
 An action client requests an action to be performed and monitors its progress.
-There may be multiple clients per server, however it is up to the server to decide how requests from multiple clients will be handled.
+There may be multiple clients per server; however, it is up to the server to decide how requests from multiple clients will be handled.
 
 It is responsible for
 
