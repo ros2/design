@@ -257,11 +257,14 @@ If the client never asks for the result then the server should discard the resul
 ### Goal Status Topic
 
 * **Direction**: Server publishes
-* **Content**: Goal ID, time it was accepted, and an enum indicating the status of this goal.
+* **Content**: List of in-progress goals with: Goal ID, time accepted, and an enum indicating the status
 
 This topic is published by the server to broadcast the status of goals it has accepted.
 The purpose of the topic is for introspection; it is not used by the action client.
 Messages are published when transitions from one status to another occur.
+
+The default QoS settings for a DDS middleware should be TRANSIENT LOCAL with a history size of 1.
+This allows new subscribers to always get the latest state.
 
 The possible statuses are:
 
