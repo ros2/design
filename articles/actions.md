@@ -144,7 +144,7 @@ uint32 number_dishes_cleaned
 
 ## Goal States
 
-![Action Server State Machine](../img/action_server_state_machine.png)
+![Action Server State Machine](../img/actions/action_server_state_machine.png)
 
 The action server is responsible for accepting (or rejecting) goals requested by clients.
 The action server is also responsible for maintaining a separate state for each accepted goal.
@@ -220,6 +220,8 @@ This is irrespective of the implementation, which may use several topics or serv
 
 ## Middleware implementation
 
+Under the hood, an action is made up of three services and two topics, each descibed in detail here.
+
 ### Goal Submission Service
 
 * **Direction**: Client calls Server
@@ -293,6 +295,25 @@ The possible statuses are:
 
 This topic is published by the server to send application specific progress about the goal.
 It is up to the author of the action server to decide how often to publish the feedback.
+
+### Goal Lifecycle Examples
+
+Here are a couple of sequence diagrams depicting typical interactions between an action client and action server.
+
+In this first example, the action client request a goal and gets a response from the server accepting the goal (synchronous).
+Upon accepting the goal, the action server starts a user defined execution method for completing the goal.
+Following the goal request, the client makes an asynchronous request for the result.
+The user defined method publishes feedback to the action client as it executes the goal.
+Ultimately, the user defined method populates a result message that is used as part of the result response.
+
+![Goal Lifecycle Example 0](../img/actions/goal_lifecycle_example_0.png)
+
+
+This example is almost identical to the first, but this time the action  client requests for the goal to be canceled mid-execution.
+Note that the user defined method is allowed to perform any shutdown operations after the cancel request before returning with the cancellation result.
+
+![Goal Lifecycle Example 1](../img/actions/goal_lifecycle_example_1.png)
+
 
 ## Bridging between ROS 1 and ROS 2
 
