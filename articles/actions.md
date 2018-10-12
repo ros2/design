@@ -108,31 +108,29 @@ The specification contains three sections, each of which is a message specificat
 
 1. Goal
 
-   The "request" part of the action.
-   Contains the data passed to the server of the action from the client, along with the request to begin executing that action.
+   This describes what the action should achieve and how it should do it.
+   It is sent to the action server when it is requested to execute an action.
 
 1. Result
 
-   The final result part of the action.
-   Contains the data passed to the client of the action from the action server once the action execution ends, whether successfully or not.
-   This data is produced by the action server as appropriate to that action's implementation, and is used by the client to understand how the action turned out.
+   This describes the outcome of an action.
+   It is sent from the server to the client when the action execution ends, whether successfully or not.
 
 1. Feedback
 
-   Contains data passed to the client of the action from the action server between commencing action execution and prior to the action completing.
+   This describes the progress towards completing an action.
+   It is sent to the client of the action from the action server between commencing action execution and prior to the action completing.
    This data is used by the client to understand the progress of executing the action.
 
 Any of these sections may be empty.
-
 Between each of the three sections is a line containing three hyphens, `---`.
-
 Action specifications are stored in a file ending in `.action`.
 There is one action specification per `.action` file.
 
-An example action specification is shown below.
+### Example
 
 ```
-# Define the goal
+# Define a goal of washing all dishes
 uint32 dishwasher_id  # Specify which dishwasher we want to use
 ---
 # Define the result that will be published after the action execution ends.
