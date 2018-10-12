@@ -3,9 +3,8 @@ layout: default
 title: Actions
 permalink: articles/actions.html
 abstract:
-  Despite their implementation as a separate library and lack of a detailed specification, actions are one of the three core types of interaction between ROS nodes.
-  Their asynchronous nature combined with the feedback and control mechanism gives them significantly more power than a remote procedure call.
-  This article specifies the requirements for actions, including what a ROS user should see, what the middleware layer should provide, and how actions are communicated.
+  Actions are one of the three core types of interaction between ROS nodes.
+  This article specifies the requirements for actions, how they've changed from ROS 1, and how they're communicated.
 author: '[Geoffrey Biggs](https://github.com/gbiggs)'
 published: true
 ---
