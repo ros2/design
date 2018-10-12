@@ -21,15 +21,15 @@ Original Author: {{ page.author }}
 
 ## Background
 
-ROS services are useful for sending a request with some information and getting a response indicating if the request was successful along with any other information.
-But, in robotics there are many instances where a response may take a significant length of time.
-In addition, often the progress of a request needs to be tracked, and the request may need to be canceled or altered before it completes.
-These requirements cannot be fulfilled by a ROS service mechanism, whether or not it is asynchronous.
+There are three forms of communication in ROS: topics, services, and actions.
+Topic publishers broadcast to multiple subscribers, but communication is one-way.
+Service clients request service servers to do something and get a response back, but there is no information about the progress.
+Actions clients request an action server reach some end state, and the action server will report progress towards a goal as well as the final result.
 
-To satisfy these use cases, ROS provides a third communication paradigm known as "actions".
-An action is a goal-oriented request that occurs asynchronously to the requester, is typically (but not necessarily) longer-running than immediate, can be canceled or replaced during execution, and has a server that provides feedback on execution progress.
+Actions are useful when a response may take a significant length of time.
+They allow a client to track the progress of a request, get the final outcome, and optionally cancel the request it before it completes.
 
-This document defines how actions are specified in the ROS Message IDL, how they will be created and used by ROS users (node developers and system integrators), and how they will be communicated by the middleware.
+This document defines requirements for actions, how they are specified in the ROS Message IDL, and how they are communicated by the middleware.
 
 ## Entities involved in actions
 
