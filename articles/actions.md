@@ -24,7 +24,7 @@ Original Author: {{ page.author }}
 There are three forms of communication in ROS: topics, services, and actions.
 Topic publishers broadcast to multiple subscribers, but communication is one-way.
 Service clients request service servers to do something and get a response back, but there is no information about the progress.
-Actions clients request an action server reach some end state, and the action server will report progress towards a goal as well as the final result.
+Actions clients request an action server reach some end state, and the action server will report progress as well as the final result.
 
 Actions are useful when a response may take a significant length of time.
 They allow a client to track the progress of a request, get the final outcome, and optionally cancel the request it before it completes.
