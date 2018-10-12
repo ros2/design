@@ -25,6 +25,8 @@ This article documents requirements, design ideas and related works on this unde
 
 ## Requirements
 
+In this section, we first describe basic requirements to the embedded ROS stack -- as a basis for discussion. This list shall be detailed by the feedback of the community.
+
 *   **Seamless integration with ROS2:** The embedded ROS2 stack shall integrate seamlessly with standard ROS2 stacks and nodes running on stronger microprocessors. For a standard ROS2 node, communication (topics, services) from and to software running on the embedded ROS2 stack should be transparent. The same should hold for other core concepts such as parameters, graph introspection, and run-time reconfiguration by the node lifecycle.
 
 *   **Portability of ROS2-based software:** The embedded ROS2 stack shall resemble or directly use the ROS2 API -- more precisely the rclcpp API -- to facilitate porting standard ROS2 nodes to MCUs.
@@ -50,7 +52,8 @@ In the EU project OFERA, we compiled a longer list of requirements to an embedde
 The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS2 rmw, rcl and rclcpp layers as-is on the micro-XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS.
 
 *   [ofera.eu](http://ofera.eu/) -- project website
-*   [github.com/microROS](https://github.com/microROS) -- first project results, including extensions for NuttX for various communication protocols and micro-XRCE
+*   [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/) -- overview to the micro-ROS stack created in the project
+*   [github.com/microROS](https://github.com/microROS) -- repositories with first project results, including NuttX extensions for various communication protocols and micro-XRCE
 *   [github.com/eProsima/Micro-XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) -- the implementation of XRCE-DSS standard by the project partner eProsima
 
 
@@ -70,7 +73,7 @@ The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a 
 
 ## First Design Ideas
 
-* This is our porposed architecture:
+* This is our proposed architecture:
 
 ![micro-ROS](/img/embedded/micro-ROS_proposed_architecture.png)
 
