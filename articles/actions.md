@@ -301,24 +301,32 @@ The possible statuses are:
 This topic is published by the server to send application specific progress about the goal.
 It is up to the author of the action server to decide how often to publish the feedback.
 
-### Goal Lifecycle Examples
+### Client/Server Interaction Examples
 
 Here are a couple of sequence diagrams depicting typical interactions between an action client and action server.
 
-In this first example, the action client request a goal and gets a response from the server accepting the goal (synchronous).
+#### Example 1
+
+In this example, the action client request a goal and gets a response from the server accepting the goal (synchronous).
 Upon accepting the goal, the action server starts a user defined execution method for completing the goal.
 Following the goal request, the client makes an asynchronous request for the result.
 The user defined method publishes feedback to the action client as it executes the goal.
 Ultimately, the user defined method populates a result message that is used as part of the result response.
 
-![Goal Lifecycle Example 0](../img/actions/goal_lifecycle_example_0.png)
+![Goal Lifecycle Example 0](../img/actions/interaction_example_0.png)
 
+#### Example 2
 
 This example is almost identical to the first, but this time the action  client requests for the goal to be canceled mid-execution.
 Note that the user defined method is allowed to perform any shutdown operations after the cancel request before returning with the cancellation result.
 
-![Goal Lifecycle Example 1](../img/actions/goal_lifecycle_example_1.png)
+![Goal Lifecycle Example 1](../img/actions/interaction_example_1.png)
 
+#### Example 3
+
+Here is a more complex example involving multiple goals.
+
+TODO
 
 ## Bridging between ROS 1 and ROS 2
 
