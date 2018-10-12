@@ -189,12 +189,6 @@ Python:
 
 - [examples/rclpy/actions](https://github.com/ros2/examples/tree/actions_proposal/rclpy/actions)
 
-### Real-time actions
-
-Actions may be used from or served by real-time nodes.
-The action server and action client APIs should be real-time capable.
-
-
 ## Introspection tools
 
 Actions, like topics and services, are introspectable from the command line.
