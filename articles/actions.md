@@ -32,7 +32,6 @@ An action is a goal-oriented request that occurs asynchronously to the requester
 
 This document defines how actions are specified in the ROS Message IDL, how they will be created and used by ROS users (node developers and system integrators), and how they will be communicated by the middleware.
 
-
 ## Entities involved in actions
 
 The following entities are involved in providing, using and executing an action.
@@ -110,6 +109,31 @@ uint32 total_dishes_cleaned
 float32 percent_complete
 uint32 number_dishes_cleaned
 ```
+
+## Differences between ROS 1 and ROS 2 actions
+
+In ROS 1, actions are implemented as a separate library using a set of topics under a namespace taken from the action name.
+This implementation was chosen because ROS services are inherently synchronous, and so incompatible with the asynchronous nature of the action concept.
+There is also a need for a status/feedback channel and a control channel.
+
+In ROS 2 cctions will be implemented on top of topics and services.
+Rather than being a separate library, they will be included in all client libraries in ROS 2 with a common implmentation in C.
+
+An alternative option is to implement actions in the rmw layer.
+This would enable using middleware specific features better suited actions.
+However, there don't appear to be any features in DDS that are better for actions than what are already in use for services and topics.
+Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
+
+### Goal Identifiers
+
+In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
+In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
+
+The server is better equiped to generate a unique goal id than the client because there may be multiple clients who could independently generate the same goal id.
+Another reason is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
+In ROS 1 if a client submits a goal and immediatly tries to cancel it then the cancelation may or may not happen.
+If the cancelation was received first then `actionlib` will ignore the cancellation request without notifying the action server.
+Then when the goal creation request comes in the server will begin executing it.
 
 ### Namespacing
 
@@ -202,32 +226,6 @@ This is irrespective of the implementation, which may use several topics or serv
 
 
 ## Middleware implementation
-
-### ROS 1 Background
-In ROS 1, actions are implemented as a separate library using a set of topics under a namespace taken from the action name.
-This implementation was chosen because ROS services are inherently synchronous, and so incompatible with the asynchronous nature of the action concept.
-There is also a need for a status/feedback channel and a control channel.
-
-### ROS 2
-
-Actions will be implemented on top of topics and services.
-However, they will be included in all client libraries in ROS 2 with a common implmentation in C.
-
-An alternative option is to implement actions in the rmw layer.
-This would enable using middleware specific features better suited actions.
-However, there don't appear to be any features in DDS that are better for actions than what are already in use for services and topics.
-Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
-
-### Goal Identifiers
-
-In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
-In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
-
-The server is better equiped to generate a unique goal id than the client because there may be multiple clients who could independently generate the same goal id.
-Another reason is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
-In ROS 1 if a client submits a goal and immediatly tries to cancel it then the cancelation may or may not happen.
-If the cancelation was received first then `actionlib` will ignore the cancellation request without notifying the action server.
-Then when the goal creation request comes in the server will begin executing it.
 
 ### Topics and Services Used
 
