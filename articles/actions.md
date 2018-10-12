@@ -143,10 +143,10 @@ uint32 number_dishes_cleaned
 
 ## Goal States
 
-![Action Server State Machine](../img/actions/action_server_state_machine.png)
+The action server maintains a state machine for each goal it accepts from a client.
+Rejected goals are not part of the state machine.
 
-The action server is responsible for accepting (or rejecting) goals requested by clients.
-The action server is also responsible for maintaining a separate state for each accepted goal.
+![Action Server State Machine](../img/actions/action_server_state_machine.png)
 
 There are two active states:
 
