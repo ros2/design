@@ -31,40 +31,36 @@ They allow a client to track the progress of a request, get the final outcome, a
 
 This document defines requirements for actions, how they are specified in the ROS Message IDL, and how they are communicated by the middleware.
 
-## Entities involved in actions
+## Entities Involved in Actions
 
-The following entities are involved in providing, using and executing an action.
+There are two entities involved in actions: an action server and an action client.
 
-- Action server
+### Action Server
 
-  The provider of the action.
-  There is only one server for any unique action.
-  The action server is responsible for:
+An action server provides an action.
+Like topics and services, an action server has a name and a type.
+There is only one server per name.
 
-  - advertising the action to other ROS entities;
+It is responsible for
 
-  - for executing the action when a request is received, or rejecting that request, as appropriate;
+* advertising the action to other ROS entities
+* accepting or rejecting requests from one or more action clients
+* executing the action when a request is received and accepted
+* optionally providing feedback about the progress of all executing actions
+* optionally handling requests to cancel an action
+* sending the result of the action, including whether it succeed, failed, or was cancelled, to the client when the action completes
 
-  - for monitoring execution of the action and providing feedback as appropriate to the action design;
+### Action Client
 
-  - for sending the result of the action, including a mandatory success/failure value, to the client when the action completes, whether the action succeeded or not; and
+An action client requests an action to be performed and monitors its progress.
+There may be multiple clients per server, however it is up to the server to decide how requests from multiple clients will be handled.
 
-  - for managing the execution of the action in response to additional requests by the client.
+It is responsible for
 
-- Action client
-
-  The entity making a request to execute an action.
-  There may be more than one client for each action server.
-  However, the semantics of multiple simultaneous clients is action-specific, i.e. it depends on what the action is and how it is implemented whether multiple simultaneous clients can be supported.
-  The action client is responsible for:
-
-  - making a request to the action, passing any needed data for the action execution;
-
-  - optionally periodically checking for updated feedback from the action server;
-
-  - optionally requesting that the action server cancel the action execution; and
-
-  - optionally checking the result of the action received from the action server.
+* making a request to the action server
+* optionally monitoring the feedback from the action server
+* optionally requesting that the action server cancel the action execution
+* optionally checking the result of the action received from the action server
 
 ## Differences between ROS 1 and ROS 2 actions
 
