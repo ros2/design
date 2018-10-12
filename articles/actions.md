@@ -221,12 +221,7 @@ This is irrespective of the implementation, which may use several topics or serv
 
 ## Middleware implementation
 
-### Topics and Services Used
-
-In ROS 1, an action is defined entirely using topics.
-In ROS 2, an action is the combination of the following services and topics.
-
-#### Goal Submission Service
+### Goal Submission Service
 
 * **Direction**: Client calls Server
 * **Request**: Description of goal
@@ -239,7 +234,7 @@ The response indicates whether or not the goal was accepted, and if so the ident
 
 The QoS settings of this service should be set the so the client is guaranteed to receive a response or an action could be executed without a client being aware of it.
 
-#### Cancel Request Service
+### Cancel Request Service
 
 * **Direction**: Client calls Server
 * **Request**: Goal identifier, time stamp
@@ -257,7 +252,7 @@ The cancel request policy is the same as in ROS 1.
 * If the goal ID is not empty and time is not zero, cancel the goal with the given id regardless of the time it was accepted
 * If the goal ID is not empty and time is zero, cancel the goal with the given id and all goals accepted at or before the time stamp
 
-#### Get Result Service
+### Get Result Service
 
 * **Direction**: Client calls Server
 * **Request**: Goal ID
@@ -270,7 +265,7 @@ The result will indicate the final status of the goal and any user defined data.
 Once the server sends the result to the client it should free up any resources used by the action.
 If the client never asks for the result then the server should discard the result after a timeout period.
 
-#### Goal Status Topic
+### Goal Status Topic
 
 * **Direction**: Server publishes
 * **Content**: Goal ID, time it was accepted, and an enum indicating the status of this goal.
@@ -292,7 +287,7 @@ The possible statuses are:
 * *Aborted*
   * The action server failed reached the goal
 
-#### Feedback Topic
+### Feedback Topic
 
 * **Direction**: Server publishes
 * **Content**: Goal id, user defined feedback message
