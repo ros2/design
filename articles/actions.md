@@ -100,6 +100,12 @@ In ROS 2, the generated service and message definitions will exist in a differen
 For example, in Python the code from the generated definitions should be in the module `action` instead of `srv` and `msg`.
 In C++, the generated code should be in the namespace and folder `action` instead of `srv` and `msg`.
 
+### Visibility of Action Services and Topics
+
+In ROS 1 `rostopic list` would show all action topics in its output.
+In ROS 2 `ros2 topic list` and `ros2 service list` will not show topics and services used by actions by default.
+The can still be shown by passing an option to the commands to show hidden services and topics.
+
 ## Action Interface Definition
 
 Actions are specified using a form of the ROS Message IDL.
