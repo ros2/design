@@ -211,6 +211,8 @@ Python:
 
 Under the hood, an action is made up of three services and two topics, each descibed in detail here.
 
+![Action Client/Server Interaction Overview](../img/actions/interaction_overview.png)
+
 ### Goal Submission Service
 
 * **Direction**: Client calls Server
