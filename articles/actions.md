@@ -112,12 +112,18 @@ uint32 number_dishes_cleaned
 
 ## Differences between ROS 1 and ROS 2 actions
 
-In ROS 1, actions are implemented as a separate library using a set of topics under a namespace taken from the action name.
-This implementation was chosen because ROS services are inherently synchronous, and so incompatible with the asynchronous nature of the action concept.
-There is also a need for a status/feedback channel and a control channel.
+### First Class Support
+In ROS 1, actions are implemented as a separate library `actionlib` which is built on top of the client libraries.
+This was done to avoid increasing the work required to create a client library in a new language, but actions turned out to be very important to packages like the navigation stack<sup>[1](#separatelib)</sup>.
+In ROS 2 actions will be included in the client library implementations.
+The work of writing a client library in a new language will be reduced by creating a common implmentation in C.
 
-In ROS 2 cctions will be implemented on top of topics and services.
-Rather than being a separate library, they will be included in all client libraries in ROS 2 with a common implmentation in C.
+### Services used for Actions
+
+In ROS 1 actions were implemented using a set of topics under a namespace taken from the action name.
+ROS 1 Services were not used because they are inherently synchronous, and actions need to be asynchronous.
+Actions also needed to send status/feedback and be cancelable.
+In ROS 2 services are asynchronous in the common C implementation, so actions will use a combination of services and topics.
 
 ### Goal Identifiers
 
@@ -127,15 +133,14 @@ In ROS 2 the action server will be responsible for generating the goal ID and no
 The server is better equiped to generate a unique goal id than the client because there may be multiple clients who could independently generate the same goal id.
 Another reason is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
 In ROS 1 if a client submits a goal and immediatly tries to cancel it then the cancelation may or may not happen.
-If the cancelation was received first then `actionlib` will ignore the cancellation request without notifying the action server.
-Then when the goal creation request comes in the server will begin executing it.
+If the cancelation is processed before the goal submission then `actionlib` will ignore the cancellation request without notifying the user's code.
 
-### Namespacing
+### Namespacing of Generated Messages and Services
 
 Multiple message and service definitions are generated from a single action definition.
 In ROS 1, the generated messages were prefixed with the name of the action to avoid conflicts with other messages and services.
-In ROS 2, the generated service and message definitions should be namespaced so it is impossible to conflict.
-In Python, the code from the generated definitions should be in the module `action` instead of `srv` and `msg`.
+In ROS 2, the generated service and message definitions will exist in a different namespace to be impossible to conflict with non-action message and service definitions.
+For example, in Python the code from the generated definitions should be in the module `action` instead of `srv` and `msg`.
 In C++, the generated code should be in the namespace and folder `action` instead of `srv` and `msg`.
 
 ## Goal States
@@ -305,3 +310,7 @@ This would enable using middleware specific features better suited actions.
 The default middleware in ROS 2 uses DDS, and there don't appear to be any DDS features better for actions than what are used for services and topics.
 Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
 For these reasons actions will be implemented at a higher level.
+
+## References
+
+1. <a name="separatelib" href="https://discourse.ros.org/t/actions-in-ros-2/6254/5">https://discourse.ros.org/t/actions-in-ros-2/6254/5</a>
