@@ -391,3 +391,9 @@ Since the goal ID is the same for both ROS 1 and ROS 2, the bridge will always p
 When the ROS 1 action server publishes a result it will be set as the result on the ROS 1 bridge.
 If the ROS 2 action client never calls the service to get the result then it is subject to the same timeout as if it were a normal ROS 2 action server.
 
+
+## Alternatives
+
+These alternative approaches to actions in ROS 2 were considered.
+
+TODO
