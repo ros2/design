@@ -144,31 +144,21 @@ uint32 number_dishes_cleaned
 ## Introspection tools
 
 Actions, like topics and services, are introspectable from the command line.
-
 In ROS 1, actions are visible in the output of the `rostopic` tool.
 
-In ROS 2, actions will not be visible as a set of topics nor a set of services.
-They will be visible using a separate `ros2 action` command line tool.
+In ROS 2, actions will not be visible by default as a set of topics nor a set of services.
+Instead they will be visible using a separate `ros2 action` command line tool.
 
-The command line tool will be similar to the `ros2 service` tool.
-It will be able to:
+The command line tool will be able to:
 
-- list known actions,
-
-- display the arguments for an action's goal,
-
-- display the type of an action's feedback and result,
-
-- display information about the server of an action,
-
-- display the underlying topics and/or services providing the action,
-
-- find actions by action type, and
-
-- call an action, display feedback as it is received, display the result when received, and cancel the action (when the tool is terminated prematurely).
+* list action servers and action clients
+* display active goals on an action server
+* display the arguments for an action's goal
+* display the type of an action's feedback and result
+* find actions by action type
+* call an action, display feedback as it is received, display the result when received, and cancel the action (when the tool is terminated prematurely).
 
 Each action will be listed and treated as a single unit by this tool.
-This is irrespective of the implementation, which may use several topics or services to provide a single action.
 
 ## Goal States
 
