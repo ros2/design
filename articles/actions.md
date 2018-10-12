@@ -119,11 +119,6 @@ There is also a need for a status/feedback channel and a control channel.
 In ROS 2 cctions will be implemented on top of topics and services.
 Rather than being a separate library, they will be included in all client libraries in ROS 2 with a common implmentation in C.
 
-An alternative option is to implement actions in the rmw layer.
-This would enable using middleware specific features better suited actions.
-However, there don't appear to be any features in DDS that are better for actions than what are already in use for services and topics.
-Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
-
 ### Goal Identifiers
 
 In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
@@ -303,4 +298,10 @@ TODO
 
 These alternative approaches to actions in ROS 2 were considered.
 
-TODO
+### Actions in rmw
+
+An alternative to using services and topics is to implement actions in the rmw layer.
+This would enable using middleware specific features better suited actions.
+The default middleware in ROS 2 uses DDS, and there don't appear to be any DDS features better for actions than what are used for services and topics.
+Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
+For these reasons actions will be implemented at a higher level.
