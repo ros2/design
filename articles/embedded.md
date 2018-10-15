@@ -17,7 +17,7 @@ author: 'In alphabetic order: [Adam Dąbrowski](https://github.com/adamdbrw), [B
 
 Original Author: {{ page.author }}
 
-While standard ROS 2 can run on Linux-class embedded devices, smaller microcontrollers (MCU) are still a challenge. For example, ARM Cortex-M3 and -M4 class MCUs are popular for motion control and sensor integration, but have little RAM and storage. ARM Cortex-L1 is widely used in many sensors due to its optimized power consumption capabilities and ultra low power modes. These microcontrollers are often running with small batteries, e.g. for environmental sensors or small consumer robots, which requires efficient power management. We aim to address these devices through a combination of specialized, ROS 2-interoperable stack as well as the use of small Real-Time Operating Systems (RTOS).
+While standard ROS 2 can run on Linux-class embedded devices, smaller microcontrollers (MCU) are still a challenge. For example, ARM Cortex-M3 and -M4 class MCUs are popular for motion control and sensor integration, but have little RAM and storage. ARM Cortex-M3 is widely used in many sensors due to its optimized power consumption capabilities and ultra low power modes. These microcontrollers are often running with small batteries, e.g. for environmental sensors or small consumer robots, which requires efficient power management. We aim to address these devices through a combination of specialized, ROS 2-interoperable stack as well as the use of small Real-Time Operating Systems (RTOS).
 
 This article documents requirements, design ideas and related works on this undertaking.
 
