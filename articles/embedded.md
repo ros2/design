@@ -38,6 +38,37 @@ A number of things that would be great to have, lets call it a wishlist... Feel 
 
 In the EU project OFERA, we compiled a longer list of requirements to an embedded ROS 2 stack, which might serve as a good basis for the discussion. Please see Section 5 in [ofera.eu/deliverables/D1.7_Requirements.pdf](http://ofera.eu/deliverables/D1.7_Requirements.pdf).
 
+## Questions
+
+To determine how feasible that is, and to come up with the actual requirements and/or design, a few questions come to mind. I've cross-referenced them to the relevant wishlist items (most of the there's more than one -- this suggests areas where trade-offs may be required, or alternatives pursued).
+
+| Key | Related Wish | Question |
+|-----|-------------|----------|
+| Q-RTOS | W-RTOS, W-PORTABILITY | Which RTOS(s) do we use as the basis? |
+| Q-BUILD | W-RTOS, W-PORTABILITY | How do we handle the RTOS(s) respective build-systems? |
+| Q-LANG | W-PORTABILITY | Which language should be used, and at what spec level? |
+| Q-API | W-PORTABILITY, W-MODULARITY | How should the API look in general?|
+| Q-PERF | W-PORTABILITY, W-DEVICES, W-CONTROL | What are the performance implications of the API?|
+| Q-MIDDLEWARE | W-MW | Which communication/middleware technology is used?|
+| Q-MCU-SPEC | W-DEVICES, W-MCU-SPEC, W-CONTROL | Which MCU-specific features do we offer in the external API?|
+
+## Actions
+
+> *TODO: Maybe don't call this action, but "fact finding" or the like?*
+
+To answer these questions, both the OFERA EU project as well as several others have already undertaken or are planning exploratory work.
+
+*Meta-Note*: Please only add a short description here, linking to more detailed pages if necessary.
+
+| Key | Related Question | Action | Description | Links |
+|-----|------------------|--------|-------------|-------|
+| A-RTOS | Q-RTOS | RTOS Proof-of-Concept | Provide a proof-of-concept RTOS. In the OFERA project, we chose NuttX, because it is largely POSIX compatible and thus eases porting. There are also experiments based on RIOT and FreeRTOS | TODO |
+| A-BUILD-META | Q-BUILD | Meta-Build | Explores a meta-build approach to transform ROS 2 CMakeLists.txt to RTOS-specific build instructions. | TODO |
+| A-BUILD-NUTTX | Q-BUILD | NuttX-specific build | OFERA has integrated (parts of) micro-ROS directly as an app in the NuttX build. |TODO |
+| A-BUILD-ANDROID | Q-BUILD | Arduino Build | Robotis has explored building all the libraries using the Arduino IDE. This required some manual changes and thus does not scale, but can get you off the ground. | TODO |
+| A-NUTTX-LIBCXX | Q-LANG | C++11/higher support for NuttX | Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp. | TODO |
+| A-PERF-RCLCPP-RESOURCE | Q-PERF | Determine resource use of rclcpp | |  TODO |
+
 
 ## Prior and on-going works
 
