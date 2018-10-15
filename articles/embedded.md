@@ -4,7 +4,7 @@ title: Embedded ROS 2.0
 abstract:
   This article captures requirements, design ideas and related works on a tiny ROS 2.0 stack for microcontrollers.
 published: true
-author: 'In alphabetic order: [Adam Dąbrowski](https://github.com/adamdbrw), [Borja Outerelo](https://github.com/BorjaOuterelo), [Ingo Luetkebohle](https://github.com/iluetkeb), [Ralph Lange](https://github.com/ralph-lange), [Víctor Mayoral Vilches](https://github.com/vmayoral), ... and many more from Embedded ROS 2 Interest Group. Please feel free to add your name.'
+author: 'In alphabetic order: [Adam Dąbrowski](https://github.com/adamdbrw), [Borja Outerelo](https://github.com/BorjaOuterelo), [Ingo Lütkebohle](https://github.com/iluetkeb), [Ralph Lange](https://github.com/ralph-lange), [Víctor Mayoral Vilches](https://github.com/vmayoral), ... and many more from Embedded ROS 2 Interest Group. Please feel free to add your name.'
 ---
 
 {:toc}
