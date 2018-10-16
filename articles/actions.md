@@ -270,6 +270,7 @@ This topic is published by the server to broadcast the status of goals it has ac
 The purpose of the topic is for introspection; it is not used by the action client.
 Messages are published when transitions from one status to another occur.
 
+The QoS settings for an action server can be configured by the user.
 The default QoS settings for a DDS middleware should be TRANSIENT LOCAL with a history size of 1.
 This allows new subscribers to always get the latest state.
 
@@ -290,7 +291,8 @@ The possible statuses are:
 This topic is published by the server to send progress feedback about the goal that is user-defined as part of the [Action Interface Definition](#action-interface-definition).
 It is up to the author of the action server to decide how often to publish the feedback.
 
-TODO: Something something about QoS specified by server
+The QoS settings for feedback coming from an action server can be configured by the user.
+It is up to the clients to use compatible QoS settings.
 
 ### Client/Server Interaction Examples
 
