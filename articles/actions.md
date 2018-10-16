@@ -337,6 +337,27 @@ The default middleware in ROS 2 uses DDS, and there don't appear to be any DDS f
 Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
 For these reasons actions will be implemented at a higher level.
 
+### Multiple topics for feedback and status
+
+When there are many goals from many clients, the choice to have a single feedback (and status) topic per action server is suboptimal in terms of processing and bandwidth resource.
+It is up to clients to filter out feedback/status messages that are not pertinent to them.
+In this scenario, M goals are sent to N clients there is an unecessary use of bandwidth and processing; especially in extreme cases where M and N are large.
+
+One approach is to use multiple topics (distinguished by goal IDs) or the "keyed data" feature in DDS that allows for "content filtered subscription".
+This would allow clients to only subscribe to the feedback and status messages that they care about.
+
+A second approach is to give clients the option to specify a custom feedback topic as part of the goal request.
+This would be useful to alleviate extreme cases without the overhead of creating/destroying topics for every goal when the number of goals/clients is small.
+
+
+Reasons against using separate topics for feedback and status:
+- Most anticipated use cases will not involve many goals/clients (premature optimization)
+- Topics dynamically namespaced (e.g. by goal ID) would complicate ROS security by not having deterministic topic names before runtime and outside user control.
+- Added complexity in C implementation and client libraries
+
+It seems reasonable in the future that the "keyed data" feature in DDS can be employed to reduce overhead in the "many goal/client" scenario.
+This will require that the feature be exposed in the middleware, which it is not at the time of writing this proposal.
+
 ## References
 
 1. <a name="separatelib" href="https://discourse.ros.org/t/actions-in-ros-2/6254/5">https://discourse.ros.org/t/actions-in-ros-2/6254/5</a>
