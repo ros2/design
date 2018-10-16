@@ -166,11 +166,12 @@ Each action will be listed and treated as a single unit by this tool.
 The action server maintains a state machine for each goal it accepts from a client.
 Rejected goals are not part of the state machine.
 
-![Action Server State Machine](../img/actions/action_server_state_machine.png)
+![Action Goal State Machine](../img/actions/goal_state_machine.png)
 
-There are two active states:
+There are three active states:
 
-- **EXECUTING** - The goal has been accepted and is currently being executed by the action server.
+- **ACCEPTED** - The goal has been accepted and is awaiting execution.
+- **EXECUTING** - The goal is currently being executed by the action server.
 - **CANCELING** - The client has requested that the goal be canceled and the action server has accepted the cancel request.
 This state is useful for any "clean up" that the action server may have to do.
 
@@ -182,6 +183,7 @@ And three terminal states:
 
 State transitions triggered by the action server:
 
+- **execute** - Start execution of an accepted goal.
 - **set_succeeded** - Notify that the goal completed successfully.
 - **set_aborted** - Notify that an error was encountered during processing of the goal and it had to be aborted.
 - **set_canceled** - Notify that canceling the goal completed successfully.
@@ -192,7 +194,6 @@ State transitions triggered by the action client:
 The state machine is only started if the action server *accepts* the goal.
 - **cancel_goal** - Request that the action server stop processing the goal.
 A transition only occurs if the action server *accepts* the request to cancel the goal.
-The goal may transition to CANCELING or CANCELED depending on the action server implementation.
 
 ## API
 
