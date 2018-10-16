@@ -24,17 +24,17 @@ Original Author: {{ page.author }}
 There are three forms of communication in ROS: topics, services, and actions.
 Topic publishers broadcast to multiple subscribers, but communication is one-way.
 Service clients send a request to a service server and get a response, but there is no information about the progress.
-Similar to services, actions clients ask an action server reach some end state and will get a response.
-Unlike services, while the action is being peformed the action server sends progress updates to the client.
+Similar to services, actions clients send a request to an action server in order to achieve some goal and will get a result.
+Unlike services, while the action is being peformed an action server sends progress feedback to the client.
 
 Actions are useful when a response may take a significant length of time.
-They allow a client to track the progress of a request, get the final outcome, and optionally cancel the request it before it completes.
+They allow a client to track the progress of a request, get the final outcome, and optionally cancel the request before it completes.
 
 This document defines requirements for actions, how they are specified in the ROS Message IDL, and how they are communicated by the middleware.
 
 ## Entities Involved in Actions
 
-There are two entities involved in actions: an action server and an action client.
+There are two entities involved in actions: an **action server** and an **action client**.
 
 ### Action Server
 
@@ -42,51 +42,55 @@ An action server provides an action.
 Like topics and services, an action server has a name and a type.
 There is only one server per name.
 
-It is responsible for
+It is responsible for:
 
-* advertising the action to other ROS entities
-* accepting or rejecting requests from one or more action clients
-* executing the action when a request is received and accepted
-* optionally providing feedback about the progress of all executing actions
-* optionally handling requests to cancel an action
-* sending the result of the action, including whether it succeed, failed, or was cancelled, to the client when the action completes
+- advertising the action to other ROS entities
+- accepting or rejecting goals from one or more action clients
+- executing the action when a goal is received and accepted
+- optionally providing feedback about the progress of all executing actions
+- optionally handling requests to cancel one or more actions
+- sending the result of an action, including whether it succeed, failed, or was canceled, to the client when the action completes
 
 ### Action Client
 
-An action client requests an action to be performed and monitors its progress.
-There may be multiple clients per server; however, it is up to the server to decide how requests from multiple clients will be handled.
+An action client sends a goal (an action to be performed) and monitors its progress.
+There may be multiple clients per server; however, it is up to the server to decide how goals from multiple clients will be handled.
 
-It is responsible for
+It is responsible for:
 
-* making a request to the action server
-* optionally monitoring the feedback from the action server
-* optionally requesting that the action server cancel the action execution
-* optionally checking the result of the action received from the action server
+- sending a goal to the action server
+- optionally monitoring the feedback for a goal from the action server
+- optionally monitoring the status for a goal from the action server
+- optionally requesting that the action server cancel an active goal
+- optionally checking the result for a goal received from the action server
 
 ## Differences between ROS 1 and ROS 2 actions
 
 ### First Class Support
-In ROS 1, actions are implemented as a separate library `actionlib` which is built on top of the client libraries.
-This was done to avoid increasing the work required to create a client library in a new language, but actions turned out to be very important to packages like the navigation stack<sup>[1](#separatelib)</sup>.
-In ROS 2 actions will be included in the client library implementations.
-The work of writing a client library in a new language will be reduced by creating a common implmentation in C.
+
+In ROS 1, actions are implemented as a separate library, [actionlib](http://wiki.ros.org/actionlib) that is built on top of the client libraries.
+This was done to avoid increasing the work required to create a client library in a new language, but actions turned out to be very important to packages like the [Navigation Stack](http://wiki.ros.org/navigation) and [MoveIt!](https://moveit.ros.org/)<sup>[1](#separatelib)</sup>.
+
+In ROS 2, actions will be included in the client library implementations.
+The work of writing a client library in a new language will be reduced by creating a common implementation in C.
 
 ### Services used for Actions
 
-In ROS 1 actions were implemented using a set of topics under a namespace taken from the action name.
-ROS 1 Services were not used because they are inherently synchronous, and actions need to be asynchronous.
+In ROS 1, actions were implemented using a set of topics under a namespace taken from the action name.
+ROS 1 services were not used because they are inherently synchronous and actions need to be asynchronous.
 Actions also needed to send status/feedback and be cancelable.
-In ROS 2 services are asynchronous in the common C implementation, so actions will use a combination of services and topics.
+
+In ROS 2, services are asynchronous in the common C implementation, so actions will use a combination of services and topics.
 
 ### Goal Identifiers
 
-In ROS 1, Action clients are responsible for creating a goal ID when submitting a goal.
-In ROS 2 the action server will be responsible for generating the goal ID and notifying the client.
+In ROS 1, an action client can create a goal ID when submitting a goal.
+This potentially leads to scenarios where mutliple clients independently generate the same goal ID.
+If an empty goal ID is sent, the action server will create one instead, which is not very useful since the client has no way to know the goal ID.
 
-The server is better equiped to generate a unique goal id than the client because there may be multiple clients who could independently generate the same goal id.
-Another reason is to avoid a race condition between goal creation and cancellation that exists in ROS 1.
-In ROS 1 if a client submits a goal and immediatly tries to cancel it then the cancelation may or may not happen.
-If the cancelation is processed before the goal submission then `actionlib` will ignore the cancellation request without notifying the user's code.
+In ROS 2, action clients will be the sole entities responsible for generating the goal ID.
+This way clients always know the goal ID for an action.
+Futhermore, a UUID will be used for each goal to mitigate the issue of goal ID collision across multiple clients.
 
 ### Namespacing of Generated Messages and Services
 
@@ -98,9 +102,10 @@ In C++, the generated code should be in the namespace and folder `action` instea
 
 ### Visibility of Action Services and Topics
 
-In ROS 1 `rostopic list` would show all action topics in its output.
-In ROS 2 `ros2 topic list` and `ros2 service list` will not show topics and services used by actions by default.
-The can still be shown by passing an option to the commands to show hidden services and topics.
+In ROS 1, `rostopic list` would show all action topics in its output.
+In ROS 2, `ros2 topic list` and `ros2 service list` will not show topics and services used by actions by default.
+They can still be shown by passing an option to the commands to show hidden services and topics.
+The tool `ros2 action list` will produce list of action names provided by action servers (see [Intropsection tools](#introspection-tools)).
 
 ## Action Interface Definition
 
@@ -132,7 +137,7 @@ There is one action specification per `.action` file.
 
 ```
 # Define a goal of washing all dishes
-uint32 dishwasher_id  # Specify which dishwasher we want to use
+bool heavy_duty  # Spend extra time cleaning
 ---
 # Define the result that will be published after the action execution ends.
 uint32 total_dishes_cleaned
@@ -145,19 +150,17 @@ uint32 number_dishes_cleaned
 ## Introspection tools
 
 Actions, like topics and services, are introspectable from the command line.
-In ROS 1, actions are visible in the output of the `rostopic` tool.
 
-In ROS 2, actions will not be visible by default as a set of topics nor a set of services.
-Instead they will be visible using a separate `ros2 action` command line tool.
+The command line tool, `ros2 action`, will be able to:
 
-The command line tool will be able to:
-
-* list action servers and action clients
-* display active goals on an action server
-* display the arguments for an action's goal
-* display the type of an action's feedback and result
-* find actions by action type
-* call an action, display feedback as it is received, display the result when received, and cancel the action (when the tool is terminated prematurely).
+- list action names provided by action servers
+- list action servers and action clients
+- display active goals on an action server
+- display the arguments for an action goal
+- display the type of an action's goal, feedback, and result
+- find actions by action type
+- echo feedback, status, and result for an action goal
+- call an action, display feedback as it is received, display the result when received, and cancel the action (when the tool is terminated prematurely).
 
 Each action will be listed and treated as a single unit by this tool.
 
@@ -210,58 +213,58 @@ Python:
 
 ## Middleware implementation
 
-Under the hood, an action is made up of three services and two topics, each descibed in detail here.
+Under the hood, an action is made up of three services and two topics.
+In this section, they are descibed in detail.
 
 ![Action Client/Server Interaction Overview](../img/actions/interaction_overview.png)
 
-### Goal Submission Service
+### Send Goal Service
 
-* **Direction**: Client calls Server
-* **Request**: Description of goal
-* **Response**: Whether goal was accepted or rejected, a unique identifier for the goal, and the time when the goal was accepted.
+- **Direction**: client calls server
+- **Request**: description of goal and a UUID for the goal ID
+- **Response**: whether goal was accepted or rejected and the time when the goal was accepted
 
-The purpose of this service is to submit a goal to the action server.
+The purpose of this service is to send a goal to the action server.
 It is the first service called to begin an action, and is expected to return quickly.
-A user-define description of the goal is sent as the request.
-The response indicates whether or not the goal was accepted, and if so the identifier the server will use to describe the goal.
+The description of the goal in the request is user-define as part of the [Action Interface Definition](#action-interface-definition).
 
-The QoS settings of this service should be set the so the client is guaranteed to receive a response or an action could be executed without a client being aware of it.
+The QoS settings of this service should be set so the client is guaranteed to receive a response or an action could be executed without a client being aware of it.
 
-### Cancel Request Service
+### Cancel Goal Service
 
-* **Direction**: Client calls Server
-* **Request**: Goal identifier, time stamp
-* **Response**: Goals that will be attempted to be canceled
+- **Direction**: client calls server
+- **Request**: goal ID and timestamp
+- **Response**: list of goals that have transitioned to the CANCELING state
 
-The purpose of this service is to request to cancel one or more goals on the action server.
-A cancellation request may cancel multiple goals.
+The purpose of this service is to request the cancellation of one or more goals on the action server.
 The result indicates which goals will be attempted to be canceled.
 Whether or not a goal is actually canceled is indicated by the status topic and the result service.
 
 The cancel request policy is the same as in ROS 1.
 
-* If the goal ID is empty and time is zero, cancel all goals
-* If the goal ID is empty and time is not zero, cancel all goals accepted at or before the time stamp
-* If the goal ID is not empty and time is not zero, cancel the goal with the given id regardless of the time it was accepted
-* If the goal ID is not empty and time is zero, cancel the goal with the given id and all goals accepted at or before the time stamp
+- If the goal ID is empty and timestamp is zero, cancel all goals
+- If the goal ID is empty and timestamp is not zero, cancel all goals accepted at or before the time stamp
+- If the goal ID is not empty and timestamp is not zero, cancel the goal with the given ID regardless of the time it was accepted
+- If the goal ID is not empty and timestamp is zero, cancel the goal with the given ID and all goals accepted at or before the timestamp
 
 ### Get Result Service
 
-* **Direction**: Client calls Server
-* **Request**: Goal ID
-* **Response**: Status of goal and user defined result
+* **Direction**: client calls server
+* **Request**: goal ID
+* **Response**: status of goal and user defined result
 
-The purpose of this service is to get the final result of a service.
+The purpose of this service is to get the final result of a goal.
 After a goal has been accepted the client should call this service to receive the result.
-The result will indicate the final status of the goal and any user defined data.
+The result will indicate the final status of the goal and any user defined data as part of the [Action Interface Definition](#action-interface-definition).
 
-Once the server sends the result to the client it should free up any resources used by the action.
-If the client never asks for the result then the server should discard the result after a timeout period.
+The server should cache the result once it is ready so multiple clients have to opportunity to get it.
+This is useful for debugging/introspection tools.
+To free up resources, the server should discard the result after a configurable timeout period.
 
 ### Goal Status Topic
 
-* **Direction**: Server publishes
-* **Content**: List of in-progress goals with: Goal ID, time accepted, and an enum indicating the status
+* **Direction**: server publishes
+* **Content**: list of in-progress goals with goal ID, time accepted, and an enum indicating the status
 
 This topic is published by the server to broadcast the status of goals it has accepted.
 The purpose of the topic is for introspection; it is not used by the action client.
@@ -272,24 +275,22 @@ This allows new subscribers to always get the latest state.
 
 The possible statuses are:
 
-* *Accepted*
-  * The goal has been accepted by the action server and may now be executing
-* *Cancelling*
-  * The action server will try to cancel the indicated goal
-* *Cancelled*
-  * The action server successfully canceled the goal
-* *Succeeded*
-  * The action server successfully reached the goal
-* *Aborted*
-  * The action server failed reached the goal
+- *Accepted* - The goal has been accepted by the action server
+- *Executing* - The goal is currently being executing by the action server
+- *Canceling* - The action server will try to cancel the indicated goal
+- *Succeeded* - The action server successfully reached the goal
+- *Aborted* - The action server failed reached the goal
+- *Canceled* - The action server successfully canceled the goal
 
 ### Feedback Topic
 
-* **Direction**: Server publishes
-* **Content**: Goal id, user defined feedback message
+- **Direction**: server publishes
+- **Content**: goal ID, user defined feedback message
 
-This topic is published by the server to send application specific progress about the goal.
+This topic is published by the server to send progress feedback about the goal that is user-defined as part of the [Action Interface Definition](#action-interface-definition).
 It is up to the author of the action server to decide how often to publish the feedback.
+
+TODO: Something something about QoS specified by server
 
 ### Client/Server Interaction Examples
 
