@@ -37,7 +37,8 @@ A number of things that would be great to have, lets call it a wishlist... Feel 
 | W-POWER | **Make low-power modes possible** | MCUs are often used in battery-powered applications, and/or in applications with a large amount of standby time. Therefore, the stack should make it easily possible to save power. |
 | W-STATIC | **Use static initialization** | Static initialization is less error-prone, easier to analyze, and shifts memory usage from RAM to flash. It is a requirement for going to very small resource use. |
 
-In the EU project OFERA, we compiled a longer list of requirements to an embedded ROS 2 stack, which might serve as a good basis for the discussion. Please see Section 5 in [ofera.eu/deliverables/D1.7_Requirements.pdf](http://ofera.eu/deliverables/D1.7_Requirements.pdf).
+In the EU project OFERA, we compiled a longer list of requirements to an embedded ROS 2 stack, which might serve as a good basis for the discussion. Please see Section 5 in [OFERA deliverable D1.7_Requirements.pdf](http://ofera.eu/storage/deliverables/OFERA_D1.7_Requirements.pdf).
+
 
 ## Questions
 
