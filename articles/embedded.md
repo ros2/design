@@ -73,11 +73,11 @@ To answer these questions, the OFERA EU project as well as several others have a
 ### ROS2-based approaches
 *   [**EU project OFERA**](http://ofera.eu/): The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the micro-XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS. Beyond the project page, additional details of the project results can be found at [micro-ros.com](http://micro-ros.com).
 
-*   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS2 publish/subscribe and clock API for the micro-XRCE (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
+*   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the micro-XRCE (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
-*   [**freeRTPS**](TODO):
+*   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, minimalist implementation of the RTPS protocol for microcontrollers such as the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with standard DDS as-is on stronger MCUs.
 
-*   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx):
+*   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx): Early port (in 2014) of ROS 2 alpha for the STM32F4Discovery board and the STM3240G eval board running the RTOS NuttX developed by Víctor Mayoral Vilches and Esteve Fernandez at the OSRF.
 
 ### ROS1-based approaches
 
@@ -91,5 +91,3 @@ To answer these questions, the OFERA EU project as well as several others have a
 * This is our proposed architecture:
 
 ![micro-ROS](/img/embedded/micro-ROS_proposed_architecture.png)
-
-... *possibly also the diagram with the API features and the vertical bars indicating the depth of implementation* ...
