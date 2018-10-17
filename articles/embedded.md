@@ -75,7 +75,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 
 *   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
-*   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, minimalist implementation of the RTPS protocol for microcontrollers such as the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with standard DDS as-is on stronger MCUs.
+*   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, minimalist implementation of the RTPS protocol for microcontrollers such as the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with standard DDS as-is on stronger MCUs. This project has been discontinued in 2016.
 
 *   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx): Early port (in 2014) of ROS 2 alpha for the STM32F4Discovery board and the STM3240G eval board running the RTOS NuttX developed by Víctor Mayoral Vilches and Esteve Fernandez at the OSRF.
 
