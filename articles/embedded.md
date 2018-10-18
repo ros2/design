@@ -86,8 +86,12 @@ To answer these questions, the OFERA EU project as well as several others have a
 *   [**mROS**](https://github.com/tlk-emb/mROS/): A new work on bringing ROS1 concepts (including nodes and the ROS1 middleware) on stronger MCUs, cf.
     *Hideki Takase, Tomoya Mori, Kazuyoshi Takagi and Naofumi Takagi: 'Work-in-Progress: Design Concept of a Lightweight Runtime Environment for Robot Software Components onto Embedded Devices' in Proc. of ESWEEK, Torino, Italy, September 2018.*
 
-## First Design Ideas
+## Design Discussion
 
-* This is our proposed architecture:
+The following figure may serve as a starting point for the design discussion. It depicts the major layers from the real-time operating system to the application, in the style the ROS 2 standard stack.
 
-![micro-ROS](/img/embedded/micro-ROS_proposed_architecture.png)
+![micro-ROS](/img/embedded/features_with_dependencies.png)
+
+At the same time, the diagram illustrates the possible feature set of the client library -- ideally in a modular fashion so that different profiles can be derived from it. The vertical bar at each feature gives an indication of the dependencies with lower layers and thus on the portability to different RTOS and middlewares.
+
+In the OFERA project, a more detailed diagram has been developed, which can be found at [micro-ros.com](https://micro-ros.com/).
