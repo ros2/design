@@ -36,8 +36,8 @@ A number of things that would be great to have, lets call it a wishlist. Feel fr
 | W-CONTROL | **Support control-oriented applications**  | MCUs are great for control, and micro-ROS should be as well. This usually means hard real-time performance with low jitter and small response times. |
 | W-POWER | **Make low-power modes possible** | MCUs are often used in battery-powered applications, and/or in applications with a large amount of standby time. Therefore, the stack should make it easily possible to save power. |
 | W-STATIC | **Use static initialization** | Static initialization is less error-prone, easier to analyze, and shifts memory usage from RAM to flash. It is a requirement for going to very small resource use. |
-| W-BOOT | **Use static initialization** | Static initialization is less error-prone, easier to analyze, and shifts memory usage from RAM to flash. It is a requirement for going to very small resource use. |
-
+| W-BOOT | **Quick boot times compared to native ROS 2 machines** | Microcontrollers provide with the capability of booting very quickly (typically, in the order of tenths of milliseconds or less). This  enhance the existing landscape of ROS 2-native devices which in the best cases, require a few seconds to boot an embedded Linux.|
+| W-INFOMODEL | **a common interface that facilitates interoperability across different vendors** | An information model for robot devices will facilitate interoperability among modules from different vendors of robot hardware and overall, it would facilitate the integration effort. Within the OFERA project we propose and use the [Hardware Robot Information Model (HRIM)](https://acutronicrobotics.com/modularity/hrim/).|
 
 In the EU project OFERA, we compiled a longer list of requirements to an embedded ROS 2 stack, which might serve as a good basis for the discussion. Please see Section 5 in [OFERA deliverable D1.7_Requirements.pdf](http://ofera.eu/storage/deliverables/OFERA_D1.7_Requirements.pdf).
 
@@ -66,6 +66,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 | A-RTOS | Q-RTOS | RTOS Proof-of-Concept | Provide a proof-of-concept RTOS. In the OFERA project, we chose [NuttX](http://nuttx.org/), because it is largely POSIX compatible and thus eases porting. There are also experiments based on [RIOT](https://www.riot-os.org/) (cf. [github.com/astralien3000/riot-ros2](https://github.com/astralien3000/riot-ros2)) and FreeRTOS (cf. [github.com/ros2/ros2_embedded_freertos](https://github.com/ros2/ros2_embedded_freertos)) |
 | A-BUILD-META | Q-BUILD | Meta-Build | Explores a meta-build approach to transform ROS 2 CMakeLists.txt to RTOS-specific build instructions. |
 | A-BUILD-NUTTX | Q-BUILD | NuttX-specific build | OFERA has integrated (parts of) micro-ROS directly as an app in the [NuttX build](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ROS2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2). |
+| A-BUILD-NUTTX-LIB | Q-BUILD | NuttX-specific build as library | OFERA has integrated (parts of) micro-ROS directly as a library in the NuttX build. |TODO |
 | A-BUILD-ARDUINO | Q-BUILD | Arduino Build | ROBOTIS has explored building all the libraries using the Arduino IDE, cf. [github.com/ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps). This required some manual changes and thus does not scale, but can get you off the ground. |
 | A-NUTTX-LIBCXX | Q-LANG | C++11/higher support for NuttX | Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp. |
 | A-PERF-RCLCPP-RESOURCE | Q-PERF | Determine resource use of rclcpp | |
@@ -75,6 +76,8 @@ To answer these questions, the OFERA EU project as well as several others have a
 
 ### ROS2-based approaches
 *   [**EU project OFERA**](http://ofera.eu/): The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the Micro XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS. Beyond the project page, additional details of the project results can be found at [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
+
+* [Hardware Robot Operating System (H-ROS)](https://acutronicrobotics.com/modularity/H-ROS/) is an a standardized software and hardware infrastructure to create modular robot hardware. H-ROS is actively being used within the OFERA EU project to benchmark and prototype the capabilities of the ROS 2 stack against the ROS 2 embedded stack. In addition, H-ROS implements selected components of the ROS 2.0 stack for microcontrollers.
 
 *   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
