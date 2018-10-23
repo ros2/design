@@ -65,7 +65,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 |-----|------------------|--------|-------------|
 | A-RTOS | Q-RTOS | RTOS Proof-of-Concept | Provide a proof-of-concept RTOS. In the OFERA project, we chose [NuttX](http://nuttx.org/), because it is largely POSIX compatible and thus eases porting. There are also experiments based on [RIOT](https://www.riot-os.org/) (cf. [github.com/astralien3000/riot-ros2](https://github.com/astralien3000/riot-ros2)) and FreeRTOS (cf. [github.com/ros2/ros2_embedded_freertos](https://github.com/ros2/ros2_embedded_freertos)) |
 | A-BUILD-META | Q-BUILD | Meta-Build | Explores a meta-build approach to transform ROS 2 CMakeLists.txt to RTOS-specific build instructions. |
-| A-BUILD-NUTTX | Q-BUILD | NuttX-specific build | OFERA has integrated (parts of) micro-ROS directly as an app in the [NuttX build](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ROS2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2) as well as a library. |
+| A-BUILD-NUTTX | Q-BUILD | NuttX-specific build | OFERA has integrated (parts of) micro-ROS directly as an app and as a library in the NuttX build. |
 | A-BUILD-ARDUINO | Q-BUILD | Arduino Build | ROBOTIS has explored building all the libraries using the Arduino IDE, cf. [github.com/ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps). This required some manual changes and thus does not scale, but can get you off the ground. |
 | A-NUTTX-LIBCXX | Q-LANG | C++11/higher support for NuttX | Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp. |
 | A-PERF-RCLCPP-RESOURCE | Q-PERF | Determine resource use of rclcpp | |
