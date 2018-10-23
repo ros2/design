@@ -67,7 +67,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 | A-BUILD-ARDUINO | Q-BUILD | Arduino Build | ROBOTIS has explored building all the libraries using the Arduino IDE, cf. [github.com/ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps). This required some manual changes and thus does not scale, but can get you off the ground. |
 | A-NUTTX-LIBCXX | Q-LANG | C++11/higher support for NuttX | Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp. |
 | A-PERF-RCLCPP-RESOURCE | Q-PERF | Determine resource use of rclcpp | |
-| A-DDS-XRCE | Q-COMM | Use of DDS-XRCE standard protocol | This OMG standard defines the protocol used by microcontrollers to publish and subscribe data to a DDS Domain, standard in ROS 2. OFERA and ROBOTIS have proved that it is a suitable protocol to seamless communicate microcontrollers with ROS 2. | [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE/) |
+| A-DDS-XRCE | Q-COMM | Use of DDS-XRCE standard protocol | This OMG standard defines the protocol used by microcontrollers to publish and subscribe data to a DDS Domain, standard in ROS 2. OFERA and ROBOTIS have demonstrated that it is a suitable protocol to seamlessly communicate with microcontrollers. | [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE/) |
 | A-Micro-XRCE-DDS | Q-COMM | Middleware usage | OFERA, Robotis and others have integrated Micro XRCE-DDS middleware as part of their solutions. This middleware provides an implementation of DDS-XRCE standard. Integrations have been done on top of different RTOSs, NuttX and FreeRTOS and using different underlying transports. | [Micro XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) |
 
 ## Prior and on-going works
