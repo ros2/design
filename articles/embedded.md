@@ -71,7 +71,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 ## Prior and on-going works
 
 ### ROS2-based approaches
-*   [**EU project OFERA**](http://ofera.eu/): The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the Micro XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS. Beyond the project page, additional details of the project results can be found at [micro-ros.com](http://micro-ros.com).
+*   [**EU project OFERA**](http://ofera.eu/): The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the Micro XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS. Beyond the project page, additional details of the project results can be found at [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
 
 *   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
@@ -94,4 +94,4 @@ The following figure may serve as a starting point for the design discussion. It
 
 At the same time, the diagram illustrates the possible feature set of the client library -- ideally in a modular fashion so that different profiles can be derived from it. The vertical bar at each feature gives an indication of the dependencies with lower layers and thus on the portability to different RTOS and middlewares.
 
-In the OFERA project, a more detailed diagram has been developed, which can be found at [micro-ros.com](https://micro-ros.com/).
+In the OFERA project, a more detailed diagram has been developed, which can be found at [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
