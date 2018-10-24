@@ -77,7 +77,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 
 *   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
-*   [XEL Network by ROBOTIS](https://xelnetwork.readthedocs.io):
+*   [**XEL Network by ROBOTIS**](https://xelnetwork.readthedocs.io):
   Product which communicate with ROS 2 (DDS) through DDS-XRCE using Micro XRCE-DDS in the firmware of their CommXel board.
   This CommXel board manages the rest of the boards conforming the XEL Network and interface them to a ROS 2 space.
   The CommXel could use Ethernet or UART to communicate using DDS-XRCE.
@@ -86,7 +86,7 @@ To answer these questions, the OFERA EU project as well as several others have a
 
 *   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx): Early port (in 2014) of ROS 2 alpha for the STM32F4Discovery board and the STM3240G eval board running the RTOS NuttX developed by Víctor Mayoral Vilches and Esteve Fernandez at the OSRF.
 
-*   [Renesas GR-ROSE](http://gadget.renesas.com/ja/event/2018/pm_rose.html):
+*   [**Renesas GR-ROSE**](http://gadget.renesas.com/ja/event/2018/pm_rose.html):
   Renesas have integrated their GR-ROSE platform with ROS 2 using DDS-XRCE protocol.
   They use Micro XRCE-DDS implementation on top of FreeRTOS.
   A sample can be found in their forums [renesas forum ](https://japan.renesasrulz.com/gr_user_forum_japanese/f/gr-rose/5201/ros-2-micro-rtps).
