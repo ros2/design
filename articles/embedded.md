@@ -53,7 +53,7 @@ To determine how feasible that is, and to come up with the actual requirements a
 | Q-LANG | W-PORTABILITY | Which language should be used, and at what spec level? |
 | Q-API | W-PORTABILITY, W-MODULARITY, W-STATIC, W-POWER | How should the API look in general?|
 | Q-PERF | W-PORTABILITY, W-DEVICES, W-CONTROL, W-STATIC | What are the performance implications of the API?|
-| Q-COMM | W-COMM | Which communication/middleware technology is used?|
+| Q-COMM | W-COMM, W-SEAMLESS| Which communication/middleware technology is used?|
 
 ## Analyses and Experiments
 
@@ -69,7 +69,8 @@ To answer these questions, the OFERA EU project as well as several others have a
 | A-BUILD-ARDUINO | Q-BUILD | Arduino Build | ROBOTIS has explored building all the libraries using the Arduino IDE, cf. [github.com/ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps). This required some manual changes and thus does not scale, but can get you off the ground. |
 | A-NUTTX-LIBCXX | Q-LANG | C++11/higher support for NuttX | Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp. |
 | A-PERF-RCLCPP-RESOURCE | Q-PERF | Determine resource use of rclcpp | |
-
+| A-DDS-XRCE | Q-COMM | Use of DDS-XRCE standard protocol | This OMG standard defines the protocol used by microcontrollers to publish and subscribe data to a DDS Domain, standard in ROS 2. OFERA and ROBOTIS have demonstrated that it is a suitable protocol to seamlessly communicate with microcontrollers. | [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE/) |
+| A-Micro-XRCE-DDS | Q-COMM | Middleware usage | OFERA, Robotis and others have integrated Micro XRCE-DDS middleware as part of their solutions. This middleware provides an implementation of DDS-XRCE standard. Integrations have been done on top of different RTOSs, NuttX and FreeRTOS and using different underlying transports. | [Micro XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) |
 
 ## Prior and on-going works
 
@@ -80,9 +81,20 @@ To answer these questions, the OFERA EU project as well as several others have a
 
 *   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
+*   [**XEL Network by ROBOTIS**](https://xelnetwork.readthedocs.io):
+  Product which communicate with ROS 2 (DDS) through DDS-XRCE using Micro XRCE-DDS in the firmware of their CommXel board.
+  This CommXel board manages the rest of the boards conforming the XEL Network and interface them to a ROS 2 space.
+  The CommXel could use Ethernet or UART to communicate using DDS-XRCE.
+
 *   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, minimalist implementation of the RTPS protocol for microcontrollers such as the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with standard DDS as-is on stronger MCUs. This project has been discontinued in 2016.
 
 *   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx): Early port (in 2014) of ROS 2 alpha for the STM32F4Discovery board and the STM3240G eval board running the RTOS NuttX developed by Víctor Mayoral Vilches and Esteve Fernandez at the OSRF.
+
+*   [**Renesas GR-ROSE**](http://gadget.renesas.com/ja/event/2018/pm_rose.html):
+  Renesas have integrated their GR-ROSE platform with ROS 2 using DDS-XRCE protocol.
+  They use Micro XRCE-DDS implementation on top of FreeRTOS.
+  A sample can be found in their forums [renesas forum ](https://japan.renesasrulz.com/gr_user_forum_japanese/f/gr-rose/5201/ros-2-micro-rtps).
+  They have integrated Micro XRCE-DDS middleware as part of their [online web compiler](http://tool-cloud2.renesas.com/index.php) for the GR-ROSE platform.
 
 ### ROS1-based approaches
 
