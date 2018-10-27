@@ -25,21 +25,87 @@ This article documents requirements, design ideas and related works on this unde
 
 A number of things that would be great to have, lets call it a wishlist. Feel free to add stuff ;-)
 
-| Key | Title | Description |
-|-----|-------|-------------|
-| W-SEAMLESS | **Seamless integration with ROS&nbsp;2** | The embedded ROS 2 stack shall integrate seamlessly with standard ROS 2 stacks and nodes running on more powerful microprocessors. For a standard ROS 2 node, communication (topics, services) from and to software running on the embedded ROS 2 stack should be transparent. The same should hold for other core concepts such as parameters, graph introspection, and run-time reconfiguration by the node lifecycle.|
-| W-PORTABILITY | **Portability of ROS 2-based software** | The embedded ROS 2 stack shall resemble or directly use the ROS 2 API -- more precisely the rclcpp API -- to facilitate porting standard ROS 2 nodes to MCUs. |
-| W-DEVICES | **Support of a broad spectrum of device classes** | The embedded ROS 2 stack shall support a broad range of MCU device classes, starting from a few tens kilobyte of RAM. |
-| W-RTOS | **Support of a broad spectrum of RTOS(s)** | The stack shall be adaptable to different RTOS (e.g., NuttX, FreeRTOS, Zephyr) and provide abstractions with regard to the application software to facilitate porting application components to between RTOSs.|
-| W-COMM | **Support of prevalent communication technologies** | To cover the broad range of use-cases for MCUs in robotics, the embedded ROS 2 stack shall be usable with the default ROS 2 middleware standard DDS, simple (custom) serial communication protocols just as common wireless technologies like 6LoWPAN |
-| W-MODULARITY | **High Modularity** | The embedded ROS 2 stack shall be highly modular, not only to allow for adaptation to specific hardware features and different RTOS, but also to allow the integration with existing frameworks and to be able to create customized sub-stacks. For example, it shall be usable in the style of rosserial, thus bringing basically the message serialization to the MCU only. Similarly, it should be possible to derive a sub-stack that provides node graph features and publish/subscribe but no parameters and services, and so on. |
-| W-CONTROL | **Support control-oriented applications**  | MCUs are great for control, and micro-ROS should be as well. This usually means hard real-time performance with low jitter and small response times. |
-| W-POWER | **Make low-power modes possible** | MCUs are often used in battery-powered applications, and/or in applications with a large amount of standby time. Therefore, the stack should make it easily possible to save power. |
-| W-STATIC | **Use static initialization** | Static initialization is less error-prone, easier to analyze, and shifts memory usage from RAM to flash. It is a requirement for going to very small resource use. |
-| W-BOOT | **Quick boot times compared to native ROS 2 machines** | Microcontrollers provide with the capability of booting very quickly (typically, in the order of tenths of milliseconds or less). This  enhances the existing landscape of ROS 2-native devices which in the best cases, require a few seconds to boot an embedded Linux.|
-| W-INFOMODEL | **A common interface that facilitates interoperability across different vendors** | An information model for robot devices, adapted by vendors of robot modules, would lower costs of integration of robotic systems. Within the OFERA project we propose and use the [Hardware Robot Information Model (HRIM)](https://acutronicrobotics.com/modularity/hrim/).|
+### W-SEAMLESS: *Seamless integration with ROS&nbsp;2*
 
-In the EU project OFERA, we compiled a longer list of requirements to an embedded ROS 2 stack, which might serve as a good basis for the discussion. Please see Section 5 in [OFERA deliverable D1.7_Requirements.pdf](http://ofera.eu/storage/deliverables/OFERA_D1.7_Requirements.pdf).
+The embedded ROS 2 stack shall integrate seamlessly with standard 
+ROS 2 stacks and nodes running on more powerful microprocessors. For 
+a standard ROS 2 node, communication (topics, services) from and to
+software running on the embedded ROS 2 stack should be transparent. 
+The same should hold for other core concepts such as parameters, 
+graph introspection, and run-time reconfiguration by the node lifecycle.
+
+### W-PORTABILITY: *Portability of ROS 2-based software*
+
+The embedded ROS 2 stack shall resemble or directly use the ROS 2 API 
+-- more precisely the rclcpp API -- to facilitate porting standard 
+ROS 2 nodes to MCUs.
+
+### W-DEVICES *Support of a broad spectrum of device classes*
+
+The embedded ROS 2 stack shall support a broad range of MCU device 
+classes, starting from a few tens kilobyte of RAM.
+
+### W-RTOS: *Support of a broad spectrum of RTOS(s)* 
+
+The stack shall be adaptable to different RTOS (e.g., NuttX, FreeRTOS, 
+Zephyr) and provide abstractions with regard to the application 
+software to facilitate porting application components to between RTOSs.
+
+### W-COMM: *Support of prevalent communication technologies* 
+
+To cover the broad range of use-cases for MCUs in robotics, the embedded 
+ROS 2 stack shall be usable with the default ROS 2 middleware standard 
+DDS, simple (custom) serial communication protocols just as common 
+wireless technologies like 6LoWPAN
+
+### W-MODULARITY: *High Modularity* 
+
+The embedded ROS 2 stack shall be highly modular, not only to allow for 
+adaptation to specific hardware features and different RTOS, but also to
+allow the integration with existing frameworks and to be able to create 
+customized sub-stacks. For example, it shall be usable in the style of 
+rosserial, thus bringing basically the message serialization to the MCU 
+only. Similarly, it should be possible to derive a sub-stack that provides 
+node graph features and publish/subscribe but no parameters and services, 
+and so on.
+
+### W-CONTROL: *Support control-oriented applications*  
+
+MCUs are great for control, and micro-ROS should be as well. This usually 
+means hard real-time performance with low jitter and small response times.
+
+### W-POWER *Make low-power modes possible* 
+
+MCUs are often used in battery-powered applications, and/or in applications
+with a large amount of standby time. Therefore, the stack should make it 
+easily possible to save power.
+
+### W-STATIC: *Use static initialization* 
+
+Static initialization is less error-prone, easier to analyze, and shifts 
+memory usage from RAM to flash. It is a requirement for going to very small 
+resource use. 
+
+### W-BOOT: *Quick boot times compared to native ROS 2 machines* 
+
+Microcontrollers provide with the capability of booting very quickly
+(typically, in the order of tenths of milliseconds or less). This enhances
+the existing landscape of ROS 2-native devices which in the best cases, 
+require a few seconds to boot an embedded Linux.
+
+### W-INFOMODEL: *A common interface that facilitates interoperability across different vendors* 
+
+An information model for robot devices, adapted by vendors of robot modules, 
+would lower costs of integration of robotic systems. Within the OFERA project 
+we propose and use the 
+[Hardware Robot Information Model (HRIM)](https://acutronicrobotics.com/modularity/hrim/).|
+
+### More Details / Ideas
+
+In the EU project OFERA, we compiled a longer list of requirements to an embedded 
+ROS 2 stack, which might serve as a good basis for the discussion. Please see 
+Section 5 in 
+[OFERA deliverable D1.7_Requirements.pdf](http://ofera.eu/storage/deliverables/OFERA_D1.7_Requirements.pdf).
 
 
 ## Questions
