@@ -125,29 +125,107 @@ To determine how feasible that is, and to come up with the actual requirements a
 
 | Key | Related Wish | Question |
 |-----|-------------|----------|
-| Q-RTOS | W-RTOS, W-PORTABILITY | Which RTOS(s) do we use as the basis? |
-| Q-BUILD | W-RTOS, W-PORTABILITY | How do we handle the RTOS(s) respective build-systems? |
-| Q-LANG | W-PORTABILITY | Which language should be used, and at what spec level? |
-| Q-API | W-PORTABILITY, W-MODULARITY, W-STATIC, W-POWER | How should the API look in general?|
-| Q-PERF | W-PORTABILITY, W-DEVICES, W-CONTROL, W-STATIC | What are the performance implications of the API?|
-| Q-COMM | W-COMM, W-SEAMLESS| Which communication/middleware technology is used?|
 
-## Analyses and Experiments
+### Q-RTOS: *Which RTOS(s) do we use as the basis?*
 
-To answer these questions, the OFERA EU project as well as several others have already undertaken or are planning exploratory work.
+#### Related: W-RTOS, W-PORTABILITY
 
-*Meta-Note*: Please only add a short description here, linking to more detailed pages if necessary.
+### Q-BUILD: *How do we handle the RTOS(s) respective build-systems?*
 
-| Key | Related Question | Action | Description |
-|-----|------------------|--------|-------------|
-| A-RTOS | Q-RTOS | RTOS Proof-of-Concept | Provide a proof-of-concept RTOS. In the OFERA project, we chose [NuttX](http://nuttx.org/), because it is largely POSIX compatible and thus eases porting. There are also experiments based on [RIOT](https://www.riot-os.org/) (cf. [github.com/astralien3000/riot-ros2](https://github.com/astralien3000/riot-ros2)) and FreeRTOS (cf. [github.com/ros2/ros2_embedded_freertos](https://github.com/ros2/ros2_embedded_freertos)) |
-| A-BUILD-META | Q-BUILD | Meta-Build | Explores a meta-build approach to transform ROS 2 CMakeLists.txt to RTOS-specific build instructions. |
-| A-BUILD-NUTTX | Q-BUILD | NuttX-specific build | OFERA has integrated (parts of) micro-ROS directly as an app and as a library in the NuttX build. |
-| A-BUILD-ARDUINO | Q-BUILD | Arduino Build | ROBOTIS has explored building all the libraries using the Arduino IDE, cf. [github.com/ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps). This required some manual changes and thus does not scale, but can get you off the ground. |
-| A-NUTTX-LIBCXX | Q-LANG | C++11/higher support for NuttX | Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp. |
-| A-PERF-RCLCPP-RESOURCE | Q-PERF | Determine resource use of rclcpp | |
-| A-DDS-XRCE | Q-COMM | Use of DDS-XRCE standard protocol | This OMG standard defines the protocol used by microcontrollers to publish and subscribe data to a DDS Domain, standard in ROS 2. OFERA and ROBOTIS have demonstrated that it is a suitable protocol to seamlessly communicate with microcontrollers. | [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE/) |
-| A-Micro-XRCE-DDS | Q-COMM | Middleware usage | OFERA, Robotis and others have integrated Micro XRCE-DDS middleware as part of their solutions. This middleware provides an implementation of DDS-XRCE standard. Integrations have been done on top of different RTOSs, NuttX and FreeRTOS and using different underlying transports. | [Micro XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) |
+#### Related: W-RTOS, W-PORTABILITY 
+
+### Q-LANG: *Which language(s) should be used, and at what spec level?*
+
+#### Related: W-PORTABILITY 
+
+### Q-API: *How should the API look in general?*
+
+#### Related: W-PORTABILITY, W-MODULARITY, W-STATIC, W-POWER
+
+### Q-PERF: * What are the performance implications of the API?*
+
+#### Related: W-PORTABILITY, W-DEVICES, W-CONTROL, W-STATIC
+
+### Q-COMM: *Which communication/middleware technology is used?*
+
+#### Related: W-COMM, W-SEAMLESS
+
+
+## Analyse and Experiment Actions
+
+To answer these questions, the OFERA EU project as well as several 
+others have already undertaken or are planning exploratory work.
+
+*Meta-Note*: Please only add a short description here, linking to 
+more detailed pages if necessary.
+
+### A-RTOS: *RTOS Proof-of-Concept* 
+
+#### Questions: *Q-RTOS*
+
+Provide a proof-of-concept RTOS. In the OFERA project, we chose 
+[NuttX](http://nuttx.org/), because it is largely POSIX compatible 
+and thus eases porting. There are also experiments based on 
+[RIOT](https://www.riot-os.org/) (cf. 
+[github.com/astralien3000/riot-ros2](https://github.com/astralien3000/riot-ros2))
+and FreeRTOS (cf. 
+[github.com/ros2/ros2_embedded_freertos](https://github.com/ros2/ros2_embedded_freertos)) |
+
+### A-BUILD-META: *Meta-Build*
+
+#### Questions: Q-BUILD 
+
+Explores a meta-build approach to transform ROS 2 CMakeLists.txt to 
+RTOS-specific build instructions. |
+
+###  A-BUILD-NUTTX: *NuttX-specific build*
+
+#### Questions: Q-BUILD 
+
+OFERA has integrated (parts of) micro-ROS directly as an app and 
+as a library in the NuttX build.
+
+### A-BUILD-ARDUINO: *Arduino Build*
+
+### Questions: Q-BUILD  
+
+ROBOTIS has explored building all the libraries using the Arduino 
+IDE, cf. [github.com/ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps). 
+This required some manual changes and thus does not scale, but 
+can get you off the ground.
+
+###  A-NUTTX-LIBCXX: *C++11/higher support for NuttX*
+
+#### Questions: Q-LANG  
+
+Build libxx from the LLVM project on NuttX, as a pre-requisite to building rclcpp.
+
+### A-PERF-RCLCPP-RESOURCE: *Determine resource use of rclcpp*
+
+#### Questions: Q-PERF 
+
+There are doubts whether rclcpp can really fit tiny MCUs, but we'll only 
+know once we tried and measured it.
+
+### A-DDS-XRCE: *Use of DDS-XRCE standard protocol*
+
+#### Questions: Q-COMM  
+
+This OMG standard defines a protocol for use by microcontrollers to 
+publish and subscribe data to a DDS Domain, standard in ROS 2. OFERA 
+and ROBOTIS have demonstrated that it is a suitable protocol to seamlessly
+communicate with microcontrollers. See [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE/)
+
+### A-Micro-XRCE-DDS: *Micro-XRCE Middleware usage*
+
+#### Questions: Q-COMM  
+
+OFERA, Robotis and others have integrated Micro XRCE-DDS middleware as 
+part of their solutions. This middleware provides an implementation of 
+DDS-XRCE standard. Integrations have been done on top of different RTOSs, 
+NuttX and FreeRTOS and using different underlying transports. 
+
+See [Micro XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) |
 
 ## Prior and on-going works
 
