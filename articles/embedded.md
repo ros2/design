@@ -17,13 +17,24 @@ author: 'In alphabetic order: [Adam Dąbrowski](https://github.com/adamdbrw), [B
 
 Original Author: {{ page.author }}
 
-While standard ROS 2 can run on Linux-class embedded devices, smaller microcontrollers (MCU) are still a challenge. For example, ARM Cortex-M3 and -M4 class MCUs are popular for motion control and sensor integration, but have little RAM and storage. ARM Cortex-M3 is widely used in many sensors due to its optimized power consumption capabilities and ultra low power modes. These microcontrollers are often running with small batteries, e.g. for environmental sensors or small consumer robots, which requires efficient power management. We aim to address these devices through a combination of specialized, ROS 2-interoperable stack as well as the use of Real-Time Operating Systems (RTOS).
+While standard ROS 2 can run on Linux-class embedded devices, smaller 
+microcontrollers (MCU) are still a challenge. For example, ARM Cortex-M3 
+and -M4 class MCUs are popular for motion control and sensor integration, 
+but have little RAM and storage. ARM Cortex-M3 is widely used in many 
+sensors due to its optimized power consumption capabilities and ultra low 
+power modes. These microcontrollers are often running with small batteries, 
+e.g. for environmental sensors or small consumer robots, which requires
+efficient power management. We aim to address these devices through a 
+combination of specialized, ROS 2-interoperable stack as well as the use
+of Real-Time Operating Systems (RTOS).
 
-This article documents requirements, design ideas and related works on this undertaking.
+This article documents feature wishes, requirements, design ideas and 
+related work on this undertaking.
 
 ## Wishlist
 
-A number of things that would be great to have, lets call it a wishlist. Feel free to add stuff ;-)
+A number of things that would be great to have, lets call it a wishlist. 
+Feel free to add stuff ;-)
 
 ### W-SEAMLESS: *Seamless integration with ROS&nbsp;2*
 
@@ -141,40 +152,80 @@ To answer these questions, the OFERA EU project as well as several others have a
 ## Prior and on-going works
 
 ### ROS2-based approaches
-*   [**EU project OFERA**](http://ofera.eu/): The EU project OFERA (Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less than 100kB RAM. The project partners currently investigate of using the ROS 2 rmw, rcl and rclcpp layers as-is on the Micro XRCE-DDS implementation of the upcoming XRCE-DDS standard. In parallel, a more modular approach in the style of rosserial is investigated. In the project's use-cases, NuttX is considered as primary choice for the RTOS. Beyond the project page, additional details of the project results can be found at [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
+*   [**EU project OFERA**](http://ofera.eu/): The EU project OFERA 
+(Open Framework for Embedded Robot Applications) aims at a ROS 2-compatible 
+stack for MCUs in the range of STM32F4 or STM32L1, i.e. with possibly less 
+than 100kB RAM. The project partners currently investigate of using the 
+ROS 2 rmw, rcl and rclcpp layers as-is on the Micro XRCE-DDS implementation 
+of the upcoming XRCE-DDS standard. In parallel, a more modular approach in 
+the style of rosserial is investigated. In the project's use-cases, NuttX 
+is considered as primary choice for the RTOS. Beyond the project page, 
+additional details of the project results can be found at 
+[microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
 
-* [**Hardware Robot Operating System (H-ROS)**](https://acutronicrobotics.com/modularity/H-ROS/) is an a standardized software and hardware infrastructure to create modular robot hardware. H-ROS is actively being used within the OFERA EU project to benchmark and prototype the capabilities of the ROS 2 stack against the ROS 2 embedded stack. In addition, H-ROS implements selected components of the ROS 2.0 stack for microcontrollers.
+* [**Hardware Robot Operating System (H-ROS)**](https://acutronicrobotics.com/modularity/H-ROS/) 
+is an a standardized software and hardware infrastructure to create modular 
+robot hardware. H-ROS is actively being used within the OFERA EU project to 
+benchmark and prototype the capabilities of the ROS 2 stack against the ROS 2 
+embedded stack. In addition, H-ROS implements selected components of the ROS 
+2.0 stack for microcontrollers.
 
-*   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): Tailored and optimized implementation of the ROS 2 publish/subscribe and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation of the upcoming XRCE-DDS middleware standard running on an STM32F7.
+*   [**ROS 2 library for OpenCR by ROBOTIS**](https://github.com/ROBOTIS-GIT/OpenCR/tree/feature-ros2-micrortps/arduino/opencr_arduino/opencr/libraries/ROS2): 
+Tailored and optimized implementation of the ROS 2 publish/subscribe 
+and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation 
+of the upcoming XRCE-DDS middleware standard running on an STM32F7.
 
 *   [**XEL Network by ROBOTIS**](https://xelnetwork.readthedocs.io):
-  Product which communicate with ROS 2 (DDS) through DDS-XRCE using Micro XRCE-DDS in the firmware of their CommXel board.
-  This CommXel board manages the rest of the boards conforming the XEL Network and interface them to a ROS 2 space.
+  Product which communicate with ROS 2 (DDS) through DDS-XRCE using Micro 
+  XRCE-DDS in the firmware of their CommXel board.
+  This CommXel board manages the rest of the boards conforming the XEL 
+  Network and interface them to a ROS 2 space.
   The CommXel could use Ethernet or UART to communicate using DDS-XRCE.
 
-*   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, minimalist implementation of the RTPS protocol for microcontrollers such as the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with standard DDS as-is on stronger MCUs. This project has been discontinued in 2016.
+*   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, 
+minimalist implementation of the RTPS protocol for microcontrollers such as 
+the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with 
+standard DDS as-is on stronger MCUs. This project has been discontinued in 2016.
 
-*   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx): Early port (in 2014) of ROS 2 alpha for the STM32F4Discovery board and the STM3240G eval board running the RTOS NuttX developed by Víctor Mayoral Vilches and Esteve Fernandez at the OSRF.
+*   [**ros2_embedded_nuttx**](https://github.com/ros2/ros2_embedded_nuttx): 
+Early port (in 2014) of ROS 2 alpha for the STM32F4Discovery board and the 
+STM3240G eval board running the RTOS NuttX developed by Víctor Mayoral Vilches 
+and Esteve Fernandez at the OSRF.
 
 *   [**Renesas GR-ROSE**](http://gadget.renesas.com/ja/event/2018/pm_rose.html):
   Renesas have integrated their GR-ROSE platform with ROS 2 using DDS-XRCE protocol.
   They use Micro XRCE-DDS implementation on top of FreeRTOS.
-  A sample can be found in their forums [renesas forum ](https://japan.renesasrulz.com/gr_user_forum_japanese/f/gr-rose/5201/ros-2-micro-rtps).
-  They have integrated Micro XRCE-DDS middleware as part of their [online web compiler](http://tool-cloud2.renesas.com/index.php) for the GR-ROSE platform.
+  A sample can be found in their forums 
+  [renesas forum ](https://japan.renesasrulz.com/gr_user_forum_japanese/f/gr-rose/5201/ros-2-micro-rtps).
+  They have integrated Micro XRCE-DDS middleware as part of their
+  [online web compiler](http://tool-cloud2.renesas.com/index.php) for the GR-ROSE platform.
 
 ### ROS1-based approaches
 
-*   [**rosserial**](http://wiki.ros.org/rosserial): Well-known and widely used in the ROS community.
+*   [**rosserial**](http://wiki.ros.org/rosserial): Well-known and widely used 
+in the ROS community.
 
-*   [**mROS**](https://github.com/tlk-emb/mROS/): A new work on bringing ROS1 concepts (including nodes and the ROS1 middleware) on stronger MCUs, cf.
-    *Hideki Takase, Tomoya Mori, Kazuyoshi Takagi and Naofumi Takagi: 'Work-in-Progress: Design Concept of a Lightweight Runtime Environment for Robot Software Components onto Embedded Devices' in Proc. of ESWEEK, Torino, Italy, September 2018.*
+*   [**mROS**](https://github.com/tlk-emb/mROS/): A new 
+    work on bringing ROS1 concepts (including nodes and the 
+    ROS1 middleware) on stronger MCUs, cf.
+    *Hideki Takase, Tomoya Mori, Kazuyoshi Takagi and Naofumi Takagi: 
+    'Work-in-Progress: Design Concept of a Lightweight Runtime Environment 
+    for Robot Software Components onto Embedded Devices' in 
+    Proc. of ESWEEK, Torino, Italy, September 2018.*
 
 ## Design Discussion
 
-The following figure may serve as a starting point for the design discussion. It depicts the major layers from the real-time operating system to the application, in the style the ROS 2 standard stack.
+The following figure may serve as a starting point for the design discussion.
+It depicts the major layers from the real-time operating system to the 
+application, in the style the ROS 2 standard stack.
 
 ![micro-ROS](/img/embedded/features_with_dependencies.png)
 
-At the same time, the diagram illustrates the possible feature set of the client library -- ideally in a modular fashion so that different profiles can be derived from it. The vertical bar at each feature gives an indication of the dependencies with lower layers and thus on the portability to different RTOS and middlewares.
+At the same time, the diagram illustrates the possible feature set of the 
+client library -- ideally in a modular fashion so that different profiles 
+can be derived from it. The vertical bar at each feature gives an indication
+of the dependencies with lower layers and thus on the portability to 
+different RTOS and middlewares.
 
-In the OFERA project, a more detailed diagram has been developed, which can be found at [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
+In the OFERA project, a more detailed diagram has been developed, which can 
+be found at [microros.github.io/micro-ROS/](https://microros.github.io/micro-ROS/).
