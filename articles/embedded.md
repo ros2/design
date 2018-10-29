@@ -260,6 +260,10 @@ of the upcoming XRCE-DDS middleware standard running on an STM32F7.
   Network and interface them to a ROS 2 space.
   The CommXel could use Ethernet or UART to communicate using DDS-XRCE.
 
+*    [**ros2arduino by ROBOTIS**](https://github.com/ROBOTIS-GIT/ros2arduino):
+  Based on their previous implementation for TB3. This implementation uses Micro XRCE-DDS implementation as communication middleware. On top of the middleware, a thin layer implementing basic ROS 2 concepts has been created.
+  [discourse.ros.org announcement](https://discourse.ros.org/t/ros2arduino-discussion-for-development-ros2-library-for-arduino/6498)
+
 *   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, 
 minimalist implementation of the RTPS protocol for microcontrollers such as 
 the STM32F7 developed at the OSRF. FreeRTPS shall allow to run ROS 2 with 
@@ -277,6 +281,15 @@ and Esteve Fernandez at the OSRF.
   [renesas forum ](https://japan.renesasrulz.com/gr_user_forum_japanese/f/gr-rose/5201/ros-2-micro-rtps).
   They have integrated Micro XRCE-DDS middleware as part of their
   [online web compiler](http://tool-cloud2.renesas.com/index.php) for the GR-ROSE platform.
+
+*   [**Renesas RX65N MCU**](https://www.renesas.com/us/en/about/press-center/news/2018/news20181029.html):
+  Renesas announce that their RX65N Microcontrollers Support DDS-XRCE using eProsimas' Micro XRCE-DDS implementation.
+  All software used in this demonstration will be open sourced and be available in Q4 2018.
+
+*    [**Amazon aws-ros-client-library-microcontrollers**](https://github.com/awslabs/aws-ros-client-library-microcontrollers)
+  Amazon open source project where an initial draft of a rcluc and rmwu layers interfaces have been designed.
+  The protocol used is DDS-XRCE and uses Micro XRCE-DDS implementation.
+  [discourse.ros.org announcement](https://discourse.ros.org/t/ros2arduino-discussion-for-development-ros2-library-for-arduino/6498/12)
 
 ### ROS1-based approaches
 
