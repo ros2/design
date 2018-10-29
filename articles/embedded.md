@@ -252,6 +252,8 @@ embedded stack. In addition, H-ROS implements selected components of the ROS
 Tailored and optimized implementation of the ROS 2 publish/subscribe 
 and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation 
 of the upcoming XRCE-DDS middleware standard running on an STM32F7.
+This initiative has been factored out under the [ros2arduino](https://github.com/ROBOTIS-GIT/ros2arduino) name
+[discourse.ros.org announcement](https://discourse.ros.org/t/ros2arduino-discussion-for-development-ros2-library-for-arduino/6498).
 
 *   [**XEL Network by ROBOTIS**](https://xelnetwork.readthedocs.io):
   Product which communicate with ROS 2 (DDS) through DDS-XRCE using Micro 
@@ -259,10 +261,6 @@ of the upcoming XRCE-DDS middleware standard running on an STM32F7.
   This CommXel board manages the rest of the boards conforming the XEL 
   Network and interface them to a ROS 2 space.
   The CommXel could use Ethernet or UART to communicate using DDS-XRCE.
-
-*    [**ros2arduino by ROBOTIS**](https://github.com/ROBOTIS-GIT/ros2arduino):
-  Based on their previous implementation for TB3. This implementation uses Micro XRCE-DDS implementation as communication middleware. On top of the middleware, a thin layer implementing basic ROS 2 concepts has been created.
-  [discourse.ros.org announcement](https://discourse.ros.org/t/ros2arduino-discussion-for-development-ros2-library-for-arduino/6498)
 
 *   [**freeRTPS**](https://github.com/ros2/freertps): A free, portable, 
 minimalist implementation of the RTPS protocol for microcontrollers such as 
