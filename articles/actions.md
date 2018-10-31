@@ -39,8 +39,9 @@ There are two entities involved in actions: an **action server** and an **action
 ### Action Server
 
 An action server provides an action.
-Like topics and services, an action server has a name and a type.
-There is only one server per name.
+Like topics and services, an action server has a *name* and a *type*.
+The name is allowed to be namespaced and must be unique across action servers.
+This means there may be multiple action servers that have the same type running simultaneously (under different namespaces).
 
 It is responsible for:
 
@@ -49,12 +50,12 @@ It is responsible for:
 - executing the action when a goal is received and accepted
 - optionally providing feedback about the progress of all executing actions
 - optionally handling requests to cancel one or more actions
-- sending the result of an action, including whether it succeed, failed, or was canceled, to the client when the action completes
+- sending the result of a completed action, including whether it succeeded, failed, or was canceled, to a client that makes a result request.
 
 ### Action Client
 
 An action client sends a goal (an action to be performed) and monitors its progress.
-There may be multiple clients per server; however, it is up to the server to decide how goals from multiple clients will be handled.
+There may be multiple clients per server; however, it is up to the server to decide how goals from multiple clients will be handled simultaneously.
 
 It is responsible for:
 
@@ -153,7 +154,7 @@ Actions, like topics and services, are introspectable from the command line.
 
 The command line tool, `ros2 action`, will be able to:
 
-- list action names provided by action servers
+- list action names associated with any running action servers or action clients
 - list action servers and action clients
 - display active goals on an action server
 - display the arguments for an action goal
@@ -176,7 +177,7 @@ There are three active states:
 - **ACCEPTED** - The goal has been accepted and is awaiting execution.
 - **EXECUTING** - The goal is currently being executed by the action server.
 - **CANCELING** - The client has requested that the goal be canceled and the action server has accepted the cancel request.
-This state is useful for any "clean up" that the action server may have to do.
+This state is useful for any user-defined "clean up" that the action server may have to do.
 
 And three terminal states:
 
@@ -238,7 +239,7 @@ The QoS settings of this service should be set so the client is guaranteed to re
 
 The purpose of this service is to request the cancellation of one or more goals on the action server.
 The result indicates which goals will be attempted to be canceled.
-Whether or not a goal is actually canceled is indicated by the status topic and the result service.
+Whether or not a goal transitions to the CANCELED state is indicated by the status topic and the result service.
 
 The cancel request policy is the same as in ROS 1.
 
@@ -257,9 +258,15 @@ The purpose of this service is to get the final result of a goal.
 After a goal has been accepted the client should call this service to receive the result.
 The result will indicate the final status of the goal and any user defined data as part of the [Action Interface Definition](#action-interface-definition).
 
+#### Result caching
+
 The server should cache the result once it is ready so multiple clients have to opportunity to get it.
-This is useful for debugging/introspection tools.
+This is also useful for debugging/introspection tools.
+
 To free up resources, the server should discard the result after a configurable timeout period.
+The timeout can be set as part of options to the action server.
+If the timeout is configured to have value **-1**, then goal results will be "kept forever" (until the action server shuts down).
+If the timeout is configured to have value **0**, then goal results are discarded immediately (after responding to any pending result requests).
 
 ### Goal Status Topic
 
