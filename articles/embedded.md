@@ -17,44 +17,47 @@ author: 'In alphabetic order: [Adam Dąbrowski](https://github.com/adamdbrw), [B
 
 Original Author: {{ page.author }}
 
-While standard ROS 2 can run on Linux-class embedded devices, smaller 
+While ROS 2 can run on Linux-class embedded devices, smaller 
 microcontrollers (MCU) are still a challenge. For example, ARM Cortex-M3 
 and -M4 class MCUs are popular for motion control and sensor integration, 
 but have little RAM and storage. ARM Cortex-M3 is widely used in many 
 sensors due to its optimized power consumption capabilities and ultra low 
 power modes. These microcontrollers are often running with small batteries, 
 e.g. for environmental sensors or small consumer robots, which requires
-efficient power management. We aim to address these devices through a 
-combination of specialized, ROS 2-interoperable stack as well as the use
-of Real-Time Operating Systems (RTOS).
+efficient power management. The embedded ROS 2 effort addresses these devices.
 
 This article documents feature wishes, requirements, design ideas and 
 related work on this undertaking.
 
+## Important Differences / Assumptions
+
+One of the major difference for the embedded stack is to be able to
+run not (only) on Linux, but also on Real-Time Operating Systems, or
+even "bare metal" (no OS).
+
 ## Wishlist
 
-A number of things that would be great to have, lets call it a wishlist. 
-Feel free to add stuff ;-)
+A number of things that would be great to have, lets call it a wishlist. Feel free to add stuff ;-)
 
 ### W-SEAMLESS: *Seamless integration with ROS&nbsp;2*
 
-The embedded ROS 2 stack shall integrate seamlessly with standard 
-ROS 2 stacks and nodes running on more powerful microprocessors. For 
-a standard ROS 2 node, communication (topics, services) from and to
-software running on the embedded ROS 2 stack should be transparent. 
-The same should hold for other core concepts such as parameters, 
-graph introspection, and run-time reconfiguration by the node lifecycle.
+Support all the communication and configuration mechanisms expected,
+e.g. topics, services, parameters (including dynamic modification),
+the life-cycle, etc.
+
+It should not be noticeable to the rest of the system that part of
+it runs on a micro-controller.
 
 ### W-PORTABILITY: *Portability of ROS 2-based software*
 
-The embedded ROS 2 stack shall resemble or directly use the ROS 2 API 
--- more precisely the rclcpp API -- to facilitate porting standard 
-ROS 2 nodes to MCUs.
+Use the same API as on ROS 2.
+
+Note that the feasibility of this wish has been questioned.
 
 ### W-DEVICES *Support of a broad spectrum of device classes*
 
-The embedded ROS 2 stack shall support a broad range of MCU device 
-classes, starting from a few tens kilobyte of RAM.
+Support a broad range of MCU device classes, starting from a 
+few tens kilobyte of RAM, up to megabytes.
 
 ### W-RTOS: *Support of a broad spectrum of RTOS(s)* 
 
@@ -111,20 +114,15 @@ would lower costs of integration of robotic systems. Within the OFERA project
 we propose and use the 
 [Hardware Robot Information Model (HRIM)](https://acutronicrobotics.com/modularity/hrim/).|
 
-### More Details / Ideas
-
-In the EU project OFERA, we compiled a longer list of requirements to an embedded 
-ROS 2 stack, which might serve as a good basis for the discussion. Please see 
-Section 5 in 
-[OFERA deliverable D1.7_Requirements.pdf](http://ofera.eu/storage/deliverables/OFERA_D1.7_Requirements.pdf).
-
 
 ## Questions
 
-To determine how feasible that is, and to come up with the actual requirements and/or design, a few questions come to mind. I've cross-referenced them to the relevant wishlist items (most of the there's more than one -- this suggests areas where trade-offs may be required, or alternatives pursued).
+To determine how feasible that is, and to come up with the actual 
+requirements and/or design, a few questions come to mind. We've 
+cross-referenced them to the relevant wishlist items (most of the 
+time there's more than one -- this suggests areas where trade-offs 
+may be required, or alternatives pursued).
 
-| Key | Related Wish | Question |
-|-----|-------------|----------|
 
 ### Q-RTOS: *Which RTOS(s) do we use as the basis?*
 
