@@ -250,6 +250,8 @@ embedded stack. In addition, H-ROS implements selected components of the ROS
 Tailored and optimized implementation of the ROS 2 publish/subscribe 
 and clock API for the Micro XRCE-DDS (formerly micro-RTPS) implementation 
 of the upcoming XRCE-DDS middleware standard running on an STM32F7.
+This initiative has been factored out under the [ros2arduino](https://github.com/ROBOTIS-GIT/ros2arduino) name
+[discourse.ros.org announcement](https://discourse.ros.org/t/ros2arduino-discussion-for-development-ros2-library-for-arduino/6498).
 
 *   [**XEL Network by ROBOTIS**](https://xelnetwork.readthedocs.io):
   Product which communicate with ROS 2 (DDS) through DDS-XRCE using Micro 
@@ -275,6 +277,15 @@ and Esteve Fernandez at the OSRF.
   [renesas forum ](https://japan.renesasrulz.com/gr_user_forum_japanese/f/gr-rose/5201/ros-2-micro-rtps).
   They have integrated Micro XRCE-DDS middleware as part of their
   [online web compiler](http://tool-cloud2.renesas.com/index.php) for the GR-ROSE platform.
+
+*   [**Renesas RX65N MCU**](https://www.renesas.com/us/en/about/press-center/news/2018/news20181029.html):
+  Renesas announce that their RX65N Microcontrollers Support DDS-XRCE using eProsimas' Micro XRCE-DDS implementation.
+  All software used in this demonstration will be open sourced and be available in Q4 2018.
+
+*    [**Amazon aws-ros-client-library-microcontrollers**](https://github.com/awslabs/aws-ros-client-library-microcontrollers)
+  Amazon open source project where an initial draft of a rcluc and rmwu layers interfaces have been designed.
+  The protocol used is DDS-XRCE and uses Micro XRCE-DDS implementation.
+  [discourse.ros.org announcement](https://discourse.ros.org/t/ros2arduino-discussion-for-development-ros2-library-for-arduino/6498/12)
 
 ### ROS1-based approaches
 
