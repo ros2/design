@@ -1,4 +1,17 @@
-# Launch Markup RFC
+---
+layout: default
+title: roslaunch markup design
+permalink: articles/150_roslaunch_markup_design.html
+abstract:
+  This article describes the rationale for a roslaunch markup language
+published: true
+author: '[Joseph Duchesne](https://github.com/josephduchesne)'
+categories: Overview
+---
+
+{:toc}
+
+# {{ page.title }}
 
 ## Scope, purpose, and design goals:
 
