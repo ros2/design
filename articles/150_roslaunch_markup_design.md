@@ -28,7 +28,7 @@ categories: Overview
 
 ### What is this document for?
 - To start gathering feedback about what ros2 launch markdown look like
-- To propose an initial implementation or at least experimental prototype, so we can do another RFC with that
+- To propose firm up initial implementation plans so that work can begin on a prototype
 
 ### Markup launchfile goals
 - It is my hope that the two launchfile definitions would be fully interoperable. You should be able to include markup launchfiles in python ones and vise-versea.
