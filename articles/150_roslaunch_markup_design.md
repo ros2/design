@@ -124,7 +124,7 @@ Example:
 
 ```xml
     <Node id="server" package="foo" node_executable="bar" />
-    <LaunchShutdownHandler target="#my_node" />
+    <LaunchShutdownHandler target="my_node" />
 ```
 
 This isn't very flexible, but is at least very easy to implement (registry+lookup?)
@@ -134,7 +134,7 @@ This does raise the question about how to handle things outside of the current f
 Maybe we shouldn't worry about that?
 
 ### Selectors?
-CSS and JQuery made selectors popular. Borrowing their syntax:
+CSS and JQuery made selectors popular. Borrowing their syntax may add a lot of complexity, but it would also allow for some of the flexibility offered by JS
 
 A hypothetical example:
 
@@ -147,6 +147,8 @@ A hypothetical example:
         <Node node_name="required_b" package="foo" node_executable="bar" />
     </GroupAction>
 ```
+
+Selectors could handle simple lookups (by property for example, by adjacency, or a combination).
 
 ## What's next
 
