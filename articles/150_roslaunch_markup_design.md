@@ -10,7 +10,7 @@
 - easier to understand/learn
 - harder to shoot yourself in the foot
 - Some people will expect/want one since ros1 has one
-- It's easier to audit, review and debug markup driven functional units, than  (an ansible playbook vrs. a bash script for example)
+- It's easier to audit, review and debug markup driven functional units, than code (compare an ansible playbook vrs. a bash script for example)
 - This separates "business logic" from "application logic" of launching nodes in a way that the python launch scripts easily allow developers to muddle.
 
 ### What is this document for?
