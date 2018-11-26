@@ -2,7 +2,7 @@
 
 ## Scope, purpose, and design goals:
 
-### why a markup language?:
+### Why a markup language?:
 
 - more guardrails than a python file:
     - XSD or DTD validation
