@@ -210,8 +210,8 @@ In order to differentiate ROS topics easily, all DDS topics created by ROS shall
 For example, a plain topic called `/foo` would translate to a DDS topic `rt/foo`, which is the result of implicitly adding `rt` to the namespace of a ROS topic which is in the root namespace `/` and has a base name `foo`.
 As another example, a topic called `/left/image_raw` would translate to a DDS topic `rt/left/image_raw`, which is the result of implicitly adding `rt` to the namespace of a ROS topic which is in the namespace `/left` and has a base name `image_raw`.
 
-For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` for the request topic and `rr` for the response topic.
-On systems where Services are handled explicitly implemented, we consider a separate prefix, e.g. `rs`.
+For systems where Services are implemented with topics (like with OpenSplice), a different subsystem character can be used: `rq` and `raq` for the request topic, `rr` and `rar` for the response topic.
+On systems where Services are handled explicitly implemented, we consider a separate prefix, e.g. `rs` and `ras`.
 
 Here is a non-exhaustive list of prefixes:
 
@@ -222,7 +222,10 @@ Here is a non-exhaustive list of prefixes:
 | ROS Service Response | rr     |
 | ROS Service          | rs     |
 | ROS Parameter        | rp     |
-| ROS Action           | ra     |
+| ROS Action Topics           | rat     |
+| ROS Action Service Request  | raq     |
+| ROS Action Service Response | rar     |
+| ROS Action Service          | ras     |
 
 While all planned prefixes consist of two characters, i.e. `rX`, anything proceeding the first namespace separator, i.e. `/`, can be considered part of the prefix.
 The standard reserves the right to use up to 8 characters for the prefix in case additional prefix space is needed in the future.
