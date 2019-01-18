@@ -543,7 +543,7 @@ string[] remap_rules
 rcl_interfaces/Parameter[] parameters
 
 # key/value arguments that are specific to a type of container process
-rcl_interfaces/Parameter extra_arguments
+rcl_interfaces/Parameter[] extra_arguments
 ---
 # True if the node was successfully loaded
 bool success
