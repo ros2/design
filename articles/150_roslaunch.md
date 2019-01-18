@@ -547,6 +547,8 @@ rcl_interfaces/Parameter[] extra_arguments
 ---
 # True if the node was successfully loaded
 bool success
+# Human readable error message if success is false, else empty string
+string error_messsage
 # Name of the loaded composable node (including namespace)
 string full_node_name
 ```
@@ -559,6 +561,8 @@ string full_node_name
 ---
 # True if the node existed and was unloaded
 bool success
+# Human readable error message if success is false, else empty string
+string error_messsage
 ```
 
 ####### list_nodes
