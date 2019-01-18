@@ -577,7 +577,7 @@ string[] full_node_names
 If the container proces is asked to shutdown due to normal [Termination], then the exit code must be 0.
 If it exits due to an error then exit code must be any other number.
 
-##### Parallel vs Sequential Loading of Node
+##### Parallel vs Sequential Loading of Nodes
 
 If it is possible to load multiple nodes in parallel, then it needs to be decided how to load the nodes.
 The container process should load nodes as soon as it is asked.
