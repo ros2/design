@@ -524,6 +524,13 @@ The services are hidden to avoid colliding with user created services.
 
 ####### load_node
 
+If a container process is asked to load a node with a full node name matching an existing node, then it must reject the request.
+This is to avoid conflicts in features that assume node name uniqueness, like parameters.
+
+A container process must assign the node a unique id when it is loaded.
+The id of a loaded node instance never changes.
+Two nodes in the same container process must never have the same id, and there should be a significant time delay before an id is reused.
+
 ```
 # A ROS package the composable node can be found in
 string package_name
@@ -551,13 +558,15 @@ bool success
 string error_messsage
 # Name of the loaded composable node (including namespace)
 string full_node_name
+# A unique identifier for the loaded node
+uint64 unique_id
 ```
 
 ####### unload_node
 
 ```
-# Full node name including namespace
-string full_node_name
+# Container specific unique id of a loaded node
+uint64 unique_id
 ---
 # True if the node existed and was unloaded
 bool success
@@ -571,6 +580,8 @@ string error_messsage
 ---
 # List of full node names including namespace
 string[] full_node_names
+# corresponding unique ids (must have same length as full_node_names)
+uint64[] unique_ids
 ```
 
 ###### Exit Code
@@ -590,10 +601,6 @@ If they are of different types then the launch system may choose to try to load 
 How Composable nodes are registered is not defined by this document.
 Instead, the container process is responsible for knowing how to find nodes it is asked to load.
 For example, a container process might use pluginlib for rclcpp nodes, or python entry points for rclpy nodes.
-
-##### Duplicate Node Handling
-
-If a container process is asked to load a node with a full node name matching an existing node, then it must reject the request.
 
 ## Event Subsystem
 
