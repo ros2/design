@@ -585,7 +585,7 @@ uint64[] unique_ids
 ```
 
 ###### Exit Code
-If the container proces is asked to shutdown due to normal [Termination], then the exit code must be 0.
+If the container process is asked to shutdown due to normal [Termination], then the exit code must be 0.
 If it exits due to an error then exit code must be any other number.
 
 ##### Parallel vs Sequential Loading of Nodes
