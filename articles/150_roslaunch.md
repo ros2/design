@@ -453,7 +453,7 @@ One option for a container processes API is to pass a configuration file with no
 Advantages
 * No waiting for an API to become available
 
-Disadvatages
+Disadvantages
 * Requires write access to the file system
 * Requires parsing a config file
 * Cannot tell from the outside if a container process supports this interface
