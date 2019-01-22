@@ -24,11 +24,15 @@ Authors: {{ page.author }}
 
 ## Rationale
 
-As an alternative to a programmatic approach to the ROS 2 launch system's API, a declarative description features a WYSIWYG approach, easier to read, audit and maintain. This is the preferred approach for ROS 1 `roslaunch` launch files, thus some degree of familiarity is expected (and relied upon).
+As an alternative to a programmatic approach to the ROS 2 launch system's API, a declarative description features a WYSIWYG approach, easier to read, audit and maintain.
+This is the preferred approach for ROS 1 `roslaunch` launch files, thus some degree of familiarity is expected (and relied upon).
 
-The body of such a description is mainly comprised of statically declared launch actions with a prescribed configuration. To that, runtime value substitution is added in order to fullfill common dynamic (re)configuration needs like conditional execution, resource lookups, etc. It is intended for these entities to map to those of the underlying implementation, reducing support to file parsing.
+The body of such a description is mainly comprised of statically declared launch actions with a prescribed configuration.
+To that, runtime value substitution is added in order to fullfill common dynamic (re)configuration needs like conditional execution, resource lookups, etc.
+It is intended for these entities to map to those of the underlying implementation, reducing support to file parsing.
 
-The choice of XML over other markup languages aims to ease the bridge between ROS and ROS 2 launch files. Widely available support for parsing XML in a myriad of languages and platforms also weighed (significantly) in the decision.
+The choice of XML over other markup languages aims to ease the bridge between ROS and ROS 2 launch files.
+Widely available support for parsing XML in a myriad of languages and platforms also weighed (significantly) in the decision.
 
 ## Static Description
 
@@ -291,8 +295,7 @@ The <param> tag allows for setting a ROS parameter of a ROS node.
 
 ##### Description
 
-The <params> tag allows to either bring ROS parameters from a YAML parameters file or
-to nest a <param> definitions under an appropriate name (i.e. to make a map of them).
+The <params> tag allows to either bring ROS parameters from a YAML parameters file or to nest a <param> definitions under an appropriate name (i.e. to make a map of them).
 
 ##### Examples
 
