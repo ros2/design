@@ -522,67 +522,67 @@ The services are hidden to avoid colliding with user created services.
 `load_node` will be called by the launch system when a composable node is to be dynamically loaded, and `unload_node` destroys a composable node.
 `list_nodes` is not called by launch system, and is only provided for introspection.
 
-####### load_node
+1. load_node
 
-If a container process is asked to load a node with a full node name matching an existing node, then it must reject the request.
-This is to avoid conflicts in features that assume node name uniqueness, like parameters.
+    If a container process is asked to load a node with a full node name matching an existing node, then it must reject the request.
+    This is to avoid conflicts in features that assume node name uniqueness, like parameters.
 
-A container process must assign the node a unique id when it is loaded.
-The id of a loaded node instance never changes.
-Two nodes in the same container process must never have the same id, and there should be a significant time delay before an id is reused.
+    A container process must assign the node a unique id when it is loaded.
+    The id of a loaded node instance never changes.
+    Two nodes in the same container process must never have the same id, and there should be a significant time delay before an id is reused.
 
-```
-# A ROS package the composable node can be found in
-string package_name
-# a plugin within that package
-string plugin_name
+    ```
+    # A ROS package the composable node can be found in
+    string package_name
+    # a plugin within that package
+    string plugin_name
 
-# Name the composable node should use, or empty to use the node's default name
-string node_name
-# Namespace the composable node should use, or empty to use the node's default namespace
-string namespace
-# Values from message rcl_interfaces/Log
-uint8 log_level
-# Remap rules
-# TODO(sloretz) rcl_interfaces message for remap rules?
-string[] remap_rules
-# Parameters to set
-rcl_interfaces/Parameter[] parameters
+    # Name the composable node should use, or empty to use the node's default name
+    string node_name
+    # Namespace the composable node should use, or empty to use the node's default namespace
+    string namespace
+    # Values from message rcl_interfaces/Log
+    uint8 log_level
+    # Remap rules
+    # TODO(sloretz) rcl_interfaces message for remap rules?
+    string[] remap_rules
+    # Parameters to set
+    rcl_interfaces/Parameter[] parameters
 
-# key/value arguments that are specific to a type of container process
-rcl_interfaces/Parameter[] extra_arguments
----
-# True if the node was successfully loaded
-bool success
-# Human readable error message if success is false, else empty string
-string error_messsage
-# Name of the loaded composable node (including namespace)
-string full_node_name
-# A unique identifier for the loaded node
-uint64 unique_id
-```
+    # key/value arguments that are specific to a type of container process
+    rcl_interfaces/Parameter[] extra_arguments
+    ---
+    # True if the node was successfully loaded
+    bool success
+    # Human readable error message if success is false, else empty string
+    string error_messsage
+    # Name of the loaded composable node (including namespace)
+    string full_node_name
+    # A unique identifier for the loaded node
+    uint64 unique_id
+    ```
 
-####### unload_node
+2. unload_node
 
-```
-# Container specific unique id of a loaded node
-uint64 unique_id
----
-# True if the node existed and was unloaded
-bool success
-# Human readable error message if success is false, else empty string
-string error_messsage
-```
+    ```
+    # Container specific unique id of a loaded node
+    uint64 unique_id
+    ---
+    # True if the node existed and was unloaded
+    bool success
+    # Human readable error message if success is false, else empty string
+    string error_messsage
+    ```
 
-####### list_nodes
+3. list_nodes
 
-```
----
-# List of full node names including namespace
-string[] full_node_names
-# corresponding unique ids (must have same length as full_node_names)
-uint64[] unique_ids
-```
+    ```
+    ---
+    # List of full node names including namespace
+    string[] full_node_names
+    # corresponding unique ids (must have same length as full_node_names)
+    uint64[] unique_ids
+    ```
 
 ###### Exit Code
 If the container process is asked to shutdown due to normal [Termination], then the exit code must be 0.
