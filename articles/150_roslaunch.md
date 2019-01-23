@@ -503,16 +503,16 @@ However, this option has the highest potential delay from when the container pro
 
 ##### Proposed Container process API
 
-This is a proposal for a container process API to be used by the launch system.
+This is a proposal for an API a launch system will use to interact with container processes.
 
 ###### Command Line Arguments
-The container process must accept command line arguments including log level, remapping, and parameters.
+A container process must accept command line arguments including log level, remapping, and parameters.
 These command line arguments must not be applied to dynamically launched nodes.
-The launch system will pass these arguments to the container process in the same way it would pass them to a node.
+The launch system will pass these arguments to a container process in the same way it would pass them to a node.
 If a remap rule would apply to a launch service, the launch system should try to use the remapped service name instead.
 
 ###### ROS Services
-The container process must offer all of the following services.
+A container process must offer all of the following services.
 
 * `_launch/load_node`
 * `_launch/unload_node`
