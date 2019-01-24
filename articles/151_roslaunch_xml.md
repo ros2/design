@@ -54,43 +54,130 @@ Widely available support for parsing XML in a myriad of languages and platforms 
       </xs:documentation>
     </xs:annotation>
 
-    <xs:choice maxOccurs="unbounded">
-      <xs:element ref="arg"/>
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          A collection of actions to be launched in order of appearance, plus
+          launch arguments for callers to provide, either through a tool or
+          by inclusion.
+        </xs:documentation>
+      </xs:annotation>
+
+      <xs:element name="arg">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Declares launch file-level arguments.
+          </xs:documentation>
+        </xs:annotation>
+        
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                Name of the launch argument.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="value" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                Fixed value for the launch argument, disables overrides.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="default" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                Default value for the launch argument, used if non is provided.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="doc" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation xml:lang="en">
+                Brief documentation for the launch argument.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
       <xs:element ref="node"/>
+      <xs:element ref="executable"/>
       <xs:element ref="include"/>
       <xs:element ref="group"/>
     </xs:choice>
   </xs:element>
 
-  <xs:element name="arg">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        Declares launch file-level arguments.
-      </xs:documentation>
-    </xs:annotation>
-
-    <xs:complexType>
-      <xs:attribute name="name" type="xs:string" use="required"/>
-      <xs:attribute name="value" type="xs:string" use="optional"/>
-      <xs:attribute name="default" type="xs:string" use="optional"/>
-      <xs:attribute name="doc" type="xs:string" use="optional"/>
-    </xs:complexType>
-  </xs:element>
-
   <xs:element name="include">
     <xs:annotation>
       <xs:documentation xml:lang="en">
-        Includes another launch file.
+        Includes another launch file, either descriptive or programmatic.
       </xs:documentation>
     </xs:annotation>
 
     <xs:complexType>
-      <xs:attribute name="file" type="xs:string" use="required"/>
-      <xs:attribute name="ns" type="xs:string" use="optional"/>
-      <xs:attribute name="if" type="xs:string" use="optional"/>
-      <xs:attribute name="unless" type="xs:string" use="optional"/>
-      <xs:sequence maxOccurs="unbounded">
-        <xs:element ref="arg"/>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Path to the launch file to be included.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ns" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A ROS namespace to scope included ROS entities launched by
+            actions in the included launch file, if any.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition launch inclusion i.e. only do
+            so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition launch inclusion i.e. do
+            so unless the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Arguments for the included launch file, if any.
+          </xs:documentation>
+        </xs:annotation>
+
+        <xs:element name="arg">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              An included launch file argument provision.
+            </xs:documentation>
+          </xs:annotation>
+          
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Name of the launch argument.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="value" type="xs:string" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Value for the launch argument.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -98,113 +185,401 @@ Widely available support for parsing XML in a myriad of languages and platforms 
   <xs:element name="group">
     <xs:annotation>
       <xs:documentation xml:lang="en">
-        Groups (and optionally scopes) a set of actions.
+        Groups and optionally scopes a set of actions.
       </xs:documentation>
     </xs:annotation>
 
     <xs:complexType>
-      <xs:choice maxOccurs="unbounded">
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The actions that make up the group.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:element ref="executable"/>
         <xs:element ref="node"/>
-        <xs:element ref="env"/>
+        <xs:element ref="group"/>
         <xs:element ref="include"/>
       </xs:choice>
-      <xs:attribute name="ns" type="xs:string" use="optional"/>
-      <xs:attribute name="scoped" type="xs:boolean" use="optional"/>
-      <xs:attribute name="if" type="xs:string" use="optional"/>
-      <xs:attribute name="unless" type="xs:string" use="optional"/>
+      <xs:attribute name="ns" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A ROS namespace to scope ROS entities launched by
+            grouped actions.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="scoped" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Whether the group is a scoping one launch configuration-wise or not.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition group launch i.e. only do
+            so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition group launch i.e. do
+            so unless the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="env">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Modifies an executable process environment.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the environment variable to be set.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Value to be set for the environment variable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition environment modification i.e.
+            only do so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition environment modification i.e.
+            do so unless the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="executable">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Executes an executable as a local OS process.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A collection of environment variable settings for the
+            launched executable.
+          </xs:documentation>
+        </xs:annotation>
+
+        <xs:element ref="env"/>
+      </xs:choice>
+      <xs:attribute name="cmd" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Path to the executable or a command-line if a
+            shell is used to launch.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="cwd" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            The working directory for the launched process.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="name" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A name or label for the launched executable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="args" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Additional 'command-line' arguments for the executable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="shell" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Whether to use a shell to launch or not.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="launch-prefix" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A prefix for the executable command-line if a shell is used to launch.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="output" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Output type for the launched executable.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="log">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Executable output goes to a log file.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="screen">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Executable output goes to stdout.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition executable launch i.e. only do
+            so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition executable launch i.e. do so unless
+            the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="param">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Sets a ROS parameter for the enclosing node to either
+        a scalar value or a sequence of scalar values delimited
+        by a known separator.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the ROS parameter to be set.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Value or list of values to set the the ROS parameter with.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="sep" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Value separator when dealing with list of values.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="params">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Sets a sequence of ROS parameters for a node as read from a parameters
+        file or as child elements, optionally namespacing them.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A collection of ROS parameters to be set.
+          </xs:documentation>
+        </xs:annotation>
+
+        <xs:element ref="params"/>
+        <xs:element ref="param"/>
+      </xs:choice>
+      <xs:attribute name="ns" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Namespace for the ROS parameters to be set.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="from" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Path to the parameters file to be loaded.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="remap">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Remaps ROS names for a node.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="from" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name matching expression to look for replacement candidates.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="to" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name replacement expression to replace candidates found.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 
   <xs:element name="node">
     <xs:annotation>
       <xs:documentation xml:lang="en">
-        Executes a ROS node (as local OS process).
+        Executes a ROS node executable in a local OS process.
       </xs:documentation>
     </xs:annotation>
 
     <xs:complexType>
-      <xs:choice maxOccurs="unbounded">
-        <xs:element name="env">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Modifies a node's process environment.
-            </xs:documentation>
-          </xs:annotation>
-          
-          <xs:complexType>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="value" type="xs:string" use="required"/>
-            <xs:attribute name="if" type="xs:string" use="optional"/>
-            <xs:attribute name="unless" type="xs:string" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-        
-        <xs:element name="param">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Sets a ROS parameter for the enclosing node to either
-              a scalar value or a sequence of scalar values.
-              TODO(hidmic): Not ROS 1 compatible, revisit?
-            </xs:documentation>
-          </xs:annotation>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A collection of ROS parameters, ROS remappings and/or
+            environment variable settings for the launched ROS node.
+          </xs:documentation>
+        </xs:annotation>
 
-          <xs:complexType>
-            <xs:simpleContent>
-              <xs:extension base="xs:string">
-                <xs:attribute name="name" type="xs:string" use="required"/>
-                <xs:attribute name="sep" type="xs:string" use="optional"/>
-              </xs:extension>
-            </xs:simpleContent>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="params">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Sets a sequence of ROS parameters for the enclosing node as read from
-              a given YAML file or enclosed by this very same tag, optionally scoping
-              them.
-            </xs:documentation>
-          </xs:annotation>
-
-          <xs:complexType>
-            <xs:choice maxOccurs="unbounded">
-              <xs:element ref="params"/>
-              <xs:element ref="param"/>
-            </xs:choice>
-            <xs:attribute name="name" type="xs:string" use="optional"/>
-            <xs:attribute name="from" type="xs:string" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="remap">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              Remaps a ROS name for the enclosing node.
-            </xs:documentation>
-          </xs:annotation>
-
-          <xs:complexType>
-            <xs:attribute name="from" type="xs:string" use="required"/>
-            <xs:attribute name="to" type="xs:string" use="required"/>
-          </xs:complexType>
-        </xs:element>
+        <xs:element ref="env"/>
+        <xs:element ref="param"/>
+        <xs:element ref="params"/>
+        <xs:element ref="remap"/>
       </xs:choice>
     </xs:complexType>
-    <xs:attribute name="package" type="xs:string" use="required"/>
-    <xs:attribute name="executable" type="xs:string" use="required"/>
-    <xs:attribute name="name" type="xs:string" use="optional"/>
-    <xs:attribute name="args" type="xs:string" use="optional"/>
-    <xs:attribute name="ns" type="xs:string" use="optional"/>
-    <xs:attribute name="launch-prefix" type="xs:string" use="optional"/>
-    <xs:attribute name="output" use="optional">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="log" />
-          <xs:enumeration value="screen" />
-        </xs:restriction>
-      </xs:simpleType>
+    <xs:attribute name="package" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Name of the package where the node is to be found.
+        </xs:documentation>
+      </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="if" type="xs:string" use="optional"/>
-    <xs:attribute name="unless" type="xs:string" use="optional"/>
+    <xs:attribute name="executable" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Name of the node executable.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="name" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          A name for the launched ROS node.
+        </xs:documentation>
+      </xs:annotation> 
+    </xs:attribute>
+      <xs:attribute name="args" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Additional 'command-line' arguments for the ROS node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ns" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A ROS namespace to scope the launched ROS node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="launch-prefix" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A prefix for the ROS node command-line used for launch.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="output" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Output type for the launched ROS node.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="log">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  ROS node output goes to a log file.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="screen">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  ROS node output goes to stdout.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition ROS node launch i.e. only do
+            so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition ROS node launch i.e. do so unless
+            the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
   </xs:element>
 </xs:schema> 
 ```
@@ -221,14 +596,17 @@ Root tag of any launch file.
 
 #### <include> Tag
 
+##### Description
+
 The <include> tag allows for bringing a launch file description into another, enabling re-use of hierarchical launch layouts.
 The included launch file description has its own scope for launch configurations.
+The included launch file description is not necessarily written in this format nor a declarative one (i.e. a programmatic description).
 To avoid ROS name clashes, included nodes can be namespaced via the `ns` attribute.
 
-#### Examples
+##### Examples
 
 ```xml
-<include file="/opt/my_launch_file.xml" ns="/my_ns"/>
+<include file="/opt/my_launch_file.py" ns="/my_ns"/>
 <include file="/opt/my_other_launch_file.xml">
   <arg name="some_argument" value="dummy_value"/>
 </include>
@@ -236,11 +614,11 @@ To avoid ROS name clashes, included nodes can be namespaced via the `ns` attribu
 
 #### <group> Tag
 
-#### Description
+##### Description
 
 The <group> tag allows for launch actions' grouping as well as optional launch file configuration scoping.
 
-#### Examples
+##### Examples
 
 ```xml
 <group ns="/dummy_group" scoped="true">
@@ -287,8 +665,8 @@ The <param> tag allows for setting a ROS parameter of a ROS node.
 ##### Examples
 
 ```xml
-<param name="some_numeric_param">100.0</param>
-<param name="some_numeric_param" sep=",">Some phrase,100.0,true</param>
+<param name="some_numeric_param" value="100.2"/>
+<param name="some_list_param" value="Some phrase,100.0,true" sep=","/>
 ```
 
 #### <params> Tag
@@ -301,8 +679,8 @@ The <params> tag allows to either bring ROS parameters from a YAML parameters fi
 
 ```xml
 <params from="path/to/param/file.yml"/>
-<params name="some_param_group">
-  <param name="some_integer_param">10</param>
+<params ns="some_param_group">
+  <param name="some_integer_param" value="10"/>
 </params>
 ```
 
@@ -353,9 +731,9 @@ All substitutions are enclosed by `$(...)`.
 : Substituted by the value of the named argument. 
   Substitution will fail if the named argument does not exist.
 
-`$(env env-var)`
-: Substituted by the value of the given environment variable.
-  Substitution will fail if the variable is not set.
+`$(env env-var [default-value])`
+: Substituted by the value of the given environment variable
+  Substitution will fail if the variable is not set, unless default values are provided.
 
 `$(dirname)`
 : Substituted by the current launch file directory name.
