@@ -540,7 +540,7 @@ The services are hidden to avoid colliding with user created services.
     # Name the composable node should use, or empty to use the node's default name
     string node_name
     # Namespace the composable node should use, or empty to use the node's default namespace
-    string namespace
+    string node_namespace
     # Values from message rcl_interfaces/Log
     uint8 log_level
     # Remap rules
