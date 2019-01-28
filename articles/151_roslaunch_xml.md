@@ -47,7 +47,7 @@ Widely available support for parsing XML in a myriad of languages and platforms 
     </xs:documentation>
   </xs:annotation>
 
-  <xs:element name="launch">
+  <xs:element name="launch" maxOccurs="1">
     <xs:annotation>
       <xs:documentation xml:lang="en">
         The root element of a launch file.
@@ -621,6 +621,7 @@ All action tags that can contain other action tags can scope ROS entities in a n
 #### `<launch>` Tag
 
 Root tag of any launch file.
+There must only be one `<launch>` tag on a given launch file.
 
 #### `<include>` Tag
 
