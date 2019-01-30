@@ -514,9 +514,9 @@ If a remap rule would apply to a launch service, the launch system should try to
 ###### ROS Services
 A container process must offer all of the following services.
 
-* `_launch/load_node`
-* `_launch/unload_node`
-* `_launch/list_nodes`
+* `~/_container/load_node`
+* `~/_container/unload_node`
+* `~/_container/list_nodes`
 
 The services are hidden to avoid colliding with user created services.
 `load_node` will be called by the launch system when a composable node is to be dynamically loaded, and `unload_node` destroys a composable node.
