@@ -137,7 +137,9 @@ The `<node>` tag allows for executing a ROS node in the form of local OS process
 
 ##### Description
 
-The `<param>` tag allows for setting a ROS parameter of a ROS node.
+The `<param>` tag allows for setting ROS parameters of a ROS node. These
+can be scalar values or sequences of scalar values, defined directly or
+either nested or brought from a YAML file to make a map.
 
 ##### Examples
 
@@ -145,23 +147,10 @@ The `<param>` tag allows for setting a ROS parameter of a ROS node.
 <node package="my_pkg" executable="my_node">
   <param name="some_numeric_param" value="100.2"/>
   <param name="some_list_param" value="Some phrase,100.0,true" sep=","/>
-</node>
-```
-
-#### `<params>` Tag
-
-##### Description
-
-The `<params>` tag allows to either bring ROS parameters from a YAML parameters file or to nest a `<param>` definitions under an appropriate name (i.e. to make a map of them).
-
-##### Examples
-
-```xml
-<node package="my_pkg" executable="my_node">
-  <params from="path/to/param/file.yml"/>
-  <params ns="some_param_group">
+  <param name="some_param_group">
     <param name="some_integer_param" value="10"/>
-  </params>
+  </param>
+  <param from="path/to/param/file.yml"/>
 </node>
 ```
 

@@ -381,13 +381,23 @@
   <xs:element name="param">
     <xs:annotation>
       <xs:documentation xml:lang="en">
-        Sets a ROS parameter for the enclosing node to either
-        a scalar value or a sequence of scalar values delimited
-        by a known separator.
+        Sets a ROS parameter for the enclosing node to a scalar
+        value, a sequence of scalar values delimited by a known
+        separator or a sequence of nested named parameters, either
+        defined in place or in a file to be loaded.
       </xs:documentation>
     </xs:annotation>
 
     <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A collection of nested ROS parameters to be set.
+          </xs:documentation>
+        </xs:annotation>
+
+        <xs:element ref="param"/>
+      </xs:choice>
       <xs:attribute name="name" type="xs:string" use="required">
         <xs:annotation>
           <xs:documentation xml:lang="en">
@@ -406,35 +416,6 @@
         <xs:annotation>
           <xs:documentation xml:lang="en">
             Value separator when dealing with list of values.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:attribute>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="params">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        Sets a sequence of ROS parameters for a node as read from a parameters
-        file or as child elements, optionally namespacing them.
-      </xs:documentation>
-    </xs:annotation>
-
-    <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            A collection of ROS parameters to be set.
-          </xs:documentation>
-        </xs:annotation>
-
-        <xs:element ref="params"/>
-        <xs:element ref="param"/>
-      </xs:choice>
-      <xs:attribute name="ns" type="xs:string" use="optional">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            Namespace for the ROS parameters to be set.
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
@@ -491,7 +472,6 @@
 
         <xs:element ref="env"/>
         <xs:element ref="param"/>
-        <xs:element ref="params"/>
         <xs:element ref="remap"/>
       </xs:choice>
     </xs:complexType>
