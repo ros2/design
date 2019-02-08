@@ -3,7 +3,7 @@ rvm:
 - 2.1
 sudo: false
 install:
-- gem install bundler --no-rdoc --no-ri
+- gem install bundler -v 1.17.3 --no-rdoc --no-ri
 - bundle install
 # install newer npm version otherwise remark fails
 - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install 4
