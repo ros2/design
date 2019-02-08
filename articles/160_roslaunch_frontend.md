@@ -21,15 +21,13 @@ Authors: {{ page.author }}
 
 ## Context
 
-Static launch descriptions are an integral part to ROS 2 launch system, and the natural
-path to transition from predominant ROS 1 `roslaunch` XML description. This document
-describes parsing and integration approaches of different front ends i.e. different
-markup languages, with a focus on extensibility and scalability.
+Static launch descriptions are an integral part to ROS 2 launch system, and the natural path to transition from predominant ROS 1 `roslaunch` XML description.
+This document describes parsing and integration approaches of different front ends i.e. different markup languages, with a focus on extensibility and scalability.
 
 ## Proposed approaches
 
-In the following, different approaches to the solution are described. This list
-is by no means exhaustive.
+In the following, different approaches to the solution are described.
+This list is by no means exhaustive.
 
 It's worth to note some commonalities between them:
 
@@ -40,7 +38,8 @@ It's worth to note some commonalities between them:
   unique reference id (usually, a human-readable name but that's not a requisite).
 
 - All of them need some form of instantiation and/or parsing procedure registry for
-  parsers to lookup. How that registry is populated and provided to the parser may vary.
+  parsers to lookup.
+  How that registry is populated and provided to the parser may vary.
   For instance, in Python class decorators may populate a global dict or even its import
   mechanism may be used if suitable, while in C++ convenience macros may expand into
   demangled registration hooks that can later be looked up by a dynamic linker (assuming
@@ -48,8 +47,7 @@ It's worth to note some commonalities between them:
 
 ### Forward Description Mapping (FDM)
 
-In FDM, the parser relies on a schema and well-known rules to map an static
-description (markup) to implementation specific instances (objects).
+In FDM, the parser relies on a schema and well-known rules to map an static description (markup) to implementation specific instances (objects).
 
 #### Description Markup
 
@@ -84,29 +82,24 @@ launch:
       actions:
         - type: actions.LogInfo
           args:
-            message: "I'm done"        
+            message: "I'm done"
 ```
 
 ### Advantages & Disadvantages
 
-+ Straightforward to implement.
+*+* Straightforward to implement.
 
-+ Launch implementations are completely unaware of the static description existence
-  and its parsing process (to the extent that type agnostic instantiation mechanisms
-  are available).
+*+* Launch implementations are completely unaware of the static description existence and its parsing process (to the extent that type agnostic instantiation mechanisms are available).
 
-- Statically typed launch system implementations may require variant objects to deal
-  with actions 
+*-* Statically typed launch system implementations may require variant objects to deal with actions.
 
-- Static descriptions are geared towards easing parsing, making them more uniform like
-  a serialization format but also less user friendly.
+*-* Static descriptions are geared towards easing parsing, making them more uniform like a serialization format but also less user friendly.
 
-- Care must be exercised to avoid coupling static descriptions with a given implementation.
+*-* Care must be exercised to avoid coupling static descriptions with a given implementation.
 
 ### Forward Description Mapping plus Markup Sugars (FDM+)
 
-A variation on FDM that allows launch entities to supply markup language specific hooks
-to do their own parsing.
+A variation on FDM that allows launch entities to supply markup language specific hooks to do their own parsing.
 
 #### Description Markup
 
@@ -131,7 +124,7 @@ launch:
     - process:
         cmd: /bin/ls
         on_exit:
-          - log: "I'm done"        
+          - log: "I'm done"
 ```
 
 #### Parsing Hooks
@@ -161,18 +154,15 @@ LAUNCH_XML_PARSING_HOOK("some-action", SomeEntity::parse_from_xml);
 
 #### Advantanges & Disadvantages
 
-- Launch system implementations are aware of the parsing process, being completely
-  involved with it if sugars are to be provided.
+*+* Straightforward to implement.
 
-+ Allows leveraging the strenghts of each markup language.
+*-* Launch system implementations are aware of the parsing process, being completely involved with it if sugars are to be provided.
 
-- Opens the door to big differences in the representation of launch entities across
-  different front end, and even within a given one by allowing the users to introduce
-  multiple custom representations for the same concepts (e.g. a list of numbers).
+*+* Allows leveraging the strenghts of each markup language.
 
-- Care must be exercised to avoid coupling static descriptions with a given implementation.
+*-* Opens the door to big differences in the representation of launch entities across different front end, and even within a given one by allowing the users to introduce multiple custom representations for the same concepts (e.g. a list of numbers).
 
-+ Straightforward to implement.
+*-* Care must be exercised to avoid coupling static descriptions with a given implementation.
 
 ### Abstract Description Parsing (ADP)
 
@@ -208,20 +198,16 @@ launch:
 
 #### Abstract Description
 
-To be able to abstract away launch descriptions written in conceptually different
-markup languages, the abstraction relies on the assumption that all launch system
-implementations are built as object hierarchies. If that holds, then ultimately
-all domain specific schemas and formats will just be different mappings of said
-hierarchy.
+To be able to abstract away launch descriptions written in conceptually different markup languages, the abstraction relies on the assumption that all launch system implementations are built as object hierarchies.
+If that holds, then ultimately all domain specific schemas and formats will just be different mappings of said hierarchy.
+Therefore, a hierarchical, object-oriented representation of the markup description can be built.
 
-In that context, a hierarchical, object-oriented representation of
-the markup description can be built. Define an `Entity` object that has:
+Define an `Entity` object that has:
 
 - a namespaced type;
 - optionally a name, unique among the others;
 - optionally a parent entity (i.e. unless it's the root entity);
-- optionally one or more named attributes, whose values can either be
-  entities or ordered sequences of them;
+- optionally one or more named attributes, whose values can either be entities or ordered sequences of them.
 
 Some sample definitions in different programming languages are provided below:
 
@@ -270,9 +256,8 @@ class Entity {
 }  // namespace parsing
 ```
 
-It is up to each front end implementation to choose how to map these concepts
-to the markup language. For instance, one could map both of the following
-descriptions:
+It is up to each front end implementation to choose how to map these concepts to the markup language.
+For instance, one could map both of the following descriptions:
 
 *XML*
 ```xml
@@ -316,16 +301,12 @@ params[0].get<std::string>("name") == "a"
 params[1].get<std::string>("name") == "b"
 ```
 
-Inherent ambiguities will arise from the mapping described above, e.g. nested
-tags in an XML description may be understood either as children (as it'd be
-the case for a grouping/scoping action) or attributes of the enclosing tag
-associated entity (as it's the case in the example above). It is up to the
-parsing procedures to disambiguate them.
+Inherent ambiguities will arise from the mapping described above, e.g. nested tags in an XML description may be understood either as children (as it'd be the case for a grouping/scoping action) or attributes of the enclosing tag associated entity (as it's the case in the example above).
+It is up to the parsing procedures to disambiguate them.
 
 #### Parsing Delegation
 
-Each launch entity that is to be statically described must provide a
-parsing procedure. 
+Each launch entity that is to be statically described must provide a parsing procedure.
 
 *Python*
 ```python
@@ -346,42 +327,32 @@ parse(const parsing::Entity & e, const parsing::Parser & parser) {
 }
 ```
 
-As can be seen above, procedures inspect the description through the given
-parsing entity, delegating further parsing of composed launch entities
-to the parser. Delegation is thus recursive.
+As can be seen above, procedures inspect the description through the given parsing entity, delegating further parsing of composed launch entities to the parser.
+Delegation is thus recursive.
 
 #### Procedure Provisioning
 
 ##### Manual Provisioning
 
-In the simplest case, the user may explicitly provide their own parsing
-procedure for each launch entity.
+In the simplest case, the user may explicitly provide their own parsing procedure for each launch entity.
 
 ##### Automatic Derivation
 
-If accurate type information is (somehow) available, reflection mechanisms
-can aid derivation of a parsing procedure with no user intervention.
+If accurate type information is (somehow) available, reflection mechanisms can aid derivation of a parsing procedure with no user intervention.
 
 ### Advantages & Disadvantages
 
 The abstraction layer allows.
 
-- Launch system implementations are aware of the parsing process.
+*-* Launch system implementations are aware of the parsing process.
 
-+ The static description abstraction effectively decouples launch frontends
-  and backends, allowing for completely independent development and full
-  feature availability at zero cost.
+*+* The static description abstraction effectively decouples launch frontends and backends, allowing for completely independent development and full feature availability at zero cost.
 
-- No markup language specific sugars are possible. REVISIT(hidmic): IMHO
-  explicitly disallowing this is a good thing, it makes for more homogeneus
-  descriptions and avoids proliferation of multiple representation of the
-  same concepts (e.g. a list of strings).
+*-* No markup language specific sugars are possible.
+    REVISIT(hidmic): IMHO explicitly disallowing this is a good thing, it makes for more homogeneus descriptions and avoids proliferation of multiple representation of the same concepts (e.g. a list of strings).
 
-+ The transfer function nature of the parsing procedure precludes the need
-  for a rooted object type hierarchy in statically typed launch system
-  implementations.
+*+* The transfer function nature of the parsing procedure precludes the need for a rooted object type hierarchy in statically typed launch system implementations.
 
-- Automatic parsing provisioning requires accurate type information, which
-  may not be trivial to gather in some implementations.
+*-* Automatic parsing provisioning requires accurate type information, which may not be trivial to gather in some implementations.
 
-- Trickier to implement.
+*-* Harder to implement.
