@@ -48,3 +48,56 @@ Various publisher/subscription types can be evaluated on several criteria:
 * Subscription copies: The minimum number of copies required for the `subscription` call to execute.
 
 ## Current Mechanism
+
+In the current mechanism (`IntraProcessManager`), a singleton instance of the manager object is connected to an `rclcpp::Context` that is shared among all nodes that are to perform intraprocess communications.
+
+When the user publishes a message, the message is stored in the `IntraProcessManager`'s internal ring buffer to then be dispatched to all intraprocess subscribers of the topic.
+Currently, the `IntraProcessManager` will only accept a `std::unique_ptr` to a message instance.
+
+### Publishing with only interprocess comms:
+
+1. User calls `Publisher::publish(std::shared_ptr)` or `Publisher::publish(const std::shared_ptr)`
+2. `Publisher::publish(std::shared_ptr)` calls `Publisher::do_inter_process_publish(const MessageT* msg)`
+3. `Publisher::do_inter_process_publish` calls `rcl_publish`
+
+* The message ownership goes back to the caller at the end of execution.
+* No memory is allocated or deallocated in `rclcpp` or `rcl`
+
+1. User calls `Publisher::publish(std::unique_ptr)`
+2. `Publisher::publish(std::unique_ptr)` calls `Publisher::do_inter_process_publish(const MessageT* msg)`
+3. `Publisher::do_inter_process_publish` calls `rcl_publish`
+
+* The message pointer is reset at the end of execution and the memory is freed.
+* No additional memory is allocated in `rclcpp` or `rcl`
+
+### Publishing with only intraprocess comms
+
+1. User calls `Publisher::publish(std::shared_ptr)` or `Publisher::publish(const std::shared_ptr)`
+2. `Publisher::publish(std::shared_ptr)` creates a `std::unique_ptr` copy of the message
+3. `Publisher::publish(std::shared_ptr)` calls `Publisher::publish(std::unique_ptr)`
+4. `Publisher::publish(std::unique_ptr)` calls `store_intra_process_message_(MessageT*)`
+5. `store_intra_process_message_(MessageT*)` stores the pointer in the ring buffer.
+
+* When publishing a `shared_ptr` an additional copy of the message must be made
+* When publishing a `unique_ptr` the message pointer is reset at the end of execution and the memory is freed.
+
+### Publishing with both interprocess and intraprocess comms
+
+1. User calls `Publisher::publish(std::shared_ptr)` or `Publisher::publish(const std::shared_ptr)`
+2. `Publisher::publish(std::shared_ptr)` creates a `std::unique_ptr` copy of the message
+3. `Publisher::publish(std::shared_ptr)` calls `Publisher::publish(std::unique_ptr)`
+4. `Publisher::publish(std::unique_ptr)` calls `Publisher::do_inter_process_publish(cosnt MessageT* msg)`
+5. `Publisher::do_inter_process_publish` calls `rcl_publish`
+  * Execution waits for interprocess publications to finish
+5. `Publisher::publish(std::unique_ptr)` calls `store_intra_process_message_(MessageT*)`
+6. `store_intra_process_message_(MessageT*)` stores the pointer in the ring buffer.
+
+* When publishing a `shared_ptr` an additional copy of the message must be made
+* When publishing a `unique_ptr` the message pointer is reset at the end of execution and the memory is freed.
+* All interprocess publication must finish before intraprocess communication executes.
+
+### Subscribing with intraprocess comms
+
+* Regardless of subscription signature, all subscriptions but one will receive copies of the message.
+
+
