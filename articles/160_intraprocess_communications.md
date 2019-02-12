@@ -101,3 +101,12 @@ Currently, the `IntraProcessManager` will only accept a `std::unique_ptr` to a m
 * Regardless of subscription signature, all subscriptions but one will receive copies of the message.
 
 
+## Possible alternatives
+
+### Storing `shared_ptr` in the IntraProcessManager
+
+Rather than creating a copy of a message when a user publishes a `std::shared_ptr` or a `std::unique_ptr`, the `IntraProcessManager` could store a `shared_ptr`.
+In the case of shared inter/intra-process comms, this would eliminate the need for an additional copy, as well as eliminate the need to wait for the interprocess publication to be done before intraprocess comms can begin.
+Additionally, if subscriptions are taking `const std::shared_ptr` (much like nodelet), this can also eliminate the copies on the subscription side.
+If a subscription signiture remains `std::unique_ptr`, then a copy would likely have to be made at the time the callback is fired.
+
