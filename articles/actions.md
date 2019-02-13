@@ -5,7 +5,7 @@ permalink: articles/actions.html
 abstract:
   Actions are one of the three core types of interaction between ROS nodes.
   This article specifies the requirements for actions, how they've changed from ROS 1, and how they're communicated.
-author: '[Geoffrey Biggs](https://github.com/gbiggs)'
+author: '[Geoffrey Biggs](https://github.com/gbiggs)', '[Jacob Perron](https://github.com/jacobperron)', '[Shane Loretz](https://github.com/sloretz)'
 published: true
 ---
 
@@ -54,14 +54,14 @@ It is responsible for:
 
 ### Action Client
 
-An action client sends a goal (an action to be performed) and monitors its progress.
+An action client sends one or more goals (an action to be performed) and monitors their progress.
 There may be multiple clients per server; however, it is up to the server to decide how goals from multiple clients will be handled simultaneously.
 
 It is responsible for:
 
-- sending a goal to the action server
-- optionally monitoring the feedback for a goal from the action server
-- optionally monitoring the status for a goal from the action server
+- sending goals to the action server
+- optionally monitoring the user-defined feedback for goals from the action server
+- optionally monitoring the current state of accepted goals from the action server (see [Goal States](#goal-states))
 - optionally requesting that the action server cancel an active goal
 - optionally checking the result for a goal received from the action server
 
@@ -201,16 +201,16 @@ A transition only occurs if the action server *accepts* the request to cancel th
 
 ## API
 
-Proposed examples can be in the respository [examples (branch: actions_proposal)](https://github.com/ros2/examples/tree/actions_proposal).
+Proposed examples can be in the respository [examples](https://github.com/ros2/examples/tree/actions_proposal).
 
 C++:
 
-- [examples/rclcpp/minimal_action_server](https://github.com/ros2/examples/tree/actions_proposal/rclcpp/minimal_action_server)
-- [examples/rclcpp/minimal_action_client](https://github.com/ros2/examples/tree/actions_proposal/rclcpp/minimal_action_client)
+- [examples/rclcpp/minimal_action_server](https://github.com/ros2/examples/tree/master/rclcpp/minimal_action_server)
+- [examples/rclcpp/minimal_action_client](https://github.com/ros2/examples/tree/master/rclcpp/minimal_action_client)
 
 Python:
 
-- [examples/rclpy/actions](https://github.com/ros2/examples/tree/actions_proposal/rclpy/actions)
+- [examples/rclpy/actions](https://github.com/ros2/examples/tree/master/rclpy/actions)
 
 ## Middleware implementation
 
@@ -235,10 +235,11 @@ The QoS settings of this service should be set so the client is guaranteed to re
 
 - **Direction**: client calls server
 - **Request**: goal ID and timestamp
-- **Response**: list of goals that have transitioned to the CANCELING state
+- **Response**: response code and a list of goals that have transitioned to the CANCELING state
 
 The purpose of this service is to request the cancellation of one or more goals on the action server.
-The result indicates which goals will be attempted to be canceled.
+The response code indicates any failures in processing the request (e.g. `OK`, `REJECTED` or `INVALID_GOAL_ID`).
+The list of goals in the response indicates which goals will be attempted to be canceled.
 Whether or not a goal transitions to the CANCELED state is indicated by the status topic and the result service.
 
 The cancel request policy is the same as in ROS 1.
