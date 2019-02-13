@@ -26,28 +26,27 @@ This document describes parsing and integration approaches of different front en
 
 ## Proposed approaches
 
-In the following, different approaches to the solution are described.
+In the following, different approaches to parsing launch descriptions are described.
 This list is by no means exhaustive.
 
-It's worth to note some commonalities between them:
+It's worth noting some things they all have in common:
 
-- All of them attempt to solve the problem in a general and extensible way to help
-  the system scale with its community.
+- All of them attempt to solve the problem in a general and extensible way to help the system scale with its community.
 
-- All of them require a way to establish associations between entities, solved using
-  unique reference id (usually, a human-readable name but that's not a requisite).
+- All of them require a way to establish associations between entities, solved using unique reference id (usually, a human-readable name but that's not a requisite).
 
-- All of them need some form of instantiation and/or parsing procedure registry for
-  parsers to lookup.
+- All of them associate a markup language with a given substitution syntax.
+
+- All of them supply a general, interpolating substitution to deal with embedded substitutions e.g. "rooted/$(subst ...)".
+
+- All of them need some form of instantiation and/or parsing procedure registry for parsers to lookup.
   How that registry is populated and provided to the parser may vary.
-  For instance, in Python class decorators may populate a global dict or even its import
-  mechanism may be used if suitable, while in C++ convenience macros may expand into
-  demangled registration hooks that can later be looked up by a dynamic linker (assuming
-  launch entities libraries are shared libraries).
+  For instance, in Python class decorators may populate a global dict or even its import mechanism may be used if suitable, while in C++ convenience macros may expand into demangled registration hooks that can later be looked up by a dynamic linker (assuming launch entities libraries are shared libraries).
 
 ### Forward Description Mapping (FDM)
 
 In FDM, the parser relies on a schema and well-known rules to map an static description (markup) to implementation specific instances (objects).
+The parser instantiates each launch entity by parsing and collecting the instantiations of the launch entities that make up the former description.
 
 #### Description Markup
 
@@ -57,7 +56,12 @@ Some description samples in different markup languages are provided below:
 ```xml
 <launch version="x.1.0">
   <action name="some-action" type="actions.ExecuteProcess">
-    <arg name="cmd" value="/bin/ls"/>
+    <arg name="cmd" value="{% substitutions.FindExecutable name=my-process %}"/>
+    <arg name="env">
+      <pair name="LD_LIBRARY_PATH"
+            value="/opt/dir:{% substitutions.EnvironmentVariable name=LD_LIBRARY_PATH %}"/>
+    </arg>
+    <arg name="prefix" value="{% substitutions.EnvironmentVariable name=LAUNCH_PREFIX %}"/>
   </action>
   <on_event type="events.ProcessExit" target="some-action">
     <action type="actions.LogInfo">
@@ -75,8 +79,11 @@ launch:
     - type: actions.ExecuteProcess
       name: some-action
       args:
-        cmd: /bin/ls
-  handlers:
+        cmd: $(substitutions.FindExecutable name=my-process)
+        env:
+          LD_LIBRARY_PATH: "/opt/dir:$(substitutions.EnvironmentVariable name=LD_LIBRARY_PATH)"
+        prefix: $(substitutions.EnvironmentVariable name=LAUNCH_PREFIX)
+  event_handlers:
     - type: events.ProcessExit
       target: some-action
       actions:
@@ -85,7 +92,7 @@ launch:
             message: "I'm done"
 ```
 
-### Advantages & Disadvantages
+#### Advantages & Disadvantages
 
 *+* Straightforward to implement.
 
@@ -97,9 +104,10 @@ launch:
 
 *-* Care must be exercised to avoid coupling static descriptions with a given implementation.
 
-### Forward Description Mapping plus Markup Sugars (FDM+)
+### Forward Description Mapping plus Markup Helpers (FDM+)
 
-A variation on FDM that allows launch entities to supply markup language specific hooks to do their own parsing.
+A variation on FDM that allows launch entities to supply markup language specific helpers to do their own parsing.
+The parser may thus delegate entire description sections to these helpers, which may or may not delegate back to the parser (e.g. for nested arbitrary launch entities).
 
 #### Description Markup
 
@@ -108,7 +116,8 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <process name="some-action" cmd="/bin/ls">
+  <process name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
+     <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
      <on_exit>
         <log message="I'm done"/>
      </on_exit>
@@ -122,7 +131,10 @@ launch:
   version: x.1.0
   entities:
     - process:
-        cmd: /bin/ls
+        cmd: $(find-exec my-process)
+        env:
+          LD_LIBRARY_PATH: "/opt/dir:$(env LD_LIBRARY_PATH)"
+        prefix: $(env LAUNCH_PREFIX)
         on_exit:
           - log: "I'm done"
 ```
@@ -133,23 +145,34 @@ Some code samples in different programming languages are provided below:
 
 *Python*
 ```python
-class SomeAction(LaunchDescriptionEntity):
+@launch_markup.xml.handle_tag('process')
+def process_tag_helper(xml_element, parser):
+    ...
+    return launch.actions.ExecuteProcess(...)
 
-   @launch.parse_from('xml')
-   def parse(cls, element):
-       ...
+@launch_markup.handle_subst('env')
+def env_subst_helper(args, parser):
+    ...
+    return launch.substitutions.EnvironmentVariable(parser.parse(args[0]))
 ```
 
 *C++*
 ```c++
-class SomeAction : public LaunchDescriptionEntity {
-public:
-  static std::unique_ptr<SomeAction> parse_from_xml(const XmlElement& e) {
-     ...
-  }
+std::unique_ptr<launch::actions::ExecuteProcess>
+process_tag_helper(const XmlElement & xml_element, const launch_markup::xml::Parser & parser) {
+    // ...
+    return std::make_unique<launch::actions::ExecuteProcess>(/* ... */);
 };
 
-LAUNCH_XML_PARSING_HOOK("some-action", SomeEntity::parse_from_xml);
+LAUNCH_XML_MARKUP_HANDLE_TAG("process", process_tag_helper);
+
+std::unique_ptr<launch::substitutions::EnvironmentVariable>
+env_subst_helper(const std::vector<std::string> & args, const launch_markup::Parser & parser) {
+    // ...
+    return std::make_unique<launch::substitutions::EnvironmentVariable>(parser.parse(args[0]));
+}
+
+LAUNCH_MARKUP_HANDLE_SUBST("env", env_subst_helper);
 ```
 
 #### Advantanges & Disadvantages
@@ -166,8 +189,8 @@ LAUNCH_XML_PARSING_HOOK("some-action", SomeEntity::parse_from_xml);
 
 ### Abstract Description Parsing (ADP)
 
-In ADP, the parser provides an abstract interface to the static description
-and delegates parsing and instantiation to hooks registered by the implementation.
+In ADP, the parser provides an abstract interface to the static description and delegates parsing and instantiation to hooks registered by the implementation.
+The parser does not attempt any form of description inference, traversing the description through of the provided hooks.
 
 #### Description Markup
 
@@ -176,8 +199,9 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <process name="some-action" cmd="/bin/ls">
-    <on_exit>
+  <process name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
+     <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
+     <on_exit>
       <log message="I'm done"/>
     </on_exit>
   </process>
@@ -190,7 +214,10 @@ launch:
   version: x.1.0
   entities:
     - process:
-        cmd: /bin/ls
+        cmd: $(find-exec my-process)
+        env:
+          LD_LIBRARY_PATH: "/opt/dir:$(env LD_LIBRARY_PATH)"
+        prefix: $(env LAUNCH_PREFIX)
         on_exit:
           - log:
               message: 'I'm done'
@@ -207,10 +234,9 @@ Define an `Entity` object that has:
 - a namespaced type;
 - optionally a name, unique among the others;
 - optionally a parent entity (i.e. unless it's the root entity);
-- optionally one or more named attributes, whose values can either be entities or ordered sequences of them.
+- optionally one or more named attributes, whose values can be entities, ordered sequences of them or neither e.g. scalar values.
 
 Some sample definitions in different programming languages are provided below:
-
 
 *Python*
 ```python
@@ -237,21 +263,21 @@ class Entity:
 namespace parsing {
 class Entity {
 
-  const std::string& type() const;
+  const std::string & type() const;
 
-  const Entity& parent() const;
+  const Entity & parent() const;
 
-  const std::vector<Entity>& children() const;
-
-  template<typename T>
-  const T& get(const std::string& name) const { ... }
-
-  const Entity& get(const std::string& name) const { ... }
+  const std::vector<Entity> & children() const;
 
   template<typename T>
-  bool has(const std::string& name) const { ... }
+  const T & get(const std::string& name) const { ... }
 
-  bool has(const std::string& name) const { ... }
+  const Entity & get(const std::string& name) const { ... }
+
+  template<typename T>
+  bool has(const std::string & name) const { ... }
+
+  bool has(const std::string & name) const { ... }
 };
 }  // namespace parsing
 ```
@@ -276,7 +302,7 @@ For instance, one could map both of the following descriptions:
     param:
       - name: a
         value: 100.
-      - name: a
+      - name: b
         value: stuff
 ```
 
@@ -296,7 +322,7 @@ e.param[1].name == 'b'
 e.type() == "node"
 e.get<std::string>("name") == "my-node"
 e.has<std::string>("package") == true
-auto params = e.get<std::vector<Entity>>("param")
+auto params = e.get<std::vector<parsing::Entity>>("param")
 params[0].get<std::string>("name") == "a"
 params[1].get<std::string>("name") == "b"
 ```
@@ -310,25 +336,63 @@ Each launch entity that is to be statically described must provide a parsing pro
 
 *Python*
 ```python
-@classmethod
-def parse(
-    cls,
-    entity: parsing.Entity,
-    parser: parsing.Parser
-) -> LaunchDescriptionEntity:
-    return cls(...)
+@launch.expose('some-action')  # Infers it's an Action
+class SomeAction(launch.Action):
+
+    @classmethod
+    def parse(
+        cls,
+        entity: parsing.Entity,
+        parser: parsing.Parser
+    ) -> SomeAction:
+        return cls(
+            scoped=parser.parse(entity.scoped), entities=[
+                parser.parse(child) for child in entity.children
+            ]
+        )
+
+@launch.expose('some-subst')  # Infers it's a Substitution
+class SomeSubstitution(launch.Substitution):
+
+    @classmethod
+    def parse(
+        cls,
+        value: parsing.Value,
+        parser: parsing.Parser
+    ) -> SomeSubstitution:
+        return cls(aliases=list(value))
 ```
 
 *C++*
 ```c++
-std::unique_ptr<LaunchDescriptionEntity>
-parse(const parsing::Entity & e, const parsing::Parser & parser) {
-   return std::make_unique<LaunchDescriptionEntity>(...);
-}
+class SomeAction : public launch::Action {
+  static std::unique_ptr<SomeAction>
+  parse(const parsing::Entity & e, const parsing::Parser & parser) {
+    std::vector<launch::DescriptionEntity> entities;
+    for (const auto & child : e.children()) {
+      entities.push_back(parser.parse(child));
+    }
+    return std::make_unique<SomeAction>(
+      parser.parse(e.get<parsing::Value>("scoped")), entities
+    );
+  }
+};
+
+LAUNCH_EXPOSE("some-action", SomeAction);  // Infers it's an Action
+
+class SomeSubstitution : public launch::Substitution {
+  static std::unique_ptr<SomeSubstitution>
+  parse(const parsing::Value & v, const parsing::Parser & parser) {
+    return std::make_unique<SomeSubstitution>(v.as<std::vector<std::string>>());
+  }
+};
+
+LAUNCH_EXPOSE("some-subst", SomeSubst);  // Infers it's a Substitution
 ```
 
-As can be seen above, procedures inspect the description through the given parsing entity, delegating further parsing of composed launch entities to the parser.
-Delegation is thus recursive.
+As can be seen above, procedures inspect the description through the given parsing entity, delegating further parsing to the parser recursively.
+To deal with substitutions, and variant values in general, the concept of a 'value' is introduced.
+Note that a value _may be_ an entity, but it isn't necessarily one.
 
 #### Procedure Provisioning
 
@@ -340,7 +404,7 @@ In the simplest case, the user may explicitly provide their own parsing procedur
 
 If accurate type information is (somehow) available, reflection mechanisms can aid derivation of a parsing procedure with no user intervention.
 
-### Advantages & Disadvantages
+#### Advantages & Disadvantages
 
 The abstraction layer allows.
 
