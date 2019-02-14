@@ -185,7 +185,7 @@ And three terminal states:
 - **ABORTED** - The goal was terminated by the action server without an external request.
 - **CANCELED** - The goal was canceled after an external request from an action client.
 
-State transitions triggered by the action server:
+State transitions triggered by the action server according to its designed behavior:
 
 - **execute** - Start execution of an accepted goal.
 - **set_succeeded** - Notify that the goal completed successfully.
@@ -415,7 +415,6 @@ This would allow clients to only subscribe to the feedback and status messages t
 A second approach is to give clients the option to specify a custom feedback topic as part of the goal request.
 This would be useful to alleviate extreme cases without the overhead of creating/destroying topics for every goal when the number of goals/clients is small.
 
-
 Reasons against using separate topics for feedback and status:
 - Most anticipated use cases will not involve many goals/clients (premature optimization)
 - Topics dynamically namespaced (e.g. by goal ID) would complicate ROS security by not having deterministic topic names before runtime and outside user control.
@@ -423,6 +422,15 @@ Reasons against using separate topics for feedback and status:
 
 It seems reasonable in the future that the "keyed data" feature in DDS can be employed to reduce overhead in the "many goal/client" scenario.
 This will require that the feature be exposed in the middleware, which it is not at the time of writing this proposal.
+
+### Server-side goal ID generation
+
+Since new goals are created by an action client making a service call to an action server, it is possible for the action server to generate the UUID for the goal and return it as part of the service response to the action client.
+The action server can better ensure uniqueness of the goal ID with this approach, but should still handle the potential race of two goal requests arriving simulataneously.
+
+On the other hand, it would be nice to expose the method for generating goal IDs and let the user correlate the goals with other libraries/systems.
+Imagine an action client being used to request a robot to perform tasks from a database where each task already has a UUID associated with it.
+In this case, it is still the action servers responsibility to ensure goal ID uniqueness and handle any potential races with concurrent goal requests, but we have the added benefit of the user being able to correlate goals to other existing entities.
 
 ## References
 
