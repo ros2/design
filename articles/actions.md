@@ -314,20 +314,20 @@ Following the goal request, the client makes an asynchronous request for the res
 The user defined method publishes feedback to the action client as it executes the goal.
 Ultimately, the user defined method populates a result message that is used as part of the result response.
 
-![Goal Lifecycle Example 0](../img/actions/interaction_example_0.png)
+![Action Interaction Example 0](../img/actions/interaction_example_0.png)
 
 #### Example 2
 
 This example is almost identical to the first, but this time the action  client requests for the goal to be canceled mid-execution.
 Note that the user defined method is allowed to perform any shutdown operations after the cancel request before returning with the cancellation result.
 
-![Goal Lifecycle Example 1](../img/actions/interaction_example_1.png)
+![Action Interaction Example 1](../img/actions/interaction_example_1.png)
 
 #### Example 3
 
 Here is a more complex example involving multiple goals.
 
-TODO
+![Action Interaction Example 2](../img/actions/interaction_example_2.png)
 
 ### Topic and Service Name Examples
 
