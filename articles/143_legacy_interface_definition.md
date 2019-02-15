@@ -99,7 +99,7 @@ A dynamic array can have between `0` and `N` elements of the specified type.
 #### Upper boundaries
 
 <div class="alert alert-info" markdown="1">
-  This feature has been added compared to the ROS 1 format.
+  This feature is not available in ROS 1.
 </div>
 
 The size of *strings* as well as *dynamic arrays* can be limited with an *upper boundary*.
@@ -108,7 +108,7 @@ This enables the preallocation of memory for data structures which use dynamical
 ### Default values
 
 <div class="alert alert-info" markdown="1">
-  This feature has been added compared to the ROS 1 format.
+  This feature is not available in ROS 1.
 </div>
 
 A field can optionally specify a default value.
