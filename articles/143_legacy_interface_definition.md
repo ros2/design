@@ -23,6 +23,7 @@ Original Author: {{ page.author }}
 
 This article specifies the file format describing the data structures which are being used to exchange information between components.
 The data structures are defined in a programming language agnostic way.
+The format is based on the [<code>.msg</code> format definition](http://wiki.ros.org/msg#Message_Description_Specification) from ROS 1.
 Please see other articles for the mappings to programming language specific types and API.
 
 ## Overview
@@ -40,9 +41,16 @@ Together with the name of the *package* a message can be uniquely identified.
 ### Services
 
 For request / reply style communication the two exchanged data structures are related.
-These pairs of data structures are called *services*
+These pairs of data structures are called *services*.
 A service is identified by its *name* and the *package* it is in.
 Each service describes two messages, one for the request data structure, one for the reply data structure.
+
+### Actions
+
+For longer running request / reply style communication with feedback about the progress the exchanged data structures are related.
+These triplets of data structures are called *actions*.
+An action is identified by its *name* and the *package* it is in.
+Each service describes three messages, one for the goal data structure, one for the result data structure, and one for the feedback data structure.
 
 ### Field types
 
@@ -63,16 +71,14 @@ The following primitive types are defined:
 - `int64`, `uint64`
 - `string`
 
-<div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> consider <code>wchar</code>, <code>wstring</code>, <code>u16string</code>, <code>u32string</code>
+<div class="alert alert-info" markdown="1">
+  While <code>byte</code> and <code>char</code> are deprecated in ROS 1 they are still part of this definition to ease migration.
 </div>
 
 <div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> <code>string</code> does not specify any encoding yet and the transport is agnostic to it, this means commonly it can only contain ASCII but all endpoints can also "agree" on using a specific encoding
-</div>
-
-<div class="alert alert-warning" markdown="1">
-  <b>TODO:</b> consider removing <code>byte</code>, <code>char</code> after specifying the mapping to C++ and Python
+  In ROS 1 <code>string</code> does not specify any encoding and the transport is agnostic to it.
+  This means commonly it can only contain ASCII.
+  For explicit support of wide character strings please consider migrating to [.idl files](http://design.ros2.org/articles/idl_interface_definition.html) which defines explicit types for that.
 </div>
 
 #### Non-primitive field types
@@ -92,10 +98,18 @@ A dynamic array can have between `0` and `N` elements of the specified type.
 
 #### Upper boundaries
 
+<div class="alert alert-info" markdown="1">
+  This feature has been added compared to the ROS 1 format.
+</div>
+
 The size of *strings* as well as *dynamic arrays* can be limited with an *upper boundary*.
 This enables the preallocation of memory for data structures which use dynamically sized data.
 
 ### Default values
+
+<div class="alert alert-info" markdown="1">
+  This feature has been added compared to the ROS 1 format.
+</div>
 
 A field can optionally specify a default value.
 If no default value is specified a common default value is used:
@@ -117,6 +131,7 @@ A field of type `array` can optionally specify a default value.
 - a trailing comma after the last element of the array is ignored
 
 Additional rule for `string` arrays:
+
 - string arrays must contain only `string`s respecting the following rules:
   - a string value which can optionally be quoted with either single quotes (`'`) or double quotes (`"`)
   - a double-quoted (`"`) string (respectively single-quoted (`'`)) should have any inner double quotes (respectively single quotes) escaped
@@ -205,11 +220,11 @@ Depending on the type the following values are valid:
 
 - `byte`:
 
-  - an unsigned integer value in the following interval `[0, 255]`
+  - an opaque 8-bit quantity with a numerical value in the following interval `[0, 255]`
 
 - `char`:
 
-  - an integer value in the following interval `[-128, 127]`
+  - an unsigned character with a numerical value in the following interval `[0, 255]`
 
 - `float32` and `float64`:
 
@@ -253,7 +268,7 @@ Code generation uses the generated file.
 | -------- | ------------------ |
 | bool     | boolean            |
 | byte     | octet              |
-| char     | uint8              |
+| char     | char               |
 | float32  | float              |
 | float64  | double             |
 | int8     | int8               |
@@ -265,6 +280,18 @@ Code generation uses the generated file.
 | int64    | long long          |
 | uint64   | unsigned long long |
 | string   | string             |
+
+<div class="alert alert-info" markdown="1">
+  The mapping of <code>byte</code> uses a different type while still remaining an opaque 8-bit quantity.
+  [Definition in ROS 1](http://wiki.ros.org/msg#Field_Types): deprecated alias for <code>int8</code>.
+  Definition in IDL (7.4.1.4.4.2.6): an opaque 8-bit quantity.
+</div>
+
+<div class="alert alert-info" markdown="1">
+  While the mapping of <code>char</code> maintains the same value range as defined in ROS 1 it uses a different type.
+  [Definition in ROS 1](http://wiki.ros.org/msg#Field_Types): deprecated alias for <code>uint8</code>.
+  Definition in IDL (7.2.6.2.1): an 8-bit quantity with a value between 0 and 255.
+</div>
 
 | ROS type                | IDL type         |
 | ----------------------- | ---------------- |
