@@ -50,7 +50,7 @@ Each service describes two messages, one for the request data structure, one for
 For longer running request / reply style communication with feedback about the progress the exchanged data structures are related.
 These triplets of data structures are called *actions*.
 An action is identified by its *name* and the *package* it is in.
-Each service describes three messages, one for the goal data structure, one for the result data structure, and one for the feedback data structure.
+Each action describes three messages, one for the goal data structure, one for the result data structure, and one for the feedback data structure.
 
 ### Field types
 
