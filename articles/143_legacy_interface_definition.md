@@ -224,7 +224,7 @@ Depending on the type the following values are valid:
 
 - `char`:
 
-  - an unsigned character with a numerical value in the following interval `[0, 255]`
+  - an unsigned integer value in the following interval `[0, 255]`
 
 - `float32` and `float64`:
 
@@ -268,7 +268,7 @@ Code generation uses the generated file.
 | -------- | ------------------ |
 | bool     | boolean            |
 | byte     | octet              |
-| char     | char               |
+| char     | uint8              |
 | float32  | float              |
 | float64  | double             |
 | int8     | int8               |
@@ -282,15 +282,14 @@ Code generation uses the generated file.
 | string   | string             |
 
 <div class="alert alert-info" markdown="1">
-  The mapping of <code>byte</code> uses a different type while still remaining an opaque 8-bit quantity.
+  The mapping of <code>byte</code> uses a different type than in ROS 1 while still remaining an opaque 8-bit quantity.
   [Definition in ROS 1](http://wiki.ros.org/msg#Field_Types): deprecated alias for <code>int8</code>.
   Definition in IDL (7.4.1.4.4.2.6): an opaque 8-bit quantity.
 </div>
 
 <div class="alert alert-info" markdown="1">
-  While the mapping of <code>char</code> maintains the same value range as defined in ROS 1 it uses a different type.
-  [Definition in ROS 1](http://wiki.ros.org/msg#Field_Types): deprecated alias for <code>uint8</code>.
-  Definition in IDL (7.2.6.2.1): an 8-bit quantity with a value between 0 and 255.
+  While the mapping of <code>char</code> is unintuitive it preserves compatibility with the [definition in ROS 1](http://wiki.ros.org/msg#Field_Types):
+  "deprecated alias for <code>uint8</code>".
 </div>
 
 | ROS type                | IDL type         |
