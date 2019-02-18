@@ -146,10 +146,10 @@ The rcl layer is currently using a WaitSet in order to be informed of events fro
 These WaitSets contain lists of several types of conditions, such as timers firing or subscriptions receiving data.
 In order to support new Topic Status Events, a new type will be added to the existing WaitSet and the rmw layer will set them when these events occur.
 
-#### rmw_take_status
+#### rcl_take_status and rmw_take_status
 
-A new function called rmw_take_status will need to be added that can directly query the status for a Topic/Service.
-It will operate in a similar manner to the rmw_take function that is used to retrieve messages for a subscription.
+New functions called rcl_take_status and rmw_take_status will need to be added that can directly query the status for a Topic/Service.
+It will operate in a similar manner to the rcl_take and rmw_take functions that are used to retrieve messages for a subscription.
 It will be used by the executors when they receive a notice via the waitset mentioned above that a resource has a new status event available.
 
 ## RMW Vendor Support
