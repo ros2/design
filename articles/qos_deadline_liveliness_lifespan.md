@@ -85,16 +85,16 @@ In order for a Client to connect to an Owner to make a request the Client_Liveli
 ### Lifespan
 
 The lifespan policy establishes a contract for how long a message remains valid.
+The lifespan QoS policy only applies to Topics.
 For Topic Subscribers it establishes the length of time a message is considered valid, after which time it will not be received.
 For Topic Publishers it establishes the length of time a message is considered valid, after which time it will be removed from the Topic history and no longer sent to Subscribers.
-For Service Owners it establishes the length of time a request is considered valid, after which time the Owner will not receive and process the request.
-For Service Clients it establishes the length of time a response is considered valid, after which time the Client will not accept the response and the request will timeout.
 
 - LIFESPAN_DEFAULT - Use the ROS specified default for lifespan (which is LIFESPAN_NONE).
 - LIFESPAN_NONE - Messages do not have a time at which they expire.
 - LIFESPAN_ENABLED - Messages will have a lifespan enforced.
 
-If a Service Owner receives a request before the lifespan expires it should finish processing that request even if the lifespan expires while the request is being processed.
+In the future lifespan support could be added for Services to act as a means of timing out requests if they take over a set amount of time.
+At present, that would require additional support for Service Clients to be able to handle timeouts and cleanup requests that is out of scope for this design.
 
 ### DDS QoS Relation
 
