@@ -51,11 +51,11 @@ For Service Clients it establishes the maximum amount of time allowed to pass be
 
 Topics and Services will support the following levels of deadlines.
 - DEADLINE_DEFAULT - Use the ROS specified default for deadlines (which is DEADLINE_NONE).
-- DEADLINE_NONE - Disables tracking of deadlines.
-- DEADLINE_RMW - Tracks deadlines at the ROS rmw layer. 
+- DEADLINE_NONE - No deadline will be offered or requested and events will not be generated for missed deadlines.
+- DEADLINE_RMW - The rmw layer of ROS will track the deadline. For a Publisher or Subscriber this means that a deadline will be considered missed if the rmw layer has not received a message within the specified time. For a Service this means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
 
 In order for a Subscriber to listen to a Publisher's Topic the deadline that they request must greater than the deadline set by the Publisher.
-A Service Client will **not** be prevent from making a request to a Service Owner if the Owner provides a deadline greater than the deadline requested by the Client.
+A Service Client will **not** be prevented from making a request to a Service Owner if the Owner provides a deadline greater than the deadline requested by the Client.
 
 ### Liveliness
 
@@ -68,16 +68,16 @@ For Service Clients it establishes both the level of reporting that they require
 Topics will support the following levels of liveliness.
 - LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
 - LIVELINESS_AUTOMATIC - The signal that establishes a Topic is alive comes from the ROS rmw layer.
-- LIVELINESS_MANUAL_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any publisher on the node or an explicit signal from the application to assert liveliness on the node will mark all publishes on the node as being alive.
+- LIVELINESS_MANUAL_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_TOPIC - The signal that establishes a Topic is alive is at the Topic level. Only publishing a message on the Topic or an explicit signal from the application to assert liveliness on the Topic will mark the Topic as being alive.
 
 Services will support the following levels of liveliness.
 - LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
 - LIVELINESS_AUTOMATIC - The signal that establishes a Service Owner is alive comes from the ROS rmw layer.
-- LIVELINESS_MANUAL_NODE - The signal that establishes a Service is alive is at the node level. A message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all Services on the node as being alive.
+- LIVELINESS_MANUAL_NODE - The signal that establishes a Service is alive is at the node level. A message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_SERVICE - The signal that establishes a Service is alive is at the Service level. Only sending a response on the Service or an explicit signal from the application to assert liveliness on the Service will mark the Service as being alive.
 
-In order for a Subscriber to listen to a Publisher's Topic the liveliness they request must be greater than the liveliness set by the Publisher.
+In order for a Subscriber to listen to a Publisher's Topic the level of liveliness tracking they request must be equal or less verbose than the level of tracking provided by the Publisher and the time until considered not alive set by the Subscriber must be greater than the time set by the Publisher.
 
 Service Owners and Clients will each specify two liveliness policies, one for the liveliness policy pertaining to the Owner and one pertaining to the Client.
 In order for a Client to connect to an Owner to make a request the Client_Liveliness level requested by the Owner must be greater than the level provided by the Client and the Owner_Liveliness requested by the Client must be greater than the level provided by the Owner.
