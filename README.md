@@ -20,6 +20,19 @@ And navgiating to your browser to:
 [http://localhost:4000/](http://localhost:4000/)
 
 
+## Working Locally (Docker)
+
+If you don't want to (or can't) install Ruby and other Jekyll dependencies directly on your machine, you can run the server via Docker. Navigate to the directory containing this repository, and start the server via
+
+```
+docker run -v $PWD:/srv/jekyll -p 4000:4000 jekyll/jekyll jekyll serve --watch --incremental
+```
+
+You can then navigate your browser to:
+
+[http://localhost:4000/](http://localhost:4000/)
+
+
 ## Site Setup
 
 Site is a Jekyll website with `design.ros2.org` as the `CNAME`.
