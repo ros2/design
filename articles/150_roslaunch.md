@@ -428,62 +428,179 @@ The remapping design document[^static_remapping] goes into detail on how you can
 However, as an example of a process with multiple nodes, consider a program that instantiates two camera driver nodes called "camera1" and "camera2" by default.
 You could configure their namespaces separately by doing something like `camera1:__ns:=left camera2:__ns:=right`.
 
-### Dynamically loaded Nodes
+#### Dynamically loading Nodes
 
-A special case of processes with multiple nodes are nodes that do not statically instantiate nodes.
-Two separate ways to do this are described below, but in both cases the typical command line arguments (as described in the remapping design document[^static_remapping]) and environment variables may not work as expected.
-In stead the method for causing the dynamic instantiation of a node needs to communicate these settings separately.
-And because of this, the launch system also needs to know how to do this.
+Dynamically loading a node means spawning it in a container process that does not know about the node until it is asked to load it.
+A container process is a stand alone executable that loads and executes nodes within itself.
 
-#### By Configuration
+##### Container Process API
 
-The first way would be to pass some user define command line arguments to the process which the process would interpret and use to dynamically instantiate some ROS nodes.
-There's no current plan to have a generic tool for this, but that's subject to change.
-However, since there's no standard tool, the launch system cannot know how to convert ROS specific declarations into a format that can be used to invoke it.
+While there will be standard container processes, custom container processes would allow using custom executors or client libraries.
+Therefore, there must be a container process API for the launch system to communicate which nodes should be loaded.
 
-Though the user could always generate the appropriate command line arguments for the process and have the launch system treat it as a normal operating system process.
-In that case, though, it might be useful to indicate to the launch system that a process may contain nodes, but should be otherwise treated like a plain operating system process.
-This would let the launch system still monitor it for ROS specific events and input/output.
+The launch system must be able tell the container process what arguments to give to a dynamically loaded node.
+This includes command line arguments and client library specific options (e.g. `rclcpp` has `use_intra_process_comms`).
+Since the launch system cannot know about all custom containers, the API must include a way to pass unknown arguments (e.g. by passing key-value pairs).
 
-As an example of a "by configuration" dynamic node process, you could have a process that takes a variable number of arguments, where each is a serial port address for a laser scanner, e.g. `/dev/ACM0 /dev/ACM1 ...`, and it would instantiate a laser scanner driver node for each address.
-It would would up to this process to figure out how to allow the user to further configure the nodes though.
-It would not be possible, in this case, for the launch system to "apply a ROS namespace" to the nodes within it, for example.
-For this reason, it's probably not an ideal way to structure nodes until a standardized way to load many nodes into a single process via configuration is defined.
+The API will not include setting environment variables per loaded node.
+Many languages have APIs to get environment variables, and there is no way to isolate them within a process.
 
-<div class="alert alert-warning" markdown="1">
-RFC:
+The following options for an API are being considered.
 
-On the point of a standardized way of having a "dynamic nodes process by configuration", I think it might be worth pursuing this, because it will basically become a more efficient way of launch a bunch of nodes into a single process, more efficient than the "by proxy" way described below.
+###### API using Command Line Configuration File
+One option for a container processes API is to pass a configuration file with nodes to load via the command line.
 
-The "by proxy" way below is essentially the pattern used by nodelets in ROS 1, but what I'm describing here is essentially like a NodeletManager executable which rather than loading nodelets via Service calls would load and run them based on command line arguments or a config file or something.
+Advantages
+* No waiting for an API to become available
 
-The "by proxy" way is more convenient when you're running things by hand, but if the roslaunch description looks something like this (just pseudo code):
+Disadvantages
+* Requires write access to the file system
+* Requires parsing a config file
+* Cannot tell from the outside if a container process supports this interface
+* Cannot tell if and when nodes are loaded or unloaded
 
-```xml
-<node_container_process name="my_container_process">
-  <node package="my_package" executable="talker" />
-  <node package="my_package" executable="listener" />
+This API could have very low latency to launch nodes since it does not require waiting for discovery.
+However, there is no way to get feedback about the success or failure of loaded nodes.
+There is also no way to tell a container process to unload a composable node.
 
-</node_container_process>
-```
+###### API using STDIN
 
-Whether or not the above results in three processes (one container and two proxy processes) or a single process, probably doesn't matter to the user or at least would be fine with the user in exchange for less overhead.
+Another option for a container process API is to pass configuration in via STDIN.
 
-It would be more efficient because you don't need to have a node in each proxy to actually make the Service call to the load that node the user wants to run, and you don't need to maintain a bond between the container and the proxy processes.
+Advantages
+* No waiting for an API to become available
+* Works with read-only file systems
 
-So I'm interested in what others think about coming up with a standardized executable which can load and configure many nodes at once from command line arguments or a config file.
-</div>
+Disadvantages
+* Requires parsing a config
+* Cannot tell from the outside if a container process supports this interface
+* Cannot tell if and when nodes are loaded or unloaded
+* Cannot stop dynamically loaded nodes from reading STDIN
 
-#### By Proxy
+This API could also have very low latency to launch nodes.
+However, there also is no way to get feedback about the success or failure of loaded nodes.
+STDOUT cannot be used because a composable node logging messages to STDOUT is assumed to be very common and would conflict.
+Since STDIN is always available, it would be possible to unload a node via this API.
 
-The other way to implement a process which dynamically instantiates ROS nodes, is to send the request to instantiate a node asynchronously from another process.
-So the "container" process would start up and provide a service (ROS Service or otherwise) that lets external processes request a node be instantiated with a given set of configurations.
+###### API using ROS Services or Topics
 
-One form this can take is by providing a "proxy" process which doesn't actually run the node, but instead loads it into an already running container and just stays running until the node is shutdown in the remote container.
-This pattern is used by the "nodelets" in ROS 1.
-It's a useful pattern when you're running nodes by hand but you want them to share a process and don't want to write your own program to do that.
+Lastly, a container process API may be defined by ROS services or topics.
 
-There are a few other forms this can take, but the common thread between them is that a process instantiates nodes dynamically based on asynchronous input from external actors (proxy's), and that the configuration for those nodes is communicated through something other than command line arguments and environment variables.
+Advantages
+* No config file parsing
+* Works with read-only file systems
+* Can indicate if a node was successfully loaded
+* Can create API to trigger launch events
+* Can tell if a container process supports this interface
+
+Disadvantages
+* Must wait for the service API to become available
+* Cannot stop dynamically loaded nodes from creating the same services
+
+This is the only option discussed which can communicate the success or failure of dynamically launched nodes.
+It is also the only option that allows introspection.
+However, this option has the highest potential delay from when the container process is spawned to when nodes may be loaded.
+
+##### Proposed Container process API
+
+This is a proposal for an API a launch system will use to interact with container processes.
+
+###### Command Line Arguments
+A container process must accept command line arguments including log level, remapping, and parameters.
+These command line arguments must not be applied to dynamically launched nodes.
+The launch system will pass these arguments to a container process in the same way it would pass them to a node.
+If a remap rule would apply to a launch service, the launch system should try to use the remapped service name instead.
+
+###### ROS Services
+A container process must offer all of the following services.
+
+* `~/_container/load_node`
+* `~/_container/unload_node`
+* `~/_container/list_nodes`
+
+The services are hidden to avoid colliding with user created services.
+`load_node` will be called by the launch system when a composable node is to be dynamically loaded, and `unload_node` destroys a composable node.
+`list_nodes` is not called by launch system, and is only provided for introspection.
+
+1. load_node
+
+    If a container process is asked to load a node with a full node name matching an existing node, then it must reject the request.
+    This is to avoid conflicts in features that assume node name uniqueness, like parameters.
+
+    A container process must assign the node a unique id when it is loaded.
+    The id of a loaded node instance never changes.
+    Two nodes in the same container process must never have the same id, and there should be a significant time delay before an id is reused.
+
+    ```
+    # A ROS package the composable node can be found in
+    string package_name
+    # a plugin within that package
+    string plugin_name
+
+    # Name the composable node should use, or empty to use the node's default name
+    string node_name
+    # Namespace the composable node should use, or empty to use the node's default namespace
+    string node_namespace
+    # Values from message rcl_interfaces/Log
+    uint8 log_level
+    # Remap rules
+    # TODO(sloretz) rcl_interfaces message for remap rules?
+    string[] remap_rules
+    # Parameters to set
+    rcl_interfaces/Parameter[] parameters
+
+    # key/value arguments that are specific to a type of container process
+    rcl_interfaces/Parameter[] extra_arguments
+    ---
+    # True if the node was successfully loaded
+    bool success
+    # Human readable error message if success is false, else empty string
+    string error_messsage
+    # Name of the loaded composable node (including namespace)
+    string full_node_name
+    # A unique identifier for the loaded node
+    uint64 unique_id
+    ```
+
+2. unload_node
+
+    ```
+    # Container specific unique id of a loaded node
+    uint64 unique_id
+    ---
+    # True if the node existed and was unloaded
+    bool success
+    # Human readable error message if success is false, else empty string
+    string error_messsage
+    ```
+
+3. list_nodes
+
+    ```
+    ---
+    # List of full node names including namespace
+    string[] full_node_names
+    # corresponding unique ids (must have same length as full_node_names)
+    uint64[] unique_ids
+    ```
+
+###### Exit Code
+If the container process is asked to shutdown due to normal [Termination], then the exit code must be 0.
+If it exits due to an error then exit code must be any other number.
+
+##### Parallel vs Sequential Loading of Nodes
+
+If it is possible to load multiple nodes in parallel, then it needs to be decided how to load the nodes.
+The container process should load nodes as soon as it is asked.
+It should be up to the launch system to decide whether to load nodes in parallel or sequentially.
+If multiple nodes of the same type are to be launched, then the launch system should load the nodes sequentially so each is able to remap it's name before the next is loaded.
+If they are of different types then the launch system may choose to try to load them in parallel, where the exact order they get loaded is determined by chance or the container process.
+
+##### Registration of Composable Nodes
+
+How Composable nodes are registered is not defined by this document.
+Instead, the container process is responsible for knowing how to find nodes it is asked to load.
+For example, a container process might use pluginlib for rclcpp nodes, or python entry points for rclpy nodes.
 
 ## Event Subsystem
 
