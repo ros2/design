@@ -25,12 +25,13 @@ Glossary:
 - DDS - Data Distribution Service
 - RTPS - Real-Time Publish Subscribe
 - QoS - Quality of Service
-- Client - Refers to an application that connects to a ROS Service to send requests and receive responses.
-- Owner - Refers to the application that is running a ROS Service that receives requests and sends responses.
+- Service Client - Also referred to as just Client, refers to an application that connects to a ROS Service to send requests and receive responses.
+- Service Server - Also referred to as just Server, refers to the application that is running a ROS Service that receives requests and sends responses.
 
 ## Existing ROS QoS Settings
 
-While DDS provides many settings to enable fine-grained control over the Quality of Service (QoS) for entities, ROS only provides native support for a handful of them. ROS users are able to specify the History, Depth, Reliability, and Durability via a QoS configuration struct when they create Publishers, Subscribers, etc.
+While DDS provides many settings to enable fine-grained control over the Quality of Service (QoS) for entities, ROS only provides native support for a handful of them.
+ROS users are able to specify the History, Depth, Reliability, and Durability via a QoS configuration struct when they create Publishers, Subscribers, etc.
 
 This leaves a lot of QoS settings that can only be set if DDS vendor can load additional default settings via a configuration file.
 If a user wants to hook their code into these additional QoS settings then they would need to get a reference to the rmw implementation and program against the vendor specific API.
@@ -44,50 +45,50 @@ To address these needs it was proposed that we start by adding support for the f
 ### Deadline
 
 The deadline policy establishes a contract for the amount of time allowed between messages.
-For Topic Subscribers it establishes the maximum amount of time allowed to pass between receiving messages.
-For Topic Publishers it establishes the maximum amount of time allowed to pass between sending messages.
-For Service Owners it establishes the maximum amount of time allowed to pass between receiving a request and when a response for that request is sent.
+For Subscriptions it establishes the maximum amount of time allowed to pass between receiving messages.
+For Publishers it establishes the maximum amount of time allowed to pass between sending messages.
+For Service Servers it establishes the maximum amount of time allowed to pass between receiving a request and when a response for that request is sent.
 For Service Clients it establishes the maximum amount of time allowed to pass between sending a request and when a response for that request is received.
 
-Topics and Services will support the following levels of deadlines.
+Topics and Services will support the following levels of deadlines:
 - DEADLINE_DEFAULT - Use the ROS specified default for deadlines (which is DEADLINE_NONE).
 - DEADLINE_NONE - No deadline will be offered or requested and events will not be generated for missed deadlines.
 - DEADLINE_RMW - The rmw layer of ROS will track the deadline. For a Publisher or Subscriber this means that a deadline will be considered missed if the rmw layer has not received a message within the specified time. For a Service this means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
 
-In order for a Subscriber to listen to a Publisher's Topic the deadline that they request must greater than the deadline set by the Publisher.
-A Service Client will **not** be prevented from making a request to a Service Owner if the Owner provides a deadline greater than the deadline requested by the Client.
+In order for a Subscriber to listen to a Publisher's Topic the deadline that they request must be greater than, or equal to, the deadline set by the Publisher.
+A Service Client will **not** be prevented from making a request to a Service Server if the  Server provides a deadline greater than the deadline requested by the Client.
 
 ### Liveliness
 
 The liveliness policy establishes a contract for how entities report that they are still alive. 
-For Topic Subscribers it establishes the level of reporting that they require from the Topic entities that they are subscribed to. 
-For Topic Publishers it establishes the level of reporting that they will provide to Subscribers that they are alive. 
-For Service Owners it establishes both the level of reporting that they will provide to Clients and also the level of reporting that they require from Clients.
-For Service Clients it establishes both the level of reporting that they require from Service Owners and the level of reporting that they will provide to the Owner.
+For Subscriptions it establishes the level of reporting that they require from the Publishers to which they are subscribed. 
+For Publishers it establishes the level of reporting that they will provide to Subscribers that they are alive. 
+For Service Servers it establishes both the level of reporting that they will provide to Clients and also the level of reporting that they require from Clients.
+For Service Clients it establishes both the level of reporting that they require from Service Servers and the level of reporting that they will provide to the Server.
 
-Topics will support the following levels of liveliness.
+Topics will support the following levels of liveliness:
 - LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
 - LIVELINESS_AUTOMATIC - The signal that establishes a Topic is alive comes from the ROS rmw layer.
 - LIVELINESS_MANUAL_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_TOPIC - The signal that establishes a Topic is alive is at the Topic level. Only publishing a message on the Topic or an explicit signal from the application to assert liveliness on the Topic will mark the Topic as being alive.
 
-Services will support the following levels of liveliness.
+Services will support the following levels of liveliness:
 - LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
-- LIVELINESS_AUTOMATIC - The signal that establishes a Service Owner is alive comes from the ROS rmw layer.
+- LIVELINESS_AUTOMATIC - The signal that establishes a Service Server is alive comes from the ROS rmw layer.
 - LIVELINESS_MANUAL_NODE - The signal that establishes a Service is alive is at the node level. A message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_SERVICE - The signal that establishes a Service is alive is at the Service level. Only sending a response on the Service or an explicit signal from the application to assert liveliness on the Service will mark the Service as being alive.
 
 In order for a Subscriber to listen to a Publisher's Topic the level of liveliness tracking they request must be equal or less verbose than the level of tracking provided by the Publisher and the time until considered not alive set by the Subscriber must be greater than the time set by the Publisher.
 
-Service Owners and Clients will each specify two liveliness policies, one for the liveliness policy pertaining to the Owner and one pertaining to the Client.
-In order for a Client to connect to an Owner to make a request the Client_Liveliness level requested by the Owner must be greater than the level provided by the Client and the Owner_Liveliness requested by the Client must be greater than the level provided by the Owner.
+Service Servers and Clients will each specify two liveliness policies, one for the liveliness policy pertaining to the Server and one pertaining to the Client.
+In order for a Client to connect to a Server to make a request the Client_Liveliness level requested by the Server must be greater than the level provided by the Client and the Server_Liveliness requested by the Client must be greater than the level provided by the Server.
 
 ### Lifespan
 
 The lifespan policy establishes a contract for how long a message remains valid.
 The lifespan QoS policy only applies to Topics.
-For Topic Subscribers it establishes the length of time a message is considered valid, after which time it will not be received.
-For Topic Publishers it establishes the length of time a message is considered valid, after which time it will be removed from the Topic history and no longer sent to Subscribers.
+For Subscriptions it establishes the length of time a message is considered valid, after which time it will not be received.
+For Publishers it establishes the length of time a message is considered valid, after which time it will be removed from the Topic history and no longer sent to Subscribers.
 
 - LIFESPAN_DEFAULT - Use the ROS specified default for lifespan (which is LIFESPAN_NONE).
 - LIFESPAN_NONE - Messages do not have a time at which they expire.
@@ -111,10 +112,10 @@ These are the various changes that would be needed within ROS in order to native
 
 #### Resource Status Event Handler
 
-Both the Deadline and Liveliness policies generate events from the rmw layer that the application will need to be informed of.
+Both the Deadline and Liveliness policies generate events from the rmw layer of which the application will need to be informed.
 For Deadlines, the Subscriber receives event notifications if it doesn't receive anything within the deadline and the Publisher receives event notifications if it doesn't publish anything within the deadline.
 For Liveliness, Subscribers receive events when the Publisher they're listening to is no longer alive.
-Services generate similar events when Clients and Owners violate the defined policies.
+Services generate similar events when Clients and Servers violate the defined policies.
 Both of these fall under a category of "Resource Status Events".
 
 To handle these notifications, a new callback function can be provided by the user that will be called any time a `ResourceStatusEvent` occurs for a particular Topic or Service.
@@ -126,8 +127,8 @@ The choice to use a callback function as opposed to another notification mechani
 
 #### QoS Struct
 
-In the current version of ROS there is a single QoS struct that is used to specify the QoS policy whenever a Publisher, Subscriber, Service Owner, and Client are created.
-With these new QoS settings the struct diverges for Topic participants and Service participants because Service participants will need to specify the QoS behavior for both the Client and Owner.
+In the current version of ROS there is a single QoS struct that is used to specify the QoS policy whenever a Publisher, Subscriber, Service Server, and Client are created.
+With these new QoS settings the struct diverges for Topic participants and Service participants because Service participants will need to specify the QoS behavior for both the Client and Server.
 Separating them into using two different struct definitions for Topics versus Services will prevent unused QoS policies that would only apply to one being available in the other.
 
 The new QoS policy structs will have additional fields that use enums based on the values defined above to specify the desired QoS settings.
@@ -177,19 +178,19 @@ This provides an application a way of being notified that even though their reso
 
 ## Appendix A
 
-Definitions of the QoS policies from the DDS spec. 
+Definitions of the QoS policies from the DDS spec.
 
 ### Deadline
 
-This policy is useful for cases where a Topic is expected to have each instance updated periodically. On the publishing side this
-setting establishes a contract that the application must meet. On the subscribing side the setting establishes a minimum
-requirement for the remote publishers that are expected to supply the data values.
+This policy is useful for cases where a Topic is expected to have each instance updated periodically.
+On the publishing side this setting establishes a contract that the application must meet.
+On the subscribing side the setting establishes a minimum requirement for the remote publishers that are expected to supply the data values.
 
-When the Service ‘matches’ a DataWriter and a DataReader it checks whether the settings are compatible (i.e., offered
+When the DDS Service ‘matches’ a DataWriter and a DataReader it checks whether the settings are compatible (i.e., offered
 deadline period<= requested deadline period) if they are not, the two entities are informed (via the listener or condition
 mechanism) of the incompatibility of the QoS settings and communication will not occur.
 
-Assuming that the reader and writer ends have compatible settings, the fulfillment of this contract is monitored by the Service
+Assuming that the 'DataReader' and 'DataWriter' ends have compatible settings, the fulfillment of this contract is monitored by the DDS Service
 and the application is informed of any violations by means of the proper listener or condition.
 
 The value offered is considered compatible with the value requested if and only if the inequality “offered deadline period <=
@@ -200,23 +201,20 @@ to be consistent the settings must be such that “deadline period>= minimum_sep
 
 ### Liveliness
 
-This policy controls the mechanism and parameters used by the Service to ensure that particular entities on the network are
-still “alive.” The liveliness can also affect the ownership of a particular instance, as determined by the OWNERSHIP QoS
-policy.
+This policy controls the mechanism and parameters used by the DDS Service to ensure that particular entities on the network are still “alive.”
+The liveliness can also affect the ownership of a particular instance, as determined by the OWNERSHIP QoS policy.
 
-This policy has several settings to support both data-objects that are updated periodically as well as those that are changed
-sporadically. It also allows customizing for different application requirements in terms of the kinds of failures that will be
-detected by the liveliness mechanism.
+This policy has several settings to support both data-objects that are updated periodically as well as those that are changed sporadically.
+It also allows customizing for different application requirements in terms of the kinds of failures that will be detected by the liveliness mechanism.
 
 The AUTOMATIC liveliness setting is most appropriate for applications that only need to detect failures at the process-
-level 27 , but not application-logic failures within a process. The Service takes responsibility for renewing the leases at the
-required rates and thus, as long as the local process where a DomainParticipant is running and the link connecting it to remote
-participants remains connected, the entities within the DomainParticipant will be considered alive. This requires the lowest
-overhead.
+level 27 , but not application-logic failures within a process.
+The DDS Service takes responsibility for renewing the leases at the required rates and thus, as long as the local process where a DomainParticipant is running and the link connecting it to remote participants remains connected, the entities within the DomainParticipant will be considered alive.
+This requires the lowest overhead.
 
 The MANUAL settings (MANUAL_BY_PARTICIPANT, MANUAL_BY_TOPIC), require the application on the publishing
-side to periodically assert the liveliness before the lease expires to indicate the corresponding Entity is still alive. The action
-can be explicit by calling the assert_liveliness operations, or implicit by writing some data.
+side to periodically assert the liveliness before the lease expires to indicate the corresponding Entity is still alive.
+The action can be explicit by calling the assert_liveliness operations, or implicit by writing some data.
 
 The two possible manual settings control the granularity at which the application must assert liveliness.
 • The setting MANUAL_BY_PARTICIPANT requires only that one Entity within the publisher is asserted to be alive to
@@ -227,15 +225,11 @@ deduce all other Entity objects within the same DomainParticipant are also alive
 
 The purpose of this QoS is to avoid delivering “stale” data to the application.
 
-Each data sample written by the DataWriter has an associated ‘expiration time’ beyond which the data should not be delivered
-to any application. Once the sample expires, the data will be removed from the DataReader caches as well as from the
-transient and persistent information caches.
+Each data sample written by the DataWriter has an associated ‘expiration time’ beyond which the data should not be delivered to any application.
+Once the sample expires, the data will be removed from the DataReader caches as well as from the transient and persistent information caches.
 
-The ‘expiration time’ of each sample is computed by adding the duration specified by the LIFESPAN QoS to the source
-timestamp. The source timestamp is either automatically computed by the Service
-each time the DataWriter write operation is called, or else supplied by the application by means of the write_w_timestamp
-operation.
+The ‘expiration time’ of each sample is computed by adding the duration specified by the LIFESPAN QoS to the source timestamp.
+The source timestamp is either automatically computed by the DDS Service each time the DataWriter write operation is called, or else supplied by the application by means of the write_w_timestamp operation.
 
-This QoS relies on the sender and receiving applications having their clocks sufficiently synchronized. If this is not the case
-and the Service can detect it, the DataReader is allowed to use the reception timestamp instead of the source timestamp in its
-computation of the ‘expiration time.
+This QoS relies on the sender and receiving applications having their clocks sufficiently synchronized.
+If this is not the case and the DDS Service can detect it, the DataReader is allowed to use the reception timestamp instead of the source timestamp in its computation of the ‘expiration time.
