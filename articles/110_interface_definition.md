@@ -13,6 +13,10 @@ categories: Interfaces
 
 # {{ page.title }}
 
+<div class="alert alert-warning" markdown="1">
+With the transition to use ``IDL`` for specifying interfaces in ROS 2 Dashing this article has been superseded by the [legacy interface definition](legacy_interface_definition.html) article.
+</div>
+
 <div class="abstract" markdown="1">
 {{ page.abstract }}
 </div>
