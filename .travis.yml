@@ -9,7 +9,6 @@ install:
 - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install 10
 - npm install remark-cli remark-lint remark-lint-sentence-newline
 script:
-- bundler --version
 - bundle exec jekyll build
 - ./node_modules/remark-cli/cli.js --frail articles/
 
