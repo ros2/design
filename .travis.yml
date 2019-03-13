@@ -1,6 +1,7 @@
+dist: xenial
 language: ruby
 rvm:
-- 2.5
+- 2.6
 sudo: false
 install:
 - gem install bundler --no-doc
