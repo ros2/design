@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Interface definition
+title: Legacy interface definition using .msg / .srv / .action files
 permalink: articles/legacy_interface_definition.html
 abstract:
-  This article specifies the file format describing the data structures exchanged by ROS 2 components to interact with each other.
-published: false
+  This article specifies the file format coming from ROS 1 describing the data structures exchanged by ROS components to interact with each other.
+published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
 categories: Interfaces
 ---
@@ -21,10 +21,12 @@ Original Author: {{ page.author }}
 
 ## Scope
 
-This article specifies the file format describing the data structures which are being used to exchange information between components.
+This article specifies the legacy file format describing the data structures which are being used to exchange information between components.
 The data structures are defined in a programming language agnostic way.
 The format is based on the [<code>.msg</code> format definition](http://wiki.ros.org/msg#Message_Description_Specification) from ROS 1.
-Please see other articles for the mappings to programming language specific types and API.
+
+Below only the mapping to IDL types is described.
+Please see the [Interface Definition and Language Mapping](idl_interface_definition.html) article for the mappings to programming language specific types and API.
 
 ## Overview
 
@@ -259,7 +261,7 @@ A service file contains two message definitions which are separated by a line wh
 
 ## Conversion to IDL
 Code is generated for defined interfaces to be usable by different client libraries.
-Interfaces described using the legacy format are first converted to [IDL](articles/idl_interface_definition.html).
+Interfaces described using the legacy format are first converted to [IDL](idl_interface_definition.html).
 Code generation uses the generated file.
 
 ### Mapping to IDL types
