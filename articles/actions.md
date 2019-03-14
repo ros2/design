@@ -24,7 +24,7 @@ Original Author: {{ page.author }}
 There are three forms of communication in ROS: topics, services, and actions.
 Topic publishers broadcast to multiple subscribers, but communication is one-way.
 Service clients send a request to a service server and get a response, but there is no information about the progress.
-Similar to services, actions clients send a request to an action server in order to achieve some goal and will get a result.
+Similar to services, action clients send a request to an action server in order to achieve some goal and will get a result.
 Unlike services, while the action is being peformed an action server sends progress feedback to the client.
 
 Actions are useful when a response may take a significant length of time.
@@ -188,9 +188,9 @@ And three terminal states:
 State transitions triggered by the action server according to its designed behavior:
 
 - **execute** - Start execution of an accepted goal.
-- **set_succeeded** - Notify that the goal completed successfully.
-- **set_aborted** - Notify that an error was encountered during processing of the goal and it had to be aborted.
-- **set_canceled** - Notify that canceling the goal completed successfully.
+- **succeed** - Notify that the goal completed successfully.
+- **abort** - Notify that an error was encountered during processing of the goal and it had to be aborted.
+- **cancel** - Notify that canceling the goal completed successfully.
 
 State transitions triggered by the action client:
 
@@ -201,7 +201,7 @@ A transition only occurs if the action server *accepts* the request to cancel th
 
 ## API
 
-Proposed examples can be in the respository [examples](https://github.com/ros2/examples/tree/actions_proposal).
+Usage examples can be found in the [examples](https://github.com/ros2/examples) repository.
 
 C++:
 
@@ -227,7 +227,7 @@ In this section, they are descibed in detail.
 
 The purpose of this service is to send a goal to the action server.
 It is the first service called to begin an action, and is expected to return quickly.
-The description of the goal in the request is user-define as part of the [Action Interface Definition](#action-interface-definition).
+The description of the goal in the request is user-defined as part of the [Action Interface Definition](#action-interface-definition).
 
 The QoS settings of this service should be set so the client is guaranteed to receive a response or an action could be executed without a client being aware of it.
 
@@ -308,7 +308,7 @@ Here are a couple of sequence diagrams depicting typical interactions between an
 
 #### Example 1
 
-In this example, the action client request a goal and gets a response from the server accepting the goal (synchronous).
+In this example, the action client requests a goal and gets a response from the server accepting the goal (synchronous).
 Upon accepting the goal, the action server starts a user defined execution method for completing the goal.
 Following the goal request, the client makes an asynchronous request for the result.
 The user defined method publishes feedback to the action client as it executes the goal.
@@ -318,7 +318,7 @@ Ultimately, the user defined method populates a result message that is used as p
 
 #### Example 2
 
-This example is almost identical to the first, but this time the action  client requests for the goal to be canceled mid-execution.
+This example is almost identical to the first, but this time the action client requests for the goal to be canceled mid-execution.
 Note that the user defined method is allowed to perform any shutdown operations after the cancel request before returning with the cancellation result.
 
 ![Action Interaction Example 1](../img/actions/interaction_example_1.png)
@@ -398,7 +398,7 @@ These alternative approaches to actions in ROS 2 were considered.
 ### Actions in rmw
 
 An alternative to using services and topics is to implement actions in the rmw layer.
-This would enable using middleware specific features better suited actions.
+This would enable using middleware specific features better suited to actions.
 The default middleware in ROS 2 uses DDS, and there don't appear to be any DDS features better for actions than what are used for services and topics.
 Additionally implementing actions in the rmw implementations increases the complexity of writing an rmw implementation.
 For these reasons actions will be implemented at a higher level.
