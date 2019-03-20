@@ -47,30 +47,133 @@ To address these needs it was proposed that we start by adding support for the f
 The deadline policy establishes a contract for the amount of time allowed between messages.
 For Subscriptions it establishes the maximum amount of time allowed to pass between receiving messages.
 For Publishers it establishes the maximum amount of time allowed to pass between sending messages.
-For Service Servers it establishes the maximum amount of time allowed to pass between receiving a request and when a response for that request is sent.
-For Service Clients it establishes the maximum amount of time allowed to pass between sending a request and when a response for that request is received.
 
-Topics and Services will support the following levels of deadlines:
+Topics will support the following levels of deadlines:
 - DEADLINE_DEFAULT - Use the ROS specified default for deadlines (which is DEADLINE_NONE).
 - DEADLINE_NONE - No deadline will be offered or requested and events will not be generated for missed deadlines.
 - DEADLINE_RMW - The rmw layer of ROS will track the deadline. For a Publisher or Subscriber this means that a deadline will be considered missed if the rmw layer has not received a message within the specified time. For a Service this means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
 
 In order for a Subscriber to listen to a Publisher's Topic the deadline that they request must be greater than, or equal to, the deadline set by the Publisher.
-A Service Client will **not** be prevented from making a request to a Service Server if the  Server provides a deadline greater than the deadline requested by the Client.
 
 ### Liveliness
 
 The liveliness policy establishes a contract for how entities report that they are still alive. 
 For Subscriptions it establishes the level of reporting that they require from the Publishers to which they are subscribed. 
 For Publishers it establishes the level of reporting that they will provide to Subscribers that they are alive. 
-For Service Servers it establishes both the level of reporting that they will provide to Clients and also the level of reporting that they require from Clients.
-For Service Clients it establishes both the level of reporting that they require from Service Servers and the level of reporting that they will provide to the Server.
 
 Topics will support the following levels of liveliness:
 - LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
 - LIVELINESS_AUTOMATIC - The signal that establishes a Topic is alive comes from the ROS rmw layer.
 - LIVELINESS_MANUAL_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_TOPIC - The signal that establishes a Topic is alive is at the Topic level. Only publishing a message on the Topic or an explicit signal from the application to assert liveliness on the Topic will mark the Topic as being alive.
+
+In order for a Subscriber to listen to a Publisher's Topic the level of liveliness tracking they request must be equal or less verbose than the level of tracking provided by the Publisher and the time until considered not alive set by the Subscriber must be greater than the time set by the Publisher.
+
+### Lifespan
+
+The lifespan policy establishes a contract for how long a message remains valid.
+The lifespan QoS policy only applies to Topics.
+For Subscriptions it establishes the length of time a message is considered valid, after which time it will not be received.
+For Publishers it establishes the length of time a message is considered valid, after which time it will be removed from the Topic history and no longer sent to Subscribers.
+
+- LIFESPAN_DEFAULT - Use the ROS specified default for lifespan (which is LIFESPAN_NONE).
+- LIFESPAN_NONE - Messages do not have a time at which they expire.
+- LIFESPAN_ENABLED - Messages will have a lifespan enforced.
+
+### DDS QoS Relation
+
+These new policies are all based on the DDS QoS policies, but they do not require a DDS in order for an rmw implementation to support them.
+More detailed information on the DDS specifics of these policies can be found below in Appendix A.
+
+### ROS Changes
+
+These are the various changes that would be needed within ROS in order to natively support Deadline and Liveliness.
+
+#### Resource Status Event Handler
+
+Both the Deadline and Liveliness policies generate events from the rmw layer of which the application will need to be informed.
+For Deadlines, the Subscriber receives event notifications if it doesn't receive anything within the deadline and the Publisher receives event notifications if it doesn't publish anything within the deadline.
+For Liveliness, Subscribers receive events when the Publisher they're listening to is no longer alive.
+Services generate similar events when Clients and Servers violate the defined policies.
+Both of these fall under a category of "Resource Status Events".
+
+To handle these notifications, new callback functions can be provided by the user that will be called any time an event occurs for a particular Topic.
+It will receive as a parameter a struct value that contains the information about the event such as when the event took place and other metadata related to the event.
+These callback functions would be optionally provided by the user's application when it calls the create function for publishers and subscribers.
+The constructors and create functions will be overloaded to make this new handler optional.
+
+The status event handlers will not be called once for every status event.
+Instead, the event handlers will only be called if there is an status change event that has not yet been handled when the Executor that services the callbacks checks.
+
+#### QoS Struct
+
+In the current version of ROS there is a single QoS struct that is used to specify the QoS policy whenever a Publisher and Subscriber are created.
+With these new QoS settings the supported set of QoS policies for Topics and Services diverges.
+Despite this, we are going to stick with a single struct for both Topics and Services instead of switching to two different struct types in order to keep the changes to a minimum and maintain as much backwards compatibility as possible in the client library interfaces.
+
+The existing QoS policy struct will have new fields added that use enums based on the values defined above to specify the desired QoS settings for Deadline, Liveliness, and Lifespan.
+Each enum field instance in the struct will also have an associated number field added to the struct that represents a time value for the policy.
+
+#### Assert Liveliness Functions
+
+New functions will need to be added that can be used by the application to explicitly assert liveliness.
+One function to assert liveliness at the Node level and one to assert it at the Topic level.
+While liveliness will also be implicitly assumed just based on sending messages, these functions will be used by the application to explicitly declare resources are alive.
+These functions will need to be implemented in every layer from the rmw up through the rcl and language specific client libraries, such as rclcpp.
+
+#### rcl_wait and rmw_wait
+
+The rcl layer is currently using a WaitSet in order to be informed of events from the rmw layer, such as incoming messages.
+These WaitSets contain lists of several types of conditions, such as timers firing or subscriptions receiving data.
+In order to support new Topic Status Events, a new type will be added to the existing WaitSet and the rmw layer will set them when these events occur.
+
+#### rcl_take_status and rmw_take_status
+
+New functions called rcl_take_status and rmw_take_status will need to be added that can directly query the status for a Topic.
+It will operate in a similar manner to the rcl_take and rmw_take functions that are used to retrieve messages for a subscription.
+It will be used by the executors when they receive a notice via the waitset mentioned above that a resource has a new status event available.
+
+## RMW Vendor Support
+All of these new QoS policies will need to be supported in the rmw implementations.
+As we add new QoS policies it is likely that not all rmw vendors will provide support for every QoS policy that ROS defines.
+This is especially true for non-DDS based implementations that do not already have native support for these features.
+Because of this we need a way for the application to know if the rmw vendor that is being used supports the specified policies at the specified levels.
+In this case, the rmw vendor should fail the operation by returning an error code that specifies that the requested QoS policy is not supported.
+The explicit failure will ensure the requesting application is receiving defined behavior and not operating under unexpected conditions.
+
+In addition to an application being prevented from running with an unsupported policy, it is useful for an application to be able to query what QoS policies the rmw vendor supports.
+The best way to do this is to provide an API that allows the application to check if a specific policy is supported and also get all the supported settings.
+The design and implementation of this API is out of scope for this document and should be considered for part of the future work.
+
+## FAQ
+
+- How does the Deadline policy take into account the additional overhead of ROS (such as deserialization) when determining if a deadline was missed?
+  - As a simplification it is not going to attempt to take into account any ROS overhead. A deadline will be considered missed if the rmw layer does not receive a message by the deadline and not if the user application on top of ROS does not receive it by the deadline. A new deadline policy could be added later that takes this into account.
+- Why will the callback not get called for every status change event instead of potentially combining events of the same type? 
+  - Adding this functionality would require an additional buffer that would be used to store multiple events between servicing them. Additionally, the DDS API lends itself better to only being informed of the latest change and would require a realtime response to status change events so as to not miss a single event. This is not a one way door and we could change this later to allow buffering events without breaking backwards compatibility.
+- How do these QoS policies impact Actions and Services?
+  - The initial implementation does not support Actions and Services as there are more complex subtleties to how these concepts natively support these QoS features. In the future work section below we explore some ways that Services could implement these policies.
+
+## Future Work
+
+Actions and Services were considered out of scope for the initial implementation. Here we detail how Services could potentially support these QoS policies in the future.
+
+### Deadline
+
+For Service Servers it establishes the maximum amount of time allowed to pass between receiving a request and when a response for that request is sent.
+For Service Clients it establishes the maximum amount of time allowed to pass between sending a request and when a response for that request is received.
+
+Services will support the following levels of deadlines:
+- DEADLINE_DEFAULT - Use the ROS specified default for deadlines (which is DEADLINE_NONE).
+- DEADLINE_NONE - No deadline will be offered or requested and events will not be generated for missed deadlines.
+- DEADLINE_RMW - The rmw layer of ROS will track the deadline. For a Publisher or Subscriber this means that a deadline will be considered missed if the rmw layer has not received a message within the specified time. For a Service this means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
+
+A Service Client will **not** be prevented from making a request to a Service Server if the  Server provides a deadline greater than the deadline requested by the Client.
+
+### Liveliness
+
+For Service Servers it establishes both the level of reporting that they will provide to Clients and also the level of reporting that they require from Clients.
+For Service Clients it establishes both the level of reporting that they require from Service Servers and the level of reporting that they will provide to the Server.
 
 Services will support the following levels of liveliness:
 - LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
@@ -85,96 +188,9 @@ In order for a Client to connect to a Server to make a request the Client_Liveli
 
 ### Lifespan
 
-The lifespan policy establishes a contract for how long a message remains valid.
-The lifespan QoS policy only applies to Topics.
-For Subscriptions it establishes the length of time a message is considered valid, after which time it will not be received.
-For Publishers it establishes the length of time a message is considered valid, after which time it will be removed from the Topic history and no longer sent to Subscribers.
-
-- LIFESPAN_DEFAULT - Use the ROS specified default for lifespan (which is LIFESPAN_NONE).
-- LIFESPAN_NONE - Messages do not have a time at which they expire.
-- LIFESPAN_ENABLED - Messages will have a lifespan enforced.
-
-In the future lifespan support could be added for Services to act as a means of timing out requests if they take over a set amount of time.
-At present, that would require additional support for Service Clients to be able to handle timeouts and cleanup requests that is out of scope for this design.
-
-### DDS QoS Relation
-
-These new policies are all based on the DDS QoS policies, but they do not require a DDS in order for an rmw implementation to support them.
-More detailed information on the DDS specifics of these policies can be found below in Appendix A.
-
-The only new QoS setting that does not directly map to DDS is the deadline policy for Services.
-While the deadline policy could map directly to the underlying Publisher and Subscriber like they do for Topics, that would tie the QoS policy to the DDS implementation instead of the generic Service definition that does not specify it be implemented using two Topics.
-The definition as it applies to messages on two underlying topics is also less useful than the definition of deadline as it pertains to life of a request.
-
-### ROS Changes
-
-These are the various changes that would be needed within ROS in order to natively support Deadline and Liveliness.
-
-#### Resource Status Event Handler
-
-Both the Deadline and Liveliness policies generate events from the rmw layer of which the application will need to be informed.
-For Deadlines, the Subscriber receives event notifications if it doesn't receive anything within the deadline and the Publisher receives event notifications if it doesn't publish anything within the deadline.
-For Liveliness, Subscribers receive events when the Publisher they're listening to is no longer alive.
-Services generate similar events when Clients and Servers violate the defined policies.
-Both of these fall under a category of "Resource Status Events".
-
-To handle these notifications, a new callback function can be provided by the user that will be called any time a `ResourceStatusEvent` occurs for a particular Topic or Service.
-It will receive as a parameter a `ResourceStatusEvent` enum value that specifies what type of event took place and a timestamp of when the event took place.
-This callback function would be provided by the user's application when it calls the create function for publishers and subscribers.
-The constructors and create functions will be overloaded to make this new handler optional.
-
-The choice to use a callback function as opposed to another notification mechanism is to remain consistent with the existing ROS interface and not add a new method of waiting on ROS data/events.
-
-#### QoS Struct
-
-In the current version of ROS there is a single QoS struct that is used to specify the QoS policy whenever a Publisher, Subscriber, Service Server, and Client are created.
-With these new QoS settings the struct diverges for Topic participants and Service participants because Service participants will need to specify the QoS behavior for both the Client and Server.
-Separating them into using two different struct definitions for Topics versus Services will prevent unused QoS policies that would only apply to one being available in the other.
-
-The new QoS policy structs will have additional fields that use enums based on the values defined above to specify the desired QoS settings.
-Each enum field instance in the struct will also have an associated number field added to the struct that represents a time value for the policy.
-
-#### Assert Liveliness Functions
-
-New functions will need to be added that can be used by the application to explicitly assert liveliness.
-One function to assert liveliness at the Node level, one to assert it at the Topic level, and one to assert it at the Service level.
-While liveliness will also be implicitly assumed just based on sending messages, these functions will be used by the application to explicitly declare resources are alive.
-These functions will need to be implemented in every layer from the rmw up through the rcl and language specific client libraries, such as rclcpp.
-
-#### rcl_wait and rmw_wait
-
-The rcl layer is currently using a WaitSet in order to be informed of events from the rmw layer, such as incoming messages.
-These WaitSets contain lists of several types of conditions, such as timers firing or subscriptions receiving data.
-In order to support new Topic Status Events, a new type will be added to the existing WaitSet and the rmw layer will set them when these events occur.
-
-#### rcl_take_status and rmw_take_status
-
-New functions called rcl_take_status and rmw_take_status will need to be added that can directly query the status for a Topic/Service.
-It will operate in a similar manner to the rcl_take and rmw_take functions that are used to retrieve messages for a subscription.
-It will be used by the executors when they receive a notice via the waitset mentioned above that a resource has a new status event available.
-
-## RMW Vendor Support
-
-All of these new QoS policies will need to be supported in the rmw implementations.
-As we add new QoS policies it is likely that not all rmw vendors will provide support for every QoS policy that ROS defines.
-This is especially true for non-DDS based implementations that do not already have native support for these features.
-Because of this we need a way for the application to know if the rmw vendor that is being used supports the specified policies at the specified levels.
-
-In the case where an rmw vendor does not support a requested QoS they can do one of two things.
-They could fail with an exception that notes that an unsupported QoS policy was requested or they can choose to continue operating with a reduced QoS policy.
-In the case where a vendor chooses to continue operating with a reduced policy it must trigger a status event for the resource that can be handled by the new callback outlined above.
-This provides an application a way of being notified that even though their resource is operating, it is doing so with a reduced QoS.
-
-## FAQ
-
-- How does the Deadline policy take into account the additional overhead of ROS (such as deserialization) when determining if a deadline was missed?
-  - As a simplification it is not going to attempt to take into account any ROS overhead. A deadline will be considered missed if the rmw layer does not receive a message by the deadline and not if the user application on top of ROS does not receive it by the deadline. A new deadline policy could be added later that takes this into account.
-- What happens if multiple policy violations occur between the invocation of the callback? 
-  - This is dependent on the rmw implementation. If the rmw layer supports tracking multiple status events then it can return them in subsequent calls to rmw_take_status. If it does not support tracking multiple events at once then it may just return one of the events, such as the first or the last to occur in the sequence.
-- How do these QoS policies impact Actions?
-  - The existing Actions interface exposes that Actions are implemented with multiple Topics and it exposes the QoS settings for those topics. It is therefore up to the application implementing the action to specify the QoS policies for the different Topics. A new interface will need to be added to allow Actions to specify a ResourceStatusHandler, but that will be added in a later design review.
-- Why do Services not enforce deadline policies on connection like Publishers and Subscribers?
-  - This is a simplification being made for initial implementation. It could be changed later to enforce it, but that would require additional complexity in the existing DDS based implementations of the rmw to disallow connections based on non-DDS QoS settings.
+For Services it establishes a time at which the request is no longer valid.
+It would act similar to a timeout on the request.
+There are a lot of open questions about how you would notify Client and the Server if a request was timed out and what action should be taken when the lifespan expires.
 
 ## Appendix A
 
