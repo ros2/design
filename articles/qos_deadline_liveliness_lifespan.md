@@ -153,6 +153,8 @@ The design and implementation of this API is out of scope for this document and 
   - Adding this functionality would require an additional buffer that would be used to store multiple events between servicing them. Additionally, the DDS API lends itself better to only being informed of the latest change and would require a realtime response to status change events so as to not miss a single event. This is not a one way door and we could change this later to allow buffering events without breaking backwards compatibility.
 - How do these QoS policies impact Actions and Services?
   - The initial implementation does not support Actions and Services as there are more complex subtleties to how these concepts natively support these QoS features. In the future work section below we explore some ways that Services could implement these policies.
+- How are these QoS policies affected by DDS topic instances?
+  - While all of these policies can and will eventually support keyed instances, this document does not focus on the details of how as it is highly dependent on the design for ROS 2 to support keyed messages in general.
 
 ## Future Work
 
