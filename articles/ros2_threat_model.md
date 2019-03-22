@@ -76,15 +76,15 @@ recording a physical property.
 This section defines actors, assets, business goals and entry points for this
 threat model.
 
-Actors are humans or external systems interacting with the robot. Considering
+**Actors** are humans or external systems interacting with the robot. Considering
 which actors interact with the robot is helpful to determine how the system
 can be compromised. For instance, actors may be able to give commands to the
 robot which may be abused to attack the system.
 
-Assets represent any user, resource (e.g. disk space), or property (user physical
+**Assets** represent any user, resource (e.g. disk space), or property (user physical
 safety) of the system that should be defended against attackers.
 
-Entry points represent how the system is interacting with the world (communication
+**Entry points** represent how the system is interacting with the world (communication
 channels, API, sensors, etc.).
 
 #### Robot Application Actors
@@ -263,7 +263,7 @@ with the system?).
 
 ### Robot Application Components and Trust Boundaries
 
-The system is divided into hardware (sensors, actuators), multiple components
+The system is divided into hardware (embedded general-purpose computer, sensors, actuators), multiple components
 (usually processes) running on multiple computers (trusted or non-trusted
 components) and data stores (embedded or in the cloud).
 
@@ -333,7 +333,7 @@ The table below lists all *generic* threats which may impact a
 robotic application.
 
 Threat categorization is based on the [STRIDE][wikipedia_stride]
- (Spoofing / Tempering / Repudiation / Integrity / Denial of service
+ (Spoofing / Tampering / Repudiation / Integrity / Denial of service
  / Elevation of privileges) model.
 Risk assessment relies on [DREAD][wikipedia_dread] (Damage / Reproducibility /
  Exploitability / Affected users / Discoverability).
@@ -1464,7 +1464,7 @@ wire.</li>
     <td>
       <ul>
         <li>Actuators should embed an identifier.</li>
-        <li>Command vector should be signed (ideally encryped) to prevent
+        <li>Command vector should be signed (ideally encrypted) to prevent
 manipulation.</li>
       </ul>
     </td>
@@ -1587,7 +1587,7 @@ error reported to the user for instance.</li>
     <td> </td>
   </tr>
 
-  <tr><th colspan="29">Embedded / Hardware / Aucilliary Functions</th></tr>
+  <tr><th colspan="29">Embedded / Hardware / Auxilliary Functions</th></tr>
 
   <tr>
     <td>An attacker compromises the software or send malicious commands to
@@ -2155,7 +2155,7 @@ TurtleBot3 software dependencies.
     * When SROS is enabled, attackers may try to compromise the CA authority
       or the private keys to generate or intercept private keys as well as
       emitting malicious certificates to allow spoofing.
-      * SSH
+  * SSH
     * SSH access is possible to anyone on the same LAN or WAN (if
       port-forwarding is enabled). Many images are
       setup with a default username and password with administrative
