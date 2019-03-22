@@ -3265,6 +3265,105 @@ Over time, new reference platforms may be introduced in addition to
 the TurtleBot 3 to define new attacks and allow other types of mitigations
 to be evaluated.
 
+## References
+
+1. Abera, Tigist, N. Asokan, Lucas Davi, Jan-Erik Ekberg, Thomas Nyman, Andrew
+   Paverd, Ahmad-Reza Sadeghi, and Gene Tsudik. “C-FLAT: Control-FLow
+   ATtestation for Embedded Systems Software.”
+   ArXiv:1605.07763 [Cs], May 25, 2016. <http://arxiv.org/abs/1605.07763>.
+1. Ahmad Yousef, Khalil, Anas AlMajali, Salah Ghalyon, Waleed Dweik, and Bassam
+   Mohd. “Analyzing Cyber-Physical Threats on Robotic Platforms.” Sensors 18,
+   no. 5 (May 21, 2018): 1643. <https://doi.org/10.3390/s18051643>.
+1. Bonaci, Tamara, Jeffrey Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and
+   Howard Jay Chizeck. “To Make a Robot Secure: An Experimental Analysis of
+   Cyber Security Threats Against Teleoperated Surgical Robots.”
+   ArXiv:1504.04339 [Cs], April 16, 2015. <http://arxiv.org/abs/1504.04339>.
+1. Checkoway, Stephen, Damon McCoy, Brian Kantor, Danny Anderson, Hovav Shacham,
+   Stefan Savage, Karl Koscher, Alexei Czeskis, Franziska Roesner, and Tadayoshi
+   Kohno. “Comprehensive Experimental Analyses of Automotive Attack Surfaces.”
+   In Proceedings of the 20th USENIX Conference on Security, 6–6. SEC’11.
+   Berkeley, CA, USA: USENIX Association, 2011.
+   <http://dl.acm.org/citation.cfm?id=2028067.2028073>.
+1. Clark, George W., Michael V. Doran, and Todd R. Andel. “Cybersecurity Issues
+   in Robotics.” In 2017 IEEE Conference on Cognitive and Computational Aspects
+   of Situation Management (CogSIMA), 1–5. Savannah, GA, USA: IEEE, 2017.
+   <https://doi.org/10.1109/COGSIMA.2017.7929597>.
+1. Denning, Tamara, Cynthia Matuszek, Karl Koscher, Joshua R. Smith, and
+   Tadayoshi Kohno. “A Spotlight on Security and Privacy Risks with Future
+   Household Robots: Attacks and Lessons.” In Proceedings of the 11th
+   International Conference on Ubiquitous Computing - Ubicomp ’09, 105. Orlando,
+   Florida, USA: ACM Press, 2009. <https://doi.org/10.1145/1620545.1620564>.
+1. Dessiatnikoff, Anthony, Yves Deswarte, Eric Alata, and Vincent Nicomette.
+   “Potential Attacks on Onboard Aerospace Systems.” IEEE Security & Privacy 10,
+   no. 4 (July 2012): 71–74. <https://doi.org/10.1109/MSP.2012.104>.
+1. Dzung, D., M. Naedele, T.P. Von Hoff, and M. Crevatin. “Security for
+   Industrial Communication Systems.” Proceedings of the IEEE 93, no. 6 (June
+   2005): 1152–77. <https://doi.org/10.1109/JPROC.2005.849714>.
+1. Elmiligi, Haytham, Fayez Gebali, and M. Watheq El-Kharashi.
+   “Multi-Dimensional Analysis of Embedded Systems Security.” Microprocessors
+   and Microsystems 41 (March 2016): 29–36.
+   <https://doi.org/10.1016/j.micpro.2015.12.005>.
+1. Groza, Bogdan, and Toma-Leonida Dragomir. “Using a Cryptographic
+   Authentication Protocol for the Secure Control of a Robot over TCP/IP.” In
+   2008 IEEE International Conference on Automation, Quality and Testing,
+   Robotics, 184–89. Cluj-Napoca, Romania: IEEE, 2008.
+   <https://doi.org/10.1109/AQTR.2008.4588731>.
+1. Javaid, Ahmad Y., Weiqing Sun, Vijay K. Devabhaktuni, and Mansoor Alam.
+   “Cyber Security Threat Analysis and Modeling of an Unmanned Aerial Vehicle
+   System.” In 2012 IEEE Conference on Technologies for Homeland Security (HST),
+   585–90. Waltham, MA, USA: IEEE, 2012.
+   <https://doi.org/10.1109/THS.2012.6459914>.
+1. Kleidermacher, David, and Mike Kleidermacher. Embedded Systems Security:
+   Practical Methods for Safe and Secure Software and Systems Development.
+   Amsterdam: Elsevier/Newnes, 2012.
+1. Klein, Gerwin, June Andronick, Matthew Fernandez, Ihor Kuz, Toby Murray, and
+   Gernot Heiser. “Formally Verified Software in the Real World.” Communications
+   of the ACM 61, no. 10 (September 26, 2018): 68–77.
+   <https://doi.org/10.1145/3230627>.
+1. Lee, Gregory S., and Bhavani Thuraisingham. “Cyberphysical Systems Security
+   Applied to Telesurgical Robotics.” Computer Standards & Interfaces 34, no. 1
+   (January 2012): 225–29. <https://doi.org/10.1016/j.csi.2011.09.001>.
+1. Lera, Francisco J. Rodríguez, Camino Fernández Llamas, Ángel Manuel Guerrero,
+   and Vicente Matellán Olivera. “Cybersecurity of Robotics and Autonomous
+   Systems: Privacy and Safety.” In Robotics - Legal, Ethical and Socioeconomic
+   Impacts, edited by George Dekoulis. InTech, 2017.
+   <https://doi.org/10.5772/intechopen.69796>.
+1. McClean, Jarrod, Christopher Stull, Charles Farrar, and David Mascareñas. “A
+   Preliminary Cyber-Physical Security Assessment of the Robot Operating System
+   (ROS).” edited by Robert E. Karlsen, Douglas W. Gage, Charles M. Shoemaker,
+   and Grant R. Gerhart, 874110. Baltimore, Maryland, USA, 2013.
+   <https://doi.org/10.1117/12.2016189>.
+1. Morante, Santiago, Juan G. Victores, and Carlos Balaguer. “Cryptobotics: Why
+   Robots Need Cyber Safety.” Frontiers in Robotics and AI 2 (September 29,
+   2015). <https://doi.org/10.3389/frobt.2015.00023>.
+1. Papp, Dorottya, Zhendong Ma, and Levente Buttyan. “Embedded Systems Security:
+   Threats, Vulnerabilities, and Attack Taxonomy.” In 2015 13th Annual
+   Conference on Privacy, Security and Trust (PST), 145–52. Izmir,
+   Turkey: IEEE, 2015. <https://doi.org/10.1109/PST.2015.7232966>.
+1. Pike, Lee, Pat Hickey, Trevor Elliott, Eric Mertens, and Aaron Tomb.
+   “TrackOS: A Security-Aware Real-Time Operating System.” In Runtime
+   Verification, edited by Yliès Falcone and César Sánchez, 10012:302–17. Cham:
+   Springer International Publishing, 2016.
+   <https://doi.org/10.1007/978-3-319-46982-9_19>.
+1. Ravi, Srivaths, Paul Kocher, Ruby Lee, Gary McGraw, and Anand Raghunathan.
+   “Security as a New Dimension in Embedded System Design.” In Proceedings of
+   the 41st Annual Conference on Design Automation  - DAC ’04, 753. San Diego,
+   CA, USA: ACM Press, 2004. <https://doi.org/10.1145/996566.996771>.
+1. Serpanos, Dimitrios N., and Artemios G. Voyiatzis. “Security Challenges in
+   Embedded Systems.” ACM Transactions on Embedded Computing Systems 12, no. 1s
+   (March 29, 2013): 1–10. <https://doi.org/10.1145/2435227.2435262>.
+1. Vilches, Víctor Mayoral, Laura Alzola Kirschgens, Asier Bilbao Calvo,
+   Alejandro Hernández Cordero, Rodrigo Izquierdo Pisón, David Mayoral Vilches,
+   Aday Muñiz Rosas, et al. “Introducing the Robot Security Framework (RSF), a
+   Standardized Methodology to Perform Security Assessments in Robotics.”
+   ArXiv:1806.04042 [Cs], June 11, 2018. <http://arxiv.org/abs/1806.04042>.
+1. Zubairi, Junaid Ahmed, and Athar Mahboob, eds. Cyber Security Standards,
+   Practices and Industrial Applications: Systems and Methodologies.
+   IGI Global, 2012. <https://doi.org/10.4018/978-1-60960-851-4>.
+1. Akhtar, Naveed, and Ajmal Mian. “Threat of Adversarial Attacks on Deep
+   Learning in Computer Vision: A Survey.” ArXiv:1801.00553 [Cs],
+   January 2, 2018. <http://arxiv.org/abs/1801.00553>.
+
 [adbd_linux]: https://github.com/tonyho/adbd-linux
 [akhtar_threat_2018]: http://arxiv.org/abs/1801.00553
 [aws_code_signing]: https://docs.aws.amazon.com/signer/latest/developerguide/Welcome.html
