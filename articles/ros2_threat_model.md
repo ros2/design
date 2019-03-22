@@ -170,7 +170,7 @@ attack).
   <tr><th colspan="2">Privacy</th></tr>
   <tr>
     <td>Sensor Data Privacy</td>
-    <td>Sensor data must not be accessed by attackers.</td>
+    <td>Sensor data must not be accessed by unauthorized actors.</td>
   </tr>
   <tr>
     <td>Robot Data Stores Privacy</td>
@@ -746,8 +746,8 @@ Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
 Communication (e.g. Bluetooth)</th></tr>
 
   <tr>
-  <td>Attacker executes arbitraty code using a short-range communication
-protocol vulnerability.</td>
+  <td>An attacker executes arbitrary code using a short-range communication
+      protocol vulnerability.</td>
   <td class="danger">✘</td>
   <td class="success">✓</td>
   <td class="success">✓</td>
@@ -1421,11 +1421,11 @@ or manipulating the bus).</td>
     <td>
       <ul>
         <li>Sensors should embed an identifier to detect hardware
-tempering.</li>
+            tampering.</li>
         <li>Components should try to explicitly refer to which sensor ID they
-expect data from.</li>
+            expect data from.</li>
         <li>Sensor data should be signed and ideally encrypted over the
-wire.</li>
+            wire.</li>
       </ul>
     </td>
     <td> </td>
@@ -1750,7 +1750,6 @@ access.</li>
       </ul>
     </td>
     <td> </td>
-    <td> </td>
   </tr>
 
   <tr>
@@ -1981,7 +1980,7 @@ robot.</td>
 
 ### System description
 
-The robotic application this section consists in tele-operating a TurtleBot 3
+The application considered in this section is tele-operation of a Turtlebot 3
 robot using an Xbox controller.
 
 The robot considered in this section is a [TurtleBot 3 Burger][tb3_burger].
@@ -2344,9 +2343,9 @@ through a network connection to e.g. stop the robot.</td>
     <td>
       <ul>
         <li>Enable SROS / DDS Security Extension to authenticate and encrypt
-DDS communications. Message tampering is mitigated by DDS security as message
-authenticity is verified by default (with preshared HMACs / digital
-signatures)</li>
+        DDS communications. Message tampering is mitigated by DDS security as
+	message authenticity is verified by default (with preshared
+	HMACs / digital signatures)</li>
       </ul>
     </td>
     <td class="success">Risk is reduced if SROS is used.</td>
@@ -2571,8 +2570,8 @@ long-range communication system).</td>
 Communication (e.g. Bluetooth)</th></tr>
 
   <tr>
-    <td>Attacker executes arbitraty code using a short-range communication
-protocol vulnerability.</td>
+    <td>An attacker executes arbitrary code using a short-range communication
+        protocol vulnerability.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
