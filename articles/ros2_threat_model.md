@@ -338,6 +338,30 @@ Threat categorization is based on the [STRIDE][wikipedia_stride]
 Risk assessment relies on [DREAD][wikipedia_dread] (Damage / Reproducibility /
  Exploitability / Affected users / Discoverability).
 
+In the following table, the "Threat Category (STRIDE)" columns indicates
+which categories a threat belong too. If the "Spoofing" column is marked with
+a check sign (✓), it means that this threat can be used to spoof a component
+of the system. If it cannot be used to spoof a component, a cross sign will
+be present instead (✘).
+
+The "Threat Risk Assessment (DREAD)" columns contain a score indicating how
+easy or likely it is for a particular threat to be exploited. The allowed
+score values are 1 (not at risk), 2 (may be at risk) or 3 (at risk, need to
+be mitigated).  For instance, in the damage column a 1 would mean
+"exploitation of the threat would cause minimum damages", 2 "exploitation of
+the treat would cause significant damages" and 3 "exploitation of the treat
+would cause massive damages". The "total score" is computed by adding the
+score of each column. The higher the score is, the most critical is the
+threat.
+
+Impacted assets, entry points and business goals columns indicate whether
+an asset, entry point or business goal is impacted by a given threat.
+A check sign (✓) means impacted, a cross sign (✘) means not impacted.
+A triangle (▲) means "impacted indirectly or under certain conditions".
+For instance, compromising the robot kernel may not be enough to steal
+user data but it makes the stealing data much easier.
+
+
 <div class="table" markdown="1">
 <table class="table">
   <tr>
@@ -2212,6 +2236,14 @@ TurtleBot3 software dependencies.
 
 Each generic threat described in the previous section can be instantiated on
 the TurtleBot 3.
+
+This table indicates which TurtleBot particular assets and entry points are
+impacted by each threat.  threat. A check sign (✓) means impacted while a
+cross sign (✘) means not impacted.
+The "SROS Enabled?" column explicitly states out whether using SROS would
+mitigate the threat or not. A check sign (✓) means that the threat could be
+exploited while SROS is enabled while a cross sign (✘) means that the threat
+requires SROS to be disabled to be applicable.
 
 <div class="table" markdown="1">
 <table class="table">
