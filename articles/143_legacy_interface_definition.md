@@ -38,21 +38,29 @@ Each field is described by a *type* and a *name*.
 
 A single data structure is called *message*.
 Each message has a *name*.
-Together with the name of the *package* a message can be uniquely identified.
 
 ### Services
 
 For request / reply style communication the two exchanged data structures are related.
 These pairs of data structures are called *services*.
-A service is identified by its *name* and the *package* it is in.
 Each service describes two messages, one for the request data structure, one for the reply data structure.
 
 ### Actions
 
 For longer running request / reply style communication with feedback about the progress the exchanged data structures are related.
 These triplets of data structures are called *actions*.
-An action is identified by its *name* and the *package* it is in.
 Each action describes three messages, one for the goal data structure, one for the result data structure, and one for the feedback data structure.
+
+### Identifying data structures
+
+Every data structure can be uniquely identified with three pieces of information:
+
+1. **Package** - the name of the package containing the data structure definition.
+2. **Subfolders** - the list of subfolders within the package where the data structure defintion can be found.
+3. **Name** - the name of the data structure.
+
+For example, a message with the name `Foo` in subfolder `msg` of the package `bar` has the unique identifier `bar/msg/Foo`.
+Here, `/` is used as a separator, but in practice any delimeter could be used.
 
 ### Field types
 
