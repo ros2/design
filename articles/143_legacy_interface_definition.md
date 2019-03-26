@@ -56,10 +56,10 @@ Each action describes three messages, one for the goal data structure, one for t
 Every data structure can be uniquely identified with three pieces of information:
 
 1. **Package** - the name of the package containing the data structure definition.
-2. **Subfolders** - the list of subfolders within the package where the data structure defintion can be found.
+2. **Subnamespaces** - the list of namespaces within the package where the data structure is defined.
 3. **Name** - the name of the data structure.
 
-For example, a message with the name `Foo` in subfolder `msg` of the package `bar` has the unique identifier `bar/msg/Foo`.
+For example, a message with the name `Foo` in the namespace `msg` of the package `bar` has the unique identifier `bar/msg/Foo`.
 Here, `/` is used as a separator, but in practice any delimeter could be used.
 
 ### Field types
