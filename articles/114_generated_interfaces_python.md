@@ -59,7 +59,7 @@ The Python module `<package_name>.msg` / `<package_name>.srv` exports all messag
 | -------- | ---------------------------- |
 | bool     | builtins.bool                |
 | byte     | builtins.bytes with length 1 |
-| char     | builtins.str with length 1   |
+| char     | builtins.int                 |
 | float32  | builtins.float               |
 | float64  | builtins.float               |
 | int8     | builtins.int                 |
