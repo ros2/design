@@ -66,7 +66,7 @@ describes "robotic components" while the next section will mention "ROS 2 nodes"
 
 ### Defining Robotic Systems Threats
 
-We will consider as a robotic system one or more general-purpose computer
+We will consider as a robotic system one or more general-purpose computers
 connected to one or more actuators or sensors. An actuator is defined as any
 device producing physical motion. A sensor is defined as any device capturing or
 recording a physical property.
@@ -92,7 +92,7 @@ channels, API, sensors, etc.).
 Actors are divided into multiple categories based on whether or not they are
 physically present next to the robot (could the robot harm them?), are they
 human or not and (human only) are they a "power user" or not. A power user
-is defined as someone who is knowledgeable and execute tasks which are normally
+is defined as someone who is knowledgeable and can execute tasks which are normally
 not done by end-users (build and debug new software, deploy code, etc.).
 
 <div class="table">
@@ -283,12 +283,12 @@ private information. While carefully controlled engineering processes can
 reduce the risk of malicious behavior (accidentally or voluntarily), it cannot
 completely eliminate it. Trusted nodes can still leak private data, etc.
 
-Trusted node should not trust non-trusted nodes. It is likely that more than one
+Trusted nodes should not trust non-trusted nodes. It is likely that more than one
 non-trusted component is embedded in any given robotic application. It is
 important for non-trusted components to not trust each other as one malicious
 non-trusted node may try to compromise another non-trusted node.
 
-An example of trusted component could be an in-house (or carefully vetted) IMU
+An example of a trusted component could be an in-house (or carefully vetted) IMU
 driver node. This component may communicate through unsafe channels with other
 driver nodes to reduce sensor data fusion latency. Trusting components is never
 ideal but it may be acceptable if the software is well-controlled.
@@ -298,7 +298,7 @@ Deploying this node without adequate sandboxing could impact:
 
 * User privacy: the node is streaming back user video without their consent
 * User safety: the robot is following the object detected by the tracker and its
-  speed is proportional to the object distance. The malicious tracker estimate
+  speed is proportional to the object distance. The malicious tracker estimates
   the object position very far away on purpose to trick the robot into suddenly
   accelerating and hurting the user.
 * System availability: the node may try to consume all available computing
@@ -338,20 +338,20 @@ Threat categorization is based on the [STRIDE][wikipedia_stride]
 Risk assessment relies on [DREAD][wikipedia_dread] (Damage / Reproducibility /
  Exploitability / Affected users / Discoverability).
 
-In the following table, the "Threat Category (STRIDE)" columns indicates
-which categories a threat belong too. If the "Spoofing" column is marked with
+In the following table, the "Threat Category (STRIDE)" columns indicate
+the categories to which a threat belongs. If the "Spoofing" column is marked with
 a check sign (✓), it means that this threat can be used to spoof a component
 of the system. If it cannot be used to spoof a component, a cross sign will
 be present instead (✘).
 
 The "Threat Risk Assessment (DREAD)" columns contain a score indicating how
 easy or likely it is for a particular threat to be exploited. The allowed
-score values are 1 (not at risk), 2 (may be at risk) or 3 (at risk, need to
+score values are 1 (not at risk), 2 (may be at risk) or 3 (at risk, needs to
 be mitigated).  For instance, in the damage column a 1 would mean
 "exploitation of the threat would cause minimum damages", 2 "exploitation of
-the treat would cause significant damages" and 3 "exploitation of the treat
+the threat would cause significant damages" and 3 "exploitation of the threat
 would cause massive damages". The "total score" is computed by adding the
-score of each column. The higher the score is, the most critical is the
+score of each column. The higher the score, the more critical the
 threat.
 
 Impacted assets, entry points and business goals columns indicate whether
@@ -359,7 +359,7 @@ an asset, entry point or business goal is impacted by a given threat.
 A check sign (✓) means impacted, a cross sign (✘) means not impacted.
 A triangle (▲) means "impacted indirectly or under certain conditions".
 For instance, compromising the robot kernel may not be enough to steal
-user data but it makes the stealing data much easier.
+user data but it makes stealing data much easier.
 
 
 <div class="table" markdown="1">
@@ -466,7 +466,7 @@ Communication</th></tr>
       <ul>
         <li>Components should authenticate themselves.</li>
         <li>Components should not be attributed similar identifiers.</li>
-        <li>Components identifiers should be chosen carefully.</li>
+        <li>Component identifiers should be chosen carefully.</li>
       </ul>
     </td>
     <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
@@ -632,7 +632,7 @@ memory whenever possible.</li>
 require.</li>
         <li>Internet-facing channels and robot-only channels should be
 isolated.</li>
-        <li>Components behaviors should be reliant to a lost of communication
+        <li>Components behaviors should be tolerant of a loss of communication
 (e.g. go to x,y vs set velocity to vx, vy).</li>
       </ul>
     </td>
@@ -1166,7 +1166,7 @@ Cyber-Physical Threats on Robotic Platforms.” Sensors 18, no. 5 (May 21,
   </tr>
 
   <tr>
-    <td>An attacker access configuration values without authorization.</td>
+    <td>An attacker accesses configuration values without authorization.</td>
     <td class="danger">✘</td>
     <td class="danger">✘</td>
     <td class="success">✓</td>
@@ -1698,7 +1698,7 @@ credentials should be tied to the user identity for audit purposes</li>
   <td> </td>
   </tr>
 
-  <tr><th colspan="29">Remote / Coud Integration</th></tr>
+  <tr><th colspan="29">Remote / Cloud Integration</th></tr>
 
   <tr>
     <td>An attacker intercepts cloud service credentials deployed on the
