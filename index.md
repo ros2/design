@@ -7,6 +7,7 @@ category_order:
   - Overview
   - Middleware
   - Interfaces
+  - Security
 ---
 
 # ROS 2.0 Design
