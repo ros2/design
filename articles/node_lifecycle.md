@@ -219,7 +219,7 @@ Conversely, any object that provides these services but does not behave in the w
 These services may also be provided via attributes and method calls (for local management) in addition to being exposed ROS messages and topics/services (for remote management).
 In the case of providing a ROS middleware interface, specific topics must be used, and they should be placed in a suitable namespace.
 
-Each possible supervisory transition will be provides as a service by the name of the transition except `create`.
+Each possible supervisory transition will be provided as a service by the name of the transition except `create`.
 `create` will require an extra argument for finding the node to instantiate.
 The service will report whether the transition was successfully completed.
 
