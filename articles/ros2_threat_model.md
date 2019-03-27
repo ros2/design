@@ -81,8 +81,8 @@ which actors interact with the robot is helpful to determine how the system
 can be compromised. For instance, actors may be able to give commands to the
 robot which may be abused to attack the system.
 
-**Assets** represent any user, resource (e.g. disk space), or property (user physical
-safety) of the system that should be defended against attackers.
+**Assets** represent any user, resource (e.g. disk space), or property (e.g. physical
+safety of users) of the system that should be defended against attackers.
 
 **Entry points** represent how the system is interacting with the world (communication
 channels, API, sensors, etc.).
@@ -91,8 +91,8 @@ channels, API, sensors, etc.).
 
 Actors are divided into multiple categories based on whether or not they are
 physically present next to the robot (could the robot harm them?), are they
-human or not and (human only) are they a "power user" or not. A power user
-is defined as someone who is knowledgeable and can execute tasks which are normally
+human or not and are they a "power user" or not. A power user
+is defined as someone who is knowledgeable and execute tasks which are normally
 not done by end-users (build and debug new software, deploy code, etc.).
 
 <div class="table">
@@ -1280,9 +1280,9 @@ it.</td>
     <td>
       <ul>
         <li>Robot filesystem must be encrypted. The key should be stored in a
-secure enclave (TPM).</li>
-        <li>Robot filesystem should be wiped out if the robot perimeter is
-breached.</li>
+            secure enclave (TPM).</li>
+        <li>Robot filesystem should be wiped out if the robot is physically
+            compromised.</li>
       </ul>
     </td>
     <td> </td>
@@ -1689,10 +1689,12 @@ Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
   <td class="success">✓</td>
   <td>
     <ul>
-      <li>Remote users should be granted minimum privileges• Credentials on
-desktop machines should be stored securely (secure enclave, TPM, etc.)</li>
-      <li>User credentials should be revokable or expire automatically• User
-credentials should be tied to the user identity for audit purposes</li>
+      <li>Remote users should be granted minimum privileges</li>
+      <li>Credentials on desktop machines should be stored securely
+          (secure enclave, TPM, etc.)</li>
+      <li>User credentials should be revokable or expire automatically</li>
+      <li>User credentials should be tied to the user identity for audit
+          purposes</li>
     </ul>
   </td>
   <td> </td>
@@ -3251,11 +3253,10 @@ communicating.</td>
 </table>
 </div>
 
-*TurtleBot Threat Diagram - An attacker deploys a malicious node on the robot *
+#### TurtleBot Threat Diagram: An attacker deploys a malicious node on the robot
 
 This diagram details how code is built and deployed for the “An attacker
-deploys
-a malicious node on the robot” attack.
+deploys a malicious node on the robot” attack.
 
 ![Signing Service Mitigation](ros2_threat_model/signing_service_mitigation.jpg)
 [Diagram Source (draw.io)](ros2_threat_model/signing_service_mitigation.xml)
