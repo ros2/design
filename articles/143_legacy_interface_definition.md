@@ -38,12 +38,15 @@ Each field is described by a *type* and a *name*.
 
 A single data structure is called *message*.
 Each message has a *name*.
+Together with the name of the *package* a message can be uniquely identified.
+A message has the URN: package/msg/name`.
 
 ### Services
 
 For request / reply style communication the two exchanged data structures are related.
 These pairs of data structures are called *services*.
 Each service describes two messages, one for the request data structure, one for the reply data structure.
+Together with the name of the *package* a
 
 ### Actions
 
@@ -53,14 +56,34 @@ Each action describes three messages, one for the goal data structure, one for t
 
 ### Identifying data structures
 
-Every data structure can be uniquely identified with three pieces of information:
+Every data structure can be uniquely referenced with a *uniform resource name* (URN) and a *uniform resource locator* (URL)
+as described by [IDL - Interface Identification](idl_interface_definition.html#interface-identification)
 
-1. **Package** - the name of the package containing the data structure definition.
-2. **Subnamespaces** - the list of namespaces within the package where the data structure is defined.
-3. **Name** - the name of the data structure.
+#### Messages
 
-For example, a message with the name `Foo` in the namespace `msg` of the package `bar` has the unique identifier `bar/msg/Foo`.
-Here, `/` is used as a separator, but in practice any delimeter could be used.
+- URN: `<package_name>/msg/<name>`
+- URL: `<package_name>/msg/<name>`
+
+#### Services
+
+- URN: `<package_name>/srv/<name>`
+- URL: `<package_name>/srv/<name>`
+
+The underlying message definitions that make up a service are located in the same file (ie. have the same URL) and are in the `srv` namespace:
+
+- URN: `<package_name>/srv/<name>\_Request`
+- URN: `<package_name>/srv/<name>\_Response`
+
+#### Actions
+
+- URN: `<package_name>/action/<name>`
+- URL: `<package_name>/action/<name>`
+
+The underlying message definitions that make up an action are located in the same file (ie. have the same URL) and are in the `action` namespace:
+
+- URN: `<package_name>/action/<name>\_Goal`
+- URN: `<package_name>/action/<name>\_Result`
+- URN: `<package_name>/action/<name>\_Feedback`
 
 ### Field types
 
