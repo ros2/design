@@ -38,15 +38,12 @@ Each field is described by a *type* and a *name*.
 
 A single data structure is called *message*.
 Each message has a *name*.
-Together with the name of the *package* a message can be uniquely identified.
-A message has the URN: package/msg/name`.
 
 ### Services
 
 For request / reply style communication the two exchanged data structures are related.
 These pairs of data structures are called *services*.
 Each service describes two messages, one for the request data structure, one for the reply data structure.
-Together with the name of the *package* a
 
 ### Actions
 
