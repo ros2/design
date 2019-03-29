@@ -76,7 +76,7 @@ The underlying message definitions that make up a service are located in the sam
 - URN: `<package_name>/action/<name>`
 - URL: `<package_name>/action/<name>`
 
-The underlying message definitions that make up an action are located in the same file (ie. have the same URL) and are in the `action` namespace:
+The underlying message and service definitions that make up an action are located in the same file (ie. have the same URL) and are in the `action` namespace:
 
 - URN: `<package_name>/action/<name>_Goal`
 - URN: `<package_name>/action/<name>_Result`
