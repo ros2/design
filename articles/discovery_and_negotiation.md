@@ -75,7 +75,7 @@ This constraint implies the need for a life cycle where any publishers and subsc
 
 Because the decisions about how to connect to the data layer are static, it also removes the possibility for dynamically creating publishers and subscribers on the fly because no entity will be watching for new publishers/subscribers and dynamically determining and executing data layer connections.
 
-Another point is that when nodes loose connection with each other on the data layer (temporary loss of network), the node implementation which calls "connect_to" would be responsible for issuing a new "connect_to" after the connection dies.
+Another point is that when nodes lose connection with each other on the data layer (temporary loss of network), the node implementation which calls "connect_to" would be responsible for issuing a new "connect_to" after the connection dies.
 This implies there should be away to introspect the node by polling it or by getting notifications about the state of the underlying connections which were created.
 
 ### Statically Configured Graph
@@ -119,7 +119,7 @@ First this paper will look at how the system can be dynamically configured.
 
 ### Dynamically Configured Graph with Static Discovery
 
-One of the issues with the "Statically Configured Graph" system described above is that the topics and/or services each nodes provides or uses must be statically defined, either as part of the configuration for each node, or as part of the centralized authority's configuration.
+One of the issues with the "Statically Configured Graph" system described above is that the topics and/or services each node provides or uses must be statically defined, either as part of the configuration for each node, or as part of the centralized authority's configuration.
 This does not allow for dynamically defined topic subscriptions and publications nor dynamically provided services.
 
 In order to enable these type of flexible or dynamic node configurations, each node must provided an externally accessible function for getting the configuration of itself.
