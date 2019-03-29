@@ -71,8 +71,8 @@ as described by [IDL - Interface Identification](idl_interface_definition.html#i
 
 The underlying message definitions that make up a service are located in the same file (ie. have the same URL) and are in the `srv` namespace:
 
-- URN: `<package_name>/srv/<name>\_Request`
-- URN: `<package_name>/srv/<name>\_Response`
+- URN: `<package_name>/srv/<name>_Request`
+- URN: `<package_name>/srv/<name>_Response`
 
 #### Actions
 
@@ -81,9 +81,9 @@ The underlying message definitions that make up a service are located in the sam
 
 The underlying message definitions that make up an action are located in the same file (ie. have the same URL) and are in the `action` namespace:
 
-- URN: `<package_name>/action/<name>\_Goal`
-- URN: `<package_name>/action/<name>\_Result`
-- URN: `<package_name>/action/<name>\_Feedback`
+- URN: `<package_name>/action/<name>_Goal`
+- URN: `<package_name>/action/<name>_Result`
+- URN: `<package_name>/action/<name>_Feedback`
 
 ### Field types
 
