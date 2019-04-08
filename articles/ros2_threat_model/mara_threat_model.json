@@ -1,0 +1,16 @@
+{
+  "summary": {
+    "title": "MARA Threat Model"
+  },
+  "detail": {
+    "contributors": [],
+    "diagrams": [
+      {
+        "title": "Mara Threat model",
+        "thumbnail": "./public/content/images/thumbnail.jpg",
+        "id": 0,
+        "$$hashKey": "object:127"
+      }
+    ]
+  }
+}
