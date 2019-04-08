@@ -53,34 +53,34 @@ Each action describes three messages, one for the goal data structure, one for t
 
 ### Identifying data structures
 
-Every data structure can be uniquely referenced with a *uniform resource name* (URN) and a *uniform resource locator* (URL)
+Every data structure can be uniquely referenced with a *uniform resource identifier* (URI) and a *uniform resource locator* (URL)
 as described by [IDL - Interface Identification](idl_interface_definition.html#interface-identification)
 
 #### Messages
 
-- URN: `<package_name>/msg/<name>`
-- URL: `<package_name>/msg/<name>`
+- URI: `rosidl:<package_name>/msg/<name>`
+- URL: `package://<package_name>/msg/<name>`
 
 #### Services
 
-- URN: `<package_name>/srv/<name>`
-- URL: `<package_name>/srv/<name>`
+- URI: `rosidl:<package_name>/srv/<name>`
+- URL: `package://<package_name>/srv/<name>`
 
 The underlying message definitions that make up a service are located in the same file (ie. have the same URL) and are in the `srv` namespace:
 
-- URN: `<package_name>/srv/<name>_Request`
-- URN: `<package_name>/srv/<name>_Response`
+- URI: `rosidl:<package_name>/srv/<name>_Request`
+- URI: `package://<package_name>/srv/<name>_Response`
 
 #### Actions
 
-- URN: `<package_name>/action/<name>`
-- URL: `<package_name>/action/<name>`
+- URI: `rosidl:<package_name>/action/<name>`
+- URL: `package://<package_name>/action/<name>`
 
 The underlying message and service definitions that make up an action are located in the same file (ie. have the same URL) and are in the `action` namespace:
 
-- URN: `<package_name>/action/<name>_Goal`
-- URN: `<package_name>/action/<name>_Result`
-- URN: `<package_name>/action/<name>_Feedback`
+- URI: `rosidl:<package_name>/action/<name>_Goal`
+- URI: `rosidl:<package_name>/action/<name>_Result`
+- URI: `rosidl:<package_name>/action/<name>_Feedback`
 
 ### Field types
 
