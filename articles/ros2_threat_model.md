@@ -2018,8 +2018,8 @@ computer.
   [teleoperation][tb3_teleop] messages published as ROS topics. This channel uses
   serial communication.
 * A Lidar driver process running on the Raspberry interfaces with the Lidar, and
-  uses a DDS-XRCE client to publish the sensor data to several ROS topics. This
-  channel uses udp.
+  uses a DDS-XRCE client to publish data over UDP to an XRCE agent also running on
+  the Raspberry Pi. The agent sends the sensor data to several ROS topics.
 * An SSH client process is running in the field testing host, connecting to the
   Raspberry PI for diagnostic and debugging.
 * A software update agent process is running on the Raspberry PI, OpenCR board,
@@ -2354,7 +2354,7 @@ manually is cumbersome and error-prone.</td>
   </tr>
 
   <tr>
-    <td rowspan="3">An attacker listens to a communication channel without
+    <td rowspan="4">An attacker listens to a communication channel without
 authorization.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
@@ -2412,13 +2412,29 @@ enable_discovery_protection to True to prevent malicious actors from
 enumerating and fingerprinting DDS participants.</li>
         <li>DDS Security Governance document must enable_liveliness_protection
 to True</li>
-        <li>XRCE agent to LIDAR should use secure UDP protocol like DTLS</li>
       </ul>
     </td>
     <td class="warning">Risk is mitigated if DDS-Security is configured
 appropriately.</td>
-    <td> </td>
+    <td></td>
   </tr>
+  <tr>
+      <td class="danger">✓</td>
+      <td class="danger">✓</td>
+      <td class="danger">✓</td>
+      <td class="success">✘</td>
+      <td class="success">✘</td>
+      <td class="danger">✓</td>
+      <td>TurtleBot LIDAR measurements are saved to a remote location controlled by
+  the attacker. </td>
+      <td>
+        Local communication using XRCE should be done over the loopback interface.
+      </td>
+      <td class="danger"> This doesn't protect the serial communication from the
+        LIDAR sensor to the Raspberry Pi.
+      </td>
+      <td></td>
+    </tr>
 
   <tr>
     <td rowspan="2">An attacker prevents a communication channel from being
