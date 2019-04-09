@@ -2013,11 +2013,13 @@ computer.
   * [`raspicam2_node`][raspicam2_node] a node publishing Raspberry Pi Camera
     Module data to ROS 2.
 * An XRCE Agent runs on the Raspberry, and is used by a DDS-XRCE client running
-  on the [OpenCR 1.0 board][opencr_1_0], that publishes  IMU sensor data to ROS
+  on the [OpenCR 1.0 board][opencr_1_0], that publishes IMU sensor data to ROS
   topics, and controls the wheels of the TurtleBot based on the
-  [teleoperation][tb3_teleop] messages published as ROS topics.
+  [teleoperation][tb3_teleop] messages published as ROS topics. This channel uses
+  serial communication.
 * A Lidar driver process running on the Raspberry interfaces with the Lidar, and
-  uses a DDS-XRCE client to publish the sensor data to several ROS topics.
+  uses a DDS-XRCE client to publish the sensor data to several ROS topics. This
+  channel uses udp.
 * An SSH client process is running in the field testing host, connecting to the
   Raspberry PI for diagnostic and debugging.
 * A software update agent process is running on the Raspberry PI, OpenCR board,
@@ -2099,6 +2101,8 @@ TurtleBot3 software dependencies.
     * When SROS is enabled, attackers may try to compromise the CA authority
       or the private keys to generate or intercept private keys as well as
       emitting malicious certificates to allow spoofing.
+    * USB connection is used for communication between Raspberry Pi and OpenCR board
+      and LIDAR sensor.
   * SSH
     * SSH access is possible to anyone on the same LAN or WAN (if
       port-forwarding is enabled). Many images are
@@ -2378,7 +2382,7 @@ vulnerabilities.</td>
       <ul>
         <li>DDS Security Governance document must set metadata_protection_kind
 to ENCRYPT to prevent malicious actors from observing communications.</li>
-        <li>DDS Security Governance document mus set
+        <li>DDS Security Governance document must set
 enable_discovery_protection to True to prevent malicious actors from
 enumerating and fingerprinting DDS participants.</li>
         <li>DDS Security Governance document must enable_liveliness_protection
@@ -2408,6 +2412,7 @@ enable_discovery_protection to True to prevent malicious actors from
 enumerating and fingerprinting DDS participants.</li>
         <li>DDS Security Governance document must enable_liveliness_protection
 to True</li>
+        <li>XRCE agent to LIDAR should use secure UDP protocol like DTLS</li>
       </ul>
     </td>
     <td class="warning">Risk is mitigated if DDS-Security is configured
@@ -2967,7 +2972,6 @@ turned off under some conditions.</td>
     <td></td>
     <td> </td>
   </tr>
-
   <tr><th colspan="11">Embedded / Hardware / Actuators</th></tr>
 
   <tr>
@@ -2980,8 +2984,9 @@ turned off under some conditions.</td>
     <td class="warning">✘/✓</td>
     <td>TurtleBot connection to the OpenCR board is intercepted motor control
 commands are altered.</td>
-    <td></td>
-    <td></td>
+    <td class="warning">Enclose OpenCR board and Raspberry Pi with a case and
+    use ZimKey perimeter breach protection.</td>
+    <td>Robot can be rendered inoperable if perimeter is breached.</td>
     <td> </td>
   </tr>
 
@@ -2996,8 +3001,9 @@ commands are altered.</td>
     <td class="warning">✘/✓</td>
     <td>TurtleBot connection to the OpenCR board is intercepted, motor control
 commands are altered.</td>
-    <td></td>
-    <td></td>
+    <td class="warning">Enclose OpenCR board and Raspberry Pi with a case and
+    use ZimKey perimeter breach protection.</td>
+    <td>Robot can be rendered inoperable if perimeter is breached.</td>
     <td> </td>
   </tr>
 
@@ -3012,10 +3018,10 @@ localization)</td>
     <td class="warning">✘/✓</td>
     <td>TurtleBot connection to the OpenCR board is intercepted motor control
 commands are logged.</td>
-    <td class="success">No mitigation - risk is acceptable for this particular
-reference architecture.</td>
-    <td>No mitigation needed.</td>
-    <td> </td>
+    <td class="warning">Enclose OpenCR board and Raspberry Pi with a case and
+    use ZimKey perimeter breach protection.</td>
+    <td>Robot can be rendered inoperable if perimeter is breached.</td>
+    <td></td>
   </tr>
 
   <tr>
