@@ -41,7 +41,6 @@ th {
 
 **DRAFT DOCUMENT**
 
-
 <div class="alert alert-warning" markdown="1">
 **Disclaimer**:
 
@@ -104,7 +103,6 @@ th {
       - [Results](#results)
         - [Findings](#findings)
   - [References](#references)
-
 
 ## Document Scope
 
@@ -433,7 +431,6 @@ A check sign (✓) means impacted, a cross sign (✘) means not impacted.
 A triangle (▲) means "impacted indirectly or under certain conditions".
 For instance, compromising the robot kernel may not be enough to steal
 user data but it makes stealing data much easier.
-
 
 <div class="table" markdown="1">
 <table class="table">
@@ -2297,7 +2294,6 @@ computer.
 ![ROS 2 Application](ros2_threat_model/ROS2_Application.png)
 [Diagram Source (draw.io)](ros2_threat_model/ROS2_Application.xml)
 
-
 ##### Hardware
 
 * [TurtleBot 3 Burger][tb3_burger] is a small, [ROS-enabled][ros_wiki_tb]
@@ -2628,8 +2624,8 @@ through a network connection to e.g. stop the robot.</td>
       <ul>
         <li>Enable SROS / DDS Security Extension to authenticate and encrypt
         DDS communications. Message tampering is mitigated by DDS security as
-	message authenticity is verified by default (with preshared
-	HMACs / digital signatures)</li>
+  message authenticity is verified by default (with preshared
+  HMACs / digital signatures)</li>
       </ul>
     </td>
     <td class="success">Risk is reduced if SROS is used.</td>
@@ -3518,9 +3514,7 @@ Threats can be organized in the following [attack tree][wikipedia_attack_tree].
 ![Signing Service Mitigation](ros2_threat_model/attack_tree.jpg)
 [Diagram Source (draw.io)](ros2_threat_model/attack_tree.xml)
 
-
 ### Threat Model Validation Strategy
-
 
 <div class="alert alert-info" markdown="1">
 Validating this threat model end-to-end is a long-term effort meant to be
@@ -3532,15 +3526,14 @@ the future.
 1. Setup a TurtleBot with the exact software described in the TurtleBot3 section
    of this document.
 2. Penetration Testing
-  * Attacks described in the spreadsheet should be implemented. For instance,
+     * Attacks described in the spreadsheet should be implemented. For instance,
     a malicious <code>joy_node</code> could be implemented to try to
     disrupt the robot operations.
-
-  * Once the vulnerability has been exploited, the exploit should be released
+     * Once the vulnerability has been exploited, the exploit should be released
     to the community so that the results can be reproduced.
-  * Whether the attack has been successful or not, this document should be
+     * Whether the attack has been successful or not, this document should be
     updated accordingly.
-  * If the attack was successful, a mitigation strategy should be implemented.
+     * If the attack was successful, a mitigation strategy should be implemented.
     It can either be done through improving ROS 2 core packages or it can be
     a platform-specific solution. In the second case, the mitigation will serve
     as an example to publish best practices for the development of secure
@@ -3549,8 +3542,6 @@ the future.
 Over time, new reference platforms may be introduced in addition to
 the TurtleBot 3 to define new attacks and allow other types of mitigations
 to be evaluated.
-
-
 
 ## Threat Analysis for the `MARA` Robotic Platform
 
@@ -3563,12 +3554,13 @@ The robot considered is a [MARA][mara_datasheet], a 6 Degrees of Freedom (6DoF) 
 and can be controlled from any industrial controller that supports ROS 2 and uses the [HRIM][hrim] information model. Each of the modules contains the [H-ROS communication bus][hros] for robots enabled by the [H-ROS SoM][hrossom], which delivers real-time, security and safety capabilities for ROS 2 at the module level.
 
 No information is provided about how ROS 2 nodes are distributed on each module. Each joint offers the following ROS 2 API capabilities as described in their [documentation (MARA joint)][mara_joint_ros2_api]:
+
 * **Topics**
   * `GoalRotaryServo.msg` model allows to control the position, velocity or/and effort (generated from [models/actuator/servo/topics/goal.xml](https://github.com/AcutronicRobotics/HRIM/blob/master/models/actuator/servo/topics/goal.xml), see [HRIM][hrim] for more).
   * `StateRotaryServo.msg` publishes the status of the motor.
-   * `Power.msg` publishes the power consumption.
-   * `Status.msg`  informs about the resources that are consumed by the H-ROS SoM,
-   * `StateCommunication.msg` is created to inform about the state of the device network.
+  * `Power.msg` publishes the power consumption.
+  * `Status.msg`  informs about the resources that are consumed by the H-ROS SoM,
+  * `StateCommunication.msg` is created to inform about the state of the device network.
 
 * **Services**
   * `ID.srv` publishes the general identity of the component.
@@ -3643,8 +3635,8 @@ The controller used in the application is a ROS 2-enabled industrial PC, specifi
 ![ROS 2 Application](ros2_threat_model/MARA-ROS2_Application.png)
 [Diagram Source (draw.io)](ros2_threat_model/ROS2_Application.xml)
 
-
 #### Assets
+
 This section aims for describing the components and specifications within the MARA robot environment. Below the different aspects of the robot are listed and detailed in Hardware, Software and Network. The external actors and Data assests are described independently.
 
 ##### Hardware
@@ -3699,18 +3691,17 @@ This section aims for describing the components and specifications within the MA
   multiple cities. Only authenticated user with suitable credentials can connect
   to the network, and good security practices like password rotation are in
   place. This network is used to develop and deploy updates in the robotic systems. Managed by the original manufacturer.
-1. **End-user corporate private network**: A secure corporate wide-area network, that spans
+3. **End-user corporate private network**: A secure corporate wide-area network, that spans
   multiple cities. Only authenticated user with suitable credentials can connect
   to the network, and good security practices like password rotation are in
   place.
-2. **Cloud network**: A VPC network residing in a public cloud platform, containing multiple servers. The network follows good security practices, like implementation of security applicances, user password rotation and multi-factor authentication. Only allowed users can access the network. The OTA service is open to the internet. Uses of the cloud network:
-     - Manufacturer (Acutronic Robotics) uploads OTA artifacts from their `Manufacturer corporate private network` to the Cloud Network.
-     - Robotic Systems on the `End-user corporate private network` fetch those artifacts from the Cloud Network.
-     - Robotic Systems on the  `End-user corporate private network` send telemetry data for predictive maintenance to Cloud Network.
-
-
+4. **Cloud network**: A VPC network residing in a public cloud platform, containing multiple servers. The network follows good security practices, like implementation of security applicances, user password rotation and multi-factor authentication. Only allowed users can access the network. The OTA service is open to the internet. Uses of the cloud network:
+     * Manufacturer (Acutronic Robotics) uploads OTA artifacts from their `Manufacturer corporate private network` to the Cloud Network.
+     * Robotic Systems on the `End-user corporate private network` fetch those artifacts from the Cloud Network.
+     * Robotic Systems on the  `End-user corporate private network` send telemetry data for predictive maintenance to Cloud Network.
 
 ##### Software processes
+
 In this section all the processes running on the robotic system in scope are detailed.
 
 * **Onboard Modular Joints**
@@ -3719,10 +3710,10 @@ In this section all the processes running on the robotic system in scope are det
   * Mender (OTA client) runs inside the H-ROS SoM. When an update is launched, the client downloads this version and it gets installed and available when the device is rebooted.
 * **Onboard Modular Gripper**: *Undisclosed*.
 * **Onboard Industrial PC**:
-    - MoveIt! motion planning framework.
-    - Manufacturing process control applications.
-    - Robot teleoperation utilities.
-    - **ROS1/ROS2 bridges**: These bridges are needed to be able to run MoveIT! which is not yet ported to ROS 2.0. Right now there is an [effort in the community](https://acutronicrobotics.com/news/ros-2-moveit-robotic-motion-planning/) to port this tool to ROS 2.0.
+  * MoveIt! motion planning framework.
+  * Manufacturing process control applications.
+  * Robot teleoperation utilities.
+  * **ROS1/ROS2 bridges**: These bridges are needed to be able to run MoveIT! which is not yet ported to ROS 2.0. Right now there is an [effort in the community](https://acutronicrobotics.com/news/ros-2-moveit-robotic-motion-planning/) to port this tool to ROS 2.0.
 
 ##### Software dependencies
 
@@ -3740,6 +3731,7 @@ See [Mara ROS 2 Tutorials](https://acutronicrobotics.com/docs/products/robots/ma
 ##### External Actors
 
 All the actors interacting with the robotic system are here gathered.
+
 * End users
   * Robotics user: Interacts with the robot for performing work labour tasks.
   * Robotics operator: Performs maintenance tasks on the robot and integrates the robot with the industrial network.
@@ -3750,6 +3742,7 @@ All the actors interacting with the robotic system are here gathered.
 ##### Robot Data assets
 
 In this section all the assets storing information within the system are displayed.
+
 * ROS 2 network (topic, actions, services information)
   * Private Data
     * Logging messages
@@ -3771,16 +3764,16 @@ In this section all the assets storing information within the system are display
   * Configuration data.
   * Credentials
   * Firmware files and source code. Intellectual property, both end-user and manufacturer.
-*  Robot Data
-    * System and ROS logs are stored on each joint module's filesystem.
-    * Robot system is subject to physical attacks (physically removing the disk from the robot to read its data).
-  * Cloud Data
-    * Different versions of the software are stored on the OTA server.
-  * Secret Management
-    * DDS / ROS Topics
-      * If SROS is enabled, private keys are stored on the local filesystem of each module.
-    * Mender OTA
-      * Mender OTA client certificates are stored on the robot file system.
+* Robot Data
+  * System and ROS logs are stored on each joint module's filesystem.
+  * Robot system is subject to physical attacks (physically removing the disk from the robot to read its data).
+* Cloud Data
+  * Different versions of the software are stored on the OTA server.
+* Secret Management
+  * DDS / ROS Topics
+    * If SROS is enabled, private keys are stored on the local filesystem of each module.
+* Mender OTA
+  * Mender OTA client certificates are stored on the robot file system.
 
 #### Use case scenarios
 
@@ -3799,9 +3792,9 @@ As described above, the application considered is a MARA modular robot operating
       * Configure ORC control functionalities
 
   * **Robotic User**: Collaborative tasks
-     * Start the robot
-     * Control the robot
-     * Work alongside the robot
+    * Start the robot
+    * Control the robot
+    * Work alongside the robot
 
   * **Robotics Operator**: Automation of industrial tasks
     * An industrial operator uses the robot in a factory. They may:
@@ -4255,7 +4248,7 @@ channel.</td>
         <li>Expand RMW to define per-topic strategies for invalid messages (drop, throw, abort, etc.).</li>
       </ul>
     </td>
-    <td class="danger">Need to expand DDS IDL or RMW for mitigating the risk.	</td>
+    <td class="danger">Need to expand DDS IDL or RMW for mitigating the risk.</td>
     <td></td>
   </tr>
   <tr>
@@ -4644,7 +4637,7 @@ normally.</td>
 
 #### Attack Trees
 
-In an attempt to analyze the different possible attacks before even happening, attack trees are created. This diagrams speculate about the possible attacks against the system in order to be able to counter them. Threats can be organized in the following [attack trees][wikipedia_attack_tree]. Attacks are ordered starting from the physical attack vector, continuing with network based attacks, and finishing with the support infrastructure for the robot.
+In an atempt to analyze the different possible attacks before even happening, attack trees are created. This diagrams speculate about the possible attacks against the system in order to be able to counter them. Threats can be organized in the following [attack trees][wikipedia_attack_tree]. Attacks are ordered starting from the physical attack vector, continuing with network based attacks, and finishing with the support infrastructure for the robot.
 
 #### Physical vector attack tree
 
@@ -4707,8 +4700,8 @@ Validating this threat model end-to-end is a long-term effort meant to be distri
      * Once the vulnerability has been exploited, the exploit should be released to the community so that the results can be reproduced.
      * Whether the attack has been successful or not, this document should be updated accordingly.
      * If the attack was successful, a mitigation strategy should be implemented. It can either be done through improving ROS 2 core packages or it can be a platform-specific solution. In the second case, the mitigation will serve as an example to publish best practices for the development of secure robotic applications.
-      * For trainning purposes, an online playground ([RCTF][rctf]) exists to challenge roboticists to learn and discover robot vulnerabilities.
-      * For an overall evaluation of the robots' security measures, the Robot Security Framework ([RSF][rsf]) will be used. This validation has to be don e after the assessment is completed in order to have a realistic results.
+     * For trainning purposes, an online playground ([RCTF][rctf]) exists to challenge roboticists to learn and discover robot vulnerabilities.
+     * For an overall evaluation of the robots' security measures, the Robot Security Framework ([RSF][rsf]) will be used. This validation has to be don e after the assessment is completed in order to have a realistic results.
 
 ### Security Assessment preliminary results
 
@@ -5064,31 +5057,16 @@ In the course of a first funded vulnerability assessment, <a style="color:black;
 [adbd_linux]: https://github.com/tonyho/adbd-linux
 [akhtar_threat_2018]: http://arxiv.org/abs/1801.00553
 [aws_code_signing]: https://docs.aws.amazon.com/signer/latest/developerguide/Welcome.html
-[aztarna]: https://arxiv.org/abs/1812.09490
 [cw_sample_app]: https://github.com/aws-robotics/aws-robomaker-sample-application-cloudwatch
 [fastrtps_security]: https://eprosima-fast-rtps.readthedocs.io/en/latest/security.html
-[hans_modular_joint]: https://acutronicrobotics.com/products/modular-joints/
-[hrim]: https://acutronicrobotics.com/technology/hrim/
-[hros]: https://acutronicrobotics.com/technology/H-ROS/
-[hros_connector_A]: https://acutronicrobotics.com/products/modular-joints/files/HROS_Connector_A_%20Robot_Assembly_datasheet_v1.0.pdf
-[hrossom]: https://acutronicrobotics.com/technology/som/
 [joy_node]: https://github.com/ros2/joystick_drivers/blob/ros2/joy/src/joy_node_linux.cpp
-[mara_datasheet]: https://acutronicrobotics.com/products/mara/files/Robotic_arm_MARA_datasheet_v1.2.pdf
-[mara_joint_ros2_api]: https://acutronicrobotics.com/docs/products/actuators/modular_motors/hans/ros2_api
-[mara_robot]: https://acutronicrobotics.com/products/mara/
 [opencr_1_0]: https://github.com/ROBOTIS-GIT/OpenCR
-[orc]: https://acutronicrobotics.com/products/orc/
 [raspicam2_node]: https://github.com/christianrauch/raspicam2_node
-[rctf]: https://arxiv.org/abs/1810.02690
 [rmw_fastrtps]: https://github.com/ros2/rmw_fastrtps
-[robotiq_modular_gripper]: https://acutronicrobotics.com/products/modular-grippers/
-[ros_wiki_tb]: https://wiki.ros.org/Robots/TurtleBot
 [ros2_launch_design_pr]: https://github.com/ros2/design/pull/163
-[rsf]: http://arxiv.org/abs/1806.04042
-[rvss]: https://arxiv.org/abs/1807.10357
-[safe_sec]: https://arxiv.org/abs/1806.06681
+[ros_wiki_tb]: https://wiki.ros.org/Robots/TurtleBot
 [tb3_burger]: http://emanual.robotis.com/docs/en/platform/turtlebot3/specifications/#hardware-specifications
-[tb3_ros2_setup]:(http://emanual.robotis.com/docs/en/platform/turtlebot3/ros2/#setup
+[tb3_ros2_setup]:http://emanual.robotis.com/docs/en/platform/turtlebot3/ros2/#setup
 [tb3_teleop]: https://github.com/ROBOTIS-GIT/turtlebot3/tree/master/turtlebot3_teleop
 [teleop_twist_joy]: https://github.com/ros2/teleop_twist_joy
 [threat_dragon]: https://threatdragon.org/
@@ -5100,3 +5078,18 @@ In the course of a first funded vulnerability assessment, <a style="color:black;
 [wikipedia_federated_identity]: https://en.wikipedia.org/wiki/Federated_identity
 [wikipedia_public_key]: https://en.wikipedia.org/wiki/Public-key_cryptography
 [wikipedia_stride]: https://en.wikipedia.org/wiki/STRIDE_(security)
+[mara_robot]: https://acutronicrobotics.com/products/mara/
+[mara_datasheet]: https://acutronicrobotics.com/products/mara/files/Robotic_arm_MARA_datasheet_v1.2.pdf
+[hrim]: https://acutronicrobotics.com/technology/hrim/
+[hros]: https://acutronicrobotics.com/technology/H-ROS/
+[hrossom]: https://acutronicrobotics.com/technology/som/
+[mara_joint_ros2_api]: https://acutronicrobotics.com/docs/products/actuators/modular_motors/hans/ros2_api
+[orc]: https://acutronicrobotics.com/products/orc/
+[hans_modular_joint]: https://acutronicrobotics.com/products/modular-joints/
+[hros_connector_A]: https://acutronicrobotics.com/products/modular-joints/files/HROS_Connector_A_%20Robot_Assembly_datasheet_v1.0.pdf
+[robotiq_modular_gripper]: https://acutronicrobotics.com/products/modular-grippers/
+[rvss]: https://arxiv.org/abs/1807.10357
+[rctf]: https://arxiv.org/abs/1810.02690
+[aztarna]: https://arxiv.org/abs/1812.09490
+[rsf]: http://arxiv.org/abs/1806.04042
+[safe_sec]: https://arxiv.org/abs/1806.06681
