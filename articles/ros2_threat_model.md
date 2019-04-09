@@ -5081,7 +5081,7 @@ In the course of a first funded vulnerability assessment, <a style="color:black;
 [rvss]: https://arxiv.org/abs/1807.10357
 [safe_sec]: https://arxiv.org/abs/1806.06681
 [tb3_burger]: http://emanual.robotis.com/docs/en/platform/turtlebot3/specifications/#hardware-specifications
-[tb3_ros2_setup]:http://emanual.robotis.com/docs/en/platform/turtlebot3/ros2/#setup
+[tb3_ros2_setup]: http://emanual.robotis.com/docs/en/platform/turtlebot3/ros2/#setup
 [tb3_teleop]: https://github.com/ROBOTIS-GIT/turtlebot3/tree/master/turtlebot3_teleop
 [teleop_twist_joy]: https://github.com/ros2/teleop_twist_joy
 [threat_dragon]: https://threatdragon.org/
