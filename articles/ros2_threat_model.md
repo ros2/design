@@ -3625,14 +3625,14 @@ Such API gets translated into the following abstractions:
 | count_zeros_axis1 | Axis 1 absolute value of the encoder for the zero position |
 | count_zeros_axis2 | Axis 2 absolute value of the encoder for the zero position |
 | enable_logging| Enable/Disable logging |
-| axis1_min_position | Axis 1 minimun position in radians |
-| axis1_max_position | Axis 1 maximun position in radians |
-| axis1_max_velocity | Axis 1 maximun velocity in radians/s |
-| axis1_max_acceleration | Axis 1 maximun acceleration in radians/s^2 |
-| axis2_min_position | Axis 2 minimun position in radians |
-| axis2_max_position | Axis 2 maximun position in radians |
-| axis2_max_velocity | Axis 2 maximun velocity in radians/s |
-| axis2_max_acceleration | Axis 2 maximun acceleration in radians/s^2 |
+| axis1_min_position | Axis 1 minimum position in radians |
+| axis1_max_position | Axis 1 maximum position in radians |
+| axis1_max_velocity | Axis 1 maximum velocity in radians/s |
+| axis1_max_acceleration | Axis 1 maximum acceleration in radians/s^2 |
+| axis2_min_position | Axis 2 minimum position in radians |
+| axis2_max_position | Axis 2 maximum position in radians |
+| axis2_max_velocity | Axis 2 maximum velocity in radians/s |
+| axis2_max_acceleration | Axis 2 maximum acceleration in radians/s^2 |
 
 <br>
 
