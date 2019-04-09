@@ -32,8 +32,7 @@ th {
 
 # {{ page.title }}
 
-**DRAFT DOCUMENT**
-
+This is a **DRAFT DOCUMENT**.
 
 <div class="alert alert-warning" markdown="1">
 **Disclaimer**:
@@ -84,7 +83,7 @@ can be compromised. For instance, actors may be able to give commands to the
 robot which may be abused to attack the system.
 
 **Assets** represent any user, resource (e.g. disk space), or property (e.g. physical
-safety of users) of the system that should be defended against attackers. 
+safety of users) of the system that should be defended against attackers.
 Properties of assets can be related to acheiving the business goals of the robot.
 For example, sensor data is a resource/asset of the system and the privacy of that
 data is a system property and a business goal.
@@ -268,7 +267,8 @@ with the system?).
 
 ### Robot Application Components and Trust Boundaries
 
-The system is divided into hardware (embedded general-purpose computer, sensors, actuators), multiple components
+The system is divided into hardware (embedded general-purpose computer,
+sensors, actuators), multiple components
 (usually processes) running on multiple computers (trusted or non-trusted
 components) and data stores (embedded or in the cloud).
 
@@ -365,7 +365,6 @@ A check sign (✓) means impacted, a cross sign (✘) means not impacted.
 A triangle (▲) means "impacted indirectly or under certain conditions".
 For instance, compromising the robot kernel may not be enough to steal
 user data but it makes stealing data much easier.
-
 
 <div class="table" markdown="1">
   <table class="table">
@@ -820,6 +819,13 @@ scheduling guarantees.</td>
           <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
           <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
           <li>/boot should not be accessible by robot processes</li>
+          <li><span markdown="1">
+          [NTP security best practices][ietf_ntp_bcp] should be enforced to ensure no
+          attacker can manipulate the robot computer clock. See also [RFC 7384][rfc_7384],
+          [NTPsec][ntpsec] and
+          [Emerging Solutions in Time Synchronization Security][emerging_solutions_time_sync_sec].
+          Additionally, [PTP protocol][ieee_1588_2008] can be considered instead of NTP.
+          </span></li>
         </ul>
       </td>
       <td>
@@ -2291,8 +2297,8 @@ through a network connection to e.g. stop the robot.</td>
       <ul>
         <li>Enable SROS / DDS Security Extension to authenticate and encrypt
         DDS communications. Message tampering is mitigated by DDS security as
-	message authenticity is verified by default (with preshared
-	HMACs / digital signatures)</li>
+        message authenticity is verified by default (with preshared
+        HMACs / digital signatures)</li>
       </ul>
     </td>
     <td class="success">Risk is reduced if SROS is used.</td>
@@ -2538,8 +2544,8 @@ default.</td>
   <tr><th colspan="11">Embedded / Software / OS & Kernel</th></tr>
 
   <tr>
-    <td>An attacker compromises the real-time clock to disrupt the kernel RT
-scheduling guarantees.</td>
+    <td rowspan="2">An attacker compromises the real-time clock to disrupt the
+    kernel RT scheduling guarantees.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
     <td class="success">✘</td>
@@ -2555,6 +2561,35 @@ this threat.</td>
         integration.
         SecureBoot support would probably be needed to completely mitigate this
         threat.</td>
+  </tr>
+
+  <tr>
+    <td class="danger">✓</td>
+    <td class="danger">✓</td>
+    <td class="success">✘</td>
+    <td class="success">✘</td>
+    <td class="success">✘</td>
+    <td class="warning">✘/✓</td>
+    <td>
+    A malicious actor sends incorrect NTP packages to enable other attacks
+    (allow the use of expired certificates) or to prevent the robot software
+    from behaving properly (time between sensor readings could be miscomputed).
+    </td>
+    <td>
+      <ul>
+        <li><span markdown="1">
+        [Implement NTP Best Practices][ntp_best_practices]</span></li>
+        <li>Use a hardware RTC clock such as the one provided by the Zymbit
+        key to reduce the system reliance on NTP.</li>
+        <li>If your robot relies on GPS for localization purpose, consider
+        using time from your GPS received (note that it opens the door to
+        other vulnerabilities such as GPS jamming).</li>
+      </ul>
+    </td>
+    <td class="warning">
+    TurtleBot / Zymbit Key integration and following best practices for
+    NTP configuration will mostly mitigate this threat.</td>
+    <td> </td>
   </tr>
 
   <tr>
@@ -3313,10 +3348,16 @@ to be evaluated.
 [akhtar_threat_2018]: http://arxiv.org/abs/1801.00553
 [aws_code_signing]: https://docs.aws.amazon.com/signer/latest/developerguide/Welcome.html
 [cw_sample_app]: https://github.com/aws-robotics/aws-robomaker-sample-application-cloudwatch
+[emerging_solutions_time_sync_sec]: https://www.nist.gov/sites/default/files/documents/2016/11/02/08_odonoghue_emerging_security_overview.pdf
 [fastrtps_security]: https://eprosima-fast-rtps.readthedocs.io/en/latest/security.html
+[ieee_1588_2008]: https://standards.ieee.org/standard/1588-2008.html
+[ietf_ntp_bcp]: https://datatracker.ietf.org/doc/draft-ietf-ntp-bcp/
 [joy_node]: https://github.com/ros2/joystick_drivers/blob/ros2/joy/src/joy_node_linux.cpp
+[ntp_best_practices]: https://tools.ietf.org/id/draft-ietf-ntp-bcp-08.html
+[ntpsec]: https://www.ntpsec.org/
 [opencr_1_0]: https://github.com/ROBOTIS-GIT/OpenCR
 [raspicam2_node]: https://github.com/christianrauch/raspicam2_node
+[rfc_7384]: https://tools.ietf.org/html/rfc7384
 [rmw_fastrtps]: https://github.com/ros2/rmw_fastrtps
 [ros2_launch_design_pr]: https://github.com/ros2/design/pull/163
 [ros_wiki_tb]: https://wiki.ros.org/Robots/TurtleBot
