@@ -58,7 +58,7 @@ th {
   - [Document Scope](#document-scope)
   - [Robotic Systems Threats Overview](#robotic-systems-threats-overview)
     - [Defining Robotic Systems Threats](#defining-robotic-systems-threats)
-    - [Robot Application Actors, Assets, Business Goals and Entry Points](#robot-application-actors-assets-business-goals-and-entry-points)
+    - [Robot Application Actors, Assets, and Entry Points](#robot-application-actors-assets-and-entry-points)
       - [Robot Application Actors](#robot-application-actors)
       - [Assets](#assets)
       - [Entry Points](#entry-points)
@@ -138,10 +138,9 @@ connected to one or more actuators or sensors. An actuator is defined as any
 device producing physical motion. A sensor is defined as any device capturing or
 recording a physical property.
 
-### Robot Application Actors, Assets, Business Goals and Entry Points
+### Robot Application Actors, Assets, and Entry Points
 
-This section defines actors, assets, business goals and entry points for this
-threat model.
+This section defines actors, assets, and entry points for this threat model.
 
 **Actors** are humans or external systems interacting with the robot. Considering
 which actors interact with the robot is helpful to determine how the system
@@ -149,7 +148,10 @@ can be compromised. For instance, actors may be able to give commands to the
 robot which may be abused to attack the system.
 
 **Assets** represent any user, resource (e.g. disk space), or property (e.g. physical
-safety of users) of the system that should be defended against attackers.
+safety of users) of the system that should be defended against attackers. 
+Properties of assets can be related to acheiving the business goals of the robot.
+For example, sensor data is a resource/asset of the system and the privacy of that
+data is a system property and a business goal.
 
 **Entry points** represent how the system is interacting with the world (communication
 channels, API, sensors, etc.).
@@ -433,450 +435,416 @@ For instance, compromising the robot kernel may not be enough to steal
 user data but it makes stealing data much easier.
 
 <div class="table" markdown="1">
-<table class="table">
-  <tr>
-    <th rowspan="2" style="width: 20em">Threat Description</th>
-    <th colspan="6">Threat Category (STRIDE)</th>
-    <th colspan="6">Threat Risk Assessment (DREAD)</th>
-    <th colspan="4">Impacted Assets</th>
-    <th colspan="4">Impacted Entry Points</th>
-    <th colspan="6">Impacted Business Goals</th>
-    <th rowspan="2" style="width: 30em">Mitigation Strategies</th>
-    <th rowspan="2" style="width: 30em">Similar Attacks in the Litterature</th>
-  </tr>
-
-  <tr style="height: 13em; white-space: nowrap;">
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Spoofing</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Tampering</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Repudiation</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Info. Disclosure</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Denial of Service</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Elev. of Privileges</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Damage</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Reproducibility</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Exploitability</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Affected Users</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Discoverability</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">DREAD Score</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Users</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Data</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Compute Rsc.</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Embedded H/W</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Comm. Channels</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Admin. Tools</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Remote App. Interface</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Deployment Infra.</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Physical Safety</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Avail.</th>
-    <th style="transform: rotate(-90deg) translateX(-5em)
-translateY(5em)">Robot Integrity</th>
-    <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Data
+  <table class="table">
+    <tr>
+      <th rowspan="2" style="width: 20em">Threat Description</th>
+      <th colspan="6">Threat Category (STRIDE)</th>
+      <th colspan="6">Threat Risk Assessment (DREAD)</th>
+      <th colspan="7">Impacted Assets</th>
+      <th colspan="5">Impacted Entry Points</th>
+      <th rowspan="2" style="width: 30em">Mitigation Strategies</th>
+      <th rowspan="2" style="width: 30em">Similar Attacks in the Litterature</th>
+    </tr>
+    <tr style="height: 13em; white-space: nowrap;">
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Spoofing</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Tampering</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Repudiation</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Info. Disclosure</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Denial of Service</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Elev. of Privileges</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Damage</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Reproducibility</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Exploitability</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Affected Users</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Discoverability</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">DREAD Score</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Robot Compute Rsc.</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Physical Safety</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Robot Avail.</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Robot Integrity</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Data
 Integrity</th>
-    <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Data
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Data
 Avail.</th>
-    <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Data
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Data
 Privacy</th>
-    <th> </th>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Communication / Inter-Component
-Communication</th></tr>
-
-  <tr>
-    <td>An attacker spoofs a component identity.</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td class="success">1</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td>10</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Components should authenticate themselves.</li>
-        <li>Components should not be attributed similar identifiers.</li>
-        <li>Component identifiers should be chosen carefully.</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Embedded H/W</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Robot Comm. Channels</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Robot Admin. Tools</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Remote App. Interface</th>
+      <th style="transform: rotate(-90deg) translateX(-5em) translateY(5em)">Deployment Infra.</th>
+      <th></th>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Communication / Inter-Component
+Communication</th>
+    </tr>
+    <tr>
+      <td>An attacker spoofs a component identity.</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td class="success">1</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td>10</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should authenticate themselves.</li>
+          <li>Components should not be attributed similar identifiers.</li>
+          <li>Component identifiers should be chosen carefully.</li>
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
     Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
     Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker intercepts and alters a message.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>15</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td>
-      <ul>
-        <li>Messages should be signed and/or encrypted.</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker intercepts and alters a message.</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>15</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Messages should be signed and/or encrypted.</li>
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
     Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
     Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker writes to a communication channel without
+    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker writes to a communication channel without
     authorization.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>15</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Components should only communicate on encrypted channels.</li>
-        <li>Sensitive inter-process communication should be done through shared
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>15</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should only communicate on encrypted channels.</li>
+          <li>Sensitive inter-process communication should be done through shared
         memory whenever possible.</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
     Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
     Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker listens to a communication channel without
+    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker listens to a communication channel without
 authorization.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>14</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Components should only communicate on encrypted channels.</li>
-        <li>Sensitive inter-process communication should be done through shared
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>14</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should only communicate on encrypted channels.</li>
+          <li>Sensitive inter-process communication should be done through shared
 memory whenever possible.</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
     Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
     Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker prevents a communication channel from being usable.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>15</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Components should only be allowed to access channels they
+    Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker prevents a communication channel from being usable.</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>15</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should only be allowed to access channels they
 require.</li>
-        <li>Internet-facing channels and robot-only channels should be
+          <li>Internet-facing channels and robot-only channels should be
 isolated.</li>
-        <li>Components behaviors should be tolerant of a loss of communication
+          <li>Components behaviors should be tolerant of a loss of communication
 (e.g. go to x,y vs set velocity to vx, vy).</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
 Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
 Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Communication / Long-Range
-Communication (e.g. WiFi, Cellular Connection)</th></tr>
-
-  <tr>
-    <td>An attacker hijacks robot long-range communication</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td>10</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Long-range communication should always use a secure transport layer
+Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Communication / Long-Range
+Communication (e.g. WiFi, Cellular Connection)</th>
+    </tr>
+    <tr>
+      <td>An attacker hijacks robot long-range communication</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td>10</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Long-range communication should always use a secure transport layer
 (WPA2 for WiFi for instance)</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
 Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
 Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker intercepts robot long-range communications (e.g. MitM)</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td>8</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Long-range communication should always use a secure transport layer
+Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker intercepts robot long-range communications (e.g. MitM)</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td>8</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Long-range communication should always use a secure transport layer
 (WPA2 for WiFi for instance)</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
 Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
 Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker disrupts (e.g. jams) robot long-range communication
+Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker disrupts (e.g. jams) robot long-range communication
 channels.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td>9</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Multiple long-range communication transport layers should be used
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td>9</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Multiple long-range communication transport layers should be used
 when possible (e.g. cellular and WiFi)</li>
-      </ul>
-    </td>
-    <td><a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
+        </ul>
+      </td>
+      <td>
+        <a href="http://arxiv.org/abs/1504.04339">Bonaci, Tamara, Jeffrey
 Herron, Tariq Yusuf, Junjie Yan, Tadayoshi Kohno, and Howard Jay Chizeck. “To
 Make a Robot Secure: An Experimental Analysis of Cyber Security Threats Against
-Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a></td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Communication / Short-Range
-Communication (e.g. Bluetooth)</th></tr>
-
-  <tr>
-  <td>An attacker executes arbitrary code using a short-range communication
+Teleoperated Surgical Robots.” ArXiv:1504.04339 [Cs], April 16, 2015.</a>
+      </td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Communication / Short-Range
+Communication (e.g. Bluetooth)</th>
+    </tr>
+    <tr>
+      <td>An attacker executes arbitrary code using a short-range communication
       protocol vulnerability.</td>
-  <td class="danger">✘</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="danger">3</td>
-  <td class="warning">2</td>
-  <td class="success">1</td>
-  <td class="success">1</td>
-  <td class="danger">3</td>
-  <td>10</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="danger">✘</td>
-  <td class="danger">✘</td>
-  <td class="danger">✘</td>
-  <td class="danger">✘</td>
-  <td class="danger">✘</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td>
-    <ul>
-      <li>Communications protocols should be disabled if unused (by using e.g.
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td>10</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Communications protocols should be disabled if unused (by using e.g.
 rfkill).</li>
-      <li>Binaries and libraries required to support short-range communications
+          <li>Binaries and libraries required to support short-range communications
 should be kept up-to-date.</li>
-    </ul>
-  </td>
-  <td><a href="http://dl.acm.org/citation.cfm?id=2028067.2028073">Checkoway,
+        </ul>
+      </td>
+      <td>
+        <a href="http://dl.acm.org/citation.cfm?id=2028067.2028073">Checkoway,
 Stephen, Damon McCoy, Brian Kantor, Danny Anderson, Hovav Shacham, Stefan
 Savage, Karl Koscher, Alexei Czeskis, Franziska Roesner, and Tadayoshi Kohno.
 “Comprehensive Experimental Analyses of Automotive Attack Surfaces.” In
@@ -999,347 +967,338 @@ Berkeley, CA, USA: USENIX Association, 2011.</a></td>
   <tr>
     <td>An attacker compromises the real-time clock to disrupt the kernel RT
 scheduling guarantees.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td>11</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
-        <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
-        <li>/boot should not be accessible by robot processes</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.1109/MSP.2012.104">Dessiatnikoff, Anthony,
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td>11</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
+          <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
+          <li>/boot should not be accessible by robot processes</li>
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.1109/MSP.2012.104">Dessiatnikoff, Anthony,
 Yves Deswarte, Eric Alata, and Vincent Nicomette. “Potential Attacks on
 Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
-2012): 71–74.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker compromises the OS or kernel to alter robot data.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td>11</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>OS user accounts should be properly secured (randomized password or
+2012): 71–74.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker compromises the OS or kernel to alter robot data.</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td>11</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>OS user accounts should be properly secured (randomized password or
 e.g. SSH keys)</li>
-        <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
-        <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
-        <li>/boot should not be accessible by robot processes</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.1109/COGSIMA.2017.7929597">Clark, George
+          <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
+          <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
+          <li>/boot should not be accessible by robot processes</li>
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.1109/COGSIMA.2017.7929597">Clark, George
 W., Michael V. Doran, and Todd R. Andel. “Cybersecurity Issues in
 Robotics.” In 2017 IEEE Conference on Cognitive and Computational Aspects of
-Situation Management (CogSIMA), 1–5. Savannah, GA, USA: IEEE, 2017.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker compromises the OS or kernel to eavesdrop on robot
+Situation Management (CogSIMA), 1–5. Savannah, GA, USA: IEEE, 2017.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker compromises the OS or kernel to eavesdrop on robot
 data.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td>9</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>OS user accounts should be properly secured (randomized password or
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td>9</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>OS user accounts should be properly secured (randomized password or
 e.g. SSH keys)</li>
-        <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
-        <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
-        <li>/boot should not be accessible by robot processes</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.1109/COGSIMA.2017.7929597">Clark, George
+          <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
+          <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
+          <li>/boot should not be accessible by robot processes</li>
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.1109/COGSIMA.2017.7929597">Clark, George
 W., Michael V. Doran, and Todd R. Andel. “Cybersecurity Issues in
 Robotics.” In 2017 IEEE Conference on Cognitive and Computational Aspects of
-Situation Management (CogSIMA), 1–5. Savannah, GA, USA: IEEE, 2017.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker gains access to the robot OS though its administration
+Situation Management (CogSIMA), 1–5. Savannah, GA, USA: IEEE, 2017.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker gains access to the robot OS though its administration
 interface.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>14</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Administrative interface should be properly secured (e.g. no
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>14</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Administrative interface should be properly secured (e.g. no
 default/static password).</li>
-        <li>Administrative interface should be accessible by a limited number
+          <li>Administrative interface should be accessible by a limited number
 of physical machines. For instance, one may require the user to be physically
 co-located with the robot (see e.g. ADB for Android)</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Component-Oriented
-Architecture</th></tr>
-
-  <tr>
-    <td>A node accidentally writes incorrect data to a communication
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Component-Oriented
+Architecture</th>
+    </tr>
+    <tr>
+      <td>A node accidentally writes incorrect data to a communication
 channel.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>13</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Components should always validate received messages.</li>
-        <li>Invalid message events should be logged and users should be
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>13</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should always validate received messages.</li>
+          <li>Invalid message events should be logged and users should be
 notified.</li>
-      </ul>
-    </td>
-    <td><a
-href="http://sunnyday.mit.edu/nasa-class/Ariane5-report.html">Jacques-Louis
+        </ul>
+      </td>
+      <td>
+        <a href="http://sunnyday.mit.edu/nasa-class/Ariane5-report.html">Jacques-Louis
 Lions et al. "Ariane S Flight 501 Failure." ESA Press Release 33–96, Paris,
-1996.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker deploys a malicious component on the robot.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>14</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Components should not trust other components (received messages
+1996.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker deploys a malicious component on the robot.</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>14</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should not trust other components (received messages
 needs to be validated, etc.).</li>
-        <li>Users should not be able to deploy components directly.</li>
-        <li>Components binary should be digitally signed.</li>
-        <li>Components source code should be audited.</li>
-        <li>Components should run with minimal privileges (CPU and memory
+          <li>Users should not be able to deploy components directly.</li>
+          <li>Components binary should be digitally signed.</li>
+          <li>Components source code should be audited.</li>
+          <li>Components should run with minimal privileges (CPU and memory
 quota, minimal I/O and access to the filesystem)</li>
-      </ul>
-    </td>
-    <td><a href="http://dl.acm.org/citation.cfm?id=2028067.2028073">Checkoway,
+        </ul>
+      </td>
+      <td>
+        <a href="http://dl.acm.org/citation.cfm?id=2028067.2028073">Checkoway,
 Stephen, Damon McCoy, Brian Kantor, Danny Anderson, Hovav Shacham, Stefan
 Savage, Karl Koscher, Alexei Czeskis, Franziska Roesner, and Tadayoshi Kohno.
 “Comprehensive Experimental Analyses of Automotive Attack Surfaces.” In
 Proceedings of the 20th USENIX Conference on Security, 6–6. SEC’11.
-Berkeley, CA, USA: USENIX Association, 2011.</a></td>
-  </tr>
-
-  <tr>
-    <td>An attacker can prevent a component running on the robot from executing
+Berkeley, CA, USA: USENIX Association, 2011.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>An attacker can prevent a component running on the robot from executing
 normally.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>13</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Components should not be trusted and be properly isolated (e.g. run
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>13</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Components should not be trusted and be properly isolated (e.g. run
 as different users)</li>
-        <li>When safe, components should attempt to restart automatically when
+          <li>When safe, components should attempt to restart automatically when
 a fatal error occurs.</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.1109/MSP.2012.104">Dessiatnikoff, Anthony,
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.1109/MSP.2012.104">Dessiatnikoff, Anthony,
 Yves Deswarte, Eric Alata, and Vincent Nicomette. “Potential Attacks on
 Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
-2012): 71–74.</a></td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Configuration Management</th></tr>
-
-  <tr>
-    <td>An attacker modifies configuration values without authorization.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>15</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Configuration data access control list should be implemented.</li>
-        <li>Configuration data modifications should be logged.</li>
-        <li>Configuration write-access should be limited to the minimum set of
+2012): 71–74.</a>
+      </td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Configuration Management</th>
+    </tr>
+    <tr>
+      <td>An attacker modifies configuration values without authorization.</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>15</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Configuration data access control list should be implemented.</li>
+          <li>Configuration data modifications should be logged.</li>
+          <li>Configuration write-access should be limited to the minimum set of
 users and/or components.</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.3390/s18051643">Ahmad Yousef, Khalil, Anas
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.3390/s18051643">Ahmad Yousef, Khalil, Anas
 AlMajali, Salah Ghalyon, Waleed Dweik, and Bassam Mohd. “Analyzing
 Cyber-Physical Threats on Robotic Platforms.” Sensors 18, no. 5 (May 21,
 2018): 1643.</a></td>
@@ -1378,305 +1337,289 @@ Cyber-Physical Threats on Robotic Platforms.” Sensors 18, no. 5 (May 21,
         <li>Configuration data should be considered as private.</li>
         <li>Configuration data should accessible by the minimum set of users
 and/or components.</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.3390/s18051643">Ahmad Yousef, Khalil, Anas
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.3390/s18051643">Ahmad Yousef, Khalil, Anas
 AlMajali, Salah Ghalyon, Waleed Dweik, and Bassam Mohd. “Analyzing
 Cyber-Physical Threats on Robotic Platforms.” Sensors 18, no. 5 (May 21,
-2018): 1643.</a></td>
-  </tr>
-
-  <tr>
-    <td>A user accidentally misconfigures the robot.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>15</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Configuration data changes should be reversible.</li>
-        <li>Large change should be applied atomically.</li>
-        <li>Fault monitoring should be able to automatically reset the
+2018): 1643.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>A user accidentally misconfigures the robot.</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>15</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Configuration data changes should be reversible.</li>
+          <li>Large change should be applied atomically.</li>
+          <li>Fault monitoring should be able to automatically reset the
 configuration to a safe state if the robot becomes unavailable.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Data Storage (File
-System)</th></tr>
-
-  <tr>
-    <td>An attacker modifies the robot file system by physically acessing
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Data Storage (File
+System)</th>
+    </tr>
+    <tr>
+      <td>An attacker modifies the robot file system by physically acessing
 it.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>15</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Robot filesystem must be encrypted. The key should be stored in a
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>15</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Robot filesystem must be encrypted. The key should be stored in a
             secure enclave (TPM).</li>
-        <li>Robot filesystem should be wiped out if the robot is physically
+          <li>Robot filesystem should be wiped out if the robot is physically
             compromised.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker eavesdrops on the robot file system by physically acessing
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker eavesdrops on the robot file system by physically acessing
 it.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>13</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Robot filesystem must be encrypted. Theykey should be stored in a
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>13</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Robot filesystem must be encrypted. Theykey should be stored in a
 secure enclave (TPM).</li>
-        <li>Robot filesystem should be wiped out if the robot perimeter is
+          <li>Robot filesystem should be wiped out if the robot perimeter is
 breached.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker saturates the robot disk with data.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>13</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Robot components disk quota should be bounded.</li>
-        <li>Disk usage should be properly monitored, logged and reported.</li>
-        <li>Optionally, components may have the option to run w/o any file
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker saturates the robot disk with data.</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>13</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Robot components disk quota should be bounded.</li>
+          <li>Disk usage should be properly monitored, logged and reported.</li>
+          <li>Optionally, components may have the option to run w/o any file
 system access. This should be prefered whenever possible.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Software / Logs</th></tr>
-
-  <tr>
-    <td>An attacker exfiltrates log data to a remote server.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>12</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Logs should never contain private data. Log data should be
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Software / Logs</th>
+    </tr>
+    <tr>
+      <td>An attacker exfiltrates log data to a remote server.</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>12</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Logs should never contain private data. Log data should be
 anonymized when needed.</li>
-        <li>Logs should be rotated and deleted after a pre-determined retention
+          <li>Logs should be rotated and deleted after a pre-determined retention
 period.</li>
-        <li>Logs should be encrypted in-transit and at-rest.</li>
-        <li>Logs access should be ACL protected.</li>
-        <li>Logs access should be monitored to enable later audits.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Hardware / Sensors</th></tr>
-
-  <tr>
-    <td>An attacker spoofs a robot sensor (by e.g. replacing the sensor itself
+          <li>Logs should be encrypted in-transit and at-rest.</li>
+          <li>Logs access should be ACL protected.</li>
+          <li>Logs access should be monitored to enable later audits.</li>
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Hardware / Sensors</th>
+    </tr>
+    <tr>
+      <td>An attacker spoofs a robot sensor (by e.g. replacing the sensor itself
 or manipulating the bus).</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>12</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Sensors should embed an identifier to detect hardware
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>12</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Sensors should embed an identifier to detect hardware
             tampering.</li>
-        <li>Components should try to explicitly refer to which sensor ID they
+          <li>Components should try to explicitly refer to which sensor ID they
             expect data from.</li>
-        <li>Sensor data should be signed and ideally encrypted over the
+          <li>Sensor data should be signed and ideally encrypted over the
             wire.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29"> Embedded / Hardware / Actuators</th></tr>
-
-  <tr>
-    <td>An attacker spoofs a robot actuator.</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>10</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Actuators should embed an identifier.</li>
-        <li>Command vector should be signed (ideally encrypted) to prevent
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Hardware / Actuators</th>
+    </tr>
+    <tr>
+      <td>An attacker spoofs a robot actuator.</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>10</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Actuators should embed an identifier.</li>
+          <li>Command vector should be signed (ideally encrypted) to prevent
 manipulation.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker modifies the command sent to the robot actuators.
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker modifies the command sent to the robot actuators.
 (intercept &amp; retransmit)</td>
     <td class="danger">✘</td>
     <td class="success">✓</td>
@@ -1709,129 +1652,122 @@ manipulation.</li>
         <li>Actuators should embed an identifier.</li>
         <li>Command vector should be signed (ideally encrypted) to prevent
 manipulation.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker intercepts the robot actuators command. (can recompute
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker intercepts the robot actuators command. (can recompute
 localization)</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>10</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Command vector should be encrypted.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker sends malicious command to actuators to trigger the
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>10</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Command vector should be encrypted.</li>
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker sends malicious command to actuators to trigger the
 E-Stop</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td>11</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>If a joint command is exceeding the joint limits, a specific code
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td>11</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>If a joint command is exceeding the joint limits, a specific code
 path for handling out-of-bounds command should be executed instead of
 triggering the E-Stop. Whenever safe, the command could be discarded and the
 error reported to the user for instance.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Embedded / Hardware / Auxilliary Functions</th></tr>
-
-  <tr>
-    <td>An attacker compromises the software or send malicious commands to
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Embedded / Hardware / Auxilliary Functions</th>
+    </tr>
+    <tr>
+      <td>An attacker compromises the software or send malicious commands to
 drain the robot battery.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>14</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td>
-      <ul>
-        <li>Per-node CPU quota should be enforced.</li>
-        <li>Appropriate protection should be implemented to prevent actuators
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>14</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Per-node CPU quota should be enforced.</li>
+          <li>Appropriate protection should be implemented to prevent actuators
 from over-heating.</li>
-        <li>If the battery level becomes critically low, the robot should be
+          <li>If the battery level becomes critically low, the robot should be
 able to bring itself to a stop.</li>
-      </ul>
-    </td>
-    <td><a href="https://doi.org/10.1109/MSP.2012.104">Dessiatnikoff, Anthony,
+        </ul>
+      </td>
+      <td>
+        <a href="https://doi.org/10.1109/MSP.2012.104">Dessiatnikoff, Anthony,
 Yves Deswarte, Eric Alata, and Vincent Nicomette. “Potential Attacks on
 Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
 2012): 71–74.</a></td>
@@ -1945,314 +1881,292 @@ Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
       <li>Remote users should be granted minimum privileges</li>
       <li>Credentials on desktop machines should be stored securely
           (secure enclave, TPM, etc.)</li>
-      <li>User credentials should be revokable or expire automatically</li>
-      <li>User credentials should be tied to the user identity for audit
+          <li>User credentials should be revokable or expire automatically</li>
+          <li>User credentials should be tied to the user identity for audit
           purposes</li>
-    </ul>
-  </td>
-  <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Remote / Cloud Integration</th></tr>
-
-  <tr>
-    <td>An attacker intercepts cloud service credentials deployed on the
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Remote / Cloud Integration</th>
+    </tr>
+    <tr>
+      <td>An attacker intercepts cloud service credentials deployed on the
 robot.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td>9</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Cloud services should be granted minimal privileges.</li>
-        <li>Cloud services credentials should be revokable.</li>
-        <li>Cloud services should be audited for abuse / unauthorized
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td>9</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Cloud services should be granted minimal privileges.</li>
+          <li>Cloud services credentials should be revokable.</li>
+          <li>Cloud services should be audited for abuse / unauthorized
 access.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker gains read access to robot cloud data.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td>9</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Cloud data stores should encrypt data at rest</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker alters or delete robot cloud data.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="warning">2</td>
-    <td class="warning">2</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td>9</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Cloud data should be have propery backup mechanisms.</li>
-        <li>Cloud data access should be audited. If an intrusion is detected, a
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker gains read access to robot cloud data.</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td>9</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Cloud data stores should encrypt data at rest</li>
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker alters or delete robot cloud data.</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="warning">2</td>
+      <td class="warning">2</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td>9</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td>
+        <ul>
+          <li>Cloud data should be have propery backup mechanisms.</li>
+          <li>Cloud data access should be audited. If an intrusion is detected, a
 process to restore the system back to a previous "uncompromised" state should
 be available.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Remote / Software Deployment</th></tr>
-
-  <tr>
-    <td>An attacker spoofs the deployment service.</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>14</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="warning">▲</td>
-    <td>
-      <ul>
-        <li>Deployment service should be authenticated• Communication with
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Remote / Software Deployment</th>
+    </tr>
+    <tr>
+      <td>An attacker spoofs the deployment service.</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>14</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Deployment service should be authenticated• Communication with
 the deployment service should be done over a secure channel.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker modifies the binaries sent by the deployment service.</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>14</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="warning">▲</td>
-    <td class="warning">▲</td>
-    <td>
-      <ul>
-        <li>Deployment service should be authenticated• Communication with
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker modifies the binaries sent by the deployment service.</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>14</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="warning">▲</td>
+      <td class="warning">▲</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Deployment service should be authenticated• Communication with
 the deployment service should be done over a secure channel.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker intercepts the binaries sent by the depoyment service.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>12</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td>
-      <ul>
-        <li>Deployment service should be authenticated• Communication with
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker intercepts the binaries sent by the depoyment service.</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>12</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td>
+        <ul>
+          <li>Deployment service should be authenticated• Communication with
 the deployment service should be done over a secure channel.</li>
-      </ul>
-    </td>
-    <td> </td>
-  </tr>
-
-  <tr>
-    <td>An attacker prevents the robot and the deployment service from
+        </ul>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>An attacker prevents the robot and the deployment service from
 communicating.</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">1</td>
-    <td class="danger">3</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td class="danger">3</td>
-    <td>12</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td></td>
-    <td> </td>
-  </tr>
-
-  <tr><th colspan="29">Cross-Cutting Concerns / Credentials, PKI and
-Secrets</th></tr>
-
-  <tr>
-    <td>An attacker compromises a Certificate Authority trusted by the
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">1</td>
+      <td class="danger">3</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td class="danger">3</td>
+      <td>12</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th colspan="29">Cross-Cutting Concerns / Credentials, PKI and
+Secrets</th>
+    </tr>
+    <tr>
+      <td>An attacker compromises a Certificate Authority trusted by the
 robot.</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="danger">3</td>
-    <td class="success">1</td>
-    <td class="success">1</td>
-    <td class="warning">2</td>
-    <td class="danger">3</td>
-    <td>10</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td></td>
-    <td> </td>
-  </tr>
-
-</table>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="success">✓</td>
+      <td class="danger">3</td>
+      <td class="success">1</td>
+      <td class="success">1</td>
+      <td class="warning">2</td>
+      <td class="danger">3</td>
+      <td>10</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="success">✓</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td class="danger">✘</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
 </div>
 
 ## Threat Analysis for the `TurtleBot 3` Robotic Platform
