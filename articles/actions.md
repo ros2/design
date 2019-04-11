@@ -190,13 +190,13 @@ State transitions triggered by the action server according to its designed behav
 - **execute** - Start execution of an accepted goal.
 - **succeed** - Notify that the goal completed successfully.
 - **abort** - Notify that an error was encountered during processing of the goal and it had to be aborted.
-- **cancel** - Notify that canceling the goal completed successfully.
+- **canceled** - Notify that canceling the goal completed successfully.
 
 State transitions triggered by the action client:
 
 - **send_goal** - A goal is sent to the action server.
 The state machine is only started if the action server *accepts* the goal.
-- **request_cancel** - Request that the action server stop processing the goal.
+- **cancel_goal** - Request that the action server stop processing the goal.
 A transition only occurs if the action server *accepts* the request to cancel the goal.
 
 ## API
