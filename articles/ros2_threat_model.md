@@ -64,6 +64,7 @@ th {
       - [Entry Points](#entry-points)
     - [Robot Application Components and Trust Boundaries](#robot-application-components-and-trust-boundaries)
     - [Threat Analysis and Modeling](#threat-analysis-and-modeling)
+    - [Including a new robot into the threat model](#including-a-new-robot-into-the-threat-model)
   - [Threat Analysis for the `TurtleBot 3` Robotic Platform](#threat-analysis-for-the-turtlebot-3-robotic-platform)
     - [System description](#system-description)
     - [Architecture Dataflow diagram](#architecture-dataflow-diagram)
@@ -2168,6 +2169,27 @@ robot.</td>
     </tr>
   </table>
 </div>
+
+### Including a new robot into the threat model
+
+The following steps are recommended in order to extend this document with additional threat models:
+
+1. Determine the robot evaluation scenario. This will include:
+   * System description and specifications
+   * Data assets
+2. Dfine the robot environment:
+   * External actors
+   * Entry points
+   * Use cases
+3. Design security boundary and architectural schemas for the robotic application.
+4. Evaluate and prioritize entry points
+   * Make use of the RSF to find applicable weaknessess on the robot.
+   * Take existing documentation as help for finding applicable entry points.
+5. Evaluate existing threats based on general threat table and add new ones to the specific threat table.
+   * Evaluate new threats with DREAD and STRIDE methodologies.
+6. Design hypothetical attack trees for each of the entry points, detailing the affected resources on the process.
+7. Create a Pull Request and submit the changes to the ros2/design repository.
+
 
 ## Threat Analysis for the `TurtleBot 3` Robotic Platform
 
