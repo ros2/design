@@ -2177,7 +2177,7 @@ The following steps are recommended in order to extend this document with additi
 1. Determine the robot evaluation scenario. This will include:
    * System description and specifications
    * Data assets
-2. Dfine the robot environment:
+2. Define the robot environment:
    * External actors
    * Entry points
    * Use cases
