@@ -2183,10 +2183,10 @@ The following steps are recommended in order to extend this document with additi
    * Use cases
 3. Design security boundary and architectural schemas for the robotic application.
 4. Evaluate and prioritize entry points
-   * Make use of the RSF to find applicable weaknessess on the robot.
+   * Make use of the RSF[rsf] to find applicable weaknessess on the robot.
    * Take existing documentation as help for finding applicable entry points.
 5. Evaluate existing threats based on general threat table and add new ones to the specific threat table.
-   * Evaluate new threats with DREAD and STRIDE methodologies.
+   * Evaluate new threats with DREAD[wikipedia_dread] and STRIDE[wikipedia_stride] methodologies.
 6. Design hypothetical attack trees for each of the entry points, detailing the affected resources on the process.
 7. Create a Pull Request and submit the changes to the ros2/design repository.
 
