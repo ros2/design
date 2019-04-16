@@ -190,7 +190,7 @@ State transitions triggered by the action server according to its designed behav
 - **execute** - Start execution of an accepted goal.
 - **succeed** - Notify that the goal completed successfully.
 - **abort** - Notify that an error was encountered during processing of the goal and it had to be aborted.
-- **cancel** - Notify that canceling the goal completed successfully.
+- **canceled** - Notify that canceling the goal completed successfully.
 
 State transitions triggered by the action client:
 
