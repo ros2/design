@@ -3541,7 +3541,7 @@ to be evaluated.
 ## Threat Analysis for the `MARA` Robotic Platform
 
 ### System description
-The application considered in this section is a **[MARA][mara_robot] modular robot operating on an industrial environment while performing a pick & place activity**. MARA is the first robot to run ROS 2 natively. It is an industrial-grade collaborative robotic arm which runs ROS 2.0 on each joint, end-effector, external sensor or even on its industrial controller. Throughout the H-ROS communication bus, MARA empowers new possibilities and applications in the professional landscape of robotics. It offers millisecond-level distributed bounded latencies or submicrosecond-level synchronization capabilities.
+The application considered in this section is a **[MARA][mara_robot] modular robot operating on an industrial environment while performing a pick & place activity**. MARA is the first robot to run ROS 2 natively. It is an industrial-grade collaborative robotic arm which runs ROS 2.0 on each joint, end-effector, external sensor or even on its industrial controller. Throughout the H-ROS communication bus, MARA is empowered with new possibilities  in the professional landscape of robotics. It offers millisecond-level distributed bounded latencies for usual payloads and submicrosecond-level synchronization capabilities across ROS 2 components.
 
 Built out of individual modules that natively run on ROS 2, MARA can be physically extended in a seamless manner. However, this also moves towards more networked robots and production environments which brings new challenges, especially in terms of [security and safety][safe_sec].
 
