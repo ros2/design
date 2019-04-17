@@ -39,7 +39,7 @@ th {
 
 # {{ page.title }}
 
-**DRAFT DOCUMENT**
+This is a **DRAFT DOCUMENT**.
 
 <div class="alert alert-warning" markdown="1">
 **Disclaimer**:
@@ -149,7 +149,7 @@ can be compromised. For instance, actors may be able to give commands to the
 robot which may be abused to attack the system.
 
 **Assets** represent any user, resource (e.g. disk space), or property (e.g. physical
-safety of users) of the system that should be defended against attackers. 
+safety of users) of the system that should be defended against attackers.
 Properties of assets can be related to acheiving the business goals of the robot.
 For example, sensor data is a resource/asset of the system and the privacy of that
 data is a system property and a business goal.
@@ -337,7 +337,8 @@ with the system?).
 
 ### Robot Application Components and Trust Boundaries
 
-The system is divided into hardware (embedded general-purpose computer, sensors, actuators), multiple components
+The system is divided into hardware (embedded general-purpose computer,
+sensors, actuators), multiple components
 (usually processes) running on multiple computers (trusted or non-trusted
 components) and data stores (embedded or in the cloud).
 
@@ -997,6 +998,13 @@ scheduling guarantees.</td>
           <li>Hardened kernel (prevent dynamic loading of kernel modules)</li>
           <li>Ensure only trustable kernels are used (e.g. Secure Boot)</li>
           <li>/boot should not be accessible by robot processes</li>
+          <li><span markdown="1">
+          [NTP security best practices][ietf_ntp_bcp] should be enforced to ensure no
+          attacker can manipulate the robot computer clock. See also [RFC 7384][rfc_7384],
+          [NTPsec][ntpsec] and
+          [Emerging Solutions in Time Synchronization Security][emerging_solutions_time_sync_sec].
+          Additionally, [PTP protocol][ieee_1588_2008] can be considered instead of NTP.
+          </span></li>
         </ul>
       </td>
       <td>
@@ -2279,11 +2287,13 @@ computer.
   * [`raspicam2_node`][raspicam2_node] a node publishing Raspberry Pi Camera
     Module data to ROS 2.
 * An XRCE Agent runs on the Raspberry, and is used by a DDS-XRCE client running
-  on the [OpenCR 1.0 board][opencr_1_0], that publishes  IMU sensor data to ROS
+  on the [OpenCR 1.0 board][opencr_1_0], that publishes IMU sensor data to ROS
   topics, and controls the wheels of the TurtleBot based on the
-  [teleoperation][tb3_teleop] messages published as ROS topics.
+  [teleoperation][tb3_teleop] messages published as ROS topics. This channel uses
+  serial communication.
 * A Lidar driver process running on the Raspberry interfaces with the Lidar, and
-  uses a DDS-XRCE client to publish the sensor data to several ROS topics.
+  uses a DDS-XRCE client to publish data over UDP to an XRCE agent also running on
+  the Raspberry Pi. The agent sends the sensor data to several ROS topics.
 * An SSH client process is running in the field testing host, connecting to the
   Raspberry PI for diagnostic and debugging.
 * A software update agent process is running on the Raspberry PI, OpenCR board,
@@ -2362,6 +2372,8 @@ TurtleBot3 software dependencies.
     * When SROS is enabled, attackers may try to compromise the CA authority
       or the private keys to generate or intercept private keys as well as
       emitting malicious certificates to allow spoofing.
+    * USB connection is used for communication between Raspberry Pi and OpenCR board
+      and LIDAR sensor.
   * SSH
     * SSH access is possible to anyone on the same LAN or WAN (if
       port-forwarding is enabled). Many images are
@@ -2560,8 +2572,8 @@ through a network connection to e.g. stop the robot.</td>
       <ul>
         <li>Enable SROS / DDS Security Extension to authenticate and encrypt
         DDS communications. Message tampering is mitigated by DDS security as
-  message authenticity is verified by default (with preshared
-  HMACs / digital signatures)</li>
+        message authenticity is verified by default (with preshared
+        HMACs / digital signatures)</li>
       </ul>
     </td>
     <td class="success">Risk is reduced if SROS is used.</td>
@@ -2613,7 +2625,7 @@ manually is cumbersome and error-prone.</td>
   </tr>
 
   <tr>
-    <td rowspan="3">An attacker listens to a communication channel without
+    <td rowspan="4">An attacker listens to a communication channel without
 authorization.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
@@ -2641,7 +2653,7 @@ vulnerabilities.</td>
       <ul>
         <li>DDS Security Governance document must set metadata_protection_kind
 to ENCRYPT to prevent malicious actors from observing communications.</li>
-        <li>DDS Security Governance document mus set
+        <li>DDS Security Governance document must set
 enable_discovery_protection to True to prevent malicious actors from
 enumerating and fingerprinting DDS participants.</li>
         <li>DDS Security Governance document must enable_liveliness_protection
@@ -2675,8 +2687,25 @@ to True</li>
     </td>
     <td class="warning">Risk is mitigated if DDS-Security is configured
 appropriately.</td>
-    <td> </td>
+    <td></td>
   </tr>
+  <tr>
+      <td class="danger">✓</td>
+      <td class="danger">✓</td>
+      <td class="danger">✓</td>
+      <td class="success">✘</td>
+      <td class="success">✘</td>
+      <td class="danger">✓</td>
+      <td>TurtleBot LIDAR measurements are saved to a remote location controlled by
+  the attacker. </td>
+      <td>
+        Local communication using XRCE should be done over the loopback interface.
+      </td>
+      <td class="danger"> This doesn't protect the serial communication from the
+        LIDAR sensor to the Raspberry Pi.
+      </td>
+      <td></td>
+    </tr>
 
   <tr>
     <td rowspan="2">An attacker prevents a communication channel from being
@@ -2807,8 +2836,8 @@ default.</td>
   <tr><th colspan="11">Embedded / Software / OS & Kernel</th></tr>
 
   <tr>
-    <td>An attacker compromises the real-time clock to disrupt the kernel RT
-scheduling guarantees.</td>
+    <td rowspan="2">An attacker compromises the real-time clock to disrupt the
+    kernel RT scheduling guarantees.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
     <td class="success">✘</td>
@@ -2824,6 +2853,35 @@ this threat.</td>
         integration.
         SecureBoot support would probably be needed to completely mitigate this
         threat.</td>
+  </tr>
+
+  <tr>
+    <td class="danger">✓</td>
+    <td class="danger">✓</td>
+    <td class="success">✘</td>
+    <td class="success">✘</td>
+    <td class="success">✘</td>
+    <td class="warning">✘/✓</td>
+    <td>
+    A malicious actor sends incorrect NTP packages to enable other attacks
+    (allow the use of expired certificates) or to prevent the robot software
+    from behaving properly (time between sensor readings could be miscomputed).
+    </td>
+    <td>
+      <ul>
+        <li><span markdown="1">
+        [Implement NTP Best Practices][ntp_best_practices]</span></li>
+        <li>Use a hardware RTC clock such as the one provided by the Zymbit
+        key to reduce the system reliance on NTP.</li>
+        <li>If your robot relies on GPS for localization purpose, consider
+        using time from your GPS received (note that it opens the door to
+        other vulnerabilities such as GPS jamming).</li>
+      </ul>
+    </td>
+    <td class="warning">
+    TurtleBot / Zymbit Key integration and following best practices for
+    NTP configuration will mostly mitigate this threat.</td>
+    <td> </td>
   </tr>
 
   <tr>
@@ -3201,7 +3259,6 @@ turned off under some conditions.</td>
     <td></td>
     <td> </td>
   </tr>
-
   <tr><th colspan="11">Embedded / Hardware / Actuators</th></tr>
 
   <tr>
@@ -3214,8 +3271,9 @@ turned off under some conditions.</td>
     <td class="warning">✘/✓</td>
     <td>TurtleBot connection to the OpenCR board is intercepted motor control
 commands are altered.</td>
-    <td></td>
-    <td></td>
+    <td class="warning">Enclose OpenCR board and Raspberry Pi with a case and
+    use ZimKey perimeter breach protection.</td>
+    <td>Robot can be rendered inoperable if perimeter is breached.</td>
     <td> </td>
   </tr>
 
@@ -3230,8 +3288,9 @@ commands are altered.</td>
     <td class="warning">✘/✓</td>
     <td>TurtleBot connection to the OpenCR board is intercepted, motor control
 commands are altered.</td>
-    <td></td>
-    <td></td>
+    <td class="warning">Enclose OpenCR board and Raspberry Pi with a case and
+    use ZimKey perimeter breach protection.</td>
+    <td>Robot can be rendered inoperable if perimeter is breached.</td>
     <td> </td>
   </tr>
 
@@ -3246,10 +3305,10 @@ localization)</td>
     <td class="warning">✘/✓</td>
     <td>TurtleBot connection to the OpenCR board is intercepted motor control
 commands are logged.</td>
-    <td class="success">No mitigation - risk is acceptable for this particular
-reference architecture.</td>
-    <td>No mitigation needed.</td>
-    <td> </td>
+    <td class="warning">Enclose OpenCR board and Raspberry Pi with a case and
+    use ZimKey perimeter breach protection.</td>
+    <td>Robot can be rendered inoperable if perimeter is breached.</td>
+    <td></td>
   </tr>
 
   <tr>
@@ -4995,20 +5054,26 @@ In the course of a first funded vulnerability assessment, <a style="color:black;
 [aws_code_signing]: https://docs.aws.amazon.com/signer/latest/developerguide/Welcome.html
 [aztarna]: https://arxiv.org/abs/1812.09490
 [cw_sample_app]: https://github.com/aws-robotics/aws-robomaker-sample-application-cloudwatch
+[emerging_solutions_time_sync_sec]: https://www.nist.gov/sites/default/files/documents/2016/11/02/08_odonoghue_emerging_security_overview.pdf
 [fastrtps_security]: https://eprosima-fast-rtps.readthedocs.io/en/latest/security.html
 [hans_modular_joint]: https://acutronicrobotics.com/products/modular-joints/
 [hrim]: https://acutronicrobotics.com/technology/hrim/
 [hros]: https://acutronicrobotics.com/technology/H-ROS/
 [hros_connector_A]: https://acutronicrobotics.com/products/modular-joints/files/HROS_Connector_A_%20Robot_Assembly_datasheet_v1.0.pdf
 [hrossom]: https://acutronicrobotics.com/technology/som/
+[ieee_1588_2008]: https://standards.ieee.org/standard/1588-2008.html
+[ietf_ntp_bcp]: https://datatracker.ietf.org/doc/draft-ietf-ntp-bcp/
 [joy_node]: https://github.com/ros2/joystick_drivers/blob/ros2/joy/src/joy_node_linux.cpp
 [mara_datasheet]: https://acutronicrobotics.com/products/mara/files/Robotic_arm_MARA_datasheet_v1.2.pdf
 [mara_joint_ros2_api]: https://acutronicrobotics.com/docs/products/actuators/modular_motors/hans/ros2_api
 [mara_robot]: https://acutronicrobotics.com/products/mara/
+[ntp_best_practices]: https://tools.ietf.org/id/draft-ietf-ntp-bcp-08.html
+[ntpsec]: https://www.ntpsec.org/
 [opencr_1_0]: https://github.com/ROBOTIS-GIT/OpenCR
 [orc]: https://acutronicrobotics.com/products/orc/
 [raspicam2_node]: https://github.com/christianrauch/raspicam2_node
 [rctf]: https://arxiv.org/abs/1810.02690
+[rfc_7384]: https://tools.ietf.org/html/rfc7384
 [rmw_fastrtps]: https://github.com/ros2/rmw_fastrtps
 [robotiq_modular_gripper]: https://acutronicrobotics.com/products/modular-grippers/
 [ros_wiki_tb]: https://wiki.ros.org/Robots/TurtleBot
