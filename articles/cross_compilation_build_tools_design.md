@@ -5,7 +5,7 @@ abstract:
   This article is a design proposal for extending the build tools for ROS 2 to
   simplify cross-compiling ROS 2 packages for platforms currently not supported
   by ROS 2, or building on a host with different platforms than the target
-  platform. That later use case is particularly useful for speeding up build
+  platform. That latter use case is particularly useful for speeding up build
   times by building the code on a powerful development workstation, and then
   deploying the binaries to a constrained resources hardware that uses the
   target platform, thus making the development cycle much faster.
