@@ -27,15 +27,17 @@ Original Author: {{ page.author }}
 
 ## Background
 
-The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation)
-contains instructions for cross-compiling ROS 2 to unsupported platforms, using
-some configuration files for CMake and Docker that is setting maintained in the
-[ros2/cross_compile repository](https://github.com/ros2/cross_compile/).
-However, that tutorial doesn't provide instructions to build other ROS 2
-packages, but just for building a whole ROS 2 distribution. Ideally, we should
-be able to cross-compile a ROS package for ROS 2 by launching a single
-`colcon build` command. Finally, cross-compiling for other platforms besides
-ARM64 is not supported in the [ros2/cross_compile repository](https://github.com/ros2/cross_compile/).
+The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation),
+and the [steve/ros2_raspbian_tools repository](https://github.com/esteve/ros2_raspbian_tools)
+contain instructions for cross-compiling ROS 2 to unsupported platforms like
+ARM64 and ARM-HF, using some configuration files for CMake and Docker. However,
+those instructions don't include how to build other ROS 2 packages, but just
+for building a whole ROS 2 distribution. Ideally, we should be able to
+cross-compile a ROS package for ROS 2 by launching a single `colcon build`
+command. Finally, even though other projects like [steve/ros2_raspbian_tools](https://github.com/esteve/ros2_raspbian_tools),
+[esteve/ros2_java](https://github.com/esteve/ros2_java) provide support
+for additional platforms like Android and iOS, we would like to have an extensible
+design that allows supporting new platforms with low effort.
 
 ## Proposed Approach
 
@@ -150,7 +152,8 @@ we would need to:
 - Prepare and publish a base ROS 2 Docker image for the new platform, both
   fetching the dependencies using the ROS 2 source using `rosdep install`, and
   from the pre-built binary if available for that platform.
-- Adapt the toolchain file for the new platform, if required.
+- Adapt the toolchain file for the new platform, if required. For that the
+  toolchains in [ruslo/polly](https://github.com/ruslo/polly) might be useful.
 - Extend the `cc-build` plugin to include dependencies for the compiler for
   the new platform, and any modifications needed to use a suitable toolchain
   file for the platform.
