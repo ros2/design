@@ -42,7 +42,7 @@ design that allows supporting new platforms with low effort.
 ## Proposed Approach
 
 We propose continuing with the general approach of the cross-compilation
-tutorial, based on building a sysroot for the target platform using qemu and
+tutorial, based on building a sysroot for the target platform using QEMU and
 Docker, and then using `cmake-toolchains` with a toolchain file pointing
 `CMAKE_SYSROOT` to the sysroot location to compile with C and C++
 cross-compilers.
@@ -80,7 +80,7 @@ plugin would do the following:
   doing a `COPY` to copy the contents of the workspace into the container, and
   running `rosdep` on the copy. That ensures no workspace system dependency is
   missing. Note we we can run `rosdep` in Docker for the ARM-HF platform thanks
-  to [qemu](https://www.qemu.org/). That image's file system is then exported by
+  to [QEMU](https://www.qemu.org/). That image's file system is then exported by
   launching a container a running `docker container export` on it, to a path
   following a sensible convention, like a workspace-local `armhf-ubuntu_bionic/sysroot`
   directory, so it can be used as a sysroot during the build.
@@ -169,7 +169,7 @@ workspace so they have access to the compiled binaries.
 In order to simplify the development of base ROS 2 Docker images for new
 architecture-OS combinations, on a second iteration of this plugin we might add
 a new verb `colcon cc-build-sysroot-base-image` that will 1) copy the required
-qemu files and ROS 2 source into a temporary file; 2) build a Docker image from
+QEMU files and ROS 2 source into a temporary file; 2) build a Docker image from
 a specified Dockerfile, with access to the those resources; 3) optionally
 publish the image into a Docker registry, using a suitable naming convention like
 `${docker_repo_uri}:${os}_${arch}_${prebuilt?}_${rosdistro}`. Dockerfiles
@@ -185,7 +185,7 @@ The design is extensible and new platforms can be supported easily.
 For simple packages with additional dependencies, there is no need to build the
 sysroot locally with Docker, and a readily available base Docker image can be
 used. For packages with custom dependencies, the base sysroot can be extended
-using `rosdep install`.
+using `rosdep install` on a Docker image that uses QEMU through [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc).
 
 ## Limitations and open questions
 
@@ -212,14 +212,14 @@ exporting the bundle, which can then be the deployed to the target hardware.
 The main drawback of this approach is that using the default ARM compiler in
 the Docker image significantly slows down the compilation, which might be a
 burden for day-to-day development. By installing `qemu-user-static` in the
-present proposal, we are not only installing the qemu binaries to simulate an
-ARM32/64 processor, but also registering [binfmt_misc](https://en.wikipedia.org/wiki/Binfmt_misc)
+present proposal, we are not only installing the QEMU binaries to simulate an
+ARM32/64 processor, but also registering [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc)
 hook in the local machine. That means that every time a program will start, if
-it is for a platform that qemu supports, the binary will automatically run
-through qemu. In practice, it lets you run ARM binaries on your X86 instance,
+it is for a platform that QEMU supports, the binary will automatically run
+through QEMU. In practice, it lets you run ARM binaries on your X86 instance,
 as it is done implicitly through Docker when building the base image. The
-problem is that qemu is ~10x slower than normal execution, but the present
-proposal limits the qemu usage to building the base image (which is
+problem is that QEMU is ~10x slower than normal execution, but the present
+proposal limits the QEMU usage to building the base image (which is
 unavoidable), and uses compilers for the target platform running natively the
 rest of the time.
 
