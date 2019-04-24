@@ -63,9 +63,9 @@ colcon cc-build --arch armhf --os ubuntu_bionic \
   --packages-up-to performance_test # other `colcon build` arguments
 ```
 
-That would should result on a new workspace directory `armhf-ubuntu_bionic`
+That would result in a new workspace directory `armhf-ubuntu_bionic`
 with subdirectories `build`, `install`, and `log` directories, with the
-ross-compiled binaries. All options for `colcon build` will be supported by
+cross-compiled binaries. All options for `colcon build` will be supported by
 forwarding them to the `BuildVerb` class. That would be the only command
 required for cross-compiling the packages in a workspace. Under the hood, the
 plugin would do the following:
@@ -113,8 +113,8 @@ The `colcon cc-build` plugin will also support the following optional arguments:
 - `--force-sysroot-build`: Boolean flag to force exporting the sysroot even if
   it already available in the workspace. This is useful for example when new
   system dependencies are added to a package in the workspace. This leads to
-  rebuilding the dependent sysroot image after the `COPY` statements that copies
-  the workspace into the image, including running `rosdep install` from scratch.
+  rebuilding the dependent sysroot image, which includes copying the workspace
+  into the image, and running `rosdep install` from scratch.
   This does not rebuild the base ROS 2 Docker image.
 - `--sysroot-path`: Specifies a local path for an existing sysroot. This can be
   useful for example if different workspaces share the same set of system
@@ -134,14 +134,13 @@ plugin.
 - _Are we building the sysroot for the workspace, and running `rosdep install`
   on each invocation of `colcon cc-build`?_ No, the Docker file system export is
   only performed once, if the sysroot is not already available. The argument
-  `--force-sysroot-build` can be used to force building the sysroot if a sysroot
-  file is already available, for example when new dependencies are added to some
-  package in the workspace.
+  `--force-sysroot-build` can be used to force re-building the sysroot, for
+  example when new dependencies are added to some packages in the workspace.
 - _How can we run the resulting binaries?_ Packaging the resulting binaries is
   outside of the scope of this document. The cross-compiled binaries will be
-  available in the workspace is a directory corresponding to the architecture-OS
+  available in the workspace in a directory corresponding to the architecture-OS
   pair, e.g. `armhf-ubuntu_bionic`. We make the assumption that the user will
-  copy the whole workspace to the remote device (including src/) and run `rosdep`
+  copy the whole workspace to the remote device (including `src`) and run `rosdep`
   on the target platform, to install the dependencies before running the binaries.
 
 ### Maintenance and testing
@@ -208,8 +207,8 @@ The [colcon bundle plugin](https://github.com/colcon/colcon-bundle) can be used
 to package a ROS workspace together with all its dependencies into a tarball.
 That could be used for cross-compiling a ROS 2 workspace by launching a Docker
 container for the target platform, building and bundling the workspace, and
-exporting the bundle, which can then be the deployed to the target hardware.
-The main drawback of this approach is that using the default ARM compiler in
+exporting the bundle, which can then be deployed to the target hardware.
+The main drawback of that approach is that using the default ARM compiler in
 the Docker image significantly slows down the compilation, which might be a
 burden for day-to-day development. By installing `qemu-user-static` in the
 present proposal, we are not only installing the QEMU binaries to simulate an
