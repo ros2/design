@@ -4,11 +4,7 @@ title: Cross-compiling ROS 2 packages
 abstract:
   This article is a design proposal for extending the build tools for ROS 2 to
   simplify cross-compiling ROS 2 packages for platforms currently not supported
-  by ROS 2, or building on a host with different platforms than the target
-  platform. That latter use case is particularly useful for speeding up build
-  times by building the code on a powerful development workstation, and then
-  deploying the binaries to a constrained resources hardware that uses the
-  target platform, thus making the development cycle much faster.
+  by ROS 2. 
 author: >
   [Thomas Moulard](https://github.com/thomas-moulard),
   [Juan Rodriguez Hortala](https://github.com/juanrh)
@@ -30,13 +26,12 @@ Original Author: {{ page.author }}
 The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation),
 and the [steve/ros2_raspbian_tools repository](https://github.com/esteve/ros2_raspbian_tools)
 contain instructions for cross-compiling ROS 2 to unsupported platforms like
-ARM64 and ARM-HF, using some configuration files for CMake and Docker. However,
-those instructions don't include how to build other ROS 2 packages, but just
-for building a whole ROS 2 distribution. Ideally, we should be able to
-cross-compile a ROS package for ROS 2 by launching a single `colcon build`
-command. Finally, even though other projects like [steve/ros2_raspbian_tools](https://github.com/esteve/ros2_raspbian_tools),
+ARM64 and ARM-HF, using some configuration files for CMake and Docker.
+Other projects like [steve/ros2_raspbian_tools](https://github.com/esteve/ros2_raspbian_tools),
 [esteve/ros2_java](https://github.com/esteve/ros2_java) provide support
-for additional platforms like Android and iOS, we would like to have an extensible
+for additional platforms like Android and iOS.
+Ideally, we should be able to cross-compile a ROS package for ROS 2 by launching a single command.
+That command should also be implemented using an extensible
 design that allows supporting new platforms with low effort.
 
 ## Proposed Approach
