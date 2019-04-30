@@ -5056,8 +5056,6 @@ In the course of a first funded vulnerability assessment, <a style="color:black;
 [cw_sample_app]: https://github.com/aws-robotics/aws-robomaker-sample-application-cloudwatch
 [emerging_solutions_time_sync_sec]: https://www.nist.gov/sites/default/files/documents/2016/11/02/08_odonoghue_emerging_security_overview.pdf
 [fastrtps_security]: https://eprosima-fast-rtps.readthedocs.io/en/latest/security.html
-[ieee_1588_2008]: https://standards.ieee.org/standard/1588-2008.html
-[ietf_ntp_bcp]: https://datatracker.ietf.org/doc/draft-ietf-ntp-bcp/
 [hans_modular_joint]: https://acutronicrobotics.com/products/modular-joints/
 [hrim]: https://acutronicrobotics.com/technology/hrim/
 [hros]: https://acutronicrobotics.com/technology/H-ROS/
