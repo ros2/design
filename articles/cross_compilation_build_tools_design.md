@@ -23,7 +23,7 @@ Original Author: {{ page.author }}
 
 ## Background
 
-The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation),
+The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation)
 and the [steve/ros2_raspbian_tools repository](https://github.com/esteve/ros2_raspbian_tools)
 contain instructions for cross-compiling ROS 2 to unsupported platforms like
 ARM64 and ARM-HF, using some configuration files for CMake and Docker.
@@ -39,49 +39,53 @@ design that allows supporting new platforms with low effort.
 
 We propose continuing with the general approach of the cross-compilation
 tutorial, based on building a sysroot for the target platform using QEMU and
-Docker, and then using `cmake-toolchains` with a toolchain file pointing
-`CMAKE_SYSROOT` to the sysroot location to compile with C and C++
-cross-compilers.
+Docker, and then using [`cmake-toolchains`](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
+with a toolchain file pointing `CMAKE_SYSROOT` to the sysroot location, to
+compile with C and C++ cross-compilers.
 
 We propose adding a set of commands to wrap the instructions on the
 cross-compilation tutorial. Those commands would use a new workspace
 directory for the target platform, determined by a convention based on
-on the target OS and archicture: for example `armhf-ubuntu_bionic`.
-Let us call that directory the _cc-root_. We would add the following commands:
+on the target ECU, operating system, rmw implementation, and ROS distribution.
+Let us call that directory the _cc-root_. Under that convention, the ECU
+implies the architecture, but generic ECUs like `generic_armhf` would also be
+available. For example `generic_armhf-ubuntu_bionic-fastrtps-crystal` is an
+example _platform identifier_. Specifically, we would add the following commands:
 
-- A new `setup-sysroot` command would use Docker to generate the sysroot
-  for the target platform, and store it in a `sysroot` directory of the
+- A new `cc-setup-sysroot` command would use Docker to generate the sysroot
+  for the target platform, and store it in a `sysroot` subdirectory of the
   cc-root. This command would take arguments to specify the target platform,
   for example:
 
 ```bash
-setup-sysroot --arch armhf --os ubuntu_bionic
+cc-setup-sysroot --arch generic_armhf --os ubuntu_bionic \
+                 --rmw fastrtps --distro crystal
 ```
 
 - A new colcon mixin for each known platform, which adds options to the colcon
-  build task for using asysroot generated using `setup-sysroot`, by using the
-  same path conventions. For example from a ROS 2 overlay workspace on a
+  build task for using asysroot generated using `cc-setup-sysroot`, by using
+  the same path conventions. For example from a ROS 2 overlay workspace on a
   developer workstation, the following command would cross-compile the packages
-  in the workspace up to a package `performance_test` for the ARM-HF archicture
-  and Ubuntu Bionic. Note this command requires having the cross [compilation
+  in the workspace up to a package `performance_test` for the platform
+  specified. Note this command requires having the cross [compilation
   toolchain](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation/#install-development-tools)
   installed. That would create `build`, `install`, and `log`
-  subdirectories of the cc-root `armhf-ubuntu_bionic` for that architecture and
-  OS combination, with the cross-compiled binaries.
+  subdirectories of the cc-root `generic_armhf-ubuntu_bionic-fastrtps-crystal`,
+  with the cross-compiled binaries.
 
 ```bash
-colcon build --mixin cross-compile-ubuntu_bionic-armhf \
+colcon build --mixin cc-generic_armhf-ubuntu_bionic-fastrtps-crystal \
   --packages-up-to performance_test # any other other `colcon build` arguments
 ```
 
 - On an second iteration of this initiative we would:
-  - Maintain a docker image for cross compilation with both the cross
+  - Maintain a docker image for cross compilation, that has both the cross
   compilation toolchain and the aforementioned colcon mixins installed.
   - Implement a new `cc-build` command that would ensure the sysroot is created
-  using `setup-sysroot`, and then launch the cross compilation into a docker
+  using `cc-setup-sysroot`, and then launch the cross compilation into a docker
   container using the corresponding Docker image.
 
-Under the hood, the `setup-sysroot` command would do the following:
+Under the hood, the `cc-setup-sysroot` command would do the following:
 
 - The command downloads a base ROS 2 Docker image for the target platform, and
   builds a workspace dependent sysroot image by
@@ -104,15 +108,14 @@ Under the hood, the `setup-sysroot` command would do the following:
   from ros2/cross_compile, and configures `DCMAKE_TOOLCHAIN_FILE` in
   `cmake-args` pointing to that toolchain file.
 
-The `setup-sysroot` command will also support the following optional arguments:
+The `cc-setup-sysroot` command will also support the following optional arguments:
 
 - `--sysroot-base-image`: Specifies a Docker image that will be used as the
   base image for the workspace dependent sysroot image. This should be a string
   that is a valid argument for `docker image pull`, and that can be used in
   `FROM` Dockerfile statement. If it is not specified, the command will deduce
-  the value of `--sysroot-base-image` from the `--arch` and `--os` arguments,
-  for the architecture-OS combinations that have an image published for them on
-  [osrf/ros2 on Docker Hub](https://hub.docker.com/r/osrf/ros2/).
+  the value of `--sysroot-base-image` from the target platform, for platforms
+  that have an image published for them on [osrf/ros2 on Docker Hub](https://hub.docker.com/r/osrf/ros2/).
 - `--sysroot-image`: Specifies a Docker image for the workspace sysroot. The
   build will export the sysroot from that image, instead of creating a sysroot
   image from the workspace. No check is performed to ensure the image has all the
@@ -124,17 +127,18 @@ The `setup-sysroot` command will also support the following optional arguments:
 
 Support for other platforms can be added by creating corresponding ROS 2 Docker
 images, and variants of the toolchain file if required.
-We could include support for ARM-HF and ARM64 in the first release of the
-commands.
+We could include support for generic versions of ARM-HF and ARM64, on Ubuntu
+Bionic with ROS 2 crystal and fastrtps, in the first release of the commands.
 
 ### Frequently asked questions
 
 - _How can we run the resulting binaries?_ Packaging the resulting binaries is
   outside of the scope of this document. The cross-compiled binaries will be
-  available in the workspace in the cc-root (e.g. `armhf-ubuntu_bionic`).
-  We make the assumption that the user will
-  copy the whole workspace to the remote device (including `src`) and run `rosdep`
-  on the target platform, to install the dependencies before running the binaries.
+  available in the workspace in the cc-root (e.g.
+  `generic_armhf-ubuntu_bionic-fastrtps-crystal`). We make the assumption that
+  the user will copy the whole workspace to the remote device (including `src`)
+  and run `rosdep` on the target platform, to install the dependencies before
+  running the binaries.
 
 ### Maintenance and testing
 
@@ -162,15 +166,15 @@ architecture-OS combinations, on a future iteration of this initiative we might 
 a new command `build-sysroot-base-image` that will 1) copy the required
 QEMU files and ROS 2 source into a temporary file; 2) build a Docker image from
 a specified Dockerfile, with access to the those resources; 3) optionally
-publish the image into a Docker registry, using a suitable naming convention like
-`${docker_repo_uri}:${os}_${arch}_${prebuilt?}_${rosdistro}`. Dockerfiles
-compatible with this command, for each architecture-OS pair would be keep on the
-`ros2/cross_compile` repository, so they can be used in CI/CI pipeline if needed.
+publish the image into a Docker registry, using a suitable naming convention
+that corresponds to the platform identifier. Dockerfiles compatible with this
+command would be keep on the `ros2/cross_compile` repository, so they can be
+used in CI/CI pipeline if needed.
 
 ### Advantages of the approach
 
 The proposed design leads to a simple development experience, where cross
-compilation is triggered by two simple commands, or a simple `cc-build` command
+compilation is triggered by two simple commands, or a single `cc-build` command
 for the second iteration.
 The design is extensible and new platforms can be supported easily.
 
