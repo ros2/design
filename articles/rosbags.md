@@ -38,7 +38,7 @@ The current version 2.0 of this format has features such as compression and a se
 ### Use cases in ROS 2
 
 Within ROS 2, the implementation of rosbags brings in new use cases with it that shall be addressed.
-The new ROS 2 API architecture introduces a [generic RMW interface](http://design.ros2.org/articles/ros_middleware_interface.html), which allows various data formats from different middlewares, such as CDR from DDS.
+The new ROS 2 API architecture introduces a [generic RMW interface](http://design.ros2.org/articles/ros_middleware_interface.html), which allows various data formats from different middlewares, such as CDR (Common Data Representation) from DDS.
 
 Even though DDS is the default middleware of ROS 2, the implementation of rosbags in ROS 2 requires to be flexible enough to record and replay other data formats than CDR, such as protobuf or ZeroMQ.
 
