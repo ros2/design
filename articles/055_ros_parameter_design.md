@@ -3,7 +3,7 @@ layout: default
 title: Parameter API design in ROS
 permalink: articles/ros_parameters.html
 abstract:
-  This article is proposed design for the interfaces for interacting with parameters in ROS 2.0.
+  This article is proposed design for the interfaces for interacting with parameters in ROS 2.
   We focus here on specifying the system design and leave the implementation unspecified.
 author: '[Tully Foote](https://github.com/tfoote)'
 published: true
@@ -30,7 +30,7 @@ It provided a service based interface to interact with parameters of other nodes
 
 ### Other resources
 
-Other resources related to the parameter design process for ROS 2.0 include:
+Other resources related to the parameter design process for ROS 2 include:
 
 - Gonzalo's research on parameters.
 
@@ -90,7 +90,7 @@ Based on that criteria an ideal system would be able to:
 
 ## Proposed Approach
 
-To cover the feature set above, the ROS 2.0 parameter system is proposed as follows.
+To cover the feature set above, the ROS 2 parameter system is proposed as follows.
 
 ### Parameters Hosted in Nodes
 

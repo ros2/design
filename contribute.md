@@ -6,7 +6,7 @@ show_in_nav: true
 
 # Contribute
 
-There are many ways you can contribute to the ROS 2.0 design effort.
+There are many ways you can contribute to the ROS 2 design effort.
 The most important of which is probably to review the list of articles posted on the [home page](/) and familiarize yourself with the discussions surrounding an issue before getting involved.
 This will help keep everyone on the same page and prevent having to discuss things multiple times.
 
