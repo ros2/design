@@ -103,7 +103,7 @@ Under the hood, the `cc-setup-sysroot` command would do the following:
   Note we can run `rosdep` in Docker for platform like ARM-HF thanks
   to [QEMU](https://www.qemu.org/).
   That image's file system is then exported by
-  launching a container a running `docker container export` on it, to a
+  launching a container running `docker container export` on it, to a
   `sysroot` subdirectory of the cc-root, so it can be used as a sysroot during
   the build.
   - Those ROS 2 base images are variants of
@@ -174,7 +174,7 @@ base ROS 2 Docker image, and a custom sysroot image for some reference package
 (e.g. [ApexAI/performance_test](https://github.com/ApexAI/performance_test/)),
 and then launching a Docker container for the that sysroot image, running
 `colcon test` using the cross-compiled binaries.
-The container would be launched with a [bind mount](https://docs.docker.com/storage/bind-mounts/) 
+The container would be launched with a [bind mount](https://docs.docker.com/storage/bind-mounts/)
 of the workspace so they have access to the compiled binaries.
 
 In order to simplify the development of base ROS 2 Docker images for new
@@ -184,8 +184,8 @@ QEMU files and ROS 2 source into a temporary file; 2) build a Docker image from
 a specified Dockerfile, with access to the those resources; 3) optionally
 publish the image into a Docker registry, using a suitable naming convention
 that corresponds to the platform identifier.
-Dockerfiles compatible with this command would be keep on the `ros2/cross_compile` repository, 
-so they can be used in CI/CI pipeline if needed.
+Dockerfiles compatible with this command would be keep on the `ros2/cross_compile` repository,
+so they can be used in CI/CD pipeline if needed.
 
 ### Advantages of the approach
 
@@ -196,7 +196,7 @@ The design is extensible and new platforms can be supported easily.
 
 For simple packages with additional dependencies, there is no need to build the
 sysroot locally with Docker, and a readily available base Docker image can be
-used. 
+used.
 For packages with custom dependencies, the base sysroot can be extended
 using `rosdep install` on a Docker image that uses QEMU through [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc).
 
@@ -249,14 +249,14 @@ minimizing the usage of Docker, followed by `colcon bundle` to generate a deploy
 Regarding the workspace dependent sysroot image, we could avoid the Docker
 `COPY` of the workspace by not building a workspace sysroot image, and instead
 launching a container for the base ROS 2 image with a [bind mount](https://docs.docker.com/storage/bind-mounts/)
-for the workspace. 
+for the workspace.
 The container's entry point would launch `rosdep` on the
 directory where the workspace is mounted, and we'd export the container's file
 system is then exported with  `docker container export` as above.
 That avoids a `COPY`, but a disadvantage is that then we wouldn't have a sysroot image for
 our workspace, and we would have to run `rosdep` on the entry point of that
 image each time we launch a container.
-That image would be useful for running tests, as mentioned in the testing section above, 
+That image would be useful for running tests, as mentioned in the testing section above,
 and an eventual `cc-test` command could further simplify using that image.
 
 Finally, compared with the original approach in the [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation),
