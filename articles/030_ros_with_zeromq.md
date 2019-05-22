@@ -33,7 +33,7 @@ Then the middleware needs to provide one or more transport paradigms for moving 
 Additional communication patterns (such as request-response) can be implemented on top of publish-subscribe.
 Finally, the middleware should provide a means of defining messages and then preparing them for transport, i.e. serialization.
 However, if the middleware lacks a serialization mechanism, this can be provided by an external component.
-Since ROS 1.x was designed, there have been several new libraries in these component fields to gain popularity.
+Since ROS 1 was designed, there have been several new libraries in these component fields to gain popularity.
 
 ### Discovery
 
@@ -86,8 +86,8 @@ Additionally, ZeroMQ, in particular, relies on reliable transports like TCP or [
 
 ### Message Serialization
 
-In ROS 1.x, messages are defined in `.msg` files and code is generated at build time for each of the supported languages.
-ROS 1.x generated code can instantiate and then later serialize the data in a message as a mechanism for exchanging information.
+In ROS 1, messages are defined in `.msg` files and code is generated at build time for each of the supported languages.
+ROS 1 generated code can instantiate and then later serialize the data in a message as a mechanism for exchanging information.
 Since ROS was created, several popular libraries which take care of this responsibility have come about.
 Google's [Protocol Buffers (Protobuf)](https://code.google.com/p/protobuf/), [MessagePack](http://msgpack.org/), [BSON](http://bsonspec.org/), and [Cap'n Proto](http://kentonv.github.io/capnproto/) are all examples of serialization libraries which have come to popularity since ROS was originally written.
 An entire article could be devoted to the pros and cons of different message definition formats, serialization libraries, and their wire formats, but for the purposes of this prototype we worked with either plain strings or Protobuf.
@@ -109,6 +109,6 @@ Even though it would be a lot of work to implement a middleware using component 
 This path would most likely give the most control over the middleware to the ROS community.
 
 In exchange for the creative control over the middleware comes the responsibility to document its behavior and design to the point that it can be verified and reproduced.
-This is a non-trivial task which ROS 1.x did not do very well because it had a relatively good pair of reference implementations.
+This is a non-trivial task which ROS 1 did not do very well because it had a relatively good pair of reference implementations.
 Many users that wish to put ROS into mission critical situations and into commercial products have lamented that ROS lacks this sort of governing design document which allows them to certify and audit the system.
 It would be of paramount importance that this new middleware be well defined, which is not a trivial task and almost certainly rivals the engineering cost of the initial implementation.

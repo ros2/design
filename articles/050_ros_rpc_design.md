@@ -32,7 +32,7 @@ ROS Services are basic request-response style RPCs, while ROS Actions additional
 
 ## Ideal System
 
-It is useful to consider the ideal system to understand how it relates to the current ROS 1.x system and how a new system could work.
+It is useful to consider the ideal system to understand how it relates to the current ROS 1 system and how a new system could work.
 An ideal RPC system would have the qualities laid out in the following paragraphs.
 
 ### Asynchronous API
@@ -61,11 +61,11 @@ Feedback is also central to the concept of Actions in ROS.
 
 It is important that the system cannot get into an undetermined state if there is packet loss.
 If a request or response is never received by either side the system must be able to notice this loss, then recover and/or inform the user in some way.
-In ROS 1.x, this lack of reliability has been a problem for ROS Actions, e.g., when they are used over lossy wireless links.
+In ROS 1, this lack of reliability has been a problem for ROS Actions, e.g., when they are used over lossy wireless links.
 
 ### Logging and Introspection
 
-When logging a ROS 1.x system (e.g., using `rosbag`), recording data transmitted on topics is insufficient to capture any information about service calls.
+When logging a ROS 1 system (e.g., using `rosbag`), recording data transmitted on topics is insufficient to capture any information about service calls.
 Because service calls are conceptually point to point, rather than broadcast, logging them is difficult.
 Still, it should be possible to efficiently record some level of detail regarding RPC interactions, such that they could be later played back in some manner (though it is not clear exactly how playback would work).
 

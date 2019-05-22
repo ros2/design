@@ -1,8 +1,8 @@
 ---
 layout: default
-title: ROS 2.0 Message Research
+title: ROS 2 Message Research
 abstract:
-  This article captures the research done in regards to the serialization component, including an overview of the current implementation in ROS 1.x and the alternatives for ROS 2.0.
+  This article captures the research done in regards to the serialization component, including an overview of the current implementation in ROS 1 and the alternatives for ROS 2.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas) and [Esteve Fernandez](https://github.com/esteve)'
 ---
@@ -31,7 +31,7 @@ So a very important goal is to make the message interface flexible enough to be 
 
 ## Existing Implementations
 
-ROS 1.x messages are data objects which use member-based access to the message fields.
+ROS 1 messages are data objects which use member-based access to the message fields.
 While the message specification is not very feature rich the serializer is pretty fast.
 The ROS distribution contains message serializers implemented in C++, Python and Lisp.
 Besides that the community provided implementations for other languages, like C, Ruby, MatLab, etc.
@@ -68,7 +68,7 @@ Since this use case implies severe constraints that are not optimal for scenario
 
 #### Optional fields, default values
 
-In ROS 1.x, messages and services require all data members and arguments to be specified.
+In ROS 1, messages and services require all data members and arguments to be specified.
 By using optional fields and default values, we can define simpler APIs so that users\' code can be more succinct and more readable.
 At the same time we could also provide sane values for certain APIs, such as for sensors.
 

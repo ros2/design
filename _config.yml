@@ -1,5 +1,5 @@
 name: ROS 2 Design
-description: "Distilled design documents related to the ROS 2.0 effort"
+description: "Distilled design documents related to the ROS 2 effort"
 
 url: http://design.ros2.org
 repo: https://github.com/ros2/design

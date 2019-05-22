@@ -34,7 +34,7 @@ Terminology:
 
 ## Why Consider DDS
 
-When exploring options for the next generation communication system of ROS, the initial options were to either improve the ROS 1.x transport or build a new middleware using component libraries such as [ZeroMQ](http://zeromq.org/), Protocol Buffers, and zeroconf (Bonjour/Avahi).
+When exploring options for the next generation communication system of ROS, the initial options were to either improve the ROS 1 transport or build a new middleware using component libraries such as [ZeroMQ](http://zeromq.org/), Protocol Buffers, and zeroconf (Bonjour/Avahi).
 However, in addition to those options, both of which involved us building a middleware from parts or scratch, other end-to-end middlewares were considered.
 During our research, one middleware that stood out was DDS.
 
@@ -162,7 +162,7 @@ It allows direct access to the RTPS protocol settings and features, which is not
 eProsima's implementation also includes a minimum DDS API, IDL support, and automatic code generation and they are open to working with the ROS community to meet their needs.
 
 Given the relatively strong LGPL option and the encouraging but custom license from RTI, it seems that depending on and even distributing DDS as a dependency should be straightforward.
-One of the goals of this proposal would be to make ROS 2.0 DDS vendor agnostic.
+One of the goals of this proposal would be to make ROS 2 DDS vendor agnostic.
 So, just as an example, if the default implementation is Connext, but someone wants to use one of the LGPL options like OpenSplice or FastRTPS, they simply need to recompile the ROS source code with some options flipped and they can use the implementation of their choice.
 
 This is made possible because of the fact that DDS defines an API in its specification.
@@ -183,11 +183,11 @@ Even though this is something which should be taken into consideration when maki
 
 ## ROS Built on DDS
 
-The goal is to make DDS an implementation detail of ROS 2.0.
+The goal is to make DDS an implementation detail of ROS 2.
 This means that all DDS specific APIs and message definitions would need to be hidden.
 DDS provides discovery, message definition, message serialization, and publish-subscribe transport.
 Therefore, DDS would provide discovery, publish-subscribe transport, and at least the underlying message serialization for ROS.
-ROS 2.0 would provide a ROS 1.x like interface on top of DDS which hides much of the complexity of DDS for the majority of ROS users, but then separately provides access to the underlying DDS implementation for users that have extreme use cases or need to integrate with other, existing DDS systems.
+ROS 2 would provide a ROS 1 like interface on top of DDS which hides much of the complexity of DDS for the majority of ROS users, but then separately provides access to the underlying DDS implementation for users that have extreme use cases or need to integrate with other, existing DDS systems.
 
 ![DDS and ROS API Layout](/img/ros_on_dds/api_levels.png)
 *DDS and ROS API Layout*
@@ -210,25 +210,25 @@ DDS also allows for user defined meta data in their discovery system, which will
 ### Publish-Subscribe Transport
 
 The DDSI-RTPS (DDS-Interoperability Real Time Publish Subscribe) protocol would replace ROS's TCPROS and UDPROS wire protocols for publish/subscribe.
-The DDS API provides a few more actors to the typical publish-subscribe pattern of ROS 1.x.
+The DDS API provides a few more actors to the typical publish-subscribe pattern of ROS 1.
 In ROS the concept of a node is most clearly paralleled to a graph participant in DDS.
 A graph participant can have zero to many topics, which are very similar to the concept of topics in ROS, but are represented as separate code objects in DDS, and is neither a subscriber nor a publisher.
 Then, from a DDS topic, DDS subscribers and publishers can be created, but again these are used to represent the subscriber and publisher concepts in DDS, and not to directly read data from or write data to the topic.
 DDS has, in addition to the topics, subscribers, and publishers, the concept of DataReaders and DataWriters which are created with a subscriber or publisher and then specialized to a particular message type before being used to read and write data for a topic.
 These additional layers of abstraction allow DDS to have a high level of configuration, because you can set QoS settings at each level of the publish-subscribe stack, providing the highest granularity of configuration possible.
 Most of these levels of abstractions are not necessary to meet the current needs of ROS.
-Therefore, packaging common workflows under the simpler ROS-like interface (Node, Publisher, and Subscriber) will be one way ROS 2.0 can hide the complexity of DDS, while exposing some of its features.
+Therefore, packaging common workflows under the simpler ROS-like interface (Node, Publisher, and Subscriber) will be one way ROS 2 can hide the complexity of DDS, while exposing some of its features.
 
 ### Efficient Transport Alternatives
 
-In ROS 1.x there was never a standard shared-memory transport because it is negligibly faster than localhost TCP loop-back connections.
-It is possible to get non-trivial performance improvements from carefully doing zero-copy style shared-memory between processes, but anytime a task required faster than localhost TCP in ROS 1.x, nodelets were used.
+In ROS 1 there was never a standard shared-memory transport because it is negligibly faster than localhost TCP loop-back connections.
+It is possible to get non-trivial performance improvements from carefully doing zero-copy style shared-memory between processes, but anytime a task required faster than localhost TCP in ROS 1, nodelets were used.
 Nodelets allow publishers and subscribers to share data by passing around `boost::shared_ptr`s to messages.
 This intraprocess communication is almost certainly faster than any interprocess communication options and is orthogonal to the discussion of the network publish-subscribe implementation.
 
 In the context of DDS, most vendors will optimize message traffic (even between processes) using shared-memory in a transparent way, only using the wire protocol and UDP sockets when leaving the localhost.
-This provides a considerable performance increase for DDS, whereas it did not for ROS 1.x, because the localhost networking optimization happens at the call to `send`.
-For ROS 1.x the process was: serialize the message into one large buffer, call TCP's `send` on the buffer once.
+This provides a considerable performance increase for DDS, whereas it did not for ROS 1, because the localhost networking optimization happens at the call to `send`.
+For ROS 1 the process was: serialize the message into one large buffer, call TCP's `send` on the buffer once.
 For DDS the process would be more like: serialize the message, break the message into potentially many UDP packets, call UDP's `send` many times.
 In this way sending many UDP datagrams does not benefit from the same speed up as one large TCP `send`.
 Therefore, many DDS vendors will short circuit this process for localhost messages and use a blackboard style shared-memory mechanism to communicate efficiently between processes.
@@ -245,11 +245,11 @@ The point to take away here is that efficient **intra**process communication wil
 There is a great deal of value in the current ROS message definitions.
 The format is simple, and the messages themselves have evolved over years of use by the robotics community.
 Much of the semantic contents of current ROS code is driven by the structure and contents of these messages, so preserving the format and in-memory representation of the messages has a great deal of value.
-In order to meet this goal, and in order to make DDS an implementation detail, ROS 2.0 should preserve the ROS 1.x like message definitions and in-memory representation.
+In order to meet this goal, and in order to make DDS an implementation detail, ROS 2 should preserve the ROS 1 like message definitions and in-memory representation.
 
-Therefore, the ROS 1.x `.msg` files would continue to be used and the `.msg` files would be converted into `.idl` files so that they could be used with the DDS transport.
+Therefore, the ROS 1 `.msg` files would continue to be used and the `.msg` files would be converted into `.idl` files so that they could be used with the DDS transport.
 Language specific files would be generated for both the `.msg` files and the `.idl` files as well as conversion functions for converting between ROS and DDS in-memory instances.
-The ROS 2.0 API would work exclusively with the `.msg` style message objects in memory and would convert them to `.idl` objects before publishing.
+The ROS 2 API would work exclusively with the `.msg` style message objects in memory and would convert them to `.idl` objects before publishing.
 
 ![Message Generation Diagram](/img/ros_on_dds/message_generation.png "Message Generation Diagram")
 
@@ -267,14 +267,14 @@ But this is a different trade-off which can be decided later.
 DDS currently does not have a ratified or implemented standard for request-response style RPC which could be used to implement the concept of services in ROS.
 There is currently an RPC specification being considered for ratification in the OMG DDS working group, and several of the DDS vendors have a draft implementation of the RPC API.
 It is not clear, however, whether this standard will work for actions, but it could at least support non-preemptable version of ROS services.
-ROS 2.0 could either implement services and actions on top of publish-subscribe (this is more feasible in DDS because of their reliable publish-subscribe QoS setting) or it could use the DDS RPC specification once it is finished for services and then build actions on top, again like it is in ROS 1.x.
-Either way actions will be a first class citizen in the ROS 2.0 API and it may be the case that services just become a degenerate case of actions.
+ROS 2 could either implement services and actions on top of publish-subscribe (this is more feasible in DDS because of their reliable publish-subscribe QoS setting) or it could use the DDS RPC specification once it is finished for services and then build actions on top, again like it is in ROS 1.
+Either way actions will be a first class citizen in the ROS 2 API and it may be the case that services just become a degenerate case of actions.
 
 ### Language Support
 
 DDS vendors typically provide at least C, C++, and Java implementations since APIs for those languages are explicitly defined by the DDS specification.
 There are not any well established versions of DDS for Python that research has uncovered.
-Therefore, one goal of the ROS 2.0 system will be to provide a first-class, feature complete C API.
+Therefore, one goal of the ROS 2 system will be to provide a first-class, feature complete C API.
 This will allow bindings for other languages to be made more easily and to enable more consistent behavior between client libraries, since they will use the same implementation.
 Languages like Python, Ruby, and Lisp can wrap the C API in a thin, language idiomatic implementation.
 
@@ -286,7 +286,7 @@ However, writing the entire system in C might not be the first goal, and in the 
 
 ### DDS as a Dependency
 
-One of the goals of ROS 2.0 is to reuse as much code as possible ("do not reinvent the wheel") but also minimize the number of dependencies to improve portability and to keep the build dependency list lean.
+One of the goals of ROS 2 is to reuse as much code as possible ("do not reinvent the wheel") but also minimize the number of dependencies to improve portability and to keep the build dependency list lean.
 These two goals are sometimes at odds, since it is often the choice between implementing something internally or relying on an outside source (dependency) for the implementation.
 
 This is a point where the DDS implementations shine, because two of the three DDS vendors under evaluation build on Linux, OS X, Windows, and other more exotic systems with no external dependencies.
@@ -299,7 +299,7 @@ Additionally, since the goal is to make DDS an implementation detail, it can pro
 
 Following the research into the feasibility of ROS on DDS, several questions were left, including but not limited to:
 
-- Can the ROS 1.x API and behavior be implemented on top of DDS?
+- Can the ROS 1 API and behavior be implemented on top of DDS?
 - Is it practical to generate IDL messages from ROS MSG messages and use them with DDS?
 - How hard is it to package (as a dependency) DDS implementations?
 - Does the DDS API specification actually make DDS vendor portability a reality?
@@ -313,7 +313,7 @@ More questions and some of the results were captured as issues:
 
 [https://github.com/osrf/ros_dds/issues?labels=task&page=1&state=closed](https://github.com/osrf/ros_dds/issues?labels=task&page=1&state=closed)
 
-The major piece of work in this repository is in the `prototype` folder and is a ROS 1.x like implementation of the Node, Publisher, and Subscriber API using DDS:
+The major piece of work in this repository is in the `prototype` folder and is a ROS 1 like implementation of the Node, Publisher, and Subscriber API using DDS:
 
 [https://github.com/osrf/ros_dds/tree/master/prototype](https://github.com/osrf/ros_dds/tree/master/prototype)
 
@@ -328,7 +328,7 @@ Specifically this prototype includes these packages:
 - Talker and listener for pub-sub and service calls: [https://github.com/osrf/ros_dds/tree/master/prototype/src/rclcpp_examples](https://github.com/osrf/ros_dds/tree/master/prototype/src/rclcpp_examples)
 
 - A branch of `ros_tutorials` in which `turtlesim` has been modified to build against the `rclcpp` library: [https://github.com/ros/ros_tutorials/tree/ros_dds/turtlesim](https://github.com/ros/ros_tutorials/tree/ros_dds/turtlesim).
-  This branch of `turtlesim` is not feature-complete (e.g., services and parameters are not supported), but the basics work, and it demonstrates that the changes required to transition from ROS 1.x `roscpp` to the prototype of ROS 2.0 `rclcpp` are not dramatic.
+  This branch of `turtlesim` is not feature-complete (e.g., services and parameters are not supported), but the basics work, and it demonstrates that the changes required to transition from ROS 1 `roscpp` to the prototype of ROS 2 `rclcpp` are not dramatic.
 
 This is a rapid prototype which was used to answer questions, so it is not representative of the final product or polished at all.
 Work on certain features was stopped cold once key questions had been answered.
