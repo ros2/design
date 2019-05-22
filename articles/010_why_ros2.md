@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Why ROS 2.0?
+title: Why ROS 2?
 permalink: articles/why_ros2.html
 abstract:
   This article captures the reasons for making breaking changes to the ROS API, hence the 2.0.
@@ -83,16 +83,16 @@ We can benefit tremendously from this approach in many ways, including:
 
 ## API changes
 
-A further reason to build ROS 2.0 is to take advantage of the opportunity to improve our user-facing APIs.
+A further reason to build ROS 2 is to take advantage of the opportunity to improve our user-facing APIs.
 A great deal of the ROS code that exists today is compatible with the client libraries as far back as the 0.4 "Mango Tango" release from February 2009.
 That's great from the point of view of stability, but it also implies that we're still living with API decisions that were made several years ago, some of which we know now to be not the best.
 
-So, with ROS 2.0, we will design new APIs, incorporating to the best of our ability the collective experience of the community with the first-generation APIs.
-As a result, while the key concepts (distributed processing, anonymous publish/subscribe messaging, RPC with feedback (i.e., actions), language neutrality, system introspectability, etc.) will remain the same, you should not expect ROS 2.0 to be API-compatible with existing ROS code.
+So, with ROS 2, we will design new APIs, incorporating to the best of our ability the collective experience of the community with the first-generation APIs.
+As a result, while the key concepts (distributed processing, anonymous publish/subscribe messaging, RPC with feedback (i.e., actions), language neutrality, system introspectability, etc.) will remain the same, you should not expect ROS 2 to be API-compatible with existing ROS code.
 
-But fear not: there will be mechanisms in place to allow ROS 2.0 code to coexist with existing ROS code.
+But fear not: there will be mechanisms in place to allow ROS 2 code to coexist with existing ROS code.
 At the very least, there will be translation relays that will support run-time interactions between the two systems.
-And it is possible that there will be library shims that will allow existing ROS code to compile/run against ROS 2.0 libraries, with behavior that is qualitatively similar to what is seen today.
+And it is possible that there will be library shims that will allow existing ROS code to compile/run against ROS 2 libraries, with behavior that is qualitatively similar to what is seen today.
 
 ## Why not just enhance ROS 1
 

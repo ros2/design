@@ -1,9 +1,9 @@
 ---
 layout: default
-title: ROS 2.0 Quality of Service policies
+title: ROS 2 Quality of Service policies
 permalink: articles/qos.html
 abstract:
-  This article describes the approach to provide QoS (Quality of Service) policies for ROS 2.0.
+  This article describes the approach to provide QoS (Quality of Service) policies for ROS 2.
 published: true
 author: '[Esteve Fernandez](https://github.com/esteve)'
 ---
@@ -27,8 +27,8 @@ With the advent of inexpensive robots using unreliable wireless networks, develo
 
 ## Background
 
-ROS 1.x uses TCP as the underlying transport, which is unsuitable for lossy networks such as wireless links.
-With ROS 2.0 relying on DDS which uses UDP as its transport, we can give control over the level of reliability a node can expect and act accordingly.
+ROS 1 uses TCP as the underlying transport, which is unsuitable for lossy networks such as wireless links.
+With ROS 2 relying on DDS which uses UDP as its transport, we can give control over the level of reliability a node can expect and act accordingly.
 
 ## DDS Quality of Service policies
 
@@ -36,9 +36,9 @@ DDS provides fine-grained control over the Quality of Service (QoS) setting for 
 Common entities whose behavior can be modified via QoS settings include: Topic, DataReader, DataWriter, Publisher and Subscriber.
 QoS is enforced based on a Request vs Offerer Model, however Publications and Subscriptions will only match if the QoS settings are compatible.
 
-## ROS 2.0 proposal
+## ROS 2 proposal
 
-Given the complexity of choosing the correct QoS settings for a given scenario, it may make sense for ROS 2.0 to provide a set of predefined QoS profiles for common usecases (e.g. sensor data, real time, etc.), while at the same time give the flexibility to control specific features of the QoS policies for the most common entities.
+Given the complexity of choosing the correct QoS settings for a given scenario, it may make sense for ROS 2 to provide a set of predefined QoS profiles for common usecases (e.g. sensor data, real time, etc.), while at the same time give the flexibility to control specific features of the QoS policies for the most common entities.
 
 ## QoS profiles
 
@@ -68,12 +68,12 @@ The base QoS profile includes settings for the following policies:
 
 Note: for each of the main bullets there is also the option of "system default", which uses whatever setting was defined via the DDS vendor tools (e.g. XML configuration files).
 
-ROS 2.0 will provide QoS profiles based on the following use cases:
+ROS 2 will provide QoS profiles based on the following use cases:
 
 - Default QoS settings for publishers and subscriptions
 
-  In order to make the transition from ROS1 to ROS2, exercising a similar network behavior is desirable.
-  By default, publishers and subscriptions are reliable in ROS2, have volatile durability, and "keep last" history.
+  In order to make the transition from ROS 1 to ROS 2, exercising a similar network behavior is desirable.
+  By default, publishers and subscriptions are reliable in ROS 2, have volatile durability, and "keep last" history.
 
 - Services
 
@@ -98,10 +98,10 @@ Note: the values in the profiles are subject to further tweaks, based on the fee
 ## Integration with existing DDS deployments
 
 Both PrismTech OpenSplice and RTI Connext support loading of QoS policies via an external XML file.
-In environments where DDS is already deployed and also to enable more extensibility other than the offered by the ROS 2.0 and the predefined profiles, ROS 2.0 may provide loading of the QoS settings via the same mechanisms the underlying DDS implementations use.
-However, this mechanism will not be added into the common ROS2 API so as to keep the `rmw` layer transport agnostic and let future developers implement it for other transports (e.g. ZeroMQ, TCPROS, etc.)
+In environments where DDS is already deployed and also to enable more extensibility other than the offered by the ROS 2 and the predefined profiles, ROS 2 may provide loading of the QoS settings via the same mechanisms the underlying DDS implementations use.
+However, this mechanism will not be added into the common ROS 2 API so as to keep the `rmw` layer transport agnostic and let future developers implement it for other transports (e.g. ZeroMQ, TCPROS, etc.)
 To honor the QoS settings of the system, developers can use the `rmw_qos_profile_system_default` QoS profile which delegates the responsibility of the QoS machinery to the underlying DDS vendor.
-This allows developers to deploy ROS2 applications and use DDS vendor tools to configure the QoS settings.
+This allows developers to deploy ROS 2 applications and use DDS vendor tools to configure the QoS settings.
 
 ## Integration with non DDS RMW Implementations
 

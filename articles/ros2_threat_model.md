@@ -95,7 +95,7 @@ This is a **DRAFT DOCUMENT**.
     - [Threat Model](#threat-model)
       - [Attack Trees](#attack-trees)
       - [Physical vector attack tree](#physical-vector-attack-tree)
-      - [ROS2 API vector attack tree](#ros2-api-vector-attack-tree)
+      - [ROS 2 API vector attack tree](#ros2-api-vector-attack-tree)
       - [H-ROS API vector attack tree](#h-ros-api-vector-attack-tree)
       - [Code repository compromise vector attack tree](#code-repository-compromise-vector-attack-tree)
     - [Threat Model Validation Strategy](#threat-model-validation-strategy-1)
@@ -3541,7 +3541,7 @@ to be evaluated.
 ## Threat Analysis for the `MARA` Robotic Platform
 
 ### System description
-The application considered in this section is a **[MARA][mara_robot] modular robot operating on an industrial environment while performing a pick & place activity**. MARA is the first robot to run ROS 2 natively. It is an industrial-grade collaborative robotic arm which runs ROS 2.0 on each joint, end-effector, external sensor or even on its industrial controller. Throughout the H-ROS communication bus, MARA is empowered with new possibilities  in the professional landscape of robotics. It offers millisecond-level distributed bounded latencies for usual payloads and submicrosecond-level synchronization capabilities across ROS 2 components.
+The application considered in this section is a **[MARA][mara_robot] modular robot operating on an industrial environment while performing a pick & place activity**. MARA is the first robot to run ROS 2 natively. It is an industrial-grade collaborative robotic arm which runs ROS 2 on each joint, end-effector, external sensor or even on its industrial controller. Throughout the H-ROS communication bus, MARA is empowered with new possibilities  in the professional landscape of robotics. It offers millisecond-level distributed bounded latencies for usual payloads and submicrosecond-level synchronization capabilities across ROS 2 components.
 
 Built out of individual modules that natively run on ROS 2, MARA can be physically extended in a seamless manner. However, this also moves towards more networked robots and production environments which brings new challenges, especially in terms of [security and safety][safe_sec].
 
@@ -3646,7 +3646,7 @@ This section aims for describing the components and specifications within the MA
         * Middleware: Data Distribution Service (DDS)
       * On-board computation: Dual core ARM® Cortex-A9
       * Operating System: Real-Time Linux
-      * ROS 2.0 version: Crystal Clemmys
+      * ROS 2 version: Crystal Clemmys
       * Information model: [HRIM][hrim] Coliza
       * Security:
         * DDS crypto, authentication and access control plugins
@@ -3658,7 +3658,7 @@ This section aims for describing the components and specifications within the MA
         * Middleware: Data Distribution Service (DDS)
       * On-board computation: Dual core ARM® Cortex-A9
       * Operating System: Real-Time Linux
-      * ROS 2.0 version: Crystal Clemmys
+      * ROS 2 version: Crystal Clemmys
       * Information model: [HRIM][hrim] Coliza
       * Security:
         * DDS crypto, authentication and access control plugins
@@ -3670,7 +3670,7 @@ This section aims for describing the components and specifications within the MA
     * Link layer: 2 x Gigabit (1 Gbps) TSN Ethernet network interface
     * Middleware: Data Distribution Service (DDS)
   * Operating System: Real-Time Linux
-  * ROS 2.0 version: Crystal Clemmys
+  * ROS 2 version: Crystal Clemmys
   * Information model: [HRIM][hrim] Coliza
   * Security:
     * DDS crypto, authentication and access control plugins
@@ -3708,7 +3708,7 @@ In this section all the processes running on the robotic system in scope are det
   * MoveIt! motion planning framework.
   * Manufacturing process control applications.
   * Robot teleoperation utilities.
-  * **ROS1/ROS2 bridges**: These bridges are needed to be able to run MoveIT! which is not yet ported to ROS 2.0. Right now there is an [effort in the community](https://acutronicrobotics.com/news/ros-2-moveit-robotic-motion-planning/) to port this tool to ROS 2.0.
+  * **ROS 1 / ROS 2 bridges**: These bridges are needed to be able to run MoveIT! which is not yet ported to ROS 2. Right now there is an [effort in the community](https://acutronicrobotics.com/news/ros-2-moveit-robotic-motion-planning/) to port this tool to ROS 2.
 
 ##### Software dependencies
 
@@ -3808,7 +3808,7 @@ As described above, the application considered is a MARA modular robot operating
     * Development of new functionality and improvements for the MARA robot.
       * Develop new software for the H-ROS SoM
       * Update OS and system libraries
-      * Update ROS2 subsystem and control nodes
+      * Update ROS 2 subsystem and control nodes
       * Deployment of new updates to the robots and management of the fleet
       * In-Place robot maintenance
 
@@ -4646,17 +4646,17 @@ The next diagram shows the infrastructure affected on a possible attack based on
 
 ![Physical vector attack architecture](ros2_threat_model/attack_tree_physical_arch.png)
 
-#### ROS2 API vector attack tree
+#### ROS 2 API vector attack tree
 
 The following attack tree describes the possible paths to be followed by an attacker for  physically compromising the system.
 
-![ROS2 API vector attack tree](ros2_threat_model/attack_tree_ros2.png)
+![ROS 2 API vector attack tree](ros2_threat_model/attack_tree_ros2.png)
 
 [Diagram Source (draw.io)](ros2_threat_model/attack_tree_ros2.xml)
 
-The following diagram shows the infrastructure affected on a possible attack based on exploitation of the ROS2 API.
+The following diagram shows the infrastructure affected on a possible attack based on exploitation of the ROS 2 API.
 
-![ROS2 API vector attack architecture](ros2_threat_model/attack_tree_ros2_arch.png)
+![ROS 2 API vector attack architecture](ros2_threat_model/attack_tree_ros2_arch.png)
 
 #### H-ROS API vector attack tree
 

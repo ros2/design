@@ -22,7 +22,7 @@ It also lays out options for how ROS 2 could be structured to enforce real-time 
 
 Robotic systems need to be responsive.
 In mission critical applications, a delay of less than a millisecond in the system can cause a catastrophic failure.
-For ROS 2.0 to capture the needs of the robotics community, the core software components must not interfere with the requirements of real-time computing.
+For ROS 2 to capture the needs of the robotics community, the core software components must not interfere with the requirements of real-time computing.
 
 ## Definition of Real-time Computing
 
