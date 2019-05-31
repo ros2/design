@@ -149,7 +149,7 @@ Instead ROS 2 will use `char16_t` for characters of wide strings, and `std::u16s
 
 ```
 #include <codecvt>
-#include <iostream>
+#include <cstdio>
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
   while (rclcpp::ok()) {
     std::u16string hello(u"Hello World: " + convert_to_u16.from_bytes(std::to_string(i++)));
     msg->data = hello;
-    std::cout << "Publishing: '" << msg->data.cpp_str() << "'" << std::endl;
+    std::printf("Publishing: '%s'\n", msg->data.cpp_str().c_str());
     chatter_pub->publish(msg);
     rclcpp::spin_some(node);
     loop_rate.sleep();
