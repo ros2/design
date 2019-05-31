@@ -150,24 +150,18 @@ Instead ROS 2 will use `char16_t` for characters of wide strings, and `std::u16s
 **Example**
 
 ```
-#include <codecvt>
+/*
+* Note that C++ source files containing unicode characters must begin with a byte order mark: https://en.wikipedia.org/wiki/Byte_order_mark .
+* Failure to do so can result in an incorrect encoding of the characters on Windows.
+* For an example, see https://github.com/ros2/system_tests/pull/362#issue-277436162
+*/
 #include <cstdio>
-#include <locale>
 #include <memory>
+#include <string>
 
 #include "rclcpp/rclcpp.hpp"
 
 #include "test_msgs/msg/w_strings.hpp"
-
-// https://en.cppreference.com/w/cpp/locale/codecvt
-// utility wrapper to adapt locale-bound facets for wstring/wbuffer convert
-template<class Facet>
-struct deletable_facet : Facet
-{
-    template<class ...Args>
-    deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
-    ~deletable_facet() {}
-};
 
 int main(int argc, char * argv[])
 {
@@ -177,26 +171,12 @@ int main(int argc, char * argv[])
 
   auto chatter_pub = node->create_publisher<test_msgs::msg::WStrings>("chatter", 10);
 
-  rclcpp::WallRate loop_rate(2);
-
-  auto i = 1;
-  std::wstring_convert<deletable_facet<std::codecvt<char16_t, char, std::mbstate_t>>, char16_t> convert_to_u16;
-
-  while (rclcpp::ok()) {
-    test_msgs::msg::WStrings msg;
-    std::u16string hello(u"Hello World: " + convert_to_u16.from_bytes(std::to_string(i++)));
-    msg.wstring_value = hello;
-    chatter_pub->publish(msg);
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
-  }
+  test_msgs::msg::WStrings msg;
+  std::u16string hello(u"Hello Wörld");
+  msg.wstring_value = hello;
+  chatter_pub->publish(msg);
+  rclcpp::spin_some(node);
 
   return 0;
 }
 ```
-
-#### Microsoft Visual Studio and byte order marks
-
-Note that C++ source files containing unicode characters must begin with a [byte order mark](https://en.wikipedia.org/wiki/Byte_order_mark).
-Failure to do so can result in an incorrect encoding of the characters on Windows.
-For an example, see [ros2/system_tests#362](https://github.com/ros2/system_tests/pull/362#issue-277436162)
