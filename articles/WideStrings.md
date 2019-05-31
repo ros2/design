@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Unicode Support
+permalink: articles/wide_strings.html
 abstract:
   This article describes how ROS 2 will support sending multi-byte character data using the [Unicode](https://en.wikipedia.org/wiki/Unicode) standard.
   It also describes how such data will be sent over the ROS 1 bridge.
