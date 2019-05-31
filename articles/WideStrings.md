@@ -138,7 +138,7 @@ if __name__ == '__main__':
     chatter_pub = node.create_publisher(WString, 'chatter', qos_profile_default)
 
     msg = WString()
-    msg.data = 'Hello Wörld' + bytes([0x00, 0x00, 0x26, 0x3A]).decode('utf-32-be')
+    msg.data = 'Hello Wörld'
     print('Publishing: "{0}"'.format(msg.data))
     chatter_pub.publish(msg)
     node.destroy_node()
