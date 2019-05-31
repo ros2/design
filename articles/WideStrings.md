@@ -152,33 +152,40 @@ Instead ROS 2 will use `char16_t` for characters of wide strings, and `std::u16s
 ```
 #include <codecvt>
 #include <cstdio>
+#include <locale>
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "std_msgs/msg/wstring.hpp"
+#include "test_msgs/msg/w_strings.hpp"
+
+// https://en.cppreference.com/w/cpp/locale/codecvt
+// utility wrapper to adapt locale-bound facets for wstring/wbuffer convert
+template<class Facet>
+struct deletable_facet : Facet
+{
+    template<class ...Args>
+    deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
+    ~deletable_facet() {}
+};
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto node = rclcpp::node::Node::make_shared("talker");
+  auto node = std::make_shared<rclcpp::Node>("talker");
 
-  rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-  custom_qos_profile.depth = 7;
-
-  auto chatter_pub = node->create_publisher<std_msgs::msg::WString>("chatter", custom_qos_profile);
+  auto chatter_pub = node->create_publisher<test_msgs::msg::WStrings>("chatter", 10);
 
   rclcpp::WallRate loop_rate(2);
 
-  auto msg = std::make_shared<std_msgs::msg::WString>();
   auto i = 1;
-  std::wstring_convert<std::codecvt<char16_t, char, std::mbstate_t>, char16_t> convert_to_u16;
+  std::wstring_convert<deletable_facet<std::codecvt<char16_t, char, std::mbstate_t>>, char16_t> convert_to_u16;
 
   while (rclcpp::ok()) {
+    test_msgs::msg::WStrings msg;
     std::u16string hello(u"Hello World: " + convert_to_u16.from_bytes(std::to_string(i++)));
-    msg->data = hello;
-    std::printf("Publishing: '%s'\n", msg->data.cpp_str().c_str());
+    msg.wstring_value = hello;
     chatter_pub->publish(msg);
     rclcpp::spin_some(node);
     loop_rate.sleep();
