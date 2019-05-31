@@ -45,7 +45,7 @@ To be compatibile with both, in ROS 2 the content of a `string` is expected to b
 
 ## Wide Strings
 ROS 2 messages will have a new [primitive field type](/articles/interface_definition.html) `wstring`.
-This purpose is to allow ROS 2 nodes to comminicate with non-ROS DDS entities using an IDL containing a `wstring` field.
+The purpose is to allow ROS 2 nodes to communicate with non-ROS DDS entities using an IDL containing a `wstring` field.
 The encoding of data in this type should be UTF-16 to match DDS-XTYPES 1.2.
 Since both UTF-8 and UTF-16 can encode the same code points, new ROS 2 messages should prefer `string` over `wstring`.
 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
 ### C++
 
-In c++ wsing `wchar_t` has different sizes on different platforms (2 bytes on Windows, 4 bytes on Linux).
+In C++ wstring `wchar_t` has different sizes on different platforms (2 bytes on Windows, 4 bytes on Linux).
 Instead ROS 2 will use `char16_t` for characters of wide strings, and `std::u16string` for wide strings themselves.
 
 **Example**
