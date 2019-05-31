@@ -194,5 +194,5 @@ int main(int argc, char * argv[])
 #### Microsoft Visual Studio and byte order marks
 
 Note that C++ source files containing unicode characters must begin with a [byte order mark](https://en.wikipedia.org/wiki/Byte_order_mark).
-Failure to do so can result in an incorrect encoding of the characters.
+Failure to do so can result in an incorrect encoding of the characters on Windows.
 For an example, see [ros2/system_tests#362](https://github.com/ros2/system_tests/pull/362#issue-277436162)
