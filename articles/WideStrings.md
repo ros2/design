@@ -122,27 +122,24 @@ Bytes of a known encoding should be converted to a `str` using [bytes.decode](ht
 **Example**
 
 ```python
-import sys
-from time import sleep
-
 import rclpy
-from rclpy.qos import qos_profile_default
-from std_msgs.msg import WString
+from test_msgs.msg import WStrings
 
 
 if __name__ == '__main__':
-    rclpy.init(sys.argv)
+    rclpy.init()
 
     node = rclpy.create_node('talker')
 
-    chatter_pub = node.create_publisher(WString, 'chatter', qos_profile_default)
+    chatter_pub = node.create_publisher(WStrings, 'chatter', 1)
 
-    msg = WString()
-    msg.data = 'Hello Wörld'
-    print('Publishing: "{0}"'.format(msg.data))
+    msg = WStrings()
+    msg.wstring_value = 'Hello Wörld'
+    print('Publishing: "{0}"'.format(msg.wstring_value))
     chatter_pub.publish(msg)
     node.destroy_node()
     rclpy.shutdown()
+
 ```
 
 ### C++
