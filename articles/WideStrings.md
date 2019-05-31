@@ -64,6 +64,10 @@ To be compatible, a ROS message `string` field must not contain zero bytes, and 
 This restriction will be enforced.
 
 ## Unicode Strings Across ROS 1 Bridge
+
+**Note:** This section has not yet been implemented.
+See [ros2/ros1_bridge#203](https://github.com/ros2/ros1_bridge/issues/203).
+
 Since ROS 1 and 2 both allow `string` to be UTF-8, the ROS 1 bridge will pass values unmodified between them.
 If a message with a string field fails to serialize because the content is not legal UTF-8 then the default behavior will be to drop the entire message.
 Other strategies like replacing invalid bytes could unintentionally change the meaning, so they will be opt-in if available at all.
