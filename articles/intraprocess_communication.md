@@ -207,7 +207,7 @@ The way in which the `std::unique_ptr<MessageT>` message is "added" to a buffer,
  - `BufferT = shared_ptr<const MessageT>` Every buffer receives a shared pointer of the same `MessageT`; no copies are required.
  - `BufferT = MessageT` A copy of the message is added to every buffer.
 
-[Sequence UML diagram](../img/intraprocess_communication/intra_process_only.png)
+![Sequence UML diagram](../img/intraprocess_communication/intra_process_only.png)
 
 #### Publishing other message types
 
@@ -266,7 +266,7 @@ Note that this `std::shared_ptr` has been just created from a `std::unique_ptr` 
 
 The difference with publishing a unique_ptr is that here it is not possible to move the ownership of the message to one of the `Subscription`, potentially saving a copy.
 
-[Sequence UML diagram](../img/intraprocess_communication/intra_inter_process.png)
+![Sequence UML diagram](../img/intraprocess_communication/intra_inter_process.png)
 
 ### QoS features
 
