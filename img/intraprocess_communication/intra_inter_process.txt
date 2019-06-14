@@ -1,0 +1,53 @@
+@startuml
+
+participant Publisher
+participant IntraProcessManager
+participant IntraProcessImpl
+collections Subscriptions
+participant ROS_Middleware
+
+[-> Publisher: publish(unique_msg)
+
+Publisher -> Publisher : promote unique_msg \nto shared_msg
+
+Publisher -> IntraProcessManager : do_intra_process_publish(\nid, shared_msg)
+
+IntraProcessManager -> IntraProcessImpl : get_subscription_ids_for_pub(id)
+
+IntraProcessImpl --> IntraProcessManager : take_shared_ids, take_owned_ids
+
+note left
+	these are lists of subscriptions
+	with QoS compatible with publisher
+	divided according to the type 
+	stored in their buffers
+end note
+
+loop for id : take_shared_ids
+	IntraProcessManager -> IntraProcessImpl : get_subscription(id)
+
+	IntraProcessManager -> Subscriptions : add_message_to_buffer(shared_msg)
+
+	IntraProcessManager -> Subscriptions : trigger_guard_condition()
+end
+
+alt take_ownership_ids.size() > 0
+	
+	IntraProcessManager -> IntraProcessManager : copy shared_msg \n to unique_msg 
+
+	loop for id : take_owned_ids
+
+		IntraProcessManager -> IntraProcessImpl : get_subscription(id)
+
+		IntraProcessManager -> IntraProcessManager : Copy unique_msg\n (except last iter)	
+		
+		IntraProcessManager -> Subscriptions : add_message_to_buffer(unique_msg)
+
+		IntraProcessManager -> Subscriptions : trigger_guard_condition()
+	end
+
+end
+
+Publisher -> ROS_Middleware : do_inter_process_publish(shared_msg.get())
+
+@enduml

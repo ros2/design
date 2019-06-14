@@ -4,7 +4,7 @@ title: Intraprocess Communications in ROS 2
 permalink: articles/intraprocess_communications.html
 abstract: Description of the current intra-process communication mechanism in ROS2 and of its drawbacks. Design proposal for an improved implementation. Experimental results.
 published: true
-author: '[Alberto Soragna](https://github.com/alsora)'
+author: '[Alberto Soragna](https://github.com/alsora) [Juan Oxoby](https://github.com/joxoby) [Dhiraj Goel](https://github.com/dgoel)'
 ---
 
 {:toc}
@@ -183,22 +183,22 @@ The structure contains information about the `Subscription`, such as its QoS, it
 An `uint64_t sub_id` unique within the `rclcpp::Context` is assigned to the `Subscription`.
 The `IntraProcessManager` contains a `std::map<uint64_t, SubscriptionInfo>` object where it is possible to retrieve the `SubscriptionInfo` of a specific `Subscription` given its id.
 There is also an additional structure `std::map<uint64_t, std::pair<std::set<uint64_t>, std::set<uint64_t>>>`.
-The key of the map is the unique id of a `Publisher`.
-The value of the map is a pair of sets of ids.
+The key of the map is the unique id of a `Publisher` and the value is a pair of sets of ids.
 These sets contain the ids of the `Subscription`s that can communicate with the `Publisher`.
-We have two different sets because we want to differentiate the `Subscription`s depending on whether they request ownership of the received messages or not.
+We have two different sets because we want to differentiate the `Subscription`s depending on whether they request ownership of the received messages or not (note that this decision is done looking at their buffer, since the `Publisher` does not have to interact with the `Subscription` callback).
 6. The `SubscriptionIntraProcessWaitable` object is added to the list of Waitable interfaces of the node through `node_interfaces::NodeWaitablesInterface::add_waitable(...)`.
+It is added to the same callback group used for the standard inter-process communication of that topic.
 
 ### Publishing only intra-process
 
 #### Publishing unique_ptr
 
 1. User calls `Publisher::publish(std::unique_ptr<MessageT> msg)`.
-2. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `IntraProcessManager::do_intra_process_publish(int pub_id, std::unique_ptr<MessageT> msg)`.
-3. `IntraProcessManager::do_intra_process_publish(...)` uses the `int pub_id` to select the `PublisherInfo` structure associated with this publisher.
-Then it calls `IntraProcessManager::find_matching_subscriptions(PublisherInfo pub_info)`.
-This returns a list of stored `SubscriptionInfo` that have a QoS compatible for receiving the message.
-5. The message is "added" to the ring buffer of all the items in the list.
+2. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `IntraProcessManager::do_intra_process_publish(uint64_t pub_id, std::unique_ptr<MessageT> msg)`.
+3. `IntraProcessManager::do_intra_process_publish(...)` uses the `uint64_t pub_id` to call `IntraProcessManager::get_subscription_ids_for_pub(uint64_t pub_id)`.
+This returns the ids correspondin to `Subscription`s that have a QoS compatible for receiving the message.
+These ids are divided into two sublists, according to the data-type that is stored in the buffer of each `Susbscription`: requesting ownership (`unique_ptr<MessageT>`) or accepting shared (`shared_ptr<MessageT>`, but also `MessageT` since it will copy data in any case).
+4. The message is "added" to the ring buffer of all the items in the lists.
 The `rcl_guard_condition_t` member of `SubscriptionIntraProcessWaitable` of each `Subscription` is triggered (this wakes up `rclcpp::spin`).
 
 The way in which the `std::unique_ptr<MessageT>` message is "added" to a buffer, depends on the type of the buffer.
@@ -207,6 +207,7 @@ The way in which the `std::unique_ptr<MessageT>` message is "added" to a buffer,
  - `BufferT = shared_ptr<const MessageT>` Every buffer receives a shared pointer of the same `MessageT`; no copies are required.
  - `BufferT = MessageT` A copy of the message is added to every buffer.
 
+[Sequence UML diagram](../img/intraprocess_communication/intra_process_only.png)
 
 #### Publishing other message types
 
@@ -241,29 +242,31 @@ Note that in this step, if the type of the buffer is a smart pointer one, no mes
 
 1. User calls `Publisher::publish(std::unique_ptr<MessageT> msg)`.
 2. The message is moved into a shared pointer `std::shared_ptr<MessageT> shared_msg = std::move(msg)`.
-3. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `IntraProcessManager::do_intra_process_publish(int pub_id, std::shared_ptr<MessageT> shared_msg)`.
+3. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `IntraProcessManager::do_intra_process_publish(uint64_t pub_id, std::shared_ptr<MessageT> shared_msg)`.
 
 The following steps are identical to steps 3, 4 and 5 applied when publishing only intra-processs.
 
-4. `IntraProcessManager::do_intra_process_publish(...)` uses the `int pub_id` to select the `PublisherInfo` structure associated with this publisher.
+4. `IntraProcessManager::do_intra_process_publish(...)` uses the `uint64_t pub_id` to call `IntraProcessManager::get_subscription_ids_for_pub(uint64_t pub_id)`.
 Then it calls `IntraProcessManager::find_matching_subscriptions(PublisherInfo pub_info)`.
-This returns a list of stored `SubscriptionInfo` that have a QoS compatible for receiving the message.
-5. If the `Publisher` QoS is set to transient local, its `PublisherInfo` is also added to the list.
-6. The message is "added" to the ring buffer of all the items in the list (so also the `Publisher` itself receives one if set to transient local).
+This returns the ids correspondin to `Subscription`s that have a QoS compatible for receiving the message.
+These ids are divided into two sublists, according to the data-type that is stored in the buffer of each `Susbscription`: requesting ownership (`unique_ptr<MessageT>`) or accepting shared (`shared_ptr<MessageT>`, but also `MessageT` since it will copy data in any case).
+5. The message is "added" to the ring buffer of all the items in the list.
 The `rcl_guard_condition_t` member of `SubscriptionIntraProcessWaitable` of each `Subscription` is triggered (this wakes up `rclcpp::spin`).
 
 After the intra-process publication, the inter-process one takes place.
 
-7. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `Publisher::do_inter_process_publish(const MessageT & inter_process_msg)`, where `MessageT inter_process_msg = *shared_msg`.
+6. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `Publisher::do_inter_process_publish(const MessageT & inter_process_msg)`, where `MessageT inter_process_msg = *shared_msg`.
 
 The difference from the previous case is that here a `std::shared_ptr<const MessageT>` is being "added" to the buffers.
-Note that this `std::shared_ptr` has been just created from a `std::unique_ptr` and its only used by the `IntraProcessManager` and by the RMW.
-The user application has no access to it.
+Note that this `std::shared_ptr` has been just created from a `std::unique_ptr` and it is only used by the `IntraProcessManager` and by the RMW, while the user application has no access to it.
 
  - `BufferT = unique_ptr<MessageT>` The buffer receives a copy of `MessageT` and has ownership on it.
  - `BufferT = shared_ptr<const MessageT>` Every buffer receives a shared pointer of the same `MessageT`, so no copies are required.
  - `BufferT = MessageT` A copy of the message is added to every buffer.
 
+The difference with publishing a unique_ptr is that here it is not possible to move the ownership of the message to one of the `Subscription`, potentially saving a copy.
+
+[Sequence UML diagram](../img/intraprocess_communication/intra_inter_process.png)
 
 ### QoS features
 
@@ -295,6 +298,8 @@ Initially, published messages are not passed to the middleware, since all the `S
 This means that the middleware is not able to store old messages for eventual late-joiners.
 
 The solution to this issue consists in always publishing both intra and inter-process when a `Publisher` has `transient local` durability.
+For this reason, when `transient local` is enabled, the `do_intra_process_publish(...)` function will always process a shared pointer.
+This allows us to add the logic for storing the published messages into the buffers only in one of the two `do_intra_process_publish(...)` cases and also it allows to use buffers that have only to store shared pointers.
 
 
 ### Number of message copies
@@ -354,8 +359,6 @@ The notation `@` indicates a memory address where the message is stored, differe
 | shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @2 <br> @3 <br> @1 <br> @1|
 
 
-
-
 The possibility of setting the data-type stored in each buffer becomes helpful when dealing with more particular scenarios.
 
 Considering a scenario with N `Subscription`s all taking a unique pointer.
@@ -372,6 +375,16 @@ There are two `Subscription`s, one taking a shared pointer and the other taking 
 With a more centralized system, if the first `Subscription` requests its shared pointer and then releases it before the second `Subscription` takes the message, it is potentially possible to optimize the system to manage this situation without requiring any copy.
 On the other hand, the proposed implementation will immediately create one copy of the message for the `Subscription` requiring ownership.
 Even in case of using a `shared_ptr` buffer as previously described, it becomes more difficult to ensure that the other `Subscription` is not using the pointer anymore.
+
+#### Where are these copies performed?
+
+The `IntraProcessManger::do_intra_process_publish(...)` function knows whether the intra-process buffer of each `Subscription` requires ownership or not.
+For this reason it can perform the minimum number of copies required by looking at the total number of `Subscription`s and their types.
+The buffer does not perform any copy when receiving a message, but directly stores it.
+
+When extracting a message from the buffer, the `Subscription` can require any particular data-type.
+The intra-process buffer will perform a copy of the message whenever necessary, for example in the previously described cases where the data-type stored in the buffer is different from the callback one.
+
 
 ## Perfomance evaluation
 
