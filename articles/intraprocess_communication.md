@@ -34,7 +34,8 @@ Until ROS2 Crystal, major performance issues and the lack of support for shared 
 
 With the ROS2 Dashing release, most of these issues have been addressed and the intra-process communication behavior has improved greatly ([see ticket](https://github.com/ros2/ros2/issues/649)).
 
-The current implementation is based on the creation of a ring buffer for each `Publisher` and on the publication of meta-messages through the middleware layer. When a `Publisher` has to publish intra-process, it will pass the message to the `IntraProcessManager`.
+The current implementation is based on the creation of a ring buffer for each `Publisher` and on the publication of meta-messages through the middleware layer.
+When a `Publisher` has to publish intra-process, it will pass the message to the `IntraProcessManager`.
 Here the message will be stored in the ring buffer associated with the `Publisher`.
 In order to extract a message from the `IntraProcessManager` two pieces of information are needed: the id of the `Publisher` (in order to select the correct ring buffer) and the position of the message within its ring buffer.
 A meta-message with this information is created and sent through the ROS2 middleware to all the `Subscription`s, which can then retrieve the original message from the `IntraProcessManager`.
@@ -76,7 +77,8 @@ In the following some experimental evidences are quickly presented.
 
 #### Memory requirement
 
-When a `Node` creates a `Publisher` or a `Subscription` to a topic `/MyTopic`, it will also create an additional one to the topic `/MyTopic/_intra`. The second topic is the one where meta-messages travel.
+When a `Node` creates a `Publisher` or a `Subscription` to a topic `/MyTopic`, it will also create an additional one to the topic `/MyTopic/_intra`.
+The second topic is the one where meta-messages travel.
 Our [experimental results](https://github.com/irobot-ros/ros2-performance/tree/master/performances/experiments/crystal/pub_sub_memory#adding-more-nodes-x86_64) show that creating a `Publisher` or a `Subscription` has a non-negligible memory cost.
 This is particularly true for the default RMW implementation, Fast-RTPS, where the memory requirement increases almost expontentially with the number of participants and entities.
 
@@ -139,7 +141,7 @@ The choice of the buffer data-type is controlled through an additional field in 
 The default value for this option is denominated `CallbackDefault`, which corresponds to selecting the type between `shared_ptr<constMessageT>` and `unique_ptr<MessageT>` that better fits with its callback type.
 This is deduced looking at the output of `AnySubscriptionCallback::use_take_shared_method()`.
 
-If the history QoS is set to `keep all`, the buffers are dynamically allocated.
+If the history QoS is set to `keep all`, the buffers are dynamically adjusted in size up to the maximum resource limits specified by the underlying middleware.
 On the other hand, if the history QoS is set to `keep last`, the buffers have a size equal to the depth of the history and they act as ring buffers (overwriting the oldest data when trying to push while its full).
 
 Buffers are not only used in `Subscription`s but also in each `Publisher` with a durability QoS of type `transient local`.
@@ -148,7 +150,7 @@ The data-type stored in the `Publisher` buffer is always `shared_ptr<const Messa
 A new class derived from `rclcpp::Waitable` is defined, denominated `SubscriptionIntraProcessWaitable`.
 An object of this type is created by each `Subscription` with intra-process communication enabled and it is used to notify the `Subscription` that a new message has been pushed into its ring buffer and that it needs to be processed.
 
-The `IntraProcessManager` class stores information about each `Publisher` and each `Subscription`, together with pointers to these structures. ]
+The `IntraProcessManager` class stores information about each `Publisher` and each `Subscription`, together with pointers to these structures.
 This allows to know which entities can communicate with each other and to have access to methods for pushing data into the buffers.
 
 The decision whether to publish inter-process, intra-process or both is made every time the `Publisher::publish()` method is called.
@@ -220,8 +222,8 @@ All these methods are unchanged with respect to the current implementation: they
 
 ### Receiving intra-process messages
 
-As previously described, whenever messages are added to the ring buffer of a `Subscription`, a condition variable specific to the `Subscription` is triggered. This condition variable has been added to the `Node` waitset so it is being monitored by
-the `rclcpp::spin`.
+As previously described, whenever messages are added to the ring buffer of a `Subscription`, a condition variable specific to the `Subscription` is triggered.
+This condition variable has been added to the `Node` waitset so it is being monitored by the `rclcpp::spin`.
 
 Remember that the `SubscriptionIntraProcessWaitable` object has access to the ring buffer and to the callback function pointer of its related `Subscription`.
 
@@ -412,7 +414,8 @@ The next results have been obtained running the iRobot benchmark application.
 This allows the user to specify the topology of a ROS2 graph that will be entirely run in a single process.
 
 The application has been run with the topologies Sierra Nevada and Mont Blanc.
-Sierra Nevada is a 10-node topology and it contains 10 publishers and 13 subscriptions. One topic has a message size of 10KB, while all the others have message sizes between 10 and 100 bytes.
+Sierra Nevada is a 10-node topology and it contains 10 publishers and 13 subscriptions.
+One topic has a message size of 10KB, while all the others have message sizes between 10 and 100 bytes.
 
 Mont Blanc is a bigger 20-node topology, containing 23 publishers and 35 subscriptions.
 Two topics have a message size of 250KB, three topics have message sizes between 1KB and 25KB, and the rest of the topics have message sizes smaller than 1KB.
