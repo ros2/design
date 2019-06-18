@@ -2506,15 +2506,15 @@ encrypt DDS communications.</li></ul></td>
     <td class="success">✘</td>
     <td class="danger">✓</td>
     <td>An attacker deploys a malicious node which is not enabling DDS Security
-Extension and spoofs the joy_node forcing the robot to stop.</td>
+Extension and spoofs the `joy_node` forcing the robot to stop.</td>
     <td>
       <ul>
-        <li>DDS Security Governance document must set allow_unauthenticated_participants to False
+        <li>DDS Security Governance document must set `allow_unauthenticated_participants` to False
             to avoid non-authenticated participants to be allowed to communicate with
             authenticated nodes.</li>
-        <li>DDS Security Governance document must set enable_join_access_control to True to
+        <li>DDS Security Governance document must set `enable_join_access_control` to True to
             explicitly whitelist node-to-node-communication.
-            permissions.xml should be as restricted as possible."</li>
+            permissions.xml should be as restricted as possible.</li>
       </ul>
     </td>
     <td class="success">Risk is mitigated.</td>
@@ -2654,12 +2654,12 @@ encrypt DDS communications.</li></ul></td>
 vulnerabilities.</td>
     <td>
       <ul>
-        <li>DDS Security Governance document must set metadata_protection_kind
+        <li>DDS Security Governance document must set `metadata_protection_kind`
 to ENCRYPT to prevent malicious actors from observing communications.</li>
         <li>DDS Security Governance document must set
-enable_discovery_protection to True to prevent malicious actors from
+`enable_discovery_protection` to True to prevent malicious actors from
 enumerating and fingerprinting DDS participants.</li>
-        <li>DDS Security Governance document must enable_liveliness_protection
+        <li>DDS Security Governance document must set `enable_liveliness_protection`
 to True</li>
       </ul>
     </td>
@@ -2678,12 +2678,12 @@ appropriately.</td>
     <td>TurtleBot camera images are saved to a remote location controlled by the attacker.</td>
     <td>
       <ul>
-        <li>DDS Security Governance document must set metadata_protection_kind
+        <li>DDS Security Governance document must set `metadata_protection_kind`
 to ENCRYPT to prevent malicious actors from observing communications.</li>
-        <li>DDS Security Governance document mus set
-enable_discovery_protection to True to prevent malicious actors from
+        <li>DDS Security Governance document must set
+`enable_discovery_protection` to True to prevent malicious actors from
 enumerating and fingerprinting DDS participants.</li>
-        <li>DDS Security Governance document must enable_liveliness_protection
+        <li>DDS Security Governance document must set `enable_liveliness_protection`
 to True</li>
       </ul>
     </td>
@@ -4024,7 +4024,7 @@ translateY(3em)">Robot App.</th>
             authenticated nodes.</li>
         <li>DDS Security Governance document must set `enable_join_access_control` to True to
             explicitly whitelist node-to-node-communication.
-            permissions.xml should be as restricted as possible."</li>
+            permissions.xml should be as restricted as possible.</li>
       </ul>
     </td>
     <td class="success">Risk is mitigated</td>
@@ -4153,9 +4153,9 @@ translateY(3em)">Robot App.</th>
       <ul>
         <li>DDS Security Governance document must set `metadata_protection_kind` to ENCRYPT to
             prevent malicious actors from observing communications.</li>
-        <li>DDS Security Governance document mus set `enable_discovery_protection` to True to
+        <li>DDS Security Governance document must set `enable_discovery_protection` to True to
             prevent malicious actors from enumerating and fingerprinting DDS participants.</li>
-        <li>DDS Security Governance document must `enable_liveliness_protection` to True</li>
+        <li>DDS Security Governance document must set `enable_liveliness_protection` to True</li>
       </ul>
     </td>
     <td class="danger">Risk is mitigated if DDS-Security is configured appropriately.</td>
