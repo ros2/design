@@ -183,6 +183,16 @@ A similar behavior can be implemented by allowing the search parameter implement
 
 The client libraries will provide the following API for interfacing with the Core Parameter API for both local and remote nodes including return codes.
 
+### Parameter Initialization
+
+Default parameters initialization may be overriden via command line arguments using the `name!=value` syntax, where:
+
+- `name` is the parameter name that is to be initialized.
+- `value` is the value, in [YAML](https://yaml.org/spec/1.2/spec.html) syntax, to initialize the parameter with.
+- `!=` is the parameter overriding assignment operator.
+
+Note the use of the `!=` operator in lieu of the `:=` operator, to help disambiguate parameter initialization statements from name remapping rules.
+
 ### Parameter Events
 
 Each node will provide a topic on which parameter events will be published.
