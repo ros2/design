@@ -116,12 +116,12 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <process name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
+  <executable name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
      <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
      <on_exit>
         <log message="I'm done"/>
      </on_exit>
-  </process>
+  </executable>
 </launch>
 ```
 
@@ -129,8 +129,8 @@ Some description samples in different markup languages are provided below:
 ```yml
 launch:
   version: x.1.0
-  entities:
-    - process:
+  children:
+    - executable:
         cmd: $(find-exec my-process)
         env:
           LD_LIBRARY_PATH: "/opt/dir:$(env LD_LIBRARY_PATH)"
@@ -199,12 +199,12 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <process name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
+  <executable name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
      <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
      <on_exit>
       <log message="I'm done"/>
     </on_exit>
-  </process>
+  </executable>
 </launch>
 ```
 
@@ -212,8 +212,8 @@ Some description samples in different markup languages are provided below:
 ```yaml
 launch:
   version: x.1.0
-  entities:
-    - process:
+  children:
+    - executable:
         cmd: $(find-exec my-process)
         env:
           LD_LIBRARY_PATH: "/opt/dir:$(env LD_LIBRARY_PATH)"
@@ -242,20 +242,26 @@ Some sample definitions in different programming languages are provided below:
 ```python
 class Entity:
 
-   @property
-   def type(self):
-       pass
+    @property
+    def type_name(self):
+        pass
 
-   @property
-   def parent(self):
-       pass
+    @property
+    def parent(self):
+        pass
 
-   @property
-   def children(self):
-       pass
+    @property
+    def children(self):
+        pass
 
-   def __getattr__(self, name):
-       pass
+    def get_attr(
+      self,
+      name,
+      *,
+      data_type=str,
+      optional=False
+    ):
+        pass
 ```
 
 *C++*
@@ -310,11 +316,12 @@ such that their associated parsing entity `e` exposes its data as follows:
 
 *Python*
 ```python
-e.type == 'node'
-e.name == 'my-node'
-hasattr(e, 'package') == true
-e.param[0].name == 'a'
-e.param[1].name == 'b'
+e.type_name == 'node'
+e.get_attr(name) == 'my-node'
+e.get_attr('package', optional=True) != None
+params = e.get_attr('param', data_type=List[Entity])
+params[0].get_attr('name') == 'a'
+params[1].get_attr('name') == 'b'
 ```
 
 *C++*
@@ -336,31 +343,30 @@ Each launch entity that is to be statically described must provide a parsing pro
 
 *Python*
 ```python
-@launch.expose('some-action')  # Infers it's an Action
+@launch.frontend.expose_action('some-action')  # Infers it's an Action
 class SomeAction(launch.Action):
 
     @classmethod
     def parse(
         cls,
-        entity: parsing.Entity,
-        parser: parsing.Parser
+        entity: launch.frontend.Entity,
+        parser: launch.frontend.Parser
     ) -> SomeAction:
         return cls(
-            scoped=parser.parse(entity.scoped), entities=[
-                parser.parse(child) for child in entity.children
+            scoped=parser.parse_substitution(entity.get_attr(scoped)), entities=[
+                parser.parse_action(child) for child in entity.children
             ]
         )
 
-@launch.expose('some-subst')  # Infers it's a Substitution
+@launch.frontend.expose_substitution('some-subst')  # Infers it's a Substitution
 class SomeSubstitution(launch.Substitution):
 
     @classmethod
     def parse(
         cls,
-        value: parsing.Value,
-        parser: parsing.Parser
+        data: Iterable[SomeSubstitutionsType]
     ) -> SomeSubstitution:
-        return cls(aliases=list(value))
+        return cls(*data)
 ```
 
 *C++*
@@ -402,7 +408,7 @@ In the simplest case, the user may explicitly provide their own parsing procedur
 
 ##### Automatic Derivation
 
-If accurate type information is (somehow) available, reflection mechanisms can aid derivation of a parsing procedure with no user intervention.
+If accurate type information is available (e.g.: type annotations in constructor), reflection mechanisms can aid derivation of a parsing procedure with no user intervention.
 
 #### Advantages & Disadvantages
 
@@ -411,9 +417,6 @@ The abstraction layer allows.
 *-* Launch system implementations are aware of the parsing process.
 
 *+* The static description abstraction effectively decouples launch frontends and backends, allowing for completely independent development and full feature availability at zero cost.
-
-*-* No markup language specific sugars are possible.
-    REVISIT(hidmic): IMHO explicitly disallowing this is a good thing, it makes for more homogeneus descriptions and avoids proliferation of multiple representation of the same concepts (e.g. a list of strings).
 
 *+* The transfer function nature of the parsing procedure precludes the need for a rooted object type hierarchy in statically typed launch system implementations.
 
