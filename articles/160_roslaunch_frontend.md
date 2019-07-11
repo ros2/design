@@ -45,7 +45,7 @@ It's worth noting some things they all have in common:
 
 ### Forward Description Mapping (FDM)
 
-In FDM, the parser relies on a schema and well-known rules to map an static description (markup) to implementation specific instances (objects).
+In FDM, the parser relies on a schema and well-known rules to map a static description (markup) to implementation specific instances (objects).
 The parser instantiates each launch entity by parsing and collecting the instantiations of the launch entities that make up the former description.
 
 #### Description Markup
@@ -96,7 +96,7 @@ launch:
 
 *+* Straightforward to implement.
 
-*+* Launch implementations are completely unaware of the static description existence and its parsing process (to the extent that type agnostic instantiation mechanisms are available).
+*+* Launch implementations are completely unaware of the existence of the static description formats and their parsing process (to the extent that type agnostic instantiation mechanisms are available).
 
 *-* Statically typed launch system implementations may require variant objects to deal with actions.
 
@@ -181,9 +181,9 @@ LAUNCH_MARKUP_HANDLE_SUBST("env", env_subst_helper);
 
 *-* Launch system implementations are aware of the parsing process, being completely involved with it if sugars are to be provided.
 
-*+* Allows leveraging the strenghts of each markup language.
+*+* Allows leveraging the strengths of each markup language.
 
-*-* Opens the door to big differences in the representation of launch entities across different front end, and even within a given one by allowing the users to introduce multiple custom representations for the same concepts (e.g. a list of numbers).
+*-* Opens the door to big differences in the representation of launch entities across different front end implementations, and even within a given one by allowing the users to introduce multiple custom representations for the same concept (e.g. a list of numbers).
 
 *-* Care must be exercised to avoid coupling static descriptions with a given implementation.
 
