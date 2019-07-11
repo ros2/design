@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+  vc:minVersion="1.1">
   <xs:annotation>
     <xs:documentation xml:lang="en">
       ROS 2 launch XML schema v0.1.0
@@ -398,14 +400,14 @@
 
         <xs:element ref="param"/>
       </xs:choice>
-      <xs:attribute name="name" type="xs:string" use="required">
+      <xs:attribute name="name" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             Name of the ROS parameter to be set.
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="value" type="xs:string" use="required">
+      <xs:attribute name="value" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             Value or list of values to set the the ROS parameter with.
@@ -426,6 +428,7 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
+      <xs:assert test="(@name and not(@from)) or (not(@name) and @from)"/>
     </xs:complexType>
   </xs:element>
 
