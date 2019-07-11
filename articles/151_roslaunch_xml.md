@@ -31,8 +31,8 @@ The body of such a description is mainly comprised of statically declared launch
 To that, runtime value substitution is added in order to fullfill common dynamic (re)configuration needs like conditional execution, resource lookups, etc.
 It is intended for these entities to map to those of the underlying implementation, reducing support to file parsing.
 
-The choice of XML over other markup languages aims to ease the bridge between ROS and ROS 2 launch files.
-Widely available support for parsing XML in a myriad of languages and platforms also weighed (significantly) in the decision.
+This article describes XML aiming to ease the bridge between ROS and ROS 2 launch files.
+YAML is currently supported too, and other markup languages could be added.
 
 ## Static Description
 
