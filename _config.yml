@@ -20,3 +20,6 @@ exclude:
  - LICENSE
  - README.md
  - vendor
+
+plugins:
+  - jekyll-redirect-from

@@ -2,6 +2,7 @@
 layout: default
 title: Resource Names
 permalink: articles/resource_names.html
+redirect_from: articles/topic_and_service_names.html
 abstract:
   This article describes an specification proposal for resource addressing in ROS, as well as its implementation in a DDS setting.
 author: '[William Woodall](https://github.com/wjwwood) [Michel Hidalgo](https://github.com/hidmic)'
@@ -25,19 +26,19 @@ Original Author: {{ page.author }}
 
 #### Content-oriented resources
 
-Content-oriented resources are not bound to any particular node in a given system.
+Borrowing both terminology and key concepts from [_Content Centric Networking_](https://en.wikipedia.org/wiki/Content_centric_networking), content-oriented resources are not bound to any particular node in a given system, but instead allow information addressing through unique names and independently of the actual source.
 ROS topics, which may be freely published or subscribed to by multiples ROS nodes, fall under this classification.
-
-Note that in ROS 1, every resource i.e. topics, services, actions and parameters, is a content-oriented resource.
+Note that in ROS 1, every resource i.e. topics, services, actions, and parameters, is a content-oriented resource.
 
 #### Host-oriented resources
 
 Host-oriented resources are provided by a node in a given system and thus are bound to it.
-Multiple resources with the same name and type may by provided by different nodes.
-Therefore, the provider node name is necessary to unambiguously address a host-oriented resource.
-In the preceding, it is assumed that node name uniqueness has been ensured by means not prescribed in this document.
+Multiple resources with the same name and type may be provided by different nodes.
+Therefore, the host node name is necessary to unambiguously address a host-oriented resource.
 
-ROS services, actions and parameters fall under this classification.
+*Note*: In the preceding, it is assumed that node name uniqueness has been ensured by means not prescribed in this document.
+
+ROS services, actions, and parameters fall under this classification.
 
 ### Restrictions
 
@@ -79,29 +80,30 @@ Resources are addressed by means of the [Uniform Resource Locators (URL)](https:
 
 ### Syntax Components
 
-#### Provider Names
+#### Host Names
 
-For host-oriented resources i.e. services, actions and parameters, the provider name refers to the node that is exposing said resources.
+For host-oriented resources, i.e. services, actions, and parameters, the host name refers to the ROS node that is exposing said resources.
 
 ##### Definition
 
-A provider name is made up of one or more tokens, delimited by periods (`.`) i.e. using URL hostname style syntax.
+A host name is made up of one or more tokens, delimited by periods (`.`), and thus borrowing [FQDNs](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) syntax.
 
 Each token:
 
 - must not be empty.
 - may use alphanumeric characters (`[0-9|a-z|A-Z]`) and/or underscores (`_`) only.
 - must not start with numeric characters (`[0-9]`).
+- must not contain any number of repeated underscores (`_`).
 
-As a consequence, a provider name:
+As a consequence, a host name:
 
 - must not contain any number of repeated periods (`.`), e.g. the name `foo..bar` is not allowed.
   - rationale: it removes the chance for accidental `..` from concatenation and therefore the need to collapse `..` to `.`.
-  
-Additionally, a provider name must not end nor start with a period (`.`).
 
-The last token in a provider name is its base name and any preceding tokens make up its namespace.
-For example, a `foo.bar.baz` provider name is made up of `foo`, `bar` and `baz` tokens, and refers to a node in the `foo.bar` namespace whose base name is `baz`.
+Additionally, a host name must not end nor start with a period (`.`).
+
+The last token in a host name is its base name and any preceding tokens make up its namespace.
+For example, a `foo.bar.baz` host name is made up of `foo`, `bar` and `baz` tokens, and refers to a node in the `foo.bar` namespace whose base name is `baz`.
 
 #### Resource Names
 
@@ -109,7 +111,7 @@ All resources, whether content-oriented or host-oriented, have a name.
 
 ##### Definition
 
-A resource name is made up of one or more tokens, delimited by forward slashes (`/`) i.e. using URL path style syntax.
+A resource name is made up of one or more tokens, delimited by forward slashes (`/`), and thus borrowing URI path syntax.
 
 Each token:
 
@@ -126,11 +128,11 @@ As a consequence, a resource name:
 Additionally, a resource name must not end with a forward slash (`/`), but may start with one (see [Locator Resolution](#locator-resolution) section).
 
 The last token in a resource name is its base name, and any preceding tokens make up its namespace.
-For example, a `/foo/bar/baz` resource name is made up of `foo`, `bar` and `baz` tokens, and refers to a resource in the `/foo/bar` namespace whose base name is `baz`.
+For example, a `/foo/bar/baz` resource path is made up of `foo`, `bar` and `baz` tokens, and refers to a resource in the `/foo/bar` namespace whose base name is `baz`.
 
 #### Resource Type
 
-All resources have a well known type. 
+All resources have a well known type.
 
 ##### Definition
 
@@ -153,11 +155,11 @@ Note the triple forward slash (`/`), which is a similar style to the `file://` s
 
 For ease of use, resource locators allow for a number of context dependent resolution mechanisms.
 
-Additionally, both resource type and provider name components may be left unspecified, which may or may not lead to ambiguity when addressing resources in a system.
+Additionally, both resource type and host name components may be left unspecified, which may or may not lead to ambiguity when addressing resources in a system.
 Tools and libraries may error in such circumstances, recompose missing components based on well known assumptions or simply leverage that ambiguity in application specific ways.
 Some examples of this include but are not limited to:
 
-- remapping names for multiple resources of different types that are named alike if no resource type is specified e.g. `foo:=bar` may result in name remapping for matching topics, services and actions.
+- remapping paths for multiple resources of different types that are named alike if no resource type is specified e.g. `foo:=bar` may result in name remapping for matching topics, services and actions.
 - presume (and enforce) that upon a given operation on a resource, said resource is of the expected type even if not resource type is specified e.g. if subscribing to `foo/chatter` it is assumed and expected that said resource name refers to a topic.
 - operating on a subset of all matching resources if no resource type and/or no provider name (if it applies) are specified e.g. calling an `add_two_ints` service may result in the first service found being called or all of them being called and the first response received returned.
 
@@ -177,10 +179,10 @@ It can be regarded as a _global_ name, or a name at the _root_ namespace.
 A relative name does not begin with a forward slash (`/`) and it is resolved _relative_ to the addressing node's namespace.
 Periods (`.`) in the addressing node's namespace are replaced by forward slashes (`/`) and a leading forward slash (`/`) is added during resolution.
 
-For example, if a `ping.pong.ball` node addresses (e.g. subscribes to) a `foo/bar` topic, then the topic name will be resolved to `/ping/pong/foo/bar`.
+For example, if a node with the address `ping.pong.ball` publishes or subscribes to a topic `foo/bar`, then the topic name will be resolved to `/ping/pong/foo/bar`.
 However, for the `/foo/bar` topic the topic name will stay `/foo/bar`, ignoring the node's namespace.
 
-##### Private namespace substitution character 
+##### Private namespace substitution character
 
 The special single character token `~` is substituted by the addressing node's name.
 Periods (`.`) in the addressing node's name are replaced by forward slashes (`/`) and a leading forward slash (`/`) is added during substitution.
@@ -204,7 +206,7 @@ The bracket syntax (`{substitution_name}`) may be used in resource names to subs
 The set of substitution keys (names) are not set in this document, but some reasonable examples might be `{node}`, expanding to the addressing node's name, or `{ns}`, expanding to the addressing node's namespace.
 
 Substitutions must result in a valid name and comply with the name constraints.
-An example of an invalid substitution would be `{sub}/foo` and replace `{sub}` with a numeric value, which thus leads to a (invalid) resource name starting with a numeric character.
+An example of an invalid substitution would be `{sub}/foo` and replace `{sub}` with a numeric value, which thus leads to a *invalid* resource name starting with a numeric character.
 
 Substitutions are expanded after the private namespace substitution character is expanded.
 Therefore a substitution may not contain the private namespace substitution character, i.e. `~`.
@@ -219,7 +221,7 @@ For example, given the name `{% raw %}/foo/{{bar}_baz}{% endraw %}` would result
 
 #### Fully Qualified Resource Names (FQRNs)
 
-Regular resource names resolution rules allow for convenient syntax, which in some cases requires additional context to expand to a fully qualified name that can be mapped to e.g. a DDS topic name.
+Regular resource name resolution rules allow for convenient syntax, which in some cases requires additional context to expand to a fully qualified name that can be mapped to another kind of name e.g. a DDS topic name.
 For example, as outlined in further detail in the preceding sections, resource names may be relative (e.g. `foo` versus the absolute `/foo`), they may contain the private namespace substitution character (`~`), or arbitrary substitutions in curly braces (`{}`) syntax.
 With enough context, each of these features can be expanded to some simple string to form the fully qualified name.
 
@@ -232,11 +234,11 @@ Fully qualified names have these additional restrictions:
 
 #### Hidden nodes
 
-If a (resource provider) node name contains any tokens that start with an underscore (`_`), the node it refers to will be considered hidden and tools may not show them unless explicitly asked to.
+If a node name (a.k.a. resource host) contains any tokens that start with an underscore (`_`), the node it refers to will be considered hidden and tools may not show them unless explicitly asked to do so.
 
 #### Hidden resources
 
-If a resource name contains any tokens that start with an underscore (`_`), the resource it refers to will be considered hidden and tools may not show them unless explicitly asked to.
+If a resource name contains any tokens that start with an underscore (`_`), the resource it refers to will be considered hidden and tools may not show them unless explicitly asked to do so.
 
 ### Examples
 
@@ -245,24 +247,25 @@ For example, these are valid names:
 | `foo`      | `abc123`   | `_foo`  | `Foo`               | `BAR`                |
 | `~`        | `foo/bar`  | `~/foo` | `{foo}_bar`         | `foo/{ping}/bar`     |
 | `foo/_bar` | `foo_/bar` | `foo_`  | `rosservice:///foo` | `rostopic://foo/bar` |
-| `foo/_bar` | `foo_/bar` | `foo_`  | `rosservice:///foo` | `rostopic://foo/bar` |
 
 But these are not valid names:
 
-| `123abc`    | `123`  | `foo bar`  | ` `        | `foo//bar` |
-| `/~`        | `~foo` | `foo~`     | `foo~/bar` | `foo/~bar` |
-| `foo/~/bar` | `foo/` | `foo__bar` |            |            |
+| `123abc` | `foo//bar` | `foo bar` | `foo/~/bar` |
+| `/~`     | `~foo`     | `foo~`    | `foo~/bar`  |
+| `foo/`   | `/456`     | `~/456`   | `foo/~bar`  |
 
 These are some valid fully qualified names:
 
-| `/foo`                    | `rosparam://another.node/bool_param` | `rostopic:///ping`                 | `/_private/thing`                  |
-| `rosaction://a.node/ping` | `/bar/baz`                           | `/public_namespace/_private/thing` | `rosservice://_private.node/reset` |
+| `/foo`                             | `rosparam://another.node/bool_param` |
+| `rosaction://a.node/ping`          | `/bar/baz`                           |
+| `rostopic:///ping`                 | `/_private/thing`                    |
+| `/public_namespace/_private/thing` | `rosservice://_private.node/reset`   |
 
 ### Summary
 
 For convenience, here is a summary of all the rules that apply to URLs in ROS.
 
-Provider names in a URL:
+Host names in a URL:
 
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`) and periods (`.`).
 - must not start with a numeric character (`[0-9]`).
@@ -284,7 +287,7 @@ Resource names in a URL:
 - must have balanced curly braces (`{}`) when used, i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`.
 
 The content of substitutions, i.e. the string in side of balanced curly braces (`{}`), follow very similar rules to names.
-The content of substitutions:
+These:
 
 - must not be empty.
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`) and underscores (`_`).
@@ -292,18 +295,19 @@ The content of substitutions:
 
 ## Mapping Resource Names to DDS Concepts
 
-### Naming Constraints 
+### Naming Constraints
 
 #### Allowed characters
 
-ROS URL syntax allows for more characters than e.g. DDS topic names allow: the forward slash (`/`), the tilde (`~`), the balanced curly braces (`{}`), the period (`.`) and the semicolon (`:`).
-These must be substituted or otherwise removed during the process of converting a ROS URL to e.g. a DDS topic name.
+The ROS URL syntax allows for more characters than are allowed in other kinds of name e.g. DDS topic names.
+For example, the tilde (`~`), the balanced curly braces (`{}`), the period (`.`) and the semicolon (`:`) are all allowed in the ROS URL syntax, but are not allowed in DDS topic names.
+These must be substituted or otherwise removed during the process of converting a ROS URL to another kind of name e.g. a DDS topic name.
+
+*Note*: Previously, forward slashes (`/`) were also disallowed in DDS topic names but now the restriction has been lifted (see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore ROS topic names are first prefixed with a ROS Specific Namespace prefix (described below) and then mapped directly to DDS topic names.
 
 After ROS resource names are expanded to fully qualified names, any balanced bracket (`{}`) substitutions and tildes (`~`) will have been expanded.
-Periods (`.`) in provider names must be transformed into another suitable character e.g. the forward slash `/`, as it is done when resolving relative resource names.
+Periods (`.`) in host names must be transformed into another suitable character e.g. the forward slash `/`, as it is done when resolving relative resource names.
 Type schemes must also be removed after parsing and before mapping can take place.
-
-*Note*: Previously, forward slashes (`/`) were disallowed in DDS topic names but now the restriction has been lifted (see [issue](https://issues.omg.org/issues/lists/dds-rtf5#issue-42236) on omg.org) and therefore ROS topic names are first prefixed with a ROS Specific Namespace prefix (described below) and then mapped directly to DDS topic names.
 
 #### Name Length Limit
 
@@ -449,7 +453,7 @@ This addressed the issue because ROS resource base names will not contain any fo
 The DDS partition would contain the ROS resource namespace, including any forward slashes (`/`) that made up the namespace and were not at the beginning or the end of the namespace.
 That is acceptable because DDS partition names are allowed to contain forward slashes (`/`) unlike the DDS topic names previously, but now DDS topic names allow forward slashes (`/`).
 
-DDS partitions are implemented as an array of strings within the `DDS::Publisher` and `DDS::Subscriber` QoS settings and have no hierarchy or order. 
+DDS partitions are implemented as an array of strings within the `DDS::Publisher` and `DDS::Subscriber` QoS settings and have no hierarchy or order.
 Each entry in the partition array is directly combined with the DDS topic and they are not sequentially combined.
 If a publisher has two partition entries, e.g. `foo` and `bar` with a base name of `baz`, this would be equivalent to having two different publishers on these topics: `/foo/baz` and `/bar/baz`.
 Therefore this proposal used only one of the strings in the partitions array to hold the entire ROS resource's namespace.
