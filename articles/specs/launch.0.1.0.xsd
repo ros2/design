@@ -122,14 +122,6 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="ns" type="xs:string" use="optional">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            A ROS namespace to scope included ROS entities launched by
-            actions in the included launch file, if any.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:attribute>
       <xs:attribute name="if" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
@@ -201,14 +193,6 @@
         <xs:element ref="include"/>
         <xs:element ref="let"/>
       </xs:choice>
-      <xs:attribute name="ns" type="xs:string" use="optional">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            A ROS namespace to scope ROS entities launched by
-            grouped actions.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:attribute>
       <xs:attribute name="scoped" type="xs:boolean" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">

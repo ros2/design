@@ -47,7 +47,6 @@ YAML is currently supported too, and other markup languages could be added.
 #### All Tags
 
 Every tag's execution can be conditioned on a boolean predicate via `if` or `unless` attributes.
-All action tags that can contain other action tags can scope ROS entities in a namespace via the `ns` attribute.
 
 #### `<launch>` Tag
 
@@ -61,12 +60,11 @@ There must only be one `<launch>` tag on a given launch file.
 The `<include>` tag allows for bringing a launch file description into another, enabling re-use of hierarchical launch layouts.
 The included launch file description has its own scope for launch configurations.
 The included launch file description is not necessarily written in this format nor a declarative one (i.e. a programmatic description).
-To avoid ROS name clashes, included nodes can be namespaced via the `ns` attribute.
 
 ##### Examples
 
 ```xml
-<include file="/opt/my_launch_file.py" ns="/my_ns"/>
+<include file="/opt/my_launch_file.py"/>
 <include file="$(find-pkg my_pkg)/launch/some_launch_file.xml"/>
 <include file="/opt/my_other_launch_file.xml">
   <arg name="some_argument" value="dummy_value"/>
@@ -82,13 +80,11 @@ The `<group>` tag allows for launch actions' grouping as well as optional launch
 ##### Examples
 
 ```xml
-<group ns="dummy_group" scoped="true">
-  <node package="a_ros_package" name="dummy0" executable="dummy_node"/>
+<group scoped="true">
+  <node package="a_ros_package" name="dummy0" ns="my_ns" executable="dummy_node"/>
   <node package="a_ros_package" name="dummy1" executable="dummy_node"/>
 </group>
 ```
-
-Namespaces for groups are usually relative to allow further namespacing by other launch files including the one the group is in.
 
 #### `<let>` Tag
 
