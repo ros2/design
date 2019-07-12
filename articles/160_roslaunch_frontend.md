@@ -343,7 +343,7 @@ Each launch entity that is to be statically described must provide a parsing pro
 
 *Python*
 ```python
-@launch.frontend.expose_action('some-action')  # Infers it's an Action
+@launch.frontend.expose_action('some-action')
 class SomeAction(launch.Action):
 
     @classmethod
@@ -358,7 +358,7 @@ class SomeAction(launch.Action):
             ]
         )
 
-@launch.frontend.expose_substitution('some-subst')  # Infers it's a Substitution
+@launch.frontend.expose_substitution('some-subst')
 class SomeSubstitution(launch.Substitution):
 
     @classmethod
@@ -384,7 +384,7 @@ class SomeAction : public launch::Action {
   }
 };
 
-LAUNCH_EXPOSE("some-action", SomeAction);  // Infers it's an Action
+LAUNCH_EXPOSE_ACTION("some-action", SomeAction);
 
 class SomeSubstitution : public launch::Substitution {
   static std::unique_ptr<SomeSubstitution>
@@ -393,7 +393,7 @@ class SomeSubstitution : public launch::Substitution {
   }
 };
 
-LAUNCH_EXPOSE("some-subst", SomeSubst);  // Infers it's a Substitution
+LAUNCH_EXPOSE_SUBSTITUTION("some-subst", SomeSubst);
 ```
 
 As can be seen above, procedures inspect the description through the given parsing entity, delegating further parsing to the parser recursively.
@@ -408,7 +408,7 @@ In the simplest case, the user may explicitly provide their own parsing procedur
 
 ##### Automatic Derivation
 
-If accurate type information is available (e.g.: type annotations in constructor), reflection mechanisms can aid derivation of a parsing procedure with no user intervention.
+If accurate type information is somehow available (e.g.: type annotations in constructor), reflection mechanisms can aid derivation of a parsing procedure with no user intervention.
 
 #### Advantages & Disadvantages
 
@@ -417,6 +417,9 @@ The abstraction layer allows.
 *-* Launch system implementations are aware of the parsing process.
 
 *+* The static description abstraction effectively decouples launch frontends and backends, allowing for completely independent development and full feature availability at zero cost.
+
+*-* No markup language specific sugars are possible.
+    REVISIT(hidmic): IMHO explicitly disallowing this is a good thing, it makes for more homogeneus descriptions and avoids proliferation of multiple representation of the same concepts (e.g. a list of strings).
 
 *+* The transfer function nature of the parsing procedure precludes the need for a rooted object type hierarchy in statically typed launch system implementations.
 
