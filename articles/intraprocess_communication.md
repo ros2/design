@@ -94,7 +94,7 @@ The result is that from the latency and CPU utilization point of view, it is con
 ### Problems when both inter and intra-process communication are needed
 
 Currently, ROS2 does not provide any API for making nodes or `Publisher` and `Subscription` to ignore each other.
-This feature woudl be useful when both inter and intra-process communication are needed.
+This feature would be useful when both inter and intra-process communication are needed.
 
 The reason is that the current implementation of the ROS2 middleware will try to deliver inter-process messages also to the nodes within the same process of the `Publisher`, even if they should have received an intra-process message.
 Note that these messages will be discarded, but they will still cause an overhead.
