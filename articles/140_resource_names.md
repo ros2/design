@@ -4,8 +4,8 @@ title: Resource Names
 permalink: articles/resource_names.html
 redirect_from: articles/topic_and_service_names.html
 abstract:
-  This article describes an specification proposal for resource addressing in ROS, as well as its implementation in a DDS setting.
-author: '[William Woodall](https://github.com/wjwwood) [Michel Hidalgo](https://github.com/hidmic)'
+  This article describes a specification proposal for resource addressing in ROS, as well as its implementation in a DDS setting.
+author: '[William Woodall](https://github.com/wjwwood), [Michel Hidalgo](https://github.com/hidmic)'
 published: true
 ---
 
@@ -277,14 +277,13 @@ Resource names in a URL:
 
 - must not be empty.
 - may contain alphanumeric characters (`[0-9|a-z|A-Z]`), underscores (`_`), and forward slashes (`/`).
-- may use balanced curly braces (`{}`) in the resource name for substitutions.
+- may use balanced curly braces (`{}`) in the resource name for substitutions i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`.
 - may start with a tilde (`~`), the private namespace substitution character.
 - must not start with a numeric character (`[0-9]`).
 - must not end with a forward slash (`/`).
 - must not contain any number of repeated forward slashes (`/`).
 - must not contain any number of repeated underscores (`_`).
 - must separate a tilde (`~`) from the rest of the name with a forward slash (`/`), i.e. `~/foo` not `~foo`.
-- must have balanced curly braces (`{}`) when used, i.e. `{sub}/foo` but not `{sub/foo` nor `/foo}`.
 
 The content of substitutions, i.e. the string in side of balanced curly braces (`{}`), follow very similar rules to names.
 These:
@@ -319,7 +318,7 @@ While testing our implementation with Connext, we encountered some additional li
 That is, for example the length of a service name has tighter limits than the length of a topic.
 In the RTI Connext implementation, service names are suffixed with the GUID value of the DDS participant for the service response topic.
 Additionally, a content filtered topic (max length 256 characters) is created which is mapped from the suffixed service name.
-Therefore when linking against `rmw_connext_c` or `rmw_connext_cpp`, service names cannot be longer than 185 characters including the namespace hierarchy and any ros specific prefixes.
+Therefore when linking against `rmw_connext_c` or `rmw_connext_cpp`, service names cannot be longer than 185 characters including the namespace hierarchy and any ROS specific prefixes.
 
 ### ROS Specific Namespace Prefix
 
