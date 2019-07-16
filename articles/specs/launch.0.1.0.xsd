@@ -67,6 +67,8 @@
       <xs:element ref="executable"/>
       <xs:element ref="include"/>
       <xs:element ref="group"/>
+      <xs:element ref="set_env"/>
+      <xs:element ref="unset_env"/>
     </xs:choice>
     <xs:attribute name="version" use="required">
       <xs:annotation>
@@ -192,6 +194,8 @@
         <xs:element ref="group"/>
         <xs:element ref="include"/>
         <xs:element ref="let"/>
+        <xs:element ref="set_env"/>
+        <xs:element ref="unset_env"/>
       </xs:choice>
       <xs:attribute name="scoped" type="xs:boolean" use="optional">
         <xs:annotation>
@@ -241,19 +245,78 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="set_env">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Modifies an executable process environment.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the environment variable to be set.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Value to be set for the environment variable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="if" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            A predicate to condition environment modification i.e.
-            only do so if the predicate evaluates to a truthy value.
+            A predicate to condition executable launch i.e. only do
+            so if the predicate evaluates to a truthy value.
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
       <xs:attribute name="unless" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            A predicate to condition environment modification i.e.
-            do so unless the predicate evaluates to a truthy value.
+            A predicate to condition executable launch i.e. do so unless
+            the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="unset_env">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Modifies an executable process environment.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the environment variable to be set.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition executable launch i.e. only do
+            so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition executable launch i.e. do so unless
+            the predicate evaluates to a truthy value.
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>

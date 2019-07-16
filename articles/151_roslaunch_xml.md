@@ -133,8 +133,8 @@ The `<node>` tag allows for executing a ROS node in the form of local OS process
 
 ##### Description
 
-The `<param>` tag allows for setting ROS parameters of a ROS node. These
-can be scalar values or sequences of scalar values, defined directly or
+The `<param>` tag allows for setting ROS parameters of a ROS node.
+These can be scalar values or sequences of scalar values, defined directly or
 either nested or brought from a YAML file to make a map.
 
 ##### Examples
@@ -142,7 +142,9 @@ either nested or brought from a YAML file to make a map.
 ```xml
 <node package="my_pkg" executable="my_node">
   <param name="some_numeric_param" value="100.2"/>
-  <param name="some_list_param" value="Some phrase,100.0,true" sep=","/>
+  <param name="some_list_of_strings" value="Some phrase,'100.0','true'" sep=","/>
+  <param name="some_list_of_ints" value="5, 3, 2" sep=", "/>
+  <param name="some_list_of_floats" value="5.0, 3.0, 2.0" sep=", "/>
   <param name="some_param_group">
     <param name="some_integer_param" value="10"/>
   </param>
@@ -170,6 +172,8 @@ The `<remap>` tag allows for ROS name remapping of a `<node>` instance.
 ##### Description
 
 The `<env>` tag allows for modifying an OS process environment.
+It can be used nested in `node` or `executable` tags.
+It doesn't allow conditional execution.
 
 ##### Examples
 
@@ -183,6 +187,38 @@ The `<env>` tag allows for modifying an OS process environment.
 </executable>
 ```
 
+#### `<set_env>` Tag
+
+##### Description
+
+The `<set_env>` tag allows for modifying an OS process environment.
+It can be used nested in `launch` or `group` tags.
+It allows conditional execution.
+
+##### Examples
+
+```xml
+<group>
+  <set_env name="RMW_IMPLEMENTATION" value="rmw_fastrtps_cpp"/>
+</group>
+```
+
+#### `<unset_env>` Tag
+
+##### Description
+
+The `<unset_env>` tag allows for deleting an OS process environment variable.
+It can be used nested in `launch` or `group` tags.
+It allows conditional execution.
+
+##### Examples
+
+```xml
+<group>
+  <unset_env name="MY_ENV_VAR"/>
+</group>
+```
+
 ## Dynamic Configuration
 
 ### Substitution Syntax
@@ -191,24 +227,24 @@ All substitutions are enclosed by `$(...)`.
 
 ### Built-in Substitutions
 
-`$(find-pkg pkg-name)`
+`$(find-package <pkg-name>)`
 : Substituted by the path to package installation directory in the local filesystem.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the package cannot be found.
 
-`$(find-exec exec-name)`
+`$(find-exec <exec-name>)`
 : Substituted by the path to the executable in the local filesystem.
   Lookups make use of the PATH environment variable.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the executable cannot be found.
 
-`$(var name)`
+`$(var <name>)`
 : Substituted by the value of the launch configuration variable.
   Substitution will fail if the named argument does not exist.
 
-`$(env env-var [default-value])`
+`$(env <env-var> [default-value])`
 : Substituted by the value of the given environment variable
-  Substitution will fail if the variable is not set, unless default values are provided.
+  Substitution will fail if the variable is not set, unless a default value is provided.
 
 `$(dirname)`
 : Substituted by the current launch file directory name.
