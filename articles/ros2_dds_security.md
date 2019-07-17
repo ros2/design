@@ -37,7 +37,8 @@ The [DDS-Security specification][dds_security] expands upon the [DDS specificati
 - **Logging**: Provide the ability to audit DDS-Security-related events
 - **Data tagging**: Provide the ability to add tags to data samples
 
-ROS 2's security features currently utilize only the first three of these, as not all DDS implementations support the **Logging** or **Data Tagging** plugins.
+ROS 2's security features currently utilize only the first three.
+This is due to the fact that neither **Logging** nor **Data Tagging** are required in order to be compliant with the [DDS-Security spec][dds_security] (see section 2.5), and thus not all DDS implementations support them.
 Let's delve a little further into those first three plugins.
 
 
