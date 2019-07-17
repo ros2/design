@@ -31,11 +31,11 @@ Original Author: {{ page.author }}
 
 The [DDS-Security specification][dds_security] expands upon the [DDS specification][dds], adding security enhancements by defining a Service Plugin Interface (SPI) architecture, a set of builtin implementations of the SPIs, and the security model enforced by the SPIs. Specifically, there are five SPIs defined:
 
-- **Authentication**: Verify the identity of a given domain participant
-- **Access control**: Enforce restrictions on the DDS-related operations that can be performed by an authenticated domain participant
-- **Cryptographic**: Handle all required encryption, signing, and hashing operations
-- **Logging**: Provide the ability to audit DDS-Security-related events
-- **Data tagging**: Provide the ability to add tags to data samples
+- **Authentication**: Verify the identity of a given domain participant.
+- **Access control**: Enforce restrictions on the DDS-related operations that can be performed by an authenticated domain participant.
+- **Cryptographic**: Handle all required encryption, signing, and hashing operations.
+- **Logging**: Provide the ability to audit DDS-Security-related events.
+- **Data tagging**: Provide the ability to add tags to data samples.
 
 ROS 2's security features currently utilize only the first three.
 This is due to the fact that neither **Logging** nor **Data Tagging** are required in order to be compliant with the [DDS-Security spec][dds_security] (see section 2.5), and thus not all DDS implementations support them.
@@ -59,7 +59,7 @@ For example, it allows a user to restrict a particular participant to a specific
 Again the SPI architecture allows for some flexibility in how the plugins accomplish this task, but ROS 2 uses the builtin access control plugin (called "DDS:Access:Permission", see section 9.4 of the [DDS-Security spec][dds_security]), which again uses PKI.
 It requires two files per domain participant:
 
-- **Governance** file: A signed XML document that specifies how the domain should be secured
+- **Governance** file: A signed XML document that specifies how the domain should be secured.
 - **Permissions** file: A signed XML document that contains the permissions of the domain participant, bound to the name of the participant as defined by the authentication plugin (which is done via an x.509 cert, as we just discussed).
 
 Both of these files must be signed by a CA which the plugin is configured to trust.
@@ -88,9 +88,9 @@ Most of the user-facing runtime support for SROS 2 is contained within the [ROS 
 Once its requirements are satisfied it takes care of configuring the middleware support for each supported DDS implementation.
 RCL includes the following features for SROS 2:
 
-- Support for security files for each domain participant
-- Support for both permissive and strict enforcement of security
-- Support for a master "on/off" switch for all SROS 2 features
+- Support for security files for each domain participant.
+- Support for both permissive and strict enforcement of security.
+- Support for a master "on/off" switch for all SROS 2 features.
 
 Let's discuss each of these in turn.
 
@@ -101,8 +101,8 @@ As stated earlier, the DDS-Security plugins require a set of security files (e.g
 Domain participants map to a specific instance of a node in ROS 2, so each node requires a set of these files.
 RCL supports this in two different ways:
 
-- Manual specification
-- Directory tree of all security files
+- Manual specification.
+- Directory tree of all security files.
 
 Let's delve further into these.
 
@@ -112,12 +112,12 @@ Let's delve further into these.
 RCL supports specifying the path to the directory containing the set of security files for the exact node instance that needs to be launched.
 The set of files expected within that directory are:
 
-- **identity_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Authentication** plugin (the "Identity" CA)
-- **cert.pem**: The x.509 certificate of this node instance (signed by the Identity CA)
-- **key.pem**: The private key of this node instance
-- **permissions_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Access control** plugin (the "Permissions" CA)
-- **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA)
-- **permissions.p7s**: The XML document that specifies the permissions of this particular node instance to the - **Access control** plugin (also signed by the Permissions CA)
+- **identity_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Authentication** plugin (the "Identity" CA).
+- **cert.pem**: The x.509 certificate of this node instance (signed by the Identity CA).
+- **key.pem**: The private key of this node instance.
+- **permissions_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Access control** plugin (the "Permissions" CA).
+- **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
+- **permissions.p7s**: The XML document that specifies the permissions of this particular node instance to the **Access control** plugin (also signed by the Permissions CA).
 
 This can be specified by setting the `$ROS_SECURITY_NODE_DIRECTORY` environment variable to point to the directory containing the security files.
 
