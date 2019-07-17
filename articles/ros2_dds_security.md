@@ -139,7 +139,7 @@ This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment 
 If using the directory tree approach to organize security files, RCL supports two different methods for looking up a given node instance's security files in the tree:
 
 - **Exact**: Only load security files from a directory exactly matching the fully-qualified name of the node instance.
-For example, given a node named "baz" within the "/foo/bar/" namespace, only load security files from `<root>/foo/bar/baz/`.
+For example, given a node named "baz_123" within the "/foo/bar/" namespace, only load security files from `<root>/foo/bar/baz_123/`.
 This is the default behavior.
 - **Prefix**: Attempt to load the most specific set of security files, but if they can't be found, check for security files under a less-specific node name.
 For example, given a node named "baz_123" within the "/foo/bar/" namespace, load security files from `<root>/foo/bar/baz_123/`.
