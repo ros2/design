@@ -101,25 +101,10 @@ As stated earlier, the DDS-Security plugins require a set of security files (e.g
 Domain participants map to a specific instance of a node in ROS 2, so each node requires a set of these files.
 RCL supports being pointed at a directory containing security files in two different ways:
 
-- Manual specification.
 - Directory tree of all security files.
+- Manual specification.
 
 Let's delve further into these.
-
-
-#### Manual specification
-
-RCL supports specifying the path to the directory containing the set of security files for the exact node instance that needs to be launched.
-The set of files expected within that directory are:
-
-- **identity_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Authentication** plugin (the "Identity" CA).
-- **cert.pem**: The x.509 certificate of this node instance (signed by the Identity CA).
-- **key.pem**: The private key of this node instance.
-- **permissions_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Access control** plugin (the "Permissions" CA).
-- **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
-- **permissions.p7s**: The XML document that specifies the permissions of this particular node instance to the **Access control** plugin (also signed by the Permissions CA).
-
-This can be specified by setting the `$ROS_SECURITY_NODE_DIRECTORY` environment variable to point to the directory containing the security files.
 
 
 #### Directory tree of all security files
@@ -137,8 +122,16 @@ For example, for the `/front/camera` node, the directory structure would look li
 To be clear: this directory structure needs to reflect the state of the running system.
 In other words, it does not contain a set of files per node on disk, but per node instance _in the ROS graph_.
 
+The set of files expected within each node instance directory are:
+
+- **identity_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Authentication** plugin (the "Identity" CA).
+- **cert.pem**: The x.509 certificate of this node instance (signed by the Identity CA).
+- **key.pem**: The private key of this node instance.
+- **permissions_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Access control** plugin (the "Permissions" CA).
+- **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
+- **permissions.p7s**: The XML document that specifies the permissions of this particular node instance to the **Access control** plugin (also signed by the Permissions CA).
+
 This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the directory tree.
-The set of files expected within each node instance directory are the same as outlined in the "Manual specification" section, above.
 
 
 ##### Support security files lookup methods
@@ -153,7 +146,16 @@ For example, given a node named "baz_123" within the "/foo/bar/" namespace, load
 However, if that directory doesn't exist, find the most specific (i.e. longest) node name that _does_ have security files within that namespace (e.g. `<root>/foo/bar/baz_12/`, or `<root>/foo/bar/baz/`, etc.).
 Note that it will not search higher in the namespace hierarchy.
 
-The desired lookup method can be specified by setting the `$ROS_SECURITY_LOOKUP_TYPE` environment variable to "MATCH_EXACT" (case-sensitive) for the **Exact* method, or "MATCH_PREFIX" (case-sensitive) for the **Prefix** method.
+The desired lookup method can be specified by setting the `$ROS_SECURITY_LOOKUP_TYPE` environment variable to "MATCH_EXACT" (case-sensitive) for the **Exact** method, or "MATCH_PREFIX" (case-sensitive) for the **Prefix** method.
+
+
+#### Manual specification
+
+RCL supports specifying the path to a directory containing the set of security files for the exact node instance that needs to be launched.
+The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual node instance directories.
+
+This can be specified by setting the `$ROS_SECURITY_NODE_DIRECTORY` environment variable to point to the directory containing the security files.
+Note that this setting takes precedence over `$ROS_SECURITY_ROOT_DIRECTORY`.
 
 
 ### Support for both permissive and strict enforcement of security
