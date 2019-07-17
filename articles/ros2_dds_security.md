@@ -172,7 +172,7 @@ The type of mode desired can be specified by setting the `$ROS_SECURITY_STRATEGY
 ### Support for a master "on/off" switch for all SROS 2 features
 
 In addition to the supported features just discussed, RCL also supports a master shutoff for security features for easy experimentation.
-If it's turned off (the default), none of the security features will be enabled.
+If it's turned off (the default), none of the above security features will be enabled.
 
 In order to enable SROS 2, set the `$ROS_SECURITY_ENABLE` environment variable to "true" (case-sensitive).
 To disable, set to any other value.
@@ -216,7 +216,8 @@ This takes an SROS 2 policy file and uses it to generate (and sign) the DDS perm
         -n <space-separated list of fully-qualified node instance names> \
         -p <space-separated list of policy files>
 
-This is essentially a combination of `create_key` and `create_permission`, taking a set of fully-qualified node instance names as well as a set of policy files and generating the entire set of keys and permissions necessary for them to run securely.
+This is essentially a combination of `create_keystore`, `create_key` and `create_permission`.
+It takes a set of fully-qualified node instance names as well as a set of policy files and generates the keystore (if it doesn't already exist) as well as the entire set of keys and permissions necessary for them to run securely.
 
 
 [dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
