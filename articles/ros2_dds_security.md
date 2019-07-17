@@ -33,9 +33,9 @@ The [DDS-Security specification][dds_security] expands upon the [DDS specificati
 
 - **Authentication**: Verify the identity of a given domain participant
 - **Access control**: Enforce restrictions on the DDS-related operations that can be performed by an authenticated domain participant
-- **Cryptographic**: Takes care of all encryption, signing, and hashing operations required
-- **Logging**: Provides the ability to audit DDS-Security-related events
-- **Data tagging**: Provides the ability to add tags to data samples
+- **Cryptographic**: Handle all required encryption, signing, and hashing operations
+- **Logging**: Provide the ability to audit DDS-Security-related events
+- **Data tagging**: Provide the ability to add tags to data samples
 
 ROS 2's security features currently utilize only the first three of these, as not all DDS implementations support the **Logging** or **Data Tagging** plugins.
 Let's delve a little further into those first three plugins.
