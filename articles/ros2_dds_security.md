@@ -75,7 +75,7 @@ This is also where the functionality to encrypt DDS topic communication resides.
 ROS 2 uses the builtin cryptographic plugin (called "DDS:Crypto:AES-GCM-GMAC", see section 9.5 of the [DDS-Security spec][dds_security]), which provides authenticated encryption using Advanced Encryption Standard (AES) in Galois Counter Mode (AES-GCM).
 
 
-# DDS-Security integration with ROS 2: SROS2
+# DDS-Security integration with ROS 2: SROS 2
 
 Now that we have established some shared understanding of how security is supported in DDS, let's discuss how that support is exposed in ROS 2.
 By default, none of the security features of DDS are enabled in ROS 2.
