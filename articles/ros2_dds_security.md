@@ -59,8 +59,8 @@ For example, it allows a user to restrict a particular participant to a specific
 Again the SPI architecture allows for some flexibility in how the plugins accomplish this task, but ROS 2 uses the builtin access control plugin (called "DDS:Access:Permission", see section 9.4 of the [DDS-Security spec][dds_security]), which again uses PKI.
 It requires two files per domain participant:
 
-- **Governance** file: A signed XML document that specifies how the domain should be secured.
-- **Permissions** file: A signed XML document that contains the permissions of the domain participant, bound to the name of the participant as defined by the authentication plugin (which is done via an x.509 cert, as we just discussed).
+- **Governance** file: A signed XML document specifying how the domain should be secured.
+- **Permissions** file: A signed XML document containing the permissions of the domain participant, bound to the name of the participant as defined by the authentication plugin (which is done via an x.509 cert, as we just discussed).
 
 Both of these files must be signed by a CA which the plugin is configured to trust.
 This may be the same CA that the **Authentication** plugin trusts, but that isn't required.
