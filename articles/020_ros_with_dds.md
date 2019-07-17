@@ -106,7 +106,7 @@ For example, if you are concerned about latency, like for soft real-time, you ca
 In another scenario you might need something that behaves like TCP, but needs to be more tolerant to long dropouts, and with DDS all of these things can be controlled by changing the QoS parameters.
 
 Though the default implementation of DDS is over UDP, and only requires that level of functionality from the transport, OMG also added support for DDS over TCP in version 1.2 of their specification.
-Only looking briefly, two of the vendors (RTI and PrismTech) both support DDS over TCP.
+Only looking briefly, two of the vendors (RTI and ADLINK Technologies) both support DDS over TCP.
 
 From RTI's website ([http://community.rti.com/kb/xml-qos-example-using-rti-connext-dds-tcp-transport](http://community.rti.com/kb/xml-qos-example-using-rti-connext-dds-tcp-transport)):
 
@@ -114,9 +114,9 @@ From RTI's website ([http://community.rti.com/kb/xml-qos-example-using-rti-conne
 > In some circumstances, the TCP protocol might be needed for discovery and data exchange.
 > For more information on the RTI TCP Transport, please refer to the section in the RTI Core Libraries and Utilities User Manual titled "RTI TCP Transport".
 
-From PrismTech's website, they support TCP as of OpenSplice v6.4:
+From ADLINK's website, they support TCP as of OpenSplice v6.4:
 
-[http://www.prismtech.com/vortex/vortex-opensplice/communication/ddsi2](http://www.prismtech.com/vortex/vortex-opensplice/communication/ddsi2)
+[https://www.adlinktech.com/en/data-distribution-service.aspx](https://www.adlinktech.com/en/data-distribution-service.aspx)
 
 ### Vendors and Licensing
 
@@ -124,7 +124,7 @@ The OMG defined the DDS specification with several companies which are now the m
 Popular DDS vendors include:
 
 - RTI
-- PrismTech
+- ADLINK Technologies
 - Twin Oaks Software
 
 Amongst these vendors is an array of reference implementations with different strategies and licenses.
@@ -143,12 +143,12 @@ RTI also appears to be willing to negotiate on the license to meet the ROS commu
 Like the other vendors this license is available for the core set of functionality, basically the basic DDS API, whereas other parts of their product like development and introspection tools are proprietary.
 RTI seems to have the largest on-line presence and installation base.
 
-PrismTech's DDS implementation, OpenSplice, is licensed under the LGPL, which is the same license used by many popular open source libraries, like glibc, ZeroMQ, and Qt.
+ADLINK's DDS implementation, OpenSplice, is licensed under the LGPL, which is the same license used by many popular open source libraries, like glibc, ZeroMQ, and Qt.
 It is available on [Github](https://github.com):
 
-[https://github.com/PrismTech/opensplice](https://github.com/PrismTech/opensplice)
+[https://github.com/ADLINK-IST/opensplice](https://github.com/ADLINK-IST/opensplice)
 
-PrismTech's implementation comes with a basic, functioning build system and was fairly easy to package.
+ADLINK's implementation comes with a basic, functioning build system and was fairly easy to package.
 OpenSplice appears to be the number two DDS implementation in use, but that is hard to tell for sure.
 
 TwinOaks's CoreDX DDS implementation is proprietary only, but apparently they specialize in minimal implementations which are able to run on embedded devices and even bare metal.
