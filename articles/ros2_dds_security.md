@@ -200,7 +200,7 @@ It then copies in the governance file created in `create_keystore` as well as th
 
     $ ros2 security generate_policy <policy file>
 
-This takes the current state of the ROS graph (i.e. all the nodes currently running, along with their topic publications/subscriptions, services, etc.) and turns it into an [SROS 2 policy file](/articles/sros2_policy_files.html).
+This takes the current state of the ROS graph (i.e. all the nodes currently running, along with their topic publications/subscriptions, services, etc.) and turns it into an [SROS 2 policy file](/articles/sros2_access_control_policies.html).
 
 
     $ ros2 security create_permission \
