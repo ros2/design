@@ -39,7 +39,7 @@ Specifically, there are five SPIs defined:
 - **Data tagging**: Provide the ability to add tags to data samples.
 
 ROS 2's security features currently utilize only the first three.
-This is due to the fact that neither **Logging** nor **Data Tagging** are required in order to be compliant with the [DDS-Security spec][dds_security] (see section 2.5), and thus not all DDS implementations support them.
+This is due to the fact that neither **Logging** nor **Data Tagging** are required in order to be compliant with the [DDS-Security spec][dds_security] (see section 2.3), and thus not all DDS implementations support them.
 Let's delve a little further into those first three plugins.
 
 
@@ -50,6 +50,11 @@ The **Authentication** plugin (see section 8.3 of the [DDS-Security spec][dds_se
 The SPI architecture allows for a number of potential authentication schemes, but ROS 2 uses the builtin authentication plugin (called "DDS:Auth:PKI-DH", see section 9.3 of the [DDS-Security spec][dds_security]), which uses the proven Public Key Infrastructure (PKI).
 It requires a public and private key per domain participant, as well as an x.509 certificate that binds the participant's public key to a specific name.
 Each x.509 certificate must be signed by (or have a signature chain to) a specific Certificate Authority (CA) that the plugin is configured to trust.
+
+The rationale for using the builtin plugin as opposed to anything else is twofold:
+
+1. It's the only approach described in detail by the spec.
+2. It's mandatory for all compliant DDS implementations to interoperably support it (see section 2.3 of the [DDS-Security spec][dds_security]), which makes the ROS 2 security features work across vendors with minimal effort.
 
 
 ## Access control
@@ -66,6 +71,11 @@ It requires two files per domain participant:
 Both of these files must be signed by a CA which the plugin is configured to trust.
 This may be the same CA that the **Authentication** plugin trusts, but that isn't required.
 
+The rationale for using the builtin plugin as opposed to anything else is the same as the **Authentication** plugin:
+
+1. It's the only approach described in detail by the spec.
+2. It's mandatory for all compliant DDS implementations to interoperably support it (see section 2.3 of the [DDS-Security spec][dds_security]), which makes the ROS 2 security features work across vendors with minimal effort.
+
 
 ## Cryptographic
 
@@ -73,7 +83,12 @@ The **Cryptographic** plugin (see section 8.5 of the [DDS-Security spec][dds_sec
 Both the **Authentication** and **Access control** plugins utilize the capabilities of the **Cryptographic** plugin in order to verify signatures, etc.
 This is also where the functionality to encrypt DDS topic communication resides.
 
-ROS 2 uses the builtin cryptographic plugin (called "DDS:Crypto:AES-GCM-GMAC", see section 9.5 of the [DDS-Security spec][dds_security]), which provides authenticated encryption using Advanced Encryption Standard (AES) in Galois Counter Mode (AES-GCM).
+While the SPI architecture again allows for a number of possibilities, ROS 2 uses the builtin cryptographic plugin (called "DDS:Crypto:AES-GCM-GMAC", see section 9.5 of the [DDS-Security spec][dds_security]), which provides authenticated encryption using Advanced Encryption Standard (AES) in Galois Counter Mode (AES-GCM).
+
+The rationale for using the builtin plugin as opposed to anything else is the same as the other plugins:
+
+1. It's the only approach described in detail by the spec.
+2. It's mandatory for all compliant DDS implementations to interoperably support it (see section 2.3 of the [DDS-Security spec][dds_security]), which makes the ROS 2 security features work across vendors with minimal effort.
 
 
 # DDS-Security integration with ROS 2: SROS 2
