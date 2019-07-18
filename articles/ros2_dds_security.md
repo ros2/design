@@ -29,7 +29,8 @@ Original Author: {{ page.author }}
 
 # DDS-Security overview
 
-The [DDS-Security specification][dds_security] expands upon the [DDS specification][dds], adding security enhancements by defining a Service Plugin Interface (SPI) architecture, a set of builtin implementations of the SPIs, and the security model enforced by the SPIs. Specifically, there are five SPIs defined:
+The [DDS-Security specification][dds_security] expands upon the [DDS specification][dds], adding security enhancements by defining a Service Plugin Interface (SPI) architecture, a set of builtin implementations of the SPIs, and the security model enforced by the SPIs.
+Specifically, there are five SPIs defined:
 
 - **Authentication**: Verify the identity of a given domain participant.
 - **Access control**: Enforce restrictions on the DDS-related operations that can be performed by an authenticated domain participant.
