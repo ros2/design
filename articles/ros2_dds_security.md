@@ -183,42 +183,14 @@ To disable, set to any other value.
 
 Configuring a ROS 2 system to be secure in RCL involves a lot of new technology (PKI, DDS governance and permissions files and their syntax, etc.).
 If a user is comfortable with these technologies, the above information should be all that's necessary to properly lock things down.
-However, the [SROS 2 CLI](https://github.com/ros2/sros2) includes a number of commands to help those who don't want to set it all up themselves.
-This section is not meant to be a tutorial, but a reference of capabilities that are available.
+However, the [SROS 2 CLI](https://github.com/ros2/sros2) should include a tool `ros2 security` to help those who don't want to set it all up themselves, including the following capabilities:
 
-
-    $ ros2 security create_keystore <keystore path>
-
-This creates the initial directory structure that will be the `$ROS_SECURITY_ROOT_DIRECTORY`, and also creates a self-signed CA and uses it to sign a governance file that will encrypt all DDS traffic.
-
-
-    $ ros2 security create_key <keystore path> <fully-qualified node instance name>
-
-This creates a new identity for the node, generating a keypair and signing its x.509 certificate using the CA created in `create_keystore`.
-It also creates an initial permissions document (that allows everything by default) and signs it with the same CA.
-It then copies in the governance file created in `create_keystore` as well as the x.509 certificate for the CA to act as both the identity CA as well as the permissions CA.
-
-
-    $ ros2 security generate_policy <policy file>
-
-This takes the current state of the ROS graph (i.e. all the nodes currently running, along with their topic publications/subscriptions, services, etc.) and turns it into an [SROS 2 policy file](/articles/sros2_access_control_policies.html).
-
-
-    $ ros2 security create_permission \
-        <keystore path> \
-        <fully-qualified node instance name> \
-        <policy file>
-
-This takes an SROS 2 policy file and uses it to generate (and sign) the DDS permissions document for the given node instance.
-
-
-    $ ros2 security generate_artifacts \
-        -k <keystore path> \
-        -n <space-separated list of fully-qualified node instance names> \
-        -p <space-separated list of policy files>
-
-This is essentially a combination of `create_keystore`, `create_key` and `create_permission`.
-It takes a set of fully-qualified node instance names as well as a set of policy files and generates the keystore (if it doesn't already exist) as well as the entire set of keys and permissions necessary for them to run securely.
+- Create Identity and Permissions CA.
+- Create directory tree containing all security files.
+- Create a new identity for a given node instance, generating a keypair and signing its x.509 certificate using the Identity CA.
+- Create a governance file that will encrypt all DDS traffic by default.
+- Support specifying node instance permissions in familiar ROS terms which are then automatically converted into low-level DDS permissions (see the [SROS 2 policy file design](/articles/sros2_access_control_policies.html) for more details).
+- Support automatically discovering required permissions from a running ROS system.
 
 
 [dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
