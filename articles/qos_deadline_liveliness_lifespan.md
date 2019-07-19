@@ -47,13 +47,11 @@ To address these needs it was proposed that we start by adding support for the f
 The deadline policy establishes a contract for the amount of time allowed between messages.
 For Subscriptions it establishes the maximum amount of time allowed to pass between receiving messages.
 For Publishers it establishes the maximum amount of time allowed to pass between sending messages.
-
-Topics will support the following levels of deadlines:
-- DEADLINE_DEFAULT - Use the ROS specified default for deadlines (which is DEADLINE_NONE).
-- DEADLINE_NONE - No deadline will be offered or requested and events will not be generated for missed deadlines.
-- DEADLINE_RMW - The rmw layer of ROS will track the deadline. For a Publisher or Subscriber this means that a deadline will be considered missed if the rmw layer has not received a message within the specified time. For a Service this means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
-
+Topics will support deadline tracking only up to the rmw layer.
+This means that a deadline will be considered missed if the rmw layer has not received a message within the specified time.
 In order for a Subscriber to listen to a Publisher's Topic the deadline that they request must be greater than, or equal to, the deadline set by the Publisher.
+A deadline time of 0 will disable the deadline tracking.
+The default deadline time will be 0.
 
 ### Liveliness
 
@@ -62,27 +60,24 @@ For Subscriptions it establishes the level of reporting that they require from t
 For Publishers it establishes the level of reporting that they will provide to Subscribers that they are alive. 
 
 Topics will support the following levels of liveliness:
-- LIVELINESS_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
+- LIVELINESS_SYSTEM_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
 - LIVELINESS_AUTOMATIC - The signal that establishes a Topic is alive comes from the ROS rmw layer.
-- LIVELINESS_MANUAL_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
-- LIVELINESS_MANUAL_TOPIC - The signal that establishes a Topic is alive is at the Topic level. Only publishing a message on the Topic or an explicit signal from the application to assert liveliness on the Topic will mark the Topic as being alive.
+- LIVELINESS_MANUAL_BY_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
+- LIVELINESS_MANUAL_BY_TOPIC - The signal that establishes a Topic is alive is at the Topic level. Only publishing a message on the Topic or an explicit signal from the application to assert liveliness on the Topic will mark the Topic as being alive.
 
 In order for a Subscriber to listen to a Publisher's Topic the level of liveliness tracking they request must be equal or less verbose than the level of tracking provided by the Publisher and the time until considered not alive set by the Subscriber must be greater than the time set by the Publisher.
 
 ### Lifespan
 
 The lifespan policy establishes a contract for how long a message remains valid.
-The lifespan QoS policy only applies to Topics.
 For Subscriptions it establishes the length of time a message is considered valid, after which time it will not be received.
 For Publishers it establishes the length of time a message is considered valid, after which time it will be removed from the Topic history and no longer sent to Subscribers.
-
-- LIFESPAN_DEFAULT - Use the ROS specified default for lifespan (which is LIFESPAN_NONE).
-- LIFESPAN_NONE - Messages do not have a time at which they expire.
-- LIFESPAN_ENABLED - Messages will have a lifespan enforced.
+A lifespan time of 0 will disable the lifespan tracking.
+The default lifespan time will be 0.
 
 ### DDS QoS Relation
 
-These new policies are all based on the DDS QoS policies, but they do not require a DDS in order for an rmw implementation to support them.
+These new policies are all based on the DDS QoS policies, but they do not require DDS in order for an rmw implementation to support them.
 More detailed information on the DDS specifics of these policies can be found below in Appendix A.
 
 ### ROS Changes
@@ -111,8 +106,8 @@ In the current version of ROS there is a single QoS struct that is used to speci
 With these new QoS settings the supported set of QoS policies for Topics and Services diverges.
 Despite this, we are going to stick with a single struct for both Topics and Services instead of switching to two different struct types in order to keep the changes to a minimum and maintain as much backwards compatibility as possible in the client library interfaces.
 
-The existing QoS policy struct will have new fields added that use enums based on the values defined above to specify the desired QoS settings for Deadline, Liveliness, and Lifespan.
-Each enum field instance in the struct will also have an associated number field added to the struct that represents a time value for the policy.
+The existing QoS policy struct will have new fields added to specify the desired QoS settings for Deadline, Liveliness, and Lifespan.
+These new fields instances will be a combination of enum and time values.
 
 #### Assert Liveliness Functions
 
@@ -164,12 +159,8 @@ Actions and Services were considered out of scope for the initial implementation
 
 For Service Servers it establishes the maximum amount of time allowed to pass between receiving a request and when a response for that request is sent.
 For Service Clients it establishes the maximum amount of time allowed to pass between sending a request and when a response for that request is received.
-
-Services will support the following levels of deadlines:
-- DEADLINE_DEFAULT - Use the ROS specified default for deadlines (which is DEADLINE_NONE).
-- DEADLINE_NONE - No deadline will be offered or requested and events will not be generated for missed deadlines.
-- DEADLINE_RMW - The rmw layer of ROS will track the deadline. For a Publisher or Subscriber this means that a deadline will be considered missed if the rmw layer has not received a message within the specified time. For a Service this means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
-
+Services will support deadline tracking only up to the rmw layer.
+This means the time a request is started is marked when the request reaches the rmw layer and the time at which it is finished is when the response message reaches the rmw layer.
 A Service Client will **not** be prevented from making a request to a Service Server if the  Server provides a deadline greater than the deadline requested by the Client.
 
 ### Liveliness
@@ -182,8 +173,6 @@ Services will support the following levels of liveliness:
 - LIVELINESS_AUTOMATIC - The signal that establishes a Service Server is alive comes from the ROS rmw layer.
 - LIVELINESS_MANUAL_NODE - The signal that establishes a Service is alive is at the node level. A message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_SERVICE - The signal that establishes a Service is alive is at the Service level. Only sending a response on the Service or an explicit signal from the application to assert liveliness on the Service will mark the Service as being alive.
-
-In order for a Subscriber to listen to a Publisher's Topic the level of liveliness tracking they request must be equal or less verbose than the level of tracking provided by the Publisher and the time until considered not alive set by the Subscriber must be greater than the time set by the Publisher.
 
 Service Servers and Clients will each specify two liveliness policies, one for the liveliness policy pertaining to the Server and one pertaining to the Client.
 In order for a Client to connect to a Server to make a request the Client_Liveliness level requested by the Server must be greater than the level provided by the Client and the Server_Liveliness requested by the Client must be greater than the level provided by the Server.
