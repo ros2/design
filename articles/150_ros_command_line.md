@@ -22,30 +22,39 @@ Original Author: {{ page.author }}
 ## Overview
 
 As it was the case in ROS 1, ROS 2 nodes allow configuration via command line arguments to a certain degree.
-However, a larger set of configuration options, an ambiguity in remapping rules and parameter assignment syntax (as a result of the leading underscore name convention for hidden resources), a one-to-many relationship between executables and nodes, among others, add up complexity to an otherwise simple interface.
+In ROS 2, this interface had to become more complex to cope with a larger set of configuration options, an ambiguity in remapping rules and parameter assignment syntax (as a result of the leading underscore name convention for hidden resources), a one-to-many relationship between executables and nodes, to name a few.
 
-Increasingly precise addressing mechanisms, as well as leading double underscores (`__`) in positional arguments, solve part of the problem.
-In ROS 2, however, command line options are introduced too as these are:
+Because of this, increasingly precise addressing mechanisms as well as leading double underscores (`__`) in some positional arguments, both natural extensions of existing ROS 1 command line features, are combined with ROS 2 specific command line flags.
+Flags, in contrast with other custom syntax alternatives, are:
 
+- Widely known and used.
 - Explicit and less error prone.
 - Suitable for tab completion.
 
-Unfortunately, additional devices must be put in place as these coexist with user-defined options -- part of the rationale behind ROS 1 command line design.
+Unfortunately, since these flags coexist with user-defined ones, additional guarding and extraction devices must be put in place -- one of the reasons why these were avoided entirely in ROS 1 command lines.
 
 ## Namespacing
 
-To prevent ROS specific command line options from interacting with user-defined ones, the former are scoped using the `--ros-args` option and a trailing double dash token (`--`):
+To prevent ROS specific command line flags from colliding with user-defined ones, the former are scoped using the `--ros-args` flag and a trailing double dash token (`--`):
 
 ```sh
-ros2 run some_package my_node [<user-defined-pre-arg0>...] \
+ros2 run some_package some_node [<user-defined-arg0>...] \
   --ros-args <ros-specific-arg-0> [<ros-specific-arg-1>...] -- <user-defined-arg-1> [<user-defined-arg-2>...]
 ```
 
 If no user defined arguments are provided after ROS specific arguments are, the double dash token (`--`) may be elided:
 
 ```sh
-ros2 run some_package my_node [<user-defined-arg-0>...] --ros-args <ros-specific-arg-0> [<ros-specific-arg-1>...]
+ros2 run some_package some_node [<user-defined-arg-0>...] --ros-args <ros-specific-arg-0> [<ros-specific-arg-1>...]
 ```
+
+More than one set of ROS specific flags may appear in the same command line:
+
+```sh
+ros2 run some_package some_node --ros-args <ros-specific-arg-0> -- [<user-defined-arg-0>...] --ros-args <ros-specific-arg-1>
+```
+
+This way, multiple sources, potentially unaware of each other, can append flags to the command line with no regard for previous sets.
 
 ## Capabilities
 
@@ -96,12 +105,17 @@ Other, alternative designs were under discussion.
 
 ### Additional operators
 
-Stop using the same `:=` operator for parameter assignments and name remapping rules and introduce additional operators e.g. `:=` for parameter assignment and `~=` for name remapping. This keeps the command line verbosity at a minimum, but is error prone.
+Stop using the same `:=` operator for parameter assignments and name remapping rules and introduce additional operators e.g. `:=` for parameter assignment and `~=` for name remapping.
+This keeps the command line verbosity at a minimum and avoids the need for flags, but is error prone.
 
 ### Full name addressing
 
-Rely on full name addressing to disambiguate operator significance e.g. `rosparam://this:=that` would mean to assign a `that` string value to parameter `this` while `rostopic://this:=that` would mean to remap topic `this` to `that`. This signficantly increases the command line verbosity.
+Rely on full name addressing to disambiguate operator significance e.g. `rosparam://this:=that` would result in a `that` string value being assigned to parameter `this` while `rosremap://this:=that` would result in name `this` being remapped to name `that`.
+Other URL schemes, specific to each interface type e.g. `rostopic` and `rosservice`, may also be used to further scope remapping rules.
+This signficantly increases command line verbosity, but still avoids the need for flags.
 
 ### Prefixed option names
 
-Remove the need for double dash tokens (`--`), conventionally used to signify the end of CLI options for a command, by adding the `--ros-` prefix to all ROS specific command line options e.g. `--ros-remap`, `--ros-param`, etc. This somewhat increases the command line verbosity.
+Remove the need for double dash tokens (`--`), conventionally used to signify the end of CLI options for a command, by adding the `--ros-` prefix to all ROS specific command line flags e.g. `--ros-remap`, `--ros-param`, etc.
+In exchange, it makes argument extraction slightly more difficult as all options must be known ahead of time, whereas `--ros-args`-based namespacing can achieve the same with a couple rules.
+It also increases command line verbosity.
