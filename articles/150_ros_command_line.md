@@ -33,7 +33,9 @@ Flags, in contrast with other custom syntax alternatives, are:
 
 Unfortunately, since these flags coexist with user-defined ones, additional guarding and extraction devices must be put in place -- one of the reasons why these were avoided entirely in ROS 1 command lines.
 
-## Namespacing
+## Features
+
+### Namespacing
 
 To prevent ROS specific command line flags from colliding with user-defined ones, the former are scoped using the `--ros-args` flag and a trailing double dash token (`--`):
 
@@ -56,16 +58,16 @@ ros2 run some_package some_node --ros-args <ros-specific-arg-0> -- [<user-define
 
 This way, multiple sources, potentially unaware of each other, can append flags to the command line with no regard for previous sets.
 
-## Capabilities
+### Capabilities
 
-### Summary
+#### Summary
 
 As a quick summary of ROS command line capabilities:
 
 - For name remapping, use either `--remap from:=to` or `-r from:=to`.
 - For parameter assignment, use either `--param name:=value` or `-p name:=value`.
 
-### Name remapping rules
+#### Name remapping rules
 
 Remapping rules may be introduced using the `--remap`/`-r` option.
 This option takes a single `from:=to` remapping rule.
@@ -82,22 +84,36 @@ or its shorter equivalent:
 ros2 run some_package some_node --ros-args -r foo:=bar
 ```
 
-### Parameter assignment statements
+#### Parameter assignment statements
 
 Parameter assignment may be achieved using the `--param`/`-p` option.
-This option takes a single `name:=value` assignment statement, where `value` is in YAML format.
+This option takes a single `name:=value` assignment statement, where `value` is in [YAML format](https://yaml.org/spec/) and thus YAML type inference rules apply.
 
-As an example, to assign an integer value of `2` to an `int_param` upon running `some_node`, one may execute:
+As an example, to assign a string value `test` to a parameter `string_param` upon running `some_node`, one may execute:
 
 ```sh
-ros2 run some_package some_node --ros-args --param int_param:=2
+ros2 run some_package some_node --ros-args --param string_param:=test
 ```
 
 or its shorter equivalent:
 
 ```sh
-ros2 run some_package some_node --ros-args -p int_param:=2
+ros2 run some_package some_node --ros-args -p string_param:=test
 ```
+
+## Implementation
+
+### Extraction
+
+Command line argument extraction happens within `rcl`.
+When an instance of the `--ros-args` flag is found in `argv`, until either a double dash token (`--`) is found or the end of the argument array is reached, all arguments that follow are taken as ROS specific arguments to be parsed as such.
+Remaining arguments can still be accessed by the user via `rcl` API.
+
+### Parsing
+
+At the time of writing, most ROS specific arguments target and are thus parsed by `rcl`.
+This is the case for name remapping rules or parameter assignments flags, to name a few.
+However, to support ROS specific arguments that target upper ROS layers e.g. a ROS client library like `rclcpp`, arguments unknown to `rcl` are left unparsed but accessible by these layers, which in turn can continue parsing or eventually warn the user if unknown arguments remain.
 
 ## Alternative designs
 
