@@ -1,9 +1,9 @@
 ---
 layout: default
-title: ROS Command Line
-permalink: articles/ros_command_line.html
+title: ROS Command Line Arguments
+permalink: articles/ros_command_line_arguments.html
 abstract:
-  This article describes ROS 2 nodes command line capabilities and its syntax.
+  This article describes ROS 2 nodes command line arguments and their syntax.
 author: '[Michel Hidalgo](https://github.com/hidmic)'
 published: true
 ---
