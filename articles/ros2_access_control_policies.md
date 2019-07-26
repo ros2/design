@@ -5,7 +5,7 @@ permalink: articles/ros2_access_control_policies.html
 abstract:
   This article specifies the policy format used for access control when securing ROS subsystem.
 author:  >
-  [Ruffin White](https://github.com/ruffsl)
+  [Ruffin White](https://github.com/ruffsl),
   [Kyle Fazzari](https://github.com/kyrofa)
 
 published: true
