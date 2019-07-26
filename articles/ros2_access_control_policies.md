@@ -96,7 +96,7 @@ There must be only one `<policy>` tag per policy file.
 
 Attributes:
 - **version**: declared version of schema version in use
- - Allows for advancing future revisions of the schema
+  - Allows for advancing future revisions of the schema
 
 ### `<profiles>` Tag
 
@@ -153,11 +153,11 @@ A group of `<topic>` tags with the specified permissions.
 
 Attributes:
 - **publish**: Whether or not publication on this set of topics is allowed
- - i.e. whether the node can be a topic publisher
- - Valid values are "ALLOW" or "DENY"
+  - i.e. whether the node can be a topic publisher
+  - Valid values are "ALLOW" or "DENY"
 - **subscribe**: Whether or not subscription on this set of topics is allowed
- - i.e. whether the node can be a topic subscriber
- - Valid values are "ALLOW" or "DENY"
+  - i.e. whether the node can be a topic subscriber
+  - Valid values are "ALLOW" or "DENY"
 
 
 ### `<services>` Tag
@@ -166,11 +166,11 @@ A group of `<service>` tags with the specified permissions.
 
 Attributes:
 - **request**: Whether or not requesting the service is allowed
- - i.e. whether the node can be a service client
- - Valid values are "ALLOW" or "DENY"
+  - i.e. whether the node can be a service client
+  - Valid values are "ALLOW" or "DENY"
 - **reply**: Whether or not replying to service requests is allowed
- - i.e. whether the node can be a service server
- - Valid values are "ALLOW" or "DENY"
+  - i.e. whether the node can be a service server
+  - Valid values are "ALLOW" or "DENY"
 
 
 ### `<actions>` Tag
@@ -179,11 +179,11 @@ A group of `<action>` tags with the specified permissions.
 
 Attributes:
 - **call**: Whether or not calling the action is allowed
- - i.e. whether the node can be an action client
- - Valid values are "ALLOW" or "DENY"
+  - i.e. whether the node can be an action client
+  - Valid values are "ALLOW" or "DENY"
 - **execute**: Whether or not executing the action is allowed
- - i.e. whether the node can be an action server
- - Valid values are "ALLOW" or "DENY"
+  - i.e. whether the node can be an action server
+  - Valid values are "ALLOW" or "DENY"
 
 ## Templating
 
@@ -197,11 +197,11 @@ The pipeline stages for targeting Secure DDS for example is as follows:
 2. At this point the document tree may or may not be pruned to a particular profile
 2. The valid document is then transpiled using the transform template
 2. For each profile, a matching DDS grant is appended into the permission document
- - privileges and namespaces are remapped into a DDS centric representations
- - privileges with matching attributes are conjoined to reduce payload size
- - duplicate objects in the same privilege are pruned to reduce payload size
- - privileges are sored deny first, abiding the priority of qualifiers when using DDS
- - objects are also sorted alphabetically to improve readability and change diffs
+   - privileges and namespaces are remapped into a DDS centric representations
+   - privileges with matching attributes are conjoined to reduce payload size
+   - duplicate objects in the same privilege are pruned to reduce payload size
+   - privileges are sored deny first, abiding the priority of qualifiers when using DDS
+   - objects are also sorted alphabetically to improve readability and change diffs
 
 ## Alternatives
 
