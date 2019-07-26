@@ -36,6 +36,7 @@ In this context, a subject may be thought of as a participant on a distributed d
 ### Mandatory Access Control
 
 [Mandatory Access Control](https://en.wikipedia.org/wiki/Mandatory_access_control) (MAC) refers to allowing access to an object if and only if rules exist that allow a given subject to access the resource; the term mandatory denotes this requirement that a subject’s access to an object must always be explicitly provisioned.
+Most importantly, contrary to discretionary access control (DAC), such policies are enforced by a set of authorization rules that cannot be overridden or modified by the subject either accidentally or intentionally.
 This could  also be referred to as “deny by default”.
 
 ### Principle of Least Privilege
