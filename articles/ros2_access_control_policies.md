@@ -24,7 +24,7 @@ categories: Security
 Original Author: {{ page.author }}
 
 
-SROS 2 introduces several security properties, including encryption, authentication, and authorization, where authorization is subsequently obtained by combining the first two properties with a model for access control.
+[SROS 2](/articles/ros2_dds_security.html) introduces several security properties, including encryption, authentication, and authorization, where authorization is subsequently obtained by combining the first two properties with a model for access control.
 Such models are often referred to as access control policies.
 A policy serves as a high-level abstraction of privileges associated with attributes that may then be transpiled into low-level permissions for individual identities, such as specific ROS nodes within a secure DDS network.
 
