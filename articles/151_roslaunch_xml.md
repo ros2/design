@@ -81,8 +81,8 @@ The `<group>` tag allows for launch actions' grouping as well as optional launch
 
 ```xml
 <group scoped="true">
-  <node package="a_ros_package" name="dummy0" ns="my_ns" executable="dummy_node"/>
-  <node package="a_ros_package" name="dummy1" executable="dummy_node"/>
+  <node pkg="a_ros_package" name="dummy0" ns="my_ns" exec="dummy_node"/>
+  <node pkg="a_ros_package" name="dummy1" exec="dummy_node"/>
 </group>
 ```
 
@@ -114,16 +114,28 @@ Arguments are limited to the scope of their definition and thus have to be expli
 <arg name="output_path" description="Output path for some processing pipeline"/>
 ```
 
-#### `<node>` Tag
+#### `<executable>` Tag
 
 ##### Description
 
-The `<node>` tag allows for executing a ROS node in the form of local OS process.
+The `<executable>` tag allows for executing any executable as a local OS process.
 
 ##### Examples
 
 ```xml
-<node package="ros_demos" executable="publisher">
+<executable cmd="ls -las" cwd="/home" launch-prefix="time" output="screen"/>
+```
+
+#### `<node>` Tag
+
+##### Description
+
+The `<node>` tag allows for executing a ROS node as a local OS process.
+
+##### Examples
+
+```xml
+<node pkg="ros_demos" exec="publisher">
   <param name="publish_frequency" value="10"/>
   <remap from="generic_topic_name" to="my_topic"/>
 </node>
@@ -140,7 +152,7 @@ either nested or brought from a YAML file to make a map.
 ##### Examples
 
 ```xml
-<node package="my_pkg" executable="my_node">
+<node pkg="my_pkg" exec="my_node">
   <param name="some_numeric_param" value="100.2"/>
   <param name="some_list_of_strings" value="Some phrase,'100.0','true'" sep=","/>
   <param name="some_list_of_ints" value="5, 3, 2" sep=", "/>
@@ -161,7 +173,7 @@ The `<remap>` tag allows for ROS name remapping of a `<node>` instance.
 ##### Examples
 
 ```xml
-<node package="my_pkg" executable="my_node">
+<node pkg="my_pkg" exec="my_node">
   <remap from="chatter" to="/my_chatter"/>
   <remap from="*/stuff" to="private_\1/stuff"/>
 </node>
@@ -178,7 +190,7 @@ It doesn't allow conditional execution.
 ##### Examples
 
 ```xml
-<node package="my_pkg" executable="my_node">
+<node pkg="my_pkg" exec="my_node">
   <env name="RMW_IMPLEMENTATION" value="rmw_fastrtps_cpp"/>
 </node>
 
@@ -227,15 +239,20 @@ All substitutions are enclosed by `$(...)`.
 
 ### Built-in Substitutions
 
-`$(find-package <pkg-name>)`
-: Substituted by the path to package installation directory in the local filesystem.
+`$(find-pkg <pkg-name>)`
+: Substituted by the install prefix path of the given package.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the package cannot be found.
 
 `$(find-exec <exec-name>)`
 : Substituted by the path to the executable in the local filesystem.
-  Lookups make use of the PATH environment variable.
+  Executables are looked up in the PATH environment variable.
   Forward and backwards slashes will be resolved to the local filesystem convention.
+  Substitution will fail if the executable cannot be found.
+
+`$(exec-in-package <exec-name> <package-name>)`
+: Substituted by the path to the executable in the local filesystem.
+  Executables are looked up in the `lib` directory of the package.
   Substitution will fail if the executable cannot be found.
 
 `$(var <name>)`
@@ -245,6 +262,10 @@ All substitutions are enclosed by `$(...)`.
 `$(env <env-var> [default-value])`
 : Substituted by the value of the given environment variable
   Substitution will fail if the variable is not set, unless a default value is provided.
+
+`$(eval <python-expression>)`
+: Substituted by the evaluated python expression.
+  Substitution will fail if python fails to evaluate the expression.
 
 `$(dirname)`
 : Substituted by the current launch file directory name.

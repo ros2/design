@@ -56,12 +56,12 @@ Some description samples in different markup languages are provided below:
 ```xml
 <launch version="x.1.0">
   <action name="some-action" type="actions.ExecuteProcess">
-    <arg name="cmd" value="{% substitutions.FindExecutable name=my-process %}"/>
+    <arg name="cmd" value="$(substitutions.FindExecutable name=my-process)"/>
     <arg name="env">
       <pair name="LD_LIBRARY_PATH"
-            value="/opt/dir:{% substitutions.EnvironmentVariable name=LD_LIBRARY_PATH %}"/>
+            value="/opt/dir:$(substitutions.EnvironmentVariable name=LD_LIBRARY_PATH)"/>
     </arg>
-    <arg name="prefix" value="{% substitutions.EnvironmentVariable name=LAUNCH_PREFIX %}"/>
+    <arg name="prefix" value="$(substitutions.EnvironmentVariable name=LAUNCH_PREFIX)"/>
   </action>
   <on_event type="events.ProcessExit" target="some-action">
     <action type="actions.LogInfo">
@@ -116,8 +116,8 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <executable name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
-     <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
+  <executable name="some-action" cmd="$(find-exec my-process)" prefix="$(env LAUNCH_PREFIX)">
+     <env name="LD_LIBRARY_PATH" value="/opt/dir:$(env LD_LIBRARY_PATH)"/>
      <on_exit>
         <log message="I'm done"/>
      </on_exit>
@@ -199,8 +199,8 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <executable name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
-     <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
+  <executable name="some-action" cmd="$(find-exec my-process)" prefix="$(env LAUNCH_PREFIX)">
+     <env name="LD_LIBRARY_PATH" value="/opt/dir:$(env LD_LIBRARY_PATH)"/>
      <on_exit>
       <log message="I'm done"/>
     </on_exit>
@@ -293,7 +293,7 @@ For instance, one could map both of the following descriptions:
 
 *XML*
 ```xml
-<node name="my-node" package="demos" executable="talker">
+<node name="my-node" pkg="demos" exec="talker">
   <param name="a" value="100."/>
   <param name="b" value="stuff"/>
 </node>
@@ -303,8 +303,8 @@ For instance, one could map both of the following descriptions:
 ```yaml
 - node:
     name: my-node
-    package: demos
-    executable: talker
+    pkg: demos
+    exec: talker
     param:
       - name: a
         value: 100.
@@ -318,7 +318,7 @@ such that their associated parsing entity `e` exposes its data as follows:
 ```python
 e.type_name == 'node'
 e.get_attr(name) == 'my-node'
-e.get_attr('package', optional=True) != None
+e.get_attr('pkg', optional=True) != None
 params = e.get_attr('param', data_type=List[Entity])
 params[0].get_attr('name') == 'a'
 params[1].get_attr('name') == 'b'
@@ -328,7 +328,7 @@ params[1].get_attr('name') == 'b'
 ```c++
 e.type() == "node"
 e.get<std::string>("name") == "my-node"
-e.has<std::string>("package") == true
+e.has<std::string>("pkg") == true
 auto params = e.get<std::vector<parsing::Entity>>("param")
 params[0].get<std::string>("name") == "a"
 params[1].get<std::string>("name") == "b"
