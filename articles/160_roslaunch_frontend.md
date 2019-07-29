@@ -56,12 +56,12 @@ Some description samples in different markup languages are provided below:
 ```xml
 <launch version="x.1.0">
   <action name="some-action" type="actions.ExecuteProcess">
-    <arg name="cmd" value="{% substitutions.FindExecutable name=my-process %}"/>
+    <arg name="cmd" value="$(substitutions.FindExecutable name=my-process)"/>
     <arg name="env">
       <pair name="LD_LIBRARY_PATH"
-            value="/opt/dir:{% substitutions.EnvironmentVariable name=LD_LIBRARY_PATH %}"/>
+            value="/opt/dir:$(substitutions.EnvironmentVariable name=LD_LIBRARY_PATH)"/>
     </arg>
-    <arg name="prefix" value="{% substitutions.EnvironmentVariable name=LAUNCH_PREFIX %}"/>
+    <arg name="prefix" value="$(substitutions.EnvironmentVariable name=LAUNCH_PREFIX)"/>
   </action>
   <on_event type="events.ProcessExit" target="some-action">
     <action type="actions.LogInfo">
@@ -116,8 +116,8 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <executable name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
-     <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
+  <executable name="some-action" cmd="$(find-exec my-process)" prefix="$(env LAUNCH_PREFIX)">
+     <env name="LD_LIBRARY_PATH" value="/opt/dir:$(env LD_LIBRARY_PATH)"/>
      <on_exit>
         <log message="I'm done"/>
      </on_exit>
@@ -199,8 +199,8 @@ Some description samples in different markup languages are provided below:
 *XML*
 ```xml
 <launch version="x.1.0">
-  <executable name="some-action" cmd="{% find-exec my-process %}" prefix="{% env LAUNCH_PREFIX %}">
-     <env name="LD_LIBRARY_PATH" value="/opt/dir:{% env LD_LIBRARY_PATH %}"/>
+  <executable name="some-action" cmd="$(find-exec my-process)" prefix="$(env LAUNCH_PREFIX)">
+     <env name="LD_LIBRARY_PATH" value="/opt/dir:$(env LD_LIBRARY_PATH)"/>
      <on_exit>
       <log message="I'm done"/>
     </on_exit>
