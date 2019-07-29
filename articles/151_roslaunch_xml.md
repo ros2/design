@@ -118,7 +118,7 @@ Arguments are limited to the scope of their definition and thus have to be expli
 
 ##### Description
 
-The `<executable>` tag allows for executing any executable in the form of local OS process.
+The `<executable>` tag allows for executing any executable as a local OS process.
 
 ##### Examples
 
@@ -130,7 +130,7 @@ The `<executable>` tag allows for executing any executable in the form of local 
 
 ##### Description
 
-The `<node>` tag allows for executing a ROS node in the form of local OS process.
+The `<node>` tag allows for executing a ROS node as a local OS process.
 
 ##### Examples
 
@@ -240,19 +240,19 @@ All substitutions are enclosed by `$(...)`.
 ### Built-in Substitutions
 
 `$(find-pkg <pkg-name>)`
-: Substituted by the install prefix path of the package.
+: Substituted by the install prefix path of the given package.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the package cannot be found.
 
 `$(find-exec <exec-name>)`
 : Substituted by the path to the executable in the local filesystem.
-  Lookups make use of the PATH environment variable.
+  Executables are looked up in the PATH environment variable.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the executable cannot be found.
 
 `$(exec-in-package <exec-name> <package-name>)`
 : Substituted by the path to the executable in the local filesystem.
-  Lookups at the `lib` folder of the package.
+  Executables are looked up in the `lib` directory of the package.
   Substitution will fail if the executable cannot be found.
 
 `$(var <name>)`
