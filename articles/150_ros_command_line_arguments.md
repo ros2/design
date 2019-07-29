@@ -40,20 +40,25 @@ Unfortunately, since these flags coexist with user-defined ones, additional guar
 To prevent ROS specific command line flags from colliding with user-defined ones, the former are scoped using the `--ros-args` flag and a trailing double dash token (`--`):
 
 ```sh
-ros2 run some_package some_node [<user-defined-arg0>...] \
-  --ros-args <ros-specific-arg-0> [<ros-specific-arg-1>...] -- <user-defined-arg-1> [<user-defined-arg-2>...]
+ros2 run some_package some_node [<user-defined-arg-0>...<user-defined-arg-N>] \
+  --ros-args [<ros-specific-arg-0>...] -- [<user-defined-arg-N+1>...]
 ```
+
+Note that `--ros-args --` i.e. an empty set is a valid invocation.
 
 If no user defined arguments are provided after ROS specific arguments are, the double dash token (`--`) may be elided:
 
 ```sh
-ros2 run some_package some_node [<user-defined-arg-0>...] --ros-args <ros-specific-arg-0> [<ros-specific-arg-1>...]
+ros2 run some_package some_node [<user-defined-arg-0>...] --ros-args [<ros-specific-arg-0>...]
 ```
+
+Note that a sole trailing `--ros-args` remains a valid invocation.
 
 More than one set of ROS specific flags may appear in the same command line:
 
 ```sh
-ros2 run some_package some_node --ros-args <ros-specific-arg-0> -- [<user-defined-arg-0>...] --ros-args <ros-specific-arg-1>
+ros2 run some_package some_node --ros-args [<ros-specific-arg-0>...<ros-specific-arg-N>] -- \
+  [<user-defined-arg-0>...] --ros-args [<ros-specific-arg-N+1>...]
 ```
 
 This way, multiple sources, potentially unaware of each other, can append flags to the command line with no regard for previous sets.
