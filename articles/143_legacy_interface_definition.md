@@ -264,6 +264,13 @@ Code is generated for defined interfaces to be usable by different client librar
 Interfaces described using the legacy format are first converted to [IDL](idl_interface_definition.html).
 Code generation uses the generated file.
 
+<div class="alert alert-info" markdown="1">
+  A structure defined in the legacy format can be empty / contain no members.
+  In that case the generated `.idl` structure will have a dummy member
+  (`uint8 structure_needs_at_least_one_member`) to satisfy the requirement from
+  IDL of not being empty.
+</div>
+
 ### Mapping to IDL types
 
 | ROS type | IDL type           |
