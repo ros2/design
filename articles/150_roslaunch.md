@@ -284,8 +284,8 @@ If this does not result in the termination of the process, then one of a few thi
 By default, the launch system will:
 
 - send `SIGINT`
-- after 10 seconds, send `SIGTERM`
-- after 10 additional seconds, send `SIGKILL`
+- after a short period of time, send `SIGTERM`
+- after an additional short period of time, send `SIGKILL`
 
 The latter two steps can be skipped, or the time until escalation can be adjusted, on a per process basis.
 
@@ -293,11 +293,8 @@ The launch system will initiate this process when an event (built-in or user gen
 
 If the launch system itself receives the `SIGTERM` signal it will send the `SIGKILL` signal to all child processes and exit immediately.
 
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-There are several small decisions here that I made somewhat arbitrarily, e.g. the default time until escalation and the propagation of `SIGKILL` when the launch system receives `SIGTERM`.
-</div>
+The rationale for the previous rule is that if someone attempts to `SIGTERM` the launch system, they probably did so out of impatience after sending `SIGINT` to the launch system, and therefore the launch system should attempt to exit quickly.
+Exiting quickly will hopefully avoid encouraging a user to `SIGKILL` the launch system, which might cause the subprocesses to be improperly shutdown and perhaps even become zombie processes.
 
 #### Shell Evaluation
 
@@ -418,7 +415,7 @@ In ROS 2, this will likely be less common because you can have one to many nodes
 Since there is only one ROS node, the command line arguments do not need to be explicit about to which node they apply.
 For example, changing the namespace of the single node could be expressed with the command line argument `__ns:=new_namespace`.
 
-Even though there is only one node in the process, that node does not need to start with the process starts, nor does the process need to end when the node is shutdown and/or destroyed.
+Even though there is only one node in the process, that node does not need to start when the process starts, nor does the process need to end when the node is shutdown and/or destroyed.
 If it is a managed node, the lifecycle of the node is best tracked using the lifecycle events.
 In fact, a process with a single node could start a node, run for a while, later destroy it, and then create it again.
 
