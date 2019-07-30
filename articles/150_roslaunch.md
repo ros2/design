@@ -402,6 +402,10 @@ Managed ROS Nodes have some additional observable effects when terminating (the 
 A managed node enters the `Finalized` state after passing through the `ShuttingDown` transition state on termination.
 Since these are state transitions, they are observable via the lifecycle event system, at least through the ROS topic `lifecycle_state` (subject to change, always reference the managed nodes design document[^lifecycle]).
 
+The mechanism for how Managed ROS Nodes transition to the Finalized state (or any other state) will not be decided in this document.
+Instead, the implementations or some other lifecycle specific documentation will cover that.
+However, you could imagine this transition could be handled by the Node itself automatically, or by launch sending a state transition request, or by launch sending a specific signal.
+
 ### Process with a Single Node
 
 In this subsection, and the following subsections of the "Calling Conventions" section, the different possible combinations of nodes and processes is explained.
