@@ -217,7 +217,7 @@ The requirements for the launch system will be enumerated in section below based
 
 In order for the launch system to execute a described system, it needs to understand how it can achieve the description.
 The phrase "calling conventions" is an existing phrase in Computer Science[^calling_convention_wikipedia], but this section is not talking specifically about the compiler defined calling convention, through it is appropriating the term to describe a similar relationship.
-In this case, the phrase "calling conventions" is meant to describe the "interface" or "contract" the launch system has with the entities it is executing and monitoring.
+In this case, the phrase "calling conventions" is meant to describe the "interface" or "contract" the launch system has with anything it is executing and monitoring.
 This contract covers initial execution, activity during runtime, signal handling and behavior of the launch system, and shutdown.
 
 ### Operating System Processes
