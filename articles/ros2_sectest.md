@@ -49,7 +49,13 @@ To continue raising the bar on ROS 2 security, we propose to:
 
 The order in which threats will be considered will be determined by the threat vulnerability assessment score (DREAD) as well as how hard / how much time would be required to implement the attack.
 We will target “low-hanging fruits” which can lead to critical vulnerabilities.
+### Robot weaknesses and vulnerabilities
+This document makes the following assumptions:
+- A **bug** is an error, flaw, failure or fault in a computer program or system that causes it to produce an incorrect or unexpected result, or to behave in unintended ways.
+- **Weaknesses** are errors that can lead to vulnerabilities. Bugs and weaknesses are treated indistinctly.
+- A **vulnerability** is a weakness that can be exploited directly or indirectly by a hacker to produced unexpected behavior.
 
+It's relevant to note that *all vulnerabilities are weaknesses but not the other way around*.
 ## Vulnerability Evaluation Process
 
 Assessing and mitigating a vulnerability is a 4-step process.
@@ -72,12 +78,12 @@ If the mitigation is partial (requires particular setup or configuration or does
 
 ### ROS 2 specific VS Generic Vulnerabilities
 
-Unlike the ALIAS Robotic Vulnerability Disclosure Program [RVDP][RVDP], this security assessment program focuses on vulnerabilities *directly related to ROS 2*.
+Unlike the Alias Robotics Robot Vulnerability Database [RVD][RVD], this security assessment program focuses on vulnerabilities *directly related to ROS 2*.
 
 For instance, the following issues are in scope:
 
 * Leaking ROS 2 topic data,
-* Triggering ROS 2 services or actions without being unauthorized,
+* Triggering ROS 2 services or actions without being authorized,
 * Abusing node API to disrupt the robot behavior.
 
 However, vulnerabilities unrelated to ROS 2 are not in scope:
@@ -213,6 +219,6 @@ The threat model is the source of truth, but we could also build the following e
 
 
 [threat_model]: http://design.ros2.org/articles/ros2_threat_model.html
-[RVDP]: https://github.com/aliasrobotics/RVDP
+[RVD]: https://github.com/aliasrobotics/RVD
 [composition]: https://index.ros.org/doc/ros2/Tutorials/Composition/
 [node_lifecycle]: http://design.ros2.org/articles/node_lifecycle.html
