@@ -169,15 +169,12 @@ There are two alternatives:
 - Add the concept of `Context` name (or `Participant` name).
   In this way, the key of each participant could be specified independently.
 - Use one key per process.
-  All the `Participants` within one process will use the same key (is that possible?).
+  All the `Participants` within one process will use the same key.
 
 ##### How to specify access policies?
 
 Access control policies could still be specified per `Node` basis.
 When a `Participant` is created, it should look at the access control policies of each of its `Nodes` and compose them in a single configuration.
-
-QQ:
-- Is it possible to add more access control policies after creating the `Participant` (e.g.: When later creating a `Node`).
 
 #### Node Name Uniqueness
 
