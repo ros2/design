@@ -2,8 +2,7 @@
 layout: default
 title: Node to Participant mapping
 permalink: articles/node_to_participant_mapping.html
-abstract: This article analyze the performance implications of having a one-to-one Node to Participant mapping and propose an alternative approach.
-  How Nodes are mapped to DDS participants.
+abstract: This article analyzes the performance implications of enforcings a one-to-one mapping between ROS nodes and DDS participants, and propose alternative approaches.
 author: '[Ivan Paunovic](https://github.com/ivanpauno)'
 published: true
 categories: Middleware
@@ -25,7 +24,7 @@ Original Author: {{ page.author }}
 
 In ROS, a `Node` is an entity used to group other entities.
 For example: `Publishers`, `Subscriptions`, `Services`, `Clients`.
-`Nodes` ease organization and code reusage, as they can be composed or launched in different ways.
+`Nodes` ease organization and code reuse, as they can be composed and launched in different ways.
 
 ### What is a `Domain Participant`?
 
@@ -34,20 +33,20 @@ A `Domain Participant` is a type of DDS entity.
 But participants do more than that:
 
 - Each `Participant` does discovery by its own.
-  Creating more than one `Participant` increase cpu and network.
-- Each `Participant` keeps track of the others and of each DDS entity.
+  Creating more than one `Participant` increases cpu usage and network IO load.
+- Each `Participant` keeps track of other `Domain Participants` and DDS entities.
   Using more than one will duplicate that data.
-- Each `Participant` creates multiple threads for event handling, discovery, etc.
-  Creating more than one will increase cpu and memory usage.
+- Each `Participant` may create multiple threads for event handling, discovery, etc.
+  The number of threads created per participant depend on the DDS vendor (e.g.: [connext](https://community.rti.com/best-practices/create-few-domainparticipants-possible)).
 
 For those reasons, `Participants` are heavyweight.
 
 ### Current status
 
-There is a one to one map between `Nodes` and `DDS Participants`.
+There is a one-to-one mapping between `Nodes` and `DDS Participants`.
 This simplified the design, as `DDS Participants` provide the same organization that a `Node` needs.
 The drawback of this approach, is that performance is deteriorated.
-Furthermore, the number of `Domain participants` is limited to a small number.
+Furthermore, the maximum number of `Domain participants` is rather small.
 For example, [RTI connext](https://community.rti.com/kb/what-maximum-number-participants-domain) is limited to 120 participants per domain.
 
 ## Proposal
@@ -63,18 +62,18 @@ There are two main alternatives:
 
 The second approach allows more flexibility.
 Considering that by default there's only one context per process, it won't lower the performance.
-Moreover, a mechanism for using the same participant in two context could be added.
+Moreover, a mechanism for re-using the same participant in two separete contexts could be added.
 
 ### What is a Node now?
 
-There's not lightweight DDS entity similar to a ROS `Node`, so `Nodes` have to be built from scratch.
+There's no lightweight DDS equivalent of a ROS `Node`, so these must be implemented on top of it.
 A `Node` should be able to:
 - Create other entities as `Publishers`, `Subscriptions`, `Services` and `Clients`.
   `Nodes` should own those entities, that is to say, those entity shouldn't outlive a `Node`.
 - List all its entities.
 
-For all the entities, it should be possible to get the `Node` what created them.
-Each `Participant` should store all the information needed about its nodes, and communicate it to the others.
+For all the entities, it should be possible to get the `Node` that created them.
+Each `Participant` should store all the information needed about its nodes, and communicate it other `Participants`.
 
 ### How `Node` information is communicated?
 
@@ -82,32 +81,36 @@ Each `Participant` should store all the information needed about its nodes, and 
 
 The name of all the available `Nodes`, and its `Publishers`, `Subscriptions`, `Services`, `Clients` should be available for every `Participant`.
 This information can be communicated using a `topic`.
-That topic will be an implementation detail and hidden to the user.
+That topic will be an implementation detail and hidden to the user (i.e.: the `rt/` prefix won't be added to this `DDS topic`).
 
-A message could be send for:
+A message could be sent for:
 - Each `Node`
 - Each `Participant`
 
-The second option reduces the amount of messages and it does lifetime management easier, as the message will not be more available after the `Participant` is deleted (using the correct QoS policies).
+The second option reduces the amount of messages.
+It also allow organizing the data using the `Participant` GUID as the key.
+It's not possible to organize the data using the `Node` name as a key, because it can collide.
+`Node` name uniqueness can be enforced using a collision resolution mechanism, but it can be detected beforehand (i.e.: this information will be needed by the resolution mechanism).
 In the following, the second option will be considered.
 
 ##### State Message
 
 Each `Participant` will send a message representing their state.
 A keyed topic could be used for communicating it.
-It's reasonable to organize the data by `Participant`, so the `Participant` guid can be used as the key.
-The rest of the message will be a vector of with the information of each node.
-That message should contain the `Node` name, and four vectors:
-- guid of its `Publishers`
-- guid of its `Subscriptions`
-- guid of its `Services`
-- guid of its `Clients`
+The `Participant` GUID can be used as the key.
+This helps for keeping only one message per `Participant` in the history (see `QoS for communicating node information`).
+The rest of the message will be a sequence of with the information of each node.
+That message should contain the `Node` name, and four sequences:
+- GUID of its `Publishers`
+- GUID of its `Subscriptions`
+- GUID of its `Services`
+- GUID of its `Clients`
 
 Vector bounds: TBD
 
 ##### QoS for communicating node information
 
-Each published message should be available to late subscriptions, and only the last message of each key is needed.
+Each published message should be available to late `Subscribers`, and only the last message of each key should be kept.
 For that reason, the QoS of the `Publishers` should be:
 
 - Durability: Transient Local
@@ -116,6 +119,8 @@ For that reason, the QoS of the `Publishers` should be:
 - Reliability: Reliable
 
 Considering that a keyed topic will be used, in which the history depth apply for each key, only one `Publisher` per process will be needed.
+In that case, `unregister_instance` can be used for delete that key from the history (see [RTI Managing Data Instances](https://community.rti.com/static/documentation/connext-dds/5.2.3/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/Managing_Data_Instances__Working_with_Ke.htm)).
+
 
 The configuration of the `Subscriber` QoS depends on how the data will be accessed later:
 - Polled using `Subscriber` read method when needed.
@@ -135,10 +140,11 @@ In the second case, durability can be changed to `Volatile`.
 
 Each `Participant` could have in its user data the list of node names that owns.
 When this data is changed, each `ParticipantListener` will be notified.
-This is not a good option, as `UserData` is just a sequence of bytes, and communicating a list of node names in it doesn't seem as a reasonable solution.
+This is not a good option, as `UserData` is just a sequence of bytes.
+Organizing a complex message in it won't be easy nor performant.
 
 Similarly to `UserData`, `GroupData` is a available in `Publishers` and `Subscribers`.
-These entities only need to communicate the guid of the `Participant` and the `Node` name from which it was created.
+These entities only need to communicate the GUID of the `Participant` and the `Node` name from which it was created.
 This idea can be combined with a topic just publishing the list of `Node` names, without including all the other vectors in the message.
 Although, it is more difficult to communicate this information for `Services` and `Clients`, as they use behind the scenes just a `DDS Publisher` and `Subscriber`.
 
@@ -147,7 +153,7 @@ Although, it is more difficult to communicate this information for `Services` an
 #### Security
 
 In `DDS`, security can be specified at a `Participant` level.
-Currently, as each `Node` was mapped to one `Participant`, we can individually configure its security key and access control policy.
+If one `Node` is mapped to one `Participant`, individual configuration of its security key and access control policy is possible.
 From a security point of view, only being able to configure it at a `Participant` (or per process) level is enough.
 There's not much sense on having different access control policies for `Nodes` in the same process.
 As they share the same address space, other vulnerabilities are possible.
@@ -175,7 +181,7 @@ QQ:
 
 #### Node Name Uniqueness
 
-We aren't currently enforcing `Node` name uniqueness.
+In `Dashing` and before, `Node` name uniqueness is not enfornced.
 
 When creating only one `Participant` per `Context`, we can distinguish two cases:
 - There is an overlap between the name of two `Nodes` created within the same `Context`.
@@ -189,7 +195,7 @@ If we don't change the `Node` to `Participant` mapping, the last item still stan
 
 #### Ignore local publications option
 
-Currently, there's an `ignore_local_publications` option that can be set when [creting a subscription](https://github.com/ros2/rmw/blob/2250b3eee645d90f9e9d6c96d71ce3aada9944f3/rmw/include/rmw/rmw.h#L517).
+There's an `ignore_local_publications` option that can be set when [creating a subscription](https://github.com/ros2/rmw/blob/2250b3eee645d90f9e9d6c96d71ce3aada9944f3/rmw/include/rmw/rmw.h#L517).
 That option avoids receiving messages from `Publishers` within the same `Node`.
 This wasn't implemented in all the rmw implementations (e.g.: [FastRTPS](https://github.com/ros2/rmw_fastrtps/blob/099f9eed9a0f581447405fbd877c6d3b15f1f26e/rmw_fastrtps_cpp/src/rmw_subscription.cpp#L118)).
 
@@ -200,14 +206,18 @@ This should be possible by querying the state messages, or the local chache were
 #### Intra process communication
 
 Currently, intra-process communication can be enable disabled in each `Publisher` and `Subscription`.
-There is only one reason for that: intraprocess communication doesn't support all the QoS feature.
+There is only one reason for that: intraprocess communication doesn't support all QoS policies.
 
 Inter process messages from `Publishers` that can also communicate with a `Subscription` using the intra process layer are ignored before handling the callback.
 The same problem will happen when having only one `Participant` per context, and it can be solved in the same fashion.
 
-If in the future our intra process communication support all the QoS policies, we could forgive the possibility of enabling and dissabling it at `Node`, `Publisher`, `Subscription` level.
+If in the future our intra process communication support all the QoS policies, we could forbid the possibility of enabling and dissabling it at `Node`, `Publisher`, `Subscription` level.
 Configuring intra process communication with `Context` granularity should be enough.
 
-## References
+#### Launching rclpy nodes
 
-- [RTI best practices: Create as Few DomainParticipants as Possible](https://community.rti.com/best-practices/create-few-domainparticipants-possible).
+In `Dashing` and before, a container for dinamically composing `rclpy Nodes` is not available.
+If this is not added, launching multiple `rclpy Nodes` in a launch file will create multiple participants.
+That will make the performance worse, compared with composing `rclcpp Nodes`.
+A `rclpy` component container should be added to solve the problem.
+A generic container can also be considered, allowing to dinamically load `Nodes` from both clients.
