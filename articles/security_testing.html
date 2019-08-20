@@ -1,7 +1,7 @@
 ---
 layout: default
 title: ROS 2 Security Testing
-permalink: articles/ros2_sectest.html
+permalink: articles/security_testing.html
 abstract:
   This document describes a proposed package for testing
   security concerns specific to ROS 2.
@@ -125,7 +125,7 @@ As a consequence, we make the assumption that it is helpful to implement attacks
 ### Overview
 
 An attack PoC is a ROS 2 node which, when launched, can disrupt the activity of a robot in any way, including: recording private information, preventing nodes from behaving correctly, corrupting information, etc.
-![RunnerNode](/img/ros2_sectest/runner_node.png)
+![RunnerNode](/img/security_testing/runner_node.png)
 
 Those ROS 2 nodes are loaded and run through the Runner class.
 This runner class is in charge of spinning (`rclcpp::spin()`) and is occupying the main thread.
