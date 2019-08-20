@@ -114,10 +114,12 @@ While remote vulnerabilities are more critical than local vulnerabilities, we ma
 
 Attacks mitigated by SROS *are in-scope*.
 
-SROS helps to prevent some attacks (unauthorized actor should not be able to read or write topic data.
-However, SROS may be disabled either accidentally, by an attacker or due to technical limitations (SROS overhead is unacceptable, etc.).
-
-As a consequence, we make the assumption that it is helpful to implement attacks for vulnerabilities which could be mitigated by SROS.
+SROS helps to prevent some attacks (unauthorized actor should not be able to read or write topic data).
+However, there are cases where a malicious actor could be allowed to interact with nodes.
+For instance, a ROS service could be triggered by a cloud component which could be compromised.
+This type of issues is usually mitigated using "defense in depth".
+Using SROS as a single line of defense can be dangerous.
+Even if SROS is enabled, we are evaluating what are the other strategies to mitigate attacks, such as service and topic data sanitization, subscribe rate limiter, etc.
 
 
 ## How to implement and validate an attack
