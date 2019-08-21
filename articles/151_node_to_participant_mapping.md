@@ -45,7 +45,7 @@ For those reasons, `Participants` are heavyweight.
 
 There is a one-to-one mapping between `Nodes` and `DDS Participants`.
 This simplified the design, as `DDS Participants` provide the same organization that a `Node` needs.
-The drawback of this approach, is that performance is deteriorated.
+The drawback of this approach, is that with an increasing number of nodes the overhead also increases.
 Furthermore, the maximum number of `Domain participants` is rather small.
 For example, [RTI connext](https://community.rti.com/kb/what-maximum-number-participants-domain) is limited to 120 participants per domain.
 
@@ -61,8 +61,8 @@ There are two main alternatives:
 - One participant per context.
 
 The second approach allows more flexibility.
-Considering that by default there's only one context per process, it won't lower the performance.
-Moreover, a mechanism for re-using the same participant in two separete contexts could be added.
+Considering that by default there's only one context per process, it wouldn't affect the case where each node runs in its own process.
+And even in the case that multiple nodes are running in a single process it allows to group them into different context - ranging from a separate context for each node, over grouping a few nodes in the same context, to using a single context for all nodes.
 
 ### What is a Node now?
 
@@ -98,7 +98,7 @@ In the following, the second option will be considered.
 Each `Participant` will send a message representing their state.
 A keyed topic could be used for communicating it.
 The `Participant` GUID can be used as the key.
-This helps for keeping only one message per `Participant` in the history (see `QoS for communicating node information`).
+This helps for keeping only one message per `Participant` in the history (see [QoS for communicating node information](#QoS-for-communicating-node-information)).
 The rest of the message will be a sequence of with the information of each node.
 That message should contain the `Node` name, and four sequences:
 - GUID of its `Publishers`
@@ -121,20 +121,18 @@ For that reason, the QoS of the `Publishers` should be:
 Considering that a keyed topic will be used, in which the history depth apply for each key, only one `Publisher` per process will be needed.
 In that case, `unregister_instance` can be used for delete that key from the history (see [RTI Managing Data Instances](https://community.rti.com/static/documentation/connext-dds/5.2.3/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/Managing_Data_Instances__Working_with_Ke.htm)).
 
-
-The configuration of the `Subscriber` QoS depends on how the data will be accessed later:
-- Polled using `Subscriber` read method when needed.
-- Listened and organized in a local cache.
-
-The second option allows better organization of this information (e.g.: in hash tables).
-In the first case, the QoS of the `Subscriber` should be:
+The QoS of the `Subscriber` should be:
 
 - Durability: Transient Local
 - History: Keep Last
 - History depth: 1
 - Reliability: Reliable
 
-In the second case, durability can be changed to `Volatile`.
+The subscriber could access data in two different ways:
+- Polled and accessed using `Subscriber` read method when needed.
+- Listened, accessed using subscriber take method and organized in a local cache.
+
+The second option allows better organization of this information (e.g.: in hash tables).
 
 #### Using USER_DATA and GROUP_DATA QoSPolicy
 
@@ -197,7 +195,7 @@ That option avoids receiving messages from `Publishers` within the same `Node`.
 This wasn't implemented in all the rmw implementations (e.g.: [FastRTPS](https://github.com/ros2/rmw_fastrtps/blob/099f9eed9a0f581447405fbd877c6d3b15f1f26e/rmw_fastrtps_cpp/src/rmw_subscription.cpp#L118)).
 
 For emulating this behavior, messages could be ignored by checking from what `Node` the `Publisher` was created.
-This should be possible by querying the state messages, or the local chache were they are organized.
+This should be possible by querying the state messages, or the local cache were they are organized.
 
 
 #### Intra process communication
@@ -213,8 +211,8 @@ Configuring intra process communication with `Context` granularity should be eno
 
 #### Launching rclpy nodes
 
-In `Dashing` and before, a container for dinamically composing `rclpy Nodes` is not available.
+In `Dashing` and before, a container for dynamically composing `rclpy Nodes` is not available.
 If this is not added, launching multiple `rclpy Nodes` in a launch file will create multiple participants.
 That will make the performance worse, compared with composing `rclcpp Nodes`.
 A `rclpy` component container should be added to solve the problem.
-A generic container can also be considered, allowing to dinamically load `Nodes` from both clients.
+A generic container can also be considered, allowing to dynamically load `Nodes` from both clients.
