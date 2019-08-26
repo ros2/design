@@ -24,7 +24,8 @@ categories: Security
 Original Author: {{ page.author }}
 
 
-[SROS 2](/articles/ros2_dds_security.html) introduces several security properties, including encryption, authentication, and authorization, where authorization is subsequently obtained by combining the first two properties with a model for access control.
+[SROS 2](/articles/ros2_dds_security.html) introduces several security properties, including encryption, authentication, and authorization.
+Authorization is obtained by combining the first two properties with a model for access control.
 Such models are often referred to as access control policies.
 A policy serves as a high-level abstraction of privileges associated with attributes that may then be transpiled into low-level permissions for individual identities, such as specific ROS nodes within a secure DDS network.
 
@@ -37,7 +38,7 @@ In this context, a subject may be thought of as a participant on a distributed d
 
 [Mandatory Access Control](https://en.wikipedia.org/wiki/Mandatory_access_control) (MAC) refers to allowing access to an object if and only if rules exist that allow a given subject to access the resource; the term mandatory denotes this requirement that a subject’s access to an object must always be explicitly provisioned.
 Most importantly, contrary to discretionary access control (DAC), such policies are enforced by a set of authorization rules that cannot be overridden or modified by the subject either accidentally or intentionally.
-This could  also be referred to as “deny by default”.
+This could also be referred to as “deny by default”.
 
 ### Principle of Least Privilege
 
@@ -54,16 +55,16 @@ Systems unable to comply with this requirement may consequently fail to satisfy 
 ### Separation of Concerns
 
 [Separation of Concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) (SoC) is a design principle for separating a system into distinct sections, so that each section addresses a separate concern.
-Separate concerns in this case may be how encryption is governed in a system v.s. how authorization is permissioned between subjects.
+Separate concerns in this case may be how encryption is governed in a system versus how authorization is given to subjects.
 
-## Criterias
+## Criteria
 
-Design criterias for SROS 2 policies and for selecting the [Extensible Markup Language](https://en.wikipedia.org/wiki/XML) (XML) are discussed here.
+Design criteria for SROS 2 policies and for selecting the [Extensible Markup Language](https://en.wikipedia.org/wiki/XML) (XML) are discussed here.
 
 ### Validation
 
 Prior to interpreting any user configuration input, such as an access control policy, [data validation](https://en.wikipedia.org/wiki/Data_validation) should be applied to ensure inputs are compliant and correctly formatted.
-Incorrect inputs can affect the soundness of most programs or tools, yet guarding against general malformormations may itself require meticulous validation logic.
+Incorrect inputs can affect the soundness of most programs or tools, yet guarding against general malformations may itself require meticulous validation logic.
 Formalizing the description of the data using a precise schema allows for separate programs to assert inputs are compliant without replicating validation logic across implementations.
 In XML, this is achieved using [XSD](https://en.wikipedia.org/wiki/XML_schema); allowing the policy markup to be defined by an extendable standard definition rather than a canonical implementation.
 
@@ -76,14 +77,14 @@ In XML, this is achieved using [XSLT](https://en.wikipedia.org/wiki/XML_transfor
 
 ### Composition
 
-When formulating an access control policy, many subjects may share a commonality of fundamental privileges for basic access.
+When formulating an access control policy, many subjects may share fundamental privileges for basic access.
 To avoid unnecessary repetition that could exacerbate human errors or other discrepancies, policies should possess sufficient [expressive power](https://en.wikipedia.org/wiki/Expressive_power_(computer_science)) to remain [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 In XML, this is achieved using [XInclude](https://en.wikipedia.org/wiki/XInclude); allowing the policy markup to easily include or substitute external reference to particular profiles and permissions that repeat across separate policies or profiles.
 
 ## Schema
 
-This section is a description of a SROS 2 policy schema, expressed in terms of constraints on the structure and content of the document that are beyond the basic syntactic constraints imposed by XML itself.
-This schema and accompanying definitions for grammatical rules governing the structure and content for elements and attributes is described below.
+The SROS 2 policy schema is defined with XML.
+The elements and attributes that make up a policy are described below.
 
 ``` xml
 {% include_relative ros2_access_control_policies/policy.xsd %}
@@ -189,7 +190,7 @@ Attributes:
 
 To transpile SROS 2 policies into security artifacts for a targeted access controlled transport, XSLT templates can be used to perform this level of document conversion.
 This may include any number of optimisations or adjustments specific for the target transport.
-The pipeline stages for targeting Secure DDS for example is as follows:
+For example, the pipeline stages for targeting Secure DDS is as follows:
 
 1. An XML document with a root of the SROS 2 policy is specified
 2. The document is fully expanded using XInclude to reference external elements
