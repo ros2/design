@@ -27,7 +27,7 @@ The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-
 and the [steve/ros2_raspbian_tools repository](https://github.com/esteve/ros2_raspbian_tools)
 contain instructions for cross-compiling ROS 2 to unsupported platforms like
 ARM64 and ARM-HF, using some configuration files for CMake and Docker.
-Other projects like [steve/ros2_raspbian_tools](https://github.com/esteve/ros2_raspbian_tools),
+Other projects like [esteve/ros2_objc](https://github.com/esteve/ros2_objc),
 [esteve/ros2_java](https://github.com/esteve/ros2_java) provide support
 for additional platforms like Android and iOS.
 Ideally, we should be able to cross-compile a ROS package for ROS 2 by
@@ -63,7 +63,7 @@ Specifically, we would add the following commands:
 
 ```bash
 cc-setup-sysroot --arch generic_armhf --os ubuntu_bionic \
-                 --rmw fastrtps --distro crystal
+                 --rmw fastrtps --rosdistro crystal
 ```
 
 - A new colcon mixin for each known platform, which adds options to the colcon
@@ -110,7 +110,7 @@ Under the hood, the `cc-setup-sysroot` command would do the following:
 The ROS 2 base images are variants of [sysroot/Dockerfile_ubuntu_arm](https://github.com/ros2/cross_compile/blob/master/sysroot/Dockerfile_ubuntu_arm)
 from ros2/cross_compile.
 OSRF would publish base ROS 2 images with ROS 2 prebuilt, that should be used
-for cros compiling workspaces with user packages.
+for cross compiling workspaces with user packages.
 OSRF would also publish other base ROS 2 images with the system setup and
 basic tools for building ROS 2 preinstalled, that should be used for building ROS
 2 from source.
@@ -162,7 +162,7 @@ we would need to:
   from the pre-built binary if available for that platform.
 - Adapt the toolchain file for the new platform, if required.
   For that the toolchains in [ruslo/polly](https://github.com/ruslo/polly) might be useful.
-- Add a new `cross-compile*` colcon mixin to for the new platform and perform
+- Add a new colcon mixin to the `cross-compile` repository for the new platform and perform
   any modifications needed to use a suitable toolchain file.
 
 We can then test cross-compile support for the new platform by:
