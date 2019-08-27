@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+               schemaLocation="http://www.w3.org/2001/03/xml.xsd" />
+
+
+    <xs:element name="policy" type="Policy" />
+    <xs:complexType name="Policy">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="profiles" type="Profiles" />
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="Profiles">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="profile" type="Profile" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Profile">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:element name="topics" minOccurs="1" type="TopicExpressionList" />
+                <xs:element name="services" minOccurs="1" type="ServicesExpressionList" />
+                <xs:element name="actions" minOccurs="1" type="ActionsExpressionList" />
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="ns" type="xs:string" use="required" />
+        <xs:attribute name="node" type="xs:string" use="required" />
+        <xs:attribute ref="xml:base" />
+    </xs:complexType>
+
+    <xs:complexType name="TopicExpressionList">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="topic" type="Expression" />
+        </xs:sequence>
+        <xs:attribute name="publish" type="RuleQualifier" use="optional" />
+        <xs:attribute name="subscribe" type="RuleQualifier" use="optional" />
+        <xs:attribute ref="xml:base" />
+    </xs:complexType>
+
+    <xs:complexType name="ServicesExpressionList">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="service" type="Expression" />
+        </xs:sequence>
+        <xs:attribute name="reply" type="RuleQualifier" use="optional" />
+        <xs:attribute name="request" type="RuleQualifier" use="optional" />
+        <xs:attribute ref="xml:base" />
+    </xs:complexType>
+
+    <xs:complexType name="ActionsExpressionList">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="action" type="Expression" />
+        </xs:sequence>
+        <xs:attribute name="call" type="RuleQualifier" use="optional" />
+        <xs:attribute name="execute" type="RuleQualifier" use="optional" />
+        <xs:attribute ref="xml:base" />
+    </xs:complexType>
+
+    <xs:simpleType name="Expression">
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+
+    <xs:simpleType name="RuleQualifier">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ALLOW" />
+            <xs:enumeration value="DENY" />
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
