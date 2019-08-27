@@ -2,12 +2,14 @@
 layout: default
 title: Cross-compiling ROS 2 packages
 abstract:
-  This article is a design proposal for extending the build tools for ROS 2 to
-  simplify cross-compiling ROS 2 packages for platforms currently not supported
-  by ROS 2.
+  This article is a design proposal for developing a ROS 2 tool that sets up and
+  manages sysroot environments for cross-compilation with the objective of being simple
+  and extensible. Extending support for new cross compilation configurations using colcon 
+  mixins is also proposed.
 author: >
   [Thomas Moulard](https://github.com/thomas-moulard),
-  [Juan Rodriguez Hortala](https://github.com/juanrh)
+  [Juan Rodriguez Hortala](https://github.com/juanrh),
+  [Anas Abou Allaban](https://github.com/piraka9011)
 published: false
 ---
 
@@ -24,9 +26,9 @@ Original Author: {{ page.author }}
 ## Background
 
 The [cross-compilation tutorial](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation)
-and the [steve/ros2_raspbian_tools repository](https://github.com/esteve/ros2_raspbian_tools)
-contain instructions for cross-compiling ROS 2 to unsupported platforms like
-ARM64 and ARM-HF, using some configuration files for CMake and Docker.
+and the [esteve/ros2_raspbian_tools repository](https://github.com/esteve/ros2_raspbian_tools)
+contain instructions for cross-compiling ROS 2 to unsupported architectures like
+ARM64 and ARM-HF, using toolchain files for CMake and Docker images.
 Other projects like [esteve/ros2_objc](https://github.com/esteve/ros2_objc),
 [esteve/ros2_java](https://github.com/esteve/ros2_java) provide support
 for additional platforms like Android and iOS.
@@ -34,13 +36,13 @@ Ideally, we should be able to cross-compile a ROS package for ROS 2 by
 launching a single command.
 That command should also be implemented using an extensible
 design that allows supporting new platforms with low effort.
+This design proposal is a push towards Tier-1 support of ARM-HF and ARM64 architectures.
 
 ## Proposed Approach
 
 We propose continuing with the general approach of the cross-compilation
 tutorial, based on building a sysroot for the target platform using QEMU and
-Docker, and then using [`cmake-toolchains`](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
-with a toolchain file pointing `CMAKE_SYSROOT` to the sysroot location, to
+Docker, and then using [colcon mixins](https://github.com/colcon/colcon-mixin) to
 compile with C and C++ cross-compilers.
 
 We propose adding a set of commands to wrap the instructions on the
@@ -55,27 +57,24 @@ available. For example `generic_armhf-ubuntu_bionic-fastrtps-crystal` is an
 example _platform identifier_.
 Specifically, we would add the following commands:
 
-- A new `cc-setup-sysroot` command would use Docker to generate the sysroot
+- A new `create-cc-sysroot` command would use Docker to generate the sysroot
   for the target platform, and store it in a `sysroot` subdirectory of the
   cc-root.
   This command would take arguments to specify the target platform,
   for example:
 
 ```bash
-cc-setup-sysroot --arch generic_armhf --os ubuntu_bionic \
-                 --rmw fastrtps --rosdistro crystal
+create-cc-sysroot --arch generic_armhf --os ubuntu_bionic \
+                  --rmw fastrtps --rosdistro crystal
 ```
 
 - A new colcon mixin for each known platform, which adds options to the colcon
-  build task for using a sysroot generated with `cc-setup-sysroot`, by using
+  build task for using a sysroot generated with `create-cc-sysroot`, by using
   the same path conventions.
   For example, from a ROS 2 overlay workspace on a
   developer workstation, the following command would cross-compile the packages
   in the workspace up to a package `performance_test` for the platform
   specified.
-  Note this command requires having the cross [compilation
-  toolchain](https://index.ros.org/doc/ros2/Tutorials/Cross-compilation/#install-development-tools)
-  installed.
   That would create `build`, `install`, and `log`
   subdirectories of the cc-root `generic_armhf-ubuntu_bionic-fastrtps-crystal`,
   with the cross-compiled binaries.
@@ -85,45 +84,46 @@ colcon build --mixin cc-generic_armhf-ubuntu_bionic-fastrtps-crystal \
   --packages-up-to performance_test # any other other `colcon build` arguments
 ```
 
-- On an second iteration of this initiative we would:
+- On a second iteration of this initiative we would:
   - Maintain a docker image for cross compilation, that has both the cross
   compilation toolchain and the aforementioned colcon mixins installed.
   - Implement a new `cc-build` command that would ensure the sysroot is created
-  using `cc-setup-sysroot`, and then launch the cross compilation into a docker
+  using `create-cc-sysroot`, and then launch the cross compilation into a docker
   container using the corresponding Docker image.
 
-Under the hood, the `cc-setup-sysroot` command would do the following:
+Under the hood, the `create-cc-sysroot` command would do the following:
 
 1. Downloads a base ROS 2 Docker image for the target platform.
 1. Builds a workspace dependent sysroot image by using a Dockerfile that starts
    from that base image and:
    1. Runs `COPY` to get the contents of the workspace into the container.
    1. Uses `rosdep` to ensure no workspace system dependency is missing.
-      Note we can run `rosdep` in Docker for platforms like ARM-HF thanks
+      Note we can run `rosdep` in Docker for architectures like ARM-HF thanks
       to [QEMU](https://www.qemu.org/).
 1. Launches a container for that image and exports its file system into a
    `sysroot` subdirectory of the cc-root.
-1. During a build, the colcon mixin sets the variable `SYSROOT` to the sysroot path,
-   as well as any other variables required to configure the toolchain file [generic_linux.cmake](https://github.com/ros2/cross_compile/blob/master/cmake-toolchains/generic_linux.cmake).
-   It also sets `DCMAKE_TOOLCHAIN_FILE` through `cmake-args`, so it points to that toolchain file.
+1. During a build, the colcon mixin sets the appropriate CMake arguments for cross compilation and/or point to
+   a toolchain file (ex. [generic_linux.cmake](https://github.com/ros2/cross_compile/blob/master/cmake-toolchains/generic_linux.cmake))
+   using the `CMAKE_TOOLCHAIN_FILE` argument.
 
 The ROS 2 base images are variants of [sysroot/Dockerfile_ubuntu_arm](https://github.com/ros2/cross_compile/blob/master/sysroot/Dockerfile_ubuntu_arm)
-from ros2/cross_compile.
+from ros2/cross_compile which use the [Docker Official Images](https://hub.docker.com/_/ros).
 OSRF would publish base ROS 2 images with ROS 2 prebuilt, that should be used
 for cross compiling workspaces with user packages.
 OSRF would also publish other base ROS 2 images with the system setup and
 basic tools for building ROS 2 preinstalled, that should be used for building ROS
 2 from source.
 
-The `cc-setup-sysroot` command will also support the following optional arguments:
+The `create-cc-sysroot` command will also support the following optional arguments:
 
 - `--sysroot-base-image`: Specifies a Docker image that will be used as the
   base image for the workspace dependent sysroot image. This should be a string
   that is a valid argument for `docker image pull`, and that can be used in
   `FROM` Dockerfile statement.
   If it is not specified, the command will deduce
-  the value of `--sysroot-base-image` from the target platform, for platforms
-  that have an image published for them on [osrf/ros2 on Docker Hub](https://hub.docker.com/r/osrf/ros2/).
+  the value of `--sysroot-base-image` from the target platform and pull from a 
+  published image on [Docker's Official ROS Images](https://hub.docker.com/_/ros),
+  the [arm64v8 Dockerhub repo](https://hub.docker.com/u/arm64v8) or from the [arm32v7 Dockerhub repo](https://hub.docker.com/u/arm32v7).
 - `--sysroot-image`: Specifies a Docker image for the workspace sysroot. The
   build will export the sysroot from that image, instead of creating a sysroot
   image from the workspace.
@@ -168,7 +168,7 @@ we would need to:
 We can then test cross-compile support for the new platform by:
 
 1. Building the base ROS 2 Docker image.
-1. Using `cc-setup-sysroot` to build a custom sysroot image for some reference package,
+1. Using `create-cc-sysroot` to build a custom sysroot image for some reference package,
    e.g. [ApexAI/performance_test](https://github.com/ApexAI/performance_test/), and export its
    file system into a sysroot.
 1. Cross-compiling that package using the sysroot.
