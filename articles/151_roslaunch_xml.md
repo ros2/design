@@ -65,7 +65,7 @@ The included launch file description is not necessarily written in this format n
 
 ```xml
 <include file="/opt/my_launch_file.py"/>
-<include file="$(find-pkg my_pkg)/launch/some_launch_file.xml"/>
+<include file="$(find-pkg-share my_pkg)/launch/some_launch_file.xml"/>
 <include file="/opt/my_other_launch_file.xml">
   <arg name="some_argument" value="dummy_value"/>
 </include>
@@ -239,8 +239,13 @@ All substitutions are enclosed by `$(...)`.
 
 ### Built-in Substitutions
 
-`$(find-pkg <pkg-name>)`
+`$(find-pkg-prefix <pkg-name>)`
 : Substituted by the install prefix path of the given package.
+  Forward and backwards slashes will be resolved to the local filesystem convention.
+  Substitution will fail if the package cannot be found.
+
+`$(find-pkg-share <pkg-name>)`
+: Substituted by the share directory path of the given package.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the package cannot be found.
 
