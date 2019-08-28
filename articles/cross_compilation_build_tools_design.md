@@ -2,10 +2,8 @@
 layout: default
 title: Cross-compiling ROS 2 packages
 abstract:
-  This article is a design proposal for developing a ROS 2 tool that sets up and
-  manages sysroot environments for cross-compilation with the objective of being simple
-  and extensible. Extending support for new cross compilation configurations using colcon 
-  mixins is also proposed.
+  This article is a design proposal for developing a ROS 2 tool that sets up and manages sysroot environments for cross-compilation with the objective of being simple and extensible.
+  Extending support for new cross compilation configurations using colcon mixins is also proposed.
 author: >
   [Thomas Moulard](https://github.com/thomas-moulard),
   [Juan Rodriguez Hortala](https://github.com/juanrh),
@@ -44,7 +42,7 @@ These commands would use a new workspace directory for the target platform, dete
 - ROS distribution
 
 Let us call this workspace directory the _cc-root_.
-Under this convention, the platform implies the architecture, but generic platforms like `generic_armhf` would also be available. 
+Under this convention, the platform implies the architecture, but generic platforms like `generic_armhf` would also be available.
 An example _platform identifier_ would be `generic_armhf-ubuntu_bionic-fastrtps-crystal` or `turtlebot_armhf-ubuntu_bionic-fastrtps-dashing`.
 To implement the proposal, we would add the following commands:
 
@@ -85,10 +83,10 @@ OSRF would also publish other base ROS 2 images with the system setup and basic 
 
 The `create-cc-sysroot` command will also support the following optional arguments:
 
-- `--sysroot-base-image`: Specifies a Docker image that will be used as the base image for the workspace dependent sysroot image. 
+- `--sysroot-base-image`: Specifies a Docker image that will be used as the base image for the workspace dependent sysroot image.
   This should be a string that is a valid argument for `docker image pull` and that can be used in the `FROM` Dockerfile statement.
   If it is not specified, the command will deduce the value of `--sysroot-base-image` from the target platform and pull from a published image on [Docker's Official ROS Images](https://hub.docker.com/_/ros), the [arm64v8 Dockerhub repo](https://hub.docker.com/u/arm64v8) or from the [arm32v7 Dockerhub repo](https://hub.docker.com/u/arm32v7).
-- `--sysroot-image`: Specifies a Docker image for the workspace sysroot. 
+- `--sysroot-image`: Specifies a Docker image for the workspace sysroot.
   The build will export the sysroot from that image, instead of creating a sysroot image from the workspace.
   No check is performed to ensure the image has all the dependencies required by the packages in the workspace.
 - `--use-base-image-sysroot`: Boolean flag, when true the base ROS 2 Docker image is used to build the sysroot, so the dependencies declared in packages in the current workspace are ignored.
@@ -99,7 +97,7 @@ We could include support for generic versions of ARM-HF and ARM64, on Ubuntu Bio
 
 ### Frequently asked questions
 
-- _How can we run the resulting binaries?_ 
+- _How can we run the resulting binaries?_
   Packaging the resulting binaries is outside of the scope of this document.
   The cross-compiled binaries will be available in the workspace in the cc-root (e.g. `generic_armhf-ubuntu_bionic-fastrtps-crystal`).
   We make the assumption that the user will copy the whole workspace to the remote device (including `src`) and run `rosdep` on the target platform, to install the dependencies before running the binaries.
@@ -151,9 +149,9 @@ Ideally a nightly job would publish an image built from source for the tip of ma
 
 The [colcon bundle plugin](https://github.com/colcon/colcon-bundle) can be used to package a ROS workspace together with all its dependencies into a tarball.
 That could be used for cross-compiling a ROS 2 workspace by launching a Docker container for the target platform, building and bundling the workspace, and exporting the bundle, which can then be deployed to the target hardware.
-The main drawback of that approach is that using the default ARM compiler in the Docker image significantly slows down the compilation, which might be a burden for day-to-day development. 
-By installing `qemu-user-static` in the present proposal, we are not only installing the QEMU binaries to simulate an ARM32/64 processor, but also registering [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc) hook in the local machine. 
-That means that every time a program will start, if it is for a platform that QEMU supports, the binary will automatically run through QEMU. 
+The main drawback of that approach is that using the default ARM compiler in the Docker image significantly slows down the compilation, which might be a burden for day-to-day development.
+By installing `qemu-user-static` in the present proposal, we are not only installing the QEMU binaries to simulate an ARM32/64 processor, but also registering [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc) hook in the local machine.
+That means that every time a program will start, if it is for a platform that QEMU supports, the binary will automatically run through QEMU.
 In practice, it lets you run ARM binaries on your X86 instance, as it is done implicitly through Docker when building the base image.
 The problem is that QEMU is ~10x slower than normal execution, but the present proposal limits the QEMU usage to building the base image (which is unavoidable), and uses compilers for the target platform running natively the rest of the time.
 
