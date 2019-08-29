@@ -246,6 +246,7 @@ All substitutions are enclosed by `$(...)`.
 
 `$(find-pkg-share <pkg-name>)`
 : Substituted by the share directory path of the given package.
+  The share directory includes the package's name, e.g. `<prefix>/share/<pkg-name>`.
   Forward and backwards slashes will be resolved to the local filesystem convention.
   Substitution will fail if the package cannot be found.
 
