@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Cross-compiling ROS 2 packages
+permalink: articles/cc_build_tools.html
 abstract:
   This article is a design proposal for developing a ROS 2 tool that sets up and manages sysroot environments for cross-compilation with the objective of being simple and extensible.
   Extending support for new cross compilation configurations using colcon mixins is also proposed.
@@ -8,12 +9,14 @@ author: >
   [Thomas Moulard](https://github.com/thomas-moulard),
   [Juan Rodriguez Hortala](https://github.com/juanrh),
   [Anas Abou Allaban](https://github.com/piraka9011)
-published: false
+published: true
 ---
 
 {:toc}
 
 # {{ page.title }}
+
+This is a **DRAFT DOCUMENT**.
 
 <div class="abstract" markdown="1">
 {{ page.abstract }}
