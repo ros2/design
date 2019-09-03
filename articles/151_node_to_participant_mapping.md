@@ -146,6 +146,29 @@ These entities only need to communicate the GUID of the `Participant` and the `N
 This idea can be combined with a topic just publishing the list of `Node` names, without including all the other vectors in the message.
 Although, it is more difficult to communicate this information for `Services` and `Clients`, as they use behind the scenes just a `DDS Publisher` and `Subscriber`.
 
+### Which layer will be implemented in?
+
+The implementation can be done in two different ways:
+
+- Through rmw implementations to rcl.
+- Modify rmw implementations without modifying rmw API (as long as possible).
+
+The first approach have the following disadvantages:
+- There is no `Node` concept in `rmw` layer, as `Node` discovery is solved in `rcl`.
+  Actually, all the `Node` related API in `rmw` doesn't have more sense.
+- Currently, no threads are created in the `rcl` layer.
+  It will be needed in case `Node` discovery is done in this layer.
+- It will force to build the concept of `Node` on top of the underlying middleware in use, regardless if the middleware already has a lightweight entity similar to a `Node`.
+- It will break API in many layers.
+
+
+The second approach has the following disadvantages:
+- Each `rmw` have to reimplement node discovery logic.
+  - It can be worked arround creating a new common package that uses the abstractions in `rmw`.
+    Each of the implementations that wants to use this should depend on this common package.
+
+The second approach is preferred, as it is more flexible and it avoids breaking API in many layers.
+
 ### Other implications
 
 #### Security
