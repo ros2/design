@@ -1,0 +1,9 @@
+<package format="2">
+  <name>foo</name>
+
+  <!-- snip -->
+
+  <export>
+    <interface declaration=”${prefix}/interface_declaration.xml”/>
+  </export>
+</package>
