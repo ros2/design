@@ -28,32 +28,61 @@ Allow a system of ROS nodes to be launched on a hardware architecture that is
 spread across multiple networked computers and facilitate introspection and
 management of the system from a single machine.
 
-### Features and Considerations
+## Justification
 
-Many of these are just extensions of the design goals for the single-machine
-version of roslaunch for ROS2, but instead of only dealing with how to group
-nodes in terms of processes, we can additionally group processes in terms of
-machines. In addition to extending the current ROS2 launch goals for remote
-machines, We would also like to consider more advanced features that could be
-added such as advanced command line tools, forms of load balancing,
-sending/retrieving files (such as configuration data or maps) to/from remote
-machines.
+Nodes can need to run on different hosts for a variety of reasons.  Some possible
+use cases:
 
-    1. Some nodes may need to be run on specific machines due to hardware architecture.
-        - Cameras or other sensors being directly connected
-        - Specialized processing hardware
-    2. Other nodes may not care which machine they run on and can be executed on machines with less workload as determined at time of launch.
-    3. Need to manage lifecycles of nodes that have them.
-    4. Need to monitor node status, and attempt recovery from failures.
-        - Attempt recovery from crashed nodes by restarting them, possibly on a different machine.
-    5. Connect to remote machines securely over SSH.
-        - How to manage credentials?
-            - Have users manually set up the accounts and put passwords in launch files?
-            - Have users set up ssh keys for the computers in the system?
-    6. Provide command line tools for managing and monitoring launched systems on remote machines.
-    7. Provide mechanisms for locating files and executables across machines, and sending files to machines that need them for certain nodes.
-        - If we intend to do any kind of load balancing or launching of nodes on non-specified machines (i.e. determined by the launch system during the launch process rather than specified by the user in the launch file), certain types of resources may need to be transferred to other machines. Calibration data, map files, training data, etc. This potentially creates a need to keep track of which machine has the most recent version of such resources (e.g. in the case of training data, or any other resource where a node might save data to be loaded next time it is launched).
-    8. Should be able to work with machines running different operating systems on the same network.
+- A large robot could with hosts located physically near the hardware they are
+controlling such as cameras or other sensors
+- A robot with hosts with different architectures in order to use specialized
+processing hardware
+- A robot with a cluster of machines that do distributed processing of data
+- A network of multiple virtual hosts for testing purposes
+- A swarm of independent drones that can cooperate but do not require
+communication with each other
+- A client computer is used to launch and monitor a system on a remote host but
+is not required for the system to operate
+
+## Capabilities
+
+In order to meet the above use cases, a launch system needs to have a number of
+capabilities, including:
+
+- Connecting to a remote host and running nodes on it
+- Pushing configuration parameters for nodes to remote hosts
+- Monitoring the status and tracking the lifecycle of nodes
+- Recovering from failures by optionally restarting nodes
+- Gracefully shutting down nodes on every host
+
+Most of these are just extensions of the design goals for the single-machine
+version of roslaunch for ROS2, but in addition to extending those goals to
+remote machines, we would also like to consider a few more advanced features,
+including:
+
+- Load balancing nodes on distributed networks
+- Command line tools for managing and monitoring systems across machines
+- Mechanisms for locating files and executables across machines
+- Sharing and synchronizing files across machines
+
+## Considerations
+
+There are some outstanding issues that may complicate things:
+
+- How to group nodes/participants/processes is somewhat of an open issue with potential
+   implications for this part of ROS2.
+    - https://github.com/ros2/design/pull/250/files/8ccaac3d60d7a0ded50934ba6416550f8d2af332?short_path=dd776c0#diff-dd776c070ecf252bc4dcc4b86a97c888
+    - The number of domain participants is limited per vendor (Connext is 120 per domain).
+- No `rosmaster` means there is no central mechanism for controlling modes or
+  distributing parameters
+- Machines may be running different operating systems
+- If we intend to do any kind of load balancing, certain types of resources may
+    need to be transferred to other machines.
+     - Calibration data, map files, training data, etc.
+     - Need to keep track of which machine has the most recent version of such
+        resources
+- Security: we'll need to manage credentials across numerous machines both for SSH
+    and secure DDS.
 
 
 ## Proposed Multi-Machine Launch Command Line Interface
