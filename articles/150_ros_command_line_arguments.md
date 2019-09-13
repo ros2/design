@@ -70,41 +70,136 @@ This way, multiple sources, potentially unaware of each other, can append flags 
 As a quick summary of ROS command line capabilities:
 
 - For name remapping, use either `--remap from:=to` or `-r from:=to`.
-- For parameter assignment, use either `--param name:=value` or `-p name:=value`.
+- For single parameter assignment, use either `--param name:=value` or `-p name:=value` where value is in YAML format.
+- For multiple parameter assignments, use `--params-file path/to/file.yaml` and a parameters YAML file.
+- For setting logging (minimum) level, use `--log-level LEVEL_NAME`.
+- For external logging configuration, use `--log-config-file path/to/file.config` and a log configuration file.
+- For enabling/disabling logging:
+  - to `rosout`, use `--enable-rosout-logs` or `--disable-rosout-logs`
+  - to `stdout`, use `--enable-stdout-logs` or `--disable-stdout-logs`
+  - to a external logging library, use `--enable-external-lib-logs` or `--disable-external-lib-logs`
+
+For name remapping and parameter assignment, specific nodes can be targeted by prepending the option value with the node name followed by a colon `:`, as in `--remap my_node:from:=to` and `--param my_node:name:=value`.
 
 #### Name remapping rules
 
 Remapping rules may be introduced using the `--remap`/`-r` option.
 This option takes a single `from:=to` remapping rule.
 
-As an example, to remap from `foo` to `bar` upon running `some_node`, one may execute:
+As an example, to remap from `foo` to `bar` for `some_ros_executable`, one may execute:
 
 ```sh
-ros2 run some_package some_node --ros-args --remap foo:=bar
+ros2 run some_package some_ros_executable --ros-args --remap foo:=bar
 ```
 
 or its shorter equivalent:
 
 ```sh
-ros2 run some_package some_node --ros-args -r foo:=bar
+ros2 run some_package some_ros_executable --ros-args -r foo:=bar
 ```
 
-#### Parameter assignment statements
+As is, this remapping rule applies to each and every node that `some_ros_executable` spawns unless explicitly ignored in code.
+To limit it to `some_node`, one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args -r some_node:foo:=bar
+```
+
+#### Single parameter assignments
 
 Parameter assignment may be achieved using the `--param`/`-p` option.
 This option takes a single `name:=value` assignment statement, where `value` is in [YAML format](https://yaml.org/spec/) and thus YAML type inference rules apply.
 
-As an example, to assign a string value `test` to a parameter `string_param` upon running `some_node`, one may execute:
+As an example, to assign a string value `test` to a parameter `string_param` for `some_ros_executable`, one may execute:
 
 ```sh
-ros2 run some_package some_node --ros-args --param string_param:=test
+ros2 run some_package some_ros_executable --ros-args --param string_param:=test
 ```
 
 or its shorter equivalent:
 
 ```sh
-ros2 run some_package some_node --ros-args -p string_param:=test
+ros2 run some_package some_ros_executable --ros-args -p string_param:=test
 ```
+
+As is, this parameter assignment applies to each and every node that `some_ros_executable` spawns unless explicitly ignored in code.
+To limit it to `some_node`, one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args -p some_node:string_param:=test
+```
+
+#### Multiple parameter assignments
+
+Multiple parameter assignments can be performed at once using the `--params-file` option.
+This option takes a [YAML](https://yaml.org/spec/) file with the following structure:
+
+```yaml
+node0_name:
+  ros__parameters:
+     param0_name: param0_value
+     ...
+     paramN_name: paramN_value
+...
+nodeM_name:
+  ros_parameters:
+     ...
+```
+
+Multiple nodes in a single executable can be targeted this way.
+Note that YAML type inference rules for parameter values apply.
+
+As an example, to assign a string value `foo` to a parameter `string_param` for `some_node` and a string value `bar` to that same parameter `string_param` but for `another_node` upon running `some_ros_executable` that contains both, one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args --params-file params_file.yaml
+```
+
+where `params_file.yaml` reads:
+
+```yaml
+some_node:
+  ros__parameters:
+     string_param: foo
+another_node:
+  ros_parameters:
+     string_param: bar
+```
+
+#### Logging level
+
+Minimum logging level can be externally set using the `--log-level` option.
+
+As an example, to set logging level to `DEBUG` for `some_ros_executable`, one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args --log-level DEBUG
+```
+
+See `rcutils` and `rcl` logging documentation for reference on existing logging levels.
+
+#### External logging configuration
+
+External logging may be configured using the `--log-config-file` option.
+This option takes a single configuration file, whose format depends on the actual external logging library being used.
+
+As an example, to pass `some_log.config` configuration file to `some_ros_executable`, one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args --log-config-file some_log.config
+```
+
+#### Enabling and disabling logging
+
+Logging to `rosout`, `stdout` and an external logging library can be independently enabled or disabled.
+
+As an example, to disable logging to `rosout` and `stdout` but not to an external logging library for `some_ros_executable`, one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args --disable-rosout-logs --disable-stdout-logs --enable-external-lib-logs
+```
+
+Logging is fully enabled by default, thus `--enable-*` options are usually redundant unless a `--disable-*` option found earlier in the command line is being overridden.
 
 ## Implementation
 
