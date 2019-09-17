@@ -26,15 +26,15 @@ This document outlines desired changes in the middleware and client libraries re
 
 The motivation for message loaning is to increase performance and determinism in ROS2.
 
-As additional motivation, there are specific middle implementations that allow for zero-copy via shared memory mechanisms.
+As additional motivation, there are specific middleware implementations that allow for zero-copy via shared memory mechanisms.
 These enhancements would allow ROS2 to take advantage of the shared memory mechanisms exposed by these implementations.
-An example of zero-copy transfer is [RTI Connext DDS Micro](https://community.rti.com/static/documentation/connext-micro/3.0.0/doc/html/usersmanual/zerocopy.html)
+An example of zero-copy transfer is [RTI Connext DDS Micro](https://community.rti.com/static/documentation/connext-micro/3.0.0/doc/html/usersmanual/zerocopy.html).
 
 ### Publisher Use Cases
 
 There are two primary kinds of use cases when publishing data which are relevant in this article:
 
-1. The user creates and owns an instance of a message which they which to publish and then reuse after publishing.
+1. The user creates and owns an instance of a message which they wish to publish and then reuse after publishing.
 2. The user borrows a message instance from the middleware, copies data into the message, and returns the ownership of the message during publish.
 
 Currently, only the first case is possible with the `rclcpp` API.
@@ -45,7 +45,7 @@ In order to support the second use case, we need a way for the user to get at le
 In the second case, the memory that is used for the loaned message should be optionally provided by the middleware.
 For example, the middleware may use this opportunity to use a preallocated pool of message instances, or it may return instances of messages allocated in shared memory.
 However, if the middleware does not have special memory handling or preallocations, it may refuse to loan memory to the client library, and in that case, a user provided allocator should be used.
-This allows the user to have control over the allocation of the message when the middleware would otherwise use the standard allocator (new/malloc)
+This allows the user to have control over the allocation of the message when the middleware might otherwise use the standard allocator (new/malloc).
 
 #### Additional Publisher Use Case
 
@@ -101,7 +101,7 @@ These requirements are driven by idiosyncrasies of various middleware implementa
 
 #### RTI Connext DDS
 
-* The Connext API (more generally the DDS API) requires that you use a sequence of messages when taking or reading.
+* The Connext API (more generally the DDS API) requires that the user to use a sequence of messages when taking or reading.
   * This means the ROS API needs to do the same, otherwise the middleware would be giving a "loan" to a message in a sequence, but it would also need to keep the sequence immutable.
 * Needs to keep sample and sample info together, therefore `rclcpp` loaned message sequence needs to own both somehow.
 
