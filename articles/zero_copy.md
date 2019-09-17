@@ -123,13 +123,15 @@ Connext Micro Specific (ZeroCopy):
 Introduce APIs for creating/destroying loaned messages, as well as structure for management:
 
 ```
-void * rmw_allocate_loaned_message(
+void *
+rmw_allocate_loaned_message(
   const rmw_publisher_t * publisher,
   const rosidl_message_type_support_t * type_support,
   size_t message_size
 );
 
-rmw_ret_t rmw_deallocate_loaned_message(
+rmw_ret_t
+rmw_deallocate_loaned_message(
   const rmw_publisher_t * publisher,
   void * loaned_message
 );
@@ -138,7 +140,8 @@ rmw_ret_t rmw_deallocate_loaned_message(
 Extend publisher API for loaned messages:
 
 ```
-rmw_ret_t rmw_publish(
+rmw_ret_t
+rmw_publish(
   const rmw_publisher_t * publisher
   const void * ros_message
   rmw_publisher_allocation_t * allocation,
@@ -157,20 +160,16 @@ Extend subscription API for taking loaned message:
 Introduce APIs for creating/destroying loaned messages, as well as structure for management:
 
 ```
-struct rcl_loaned_message_t
-{
-  rcl_publisher_t * publisher;
-  rmw_loaned_message_t * message;
-}
-
-rcl_ret_t rcl_allocate_loaned_message(
+void *
+rcl_allocate_loaned_message(
   const rcl_publisher_t * publisher,
   const rosidl_message_type_support_t * type_support,
-  size_t message_size,
-  rcl_loaned_message_t * loaned_message
+  size_t message_size
 );
 
-rcl_ret_t rcl_deallocate_loaned_message(
+rcl_ret_t
+rcl_deallocate_loaned_message(
+  const rcl_publisher_t * publisher,
   rcl_loaned_message_t * loaned_message
 );
 ```
@@ -178,11 +177,16 @@ rcl_ret_t rcl_deallocate_loaned_message(
 Extend publisher API for loaned messages:
 
 ```
-// This would not need knowledge of the rmw_publisher_t, as the message allocation
-// is tied to the publisher.
-rcl_ret_t rcl_publish(
-  const rcl_loaned_message_t * message
+rcl_ret_t
+rcl_publish(
+  const rcl_publisher_t * publisher,
+  const void * ros_message,
+  rmw_publisher_allocation_t * allocation,
+  bool is_loaned
 );
+
+bool
+rcl_publisher_can_loan_messages(const rcl_publisher_t * publisher);
 ```
 
 Extend subscription API for taking loaned message:
@@ -193,7 +197,8 @@ Extend subscription API for taking loaned message:
 
 ### RCLCPP LoanedMessage
 
-Introduce the concept of a `LoanedMessage`
+In order to support loaned messages in `rclcpp`, we tntroduce the concept of a `LoanedMessage`.
+A `LoanedMessage` provides a wrapper around the underlying loan mechanisms, and manages the loan's lifecycle.
 
 ```
 template <class MsgT, typename Alloc = std::allocator<void>>
@@ -241,5 +246,4 @@ rclcpp::Publisher::can_loan_messages()
 ```
 
 ### RCLCPP Subscription
-
 
