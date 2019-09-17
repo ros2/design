@@ -30,7 +30,7 @@ As additional motivation, there are specific middle implementations that allow f
 These enhancements would allow ROS2 to take advantage of the shared memory mechanisms exposed by these implementations.
 An example of zero-copy transfer is [RTI Connext DDS Micro](https://community.rti.com/static/documentation/connext-micro/3.0.0/doc/html/usersmanual/zerocopy.html)
 
-### Publication Use Cases
+### Publisher Use Cases
 
 There are two primary kinds of use cases when publishing data which are relevant in this article:
 
@@ -47,7 +47,7 @@ For example, the middleware may use this opportunity to use a preallocated pool 
 However, if the middleware does not have special memory handling or preallocations, it may refuse to loan memory to the client library, and in that case, a user provided allocator should be used.
 This allows the user to have control over the allocation of the message when the middleware would otherwise use the standard allocator (new/malloc)
 
-#### Additional Publication Use Case
+#### Additional Publisher Use Case
 
 One additional publishing use case is allowing the user to loan the message to the middleware during asynchronous publishing.
 This use case comes up when all or part of the data being published is located in memory that the middleware cannot allocate from, e.g. a hardware buffer via memory mapped I/O or something similar, and the user wants to still have zero copy and asynchronous publishing.
@@ -79,7 +79,7 @@ Based on the the use cases above, the general requirements are as follows:
 * Users must be able to avoid all memory operations and copies in at least one configuration.
 
 
-### Publication Requirements
+### Publisher Requirements
 
 * The user must be able to publish from messages allocated in their stack or heap.
 * The user must be able to get a loaned message, use it, and return it during publication.
@@ -115,3 +115,137 @@ Connext Micro Specific (ZeroCopy):
   * Versus reusing a user owned message on the stack or heap.
   * We will still recommend reusing a message repeatedly from the stack or heap of the user.
 * Memory operations and copies should be avoided anywhere possible.
+
+## Design Proposal
+
+### RMW API
+
+Introduce APIs for creating/destroying loaned messages, as well as structure for management:
+
+```
+struct rmw_loaned_message_t
+{
+  const char * implementation_identifier;
+  rmw_publisher_t * publisher;
+  void * data;
+}
+
+rmw_ret_t rmw_allocate_loaned_message(
+  const rmw_publisher_t * publisher,
+  const rosidl_message_type_support_t * type_support,
+  size_t message_size,
+  rmw_loaned_message_t * loaned_message
+);
+
+rmw_ret_t rmw_deallocate_loaned_message(
+  rmw_loaned_message_t * loaned_message
+);
+```
+
+Extend publisher API for loaned messages:
+
+```
+// This would not need knowledge of the rmw_publisher_t, as the message allocation
+// is tied to the publisher.
+rmw_ret_t rmw_publish(
+  const rmw_loaned_message_t * message
+);
+```
+
+Extend subscription API for taking loaned message:
+
+```
+// TODO
+```
+
+### RCL API
+
+Introduce APIs for creating/destroying loaned messages, as well as structure for management:
+
+```
+struct rcl_loaned_message_t
+{
+  rcl_publisher_t * publisher;
+  rmw_loaned_message_t * message;
+}
+
+rcl_ret_t rcl_allocate_loaned_message(
+  const rcl_publisher_t * publisher,
+  const rosidl_message_type_support_t * type_support,
+  size_t message_size,
+  rcl_loaned_message_t * loaned_message
+);
+
+rcl_ret_t rcl_deallocate_loaned_message(
+  rcl_loaned_message_t * loaned_message
+);
+```
+
+Extend publisher API for loaned messages:
+
+```
+// This would not need knowledge of the rmw_publisher_t, as the message allocation
+// is tied to the publisher.
+rcl_ret_t rcl_publish(
+  const rcl_loaned_message_t * message
+);
+```
+
+Extend subscription API for taking loaned message:
+
+```
+// TODO
+```
+
+### RCLCPP LoanedMessage
+
+Introduce the concept of a `LoanedMessage`
+
+```
+template <class MsgT, typename Alloc = std::allocator<void>>
+class LoanedMessage
+{
+public:
+  // Get the underlying message
+  MsgT& get()
+
+  // Check if underlying message is valid and consistent
+  bool is_consistent();
+
+  // Loan message from the middleware, if loaning is not available,
+  // allocate memory using Alloc
+  LoanedMessage(
+    const rclcpp::Publisher<MsgT, Alloc> * pub);
+
+private:
+  const rclcpp::Publisher<MsgT, Alloc> * pub_;
+
+  // Holds details of the message loan
+  rcl_loaned_message_t * loaned_msg_;
+
+  // Will be initialized with memory from loaned_msg_, otherwise allocated.
+  std::unique_ptr<MsgT> msg_;
+};
+```
+
+### RCLCPP Publisher
+
+Extend RCLCPP API:
+
+```
+// Return a loaned message from the middleware
+rclcpp::LoanedMessage<MsgT, Alloc>
+rclcpp::Publisher::loan_message()
+
+// Publish a loaned message, returning the loan
+void
+rclcpp::Publisher::publish(std::unique_ptr<rclcpp::LoanedMessage<MsgT, Alloc>> loaned_msg);
+
+// Test if the middleware supports loaning messages
+bool
+rclcpp::Publisher::can_loan_messages()
+```
+
+### RCLCPP Subscription
+
+
