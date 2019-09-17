@@ -123,32 +123,26 @@ Connext Micro Specific (ZeroCopy):
 Introduce APIs for creating/destroying loaned messages, as well as structure for management:
 
 ```
-struct rmw_loaned_message_t
-{
-  const char * implementation_identifier;
-  rmw_publisher_t * publisher;
-  void * data;
-}
-
-rmw_ret_t rmw_allocate_loaned_message(
+void * rmw_allocate_loaned_message(
   const rmw_publisher_t * publisher,
   const rosidl_message_type_support_t * type_support,
-  size_t message_size,
-  rmw_loaned_message_t * loaned_message
+  size_t message_size
 );
 
 rmw_ret_t rmw_deallocate_loaned_message(
-  rmw_loaned_message_t * loaned_message
+  const rmw_publisher_t * publisher,
+  void * loaned_message
 );
 ```
 
 Extend publisher API for loaned messages:
 
 ```
-// This would not need knowledge of the rmw_publisher_t, as the message allocation
-// is tied to the publisher.
 rmw_ret_t rmw_publish(
-  const rmw_loaned_message_t * message
+  const rmw_publisher_t * publisher
+  const void * ros_message
+  rmw_publisher_allocation_t * allocation,
+  bool is_loaned
 );
 ```
 
