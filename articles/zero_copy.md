@@ -74,5 +74,44 @@ The user should be able to influence what the `Executor` does, and in the case t
 
 ## Requirements
 
+Based on the the use cases above, the general requirements are as follows:
 
-## Design Proposal
+* Users must be able to avoid all memory operations and copies in at least one configuration.
+
+
+### Publication Requirements
+
+* The user must be able to publish from messages allocated in their stack or heap.
+* The user must be able to get a loaned message, use it, and return it during publication.
+* When taking a loan, the middleware should not do anything "special", that is that the user must be able to influence the allocation.
+
+### Subscription Requirements
+
+The following requirements should hold whether the user is polling or using a wait set.
+
+* The user must be able to have the middleware fill data into messages allocated in the user's stack or heap.
+* The user must be able to get a loaned message from the middleware when calling take.
+* The user must be able to get a sequence of loaned messages from the middleware when calling take.
+* The loaned message or sequence must be returned by the user.
+* When taking a loan, the middleware should not do anything "special", that is that the user must be able to influence the allocation.
+
+### Special Requirements
+
+These requirements are driven by idiosyncrasies of various middleware implementations and some of their special operating modes, e.g. zero copy:
+
+#### RTI Connext DDS
+
+* The Connext API (more generally the DDS API) requires that you use a sequence of messages when taking or reading.
+  * This means the ROS API needs to do the same, otherwise the middleware would be giving a "loan" to a message in a sequence, but it would also need to keep the sequence immutable.
+* Needs to keep sample and sample info together, therefore `rclcpp` loaned message sequence needs to own both somehow.
+
+Connext Micro Specific (ZeroCopy):
+
+* The user needs to be able to check if data has been invalidated after reading it.
+
+### Nice to Haves
+
+* When using loaned messages, the overhead should be minimized, so that it can be used as the general approach as often as possible.
+  * Versus reusing a user owned message on the stack or heap.
+  * We will still recommend reusing a message repeatedly from the stack or heap of the user.
+* Memory operations and copies should be avoided anywhere possible.
