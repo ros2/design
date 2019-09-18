@@ -111,15 +111,6 @@ In `roslaunch` from ROS 1 there were only a few ways that it could react to chan
 
 This is somewhere that the launch system in ROS 2 can hopefully improve on what `roslaunch` from ROS 1 had to offer, and it can do so by providing not only these common reactions to processes exiting, but also by providing more granular information about the process exit (and other events), and by letting the user specify arbitrary responses to these type of events.
 
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-This is very much still a point for debate in my opinion.
-I think there is a valid argument against arbitrary event handling and restricting it to "canned" responses to a limited set of events, and leaving everything else to external programs.
-I especially feel this way about changes in node state and nodes exiting even when their process does not, but I don't feel as strongly when it comes to reporting and reacting to events related to the process itself, e.g. the return code, stdout/stderr/stdin, etc...
-Mostly because no other process can observe these things, so they should definitely be exported in some way by the launch system, and if you're already doing that then it might just be much more convenient to let the user tell the launch system what to do rather than having to have a separate process that monitors what the launch system is reporting and then has to react, mostly likely by asking the launch system to do something else.
-</div>
-
 #### Deterministic Startup
 
 In the ROS 1 wiki for `rosluanch`, it says ([https://wiki.ros.org/roslaunch/Architecture](https://wiki.ros.org/roslaunch/Architecture)):
@@ -137,32 +128,10 @@ Also, these constraints don't have to be related to ROS specific events like lif
 For example, a user might express that a plain process should be launched (in this case executed as a subprocess) after another process has been running for ten seconds.
 The launch system in ROS 2, could either choose to let the user define a predicate which satisfied that constraint, or it could provide a generic constraint like: "launch N seconds after another process".
 
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-This is also very much still a point for debate in my opinion.
-I'm not sure if this kind of arbitrary constraint is a good idea, either because it doesn't provide enough value given the complexity, or because it allows users to any manner of dangerous or unexpected things in the predicate.
-</div>
-
 #### Node Related Events and Responses
 
 Also leveraging Managed Nodes when possible, the launch system in ROS 2 could export, aggregate and export, or react to lifecycle events of nodes.
 For example, it might be possible to say that a node, rather than a process, is "required" such that the launch system shutdowns if that node's state ends up in the "Finalized" state, which would be similar to a process exiting with the "required=true" setting for `roslaunch` from ROS 1.
-
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-There is still a gray area for me here as to where to drawn the line between the launch system and general purpose "supervision" of managed nodes (we've called this the "lifecycle manager" in the past).
-It seems ok for the launch system to use the manage node's state information for deterministic startup and for the above kind of "require node" feature, but it's hard for me to say exactly to what degree the launch system should be required or tied into the long running supervision of system of managed ros nodes.
-As opposed to what I always imagined which was a completely user written program which would monitor the lifecycle event system (and possibly other things like devices, the diagnostics system, etc...), would have domain and application specific knowledge, as well as knowledge about the ROS graph layout, and could react to certain events.
-
-I didn't really think that would be implemented as a series of event handlers within the launch system, and I'm still not convinced that's a good idea.
-On the other hand, I also have a hard time thinking that simple events which result in an action only the launch system can take, things like "respawn=true" and "required=true" for nodes, should be a separate program rather than just a user defined reaction within the launch system itself.
-So I don't know where the line is, or if we should try to define it.
-We could choose to support reacting to lifecycle events in both the launch system and externally, or we could choose to not utilize them at all in the launch system, but my gut reaction at the moment is to allow them to be used in the launch system and also not try to restrict their complexity, simply because I don't see a good way to do that or how to decide what should and should not be allowed.
-
-I'm very interested to see what others think of this question.
-</div>
 
 #### Static Description and Programmatic API
 
@@ -369,30 +338,6 @@ These state changes could be consumed by either the launch system itself or by t
 
 For example, the user could express something like "when node 'A' enters the `Active` state, launch nodes 'B' and 'C'" or "if node 'A' exits with a return code or enters the `Finalized` state, shutdown everything".
 
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-This is where things get murky for me.
-There is a gray line between more complex startup behaviors (like "wait for A to get to Active then launch B") and long running monitoring and reactions to events, what I would call "supervision" (like "if A goes transitions to ErrorProcessing change B to Inactive").
-
-I'm interested to see what other people think.
-
-For me the best way to separate the two cases (if they're to be separated at all) is to ask "do I want/need to understand this event handling off-line"?
-For example, when looking at a system description, it would be nice to see the event handler "when A crashes or exits, the whole system is down" (i.e. `require=true`) or the event handler "when A reaches Inactive, launch B" (something like "B depends on A").
-However, maybe it doesn't need to capture/understand the "when A crashes or has an error move B to inactive".
-
-Alternatively, we could say "all event handling is opaque to the launch system and is user defined" which removes the ambiguity.
-
-\<wjwwod's opinion>
-<br/>
-I think the idea that saying all "supervision" or "reactionary launching" like activities are not part of the launch system is the simplest way forward, but then you'd still like to include in the launch system some convenient ways to express the most common cases, e.g. something like ROS 1's `roslaunch`'s `require=true` and `respawn=true`.
-In my opinion, it would be unacceptably inconvenient to have users write a lambda for each of those cases, and I also think it would lead to everyone doing it slightly different and making it impossible to understand with tools.
-<br/>
-</wjwwod's opinion>
-
-This will come up again in the "System Description" section, because I believe the mind set around the "Execution of the System Description" (basically the python library that runs things) will be "personal responsibility".
-</div>
-
 #### Termination
 
 Managed ROS Nodes have some additional observable effects when terminating (the node, not necessarily the process containing it).
@@ -449,12 +394,15 @@ Many languages have APIs to get environment variables, and there is no way to is
 The following options for an API are being considered.
 
 ###### API using Command Line Configuration File
+
 One option for a container processes API is to pass a configuration file with nodes to load via the command line.
 
-Advantages
+Advantages:
+
 * No waiting for an API to become available
 
-Disadvantages
+Disadvantages:
+
 * Requires write access to the file system
 * Requires parsing a config file
 * Cannot tell from the outside if a container process supports this interface
@@ -468,11 +416,13 @@ There is also no way to tell a container process to unload a composable node.
 
 Another option for a container process API is to pass configuration in via STDIN.
 
-Advantages
+Advantages:
+
 * No waiting for an API to become available
 * Works with read-only file systems
 
-Disadvantages
+Disadvantages:
+
 * Requires parsing a config
 * Cannot tell from the outside if a container process supports this interface
 * Cannot tell if and when nodes are loaded or unloaded
@@ -487,14 +437,16 @@ Since STDIN is always available, it would be possible to unload a node via this 
 
 Lastly, a container process API may be defined by ROS services or topics.
 
-Advantages
+Advantages:
+
 * No config file parsing
 * Works with read-only file systems
 * Can indicate if a node was successfully loaded
 * Can create API to trigger launch events
 * Can tell if a container process supports this interface
 
-Disadvantages
+Disadvantages:
+
 * Must wait for the service API to become available
 * Cannot stop dynamically loaded nodes from creating the same services
 
@@ -507,12 +459,14 @@ However, this option has the highest potential delay from when the container pro
 This is a proposal for an API a launch system will use to interact with container processes.
 
 ###### Command Line Arguments
+
 A container process must accept command line arguments including log level, remapping, and parameters.
 These command line arguments must not be applied to dynamically launched nodes.
 The launch system will pass these arguments to a container process in the same way it would pass them to a node.
 If a remap rule would apply to a launch service, the launch system should try to use the remapped service name instead.
 
 ###### ROS Services
+
 A container process must offer all of the following services.
 
 * `~/_container/load_node`
@@ -532,60 +486,24 @@ The services are hidden to avoid colliding with user created services.
     The id of a loaded node instance never changes.
     Two nodes in the same container process must never have the same id, and there should be a significant time delay before an id is reused.
 
-    ```
-    # A ROS package the composable node can be found in
-    string package_name
-    # a plugin within that package
-    string plugin_name
+    The interface for this Service was added in ROS 2 Dashing:
 
-    # Name the composable node should use, or empty to use the node's default name
-    string node_name
-    # Namespace the composable node should use, or empty to use the node's default namespace
-    string node_namespace
-    # Values from message rcl_interfaces/Log
-    uint8 log_level
-    # Remap rules
-    # TODO(sloretz) rcl_interfaces message for remap rules?
-    string[] remap_rules
-    # Parameters to set
-    rcl_interfaces/Parameter[] parameters
-
-    # key/value arguments that are specific to a type of container process
-    rcl_interfaces/Parameter[] extra_arguments
-    ---
-    # True if the node was successfully loaded
-    bool success
-    # Human readable error message if success is false, else empty string
-    string error_messsage
-    # Name of the loaded composable node (including namespace)
-    string full_node_name
-    # A unique identifier for the loaded node
-    uint64 unique_id
-    ```
+    https://github.com/ros2/rcl_interfaces/blob/dashing/composition_interfaces/srv/LoadNode.srv
 
 2. unload_node
 
-    ```
-    # Container specific unique id of a loaded node
-    uint64 unique_id
-    ---
-    # True if the node existed and was unloaded
-    bool success
-    # Human readable error message if success is false, else empty string
-    string error_messsage
-    ```
+    The interface for this Service was added in ROS 2 Dashing:
+
+    https://github.com/ros2/rcl_interfaces/blob/dashing/composition_interfaces/srv/UnloadNode.srv
 
 3. list_nodes
 
-    ```
-    ---
-    # List of full node names including namespace
-    string[] full_node_names
-    # corresponding unique ids (must have same length as full_node_names)
-    uint64[] unique_ids
-    ```
+    The interface for this Service was added in ROS 2 Dashing:
+
+    https://github.com/ros2/rcl_interfaces/blob/dashing/composition_interfaces/srv/ListNodes.srv
 
 ###### Exit Code
+
 If the container process is asked to shutdown due to normal [Termination], then the exit code must be 0.
 If it exits due to an error then exit code must be any other number.
 
@@ -629,7 +547,9 @@ You could also imagine events which get fired when `stdout` or `stderr` data is 
 
 #### ROS Specific Events
 
-TODO
+ROS specific events would most likely occur in processes that launch is executing, but using ROS topics and/or services launch could observe these events and generate equivalent events within the launch event system.
+For example, if a process being run by launch contains a node with a life cycle, launch could observe any life cycle state transitions the node makes and create an event each time one of those transitions occur.
+Using this a user could, for example, wait for a node to reach the "active" state and only then start another process.
 
 ### Reporting and Handling of Events
 
@@ -653,7 +573,7 @@ The only required form of event handler is one that is a function, registered lo
 Other kinds of event handlers could be supported by building on a locally defined function.
 They could be something like a user-defined "lambda" defined in the description of the launch file, or even a built-in event handler function which just publishes the events as ROS messages.
 In the latter case, it could be either be a subscription to a topic (which needs no a priori registration with the launch system) or a service call (which was registered with the launch system a priori).
-So if it is a topic, the subscription could be considered an event handler.
+So if it is a topic, the subscription object, with its callback, could be considered an event handler.
 In the case of a service, which would be called by the launch system and handled by a user defined service server, the service server (and it's response) would be considered the event handler.
 
 #### Handling of Events
@@ -663,15 +583,9 @@ By default, events are passed to all event handlers and there is no way for an e
 While event handlers have no comparison operators between one another (so no sorting), the order of delivery of events to event handlers should be deterministic and should be in the reverse order of registration, i.e. "first registered, last delivered".
 Note that delivery to asynchronous event handlers (e.g. a subscription to a ROS topic for events, sent via a ROS publisher), will be sent in order, but not necessarily delivered in order.
 
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-With respect to the delivery order, I think first registered, last delivered makes the most sense, but I could be convinced otherwise.
-</div>
-
 ##### Event Filters
 
-Like the Qt event system, it will be possible to create even filters, which emulate the ability to accept events and prevent them from being sent "downstream". [^qt_event_filters]
+Like the Qt event system, it will be possible to create event filters, which emulate the ability to accept events and prevent them from being sent "downstream". [^qt_event_filters]
 
 Unlike the Qt event system, an event filter is simply like any other event handler, and will not prevent other event handlers from receiving the event.
 Instead, each event filter will have its own list of event handlers, each of which can accept or reject an event, allowing or denying further processing of the event within the event filter, respectively.
@@ -690,9 +604,9 @@ The system description is a declarative set of actions and reactions that descri
 
 The goal of the system description is to capture the intentions of the user describing the system to be launched, with as few side effects as possible.
 The reason for doing this is so that a launch description can be visualized and statically analyzed without actually launching the described system.
-Having a tool that can allow a developer to visualize and modify the launch description in a WYSIWYG (what you see is what you get) editor is guiding use case for the system description.
+Having a tool that can allow a developer to visualize and modify the launch description in a WYSIWYG (what you see is what you get) editor is an important use case for the system description.
 
-First this section will describe in a programming language, or text markup, agnostic way what can be expressed in the system description and how it maps to the calling conventions and event handling described in previous sections, as well as how it maps to launch system specific behaviors.
+First, this section will describe in a programming language, or text markup, agnostic way what can be expressed in the system description and how it maps to the calling conventions and event handling described in previous sections, as well as how it maps to launch system specific behaviors.
 After that, it will suggest how this agnostic system description can be applied to Python and XML, but also how it might be able to be extended to support other languages and markups.
 
 ### Launch Descriptions
@@ -720,7 +634,7 @@ Basic actions include being able to:
 - additional actions defined by extensions to the launch system
 
 Actions may also yield more actions and groups rather than perform an actual task.
-For example, an action to "run a node" may end up resulting in "executing two process" or in "executing a process and registering an event".
+For example, an action to "run a node" may end up resulting in "executing two process" or in "executing a process and registering an event handler".
 These kind of actions could be thought of a launch description generators or macros, since they effectively generate the same contents as a launch description, but look like an action to the user.
 
 This allows for more complex actions which might include, but not be limited to:
@@ -746,22 +660,14 @@ For example, a "run a single-node process" action might take ROS specific config
 ##### Including Another Launch Description
 
 One of the simplest actions is to include another launch description.
-This launch description is process in its entirety, including parsing of any launch descriptions included recursively.
+This launch description is processed in its entirety, including parsing of any launch descriptions it includes recursively.
 Therefore processing of launch descriptions is in order, and depth first.
 
 Included launch descriptions inherit all configurations of the current launch description, and any changes to the launch system configurations made in the included launch description will affect actions after the include action.
 
-<div class="alert alert-warning" markdown="1">
-RFC:
+However, it should also be possible to control which configurations are inherited by an included launch description and also to "scope" an included launch description so that it cannot affect the configuration above it.
 
-This is a departure from roslaunch in ROS 1, where the include statement is not only scoped (changes in "sublaunch" are not reflected in higher scope) but also do not automatically inherit from the parent scope. All variables used in the included launch file need to be explicitly forwarded when including. Though recently a "pass all args" option was made to opt into the new behavior:
-
-https://github.com/ros/ros_comm/pull/710
-
-In the new system I'd prefer to make that the default behavior (with an opt in to the old behavior for easier porting of existing roslaunch logic).
-
-Also, changes in the launch file will, by default, be reflected in the including description, unless a scoped group is used.
-</div>
+In all cases, the desired behavior may be achieved though selective use of optionally scoped group actions.
 
 ##### Launch System Configuration
 
@@ -840,23 +746,6 @@ This signature might be useful to after ten seconds start a node or include anot
 </on_event>
 ```
 
-<div class="alert alert-warning" markdown="1">
-RFC:
-
-Should there be user defined event handler signatures (types?, same thing not sure on naming)?
-
-By user defined, I mean specifically defined within the description.
-There will be a way for packages to provide new actions, events, and event handlers through an extension point of some kind, but those would probably be in the programming language of the launch system itself and not in the launch description, whether it be XML or something else.
-
-Personally, I think it's too much, the actions are not meant to be touring complete... The closest equivalent, however, would be something like xacro's macros:
-
-https://wiki.ros.org/xacro#Macros
-
-So, the analogy to what I'm proposing (by leaving out user defined event handlers) would be to remove macros from xacro and instead make it possible to add new tags to xacro from a Python API (xacro is written in Python).
-
-I think this is the best course of action, and I also think that some future package could add something like xacro's macros to the launch system later using the aforementioned extension points to add a new action that does this.
-</div>
-
 ##### Emitting Events
 
 Another basic action that the launch system should support is the ability to emit events and if necessary declare new kinds of events before emitting them.
@@ -867,23 +756,31 @@ How events are defined is up to the implementation, but it should be possible to
 
 #### Groups
 
+<div class="alert alert-warning" markdown="1">
 TODO:
   - can be broken into:
     - "namespace" (like roslaunch),
     - conditionals (`if` and `unless`) (see: https://wiki.ros.org/roslaunch/XML#if_and_unless_attributes), and
     - scope (push-pop for configurations)
+    - should consider what we're discussing to do in https://github.com/ros2/launch/issues/313
+</div>
 
 #### Substitutions
 
+<div class="alert alert-warning" markdown="1">
 TODO:
   - equivalent to substitutions in ROS 1, see: https://wiki.ros.org/roslaunch/XML#substitution_args
+  - they've already been implemented in the reference implementation, they should at least be summarized as built here
+</div>
 
 ### Mapping to Programming Languages and Markup Languages
 
+<div class="alert alert-warning" markdown="1">
 TODO:
   - Explain in general how the features described in the previous sections would map to a programming language and/or markup language and any considerations therein.
   - How it would map to Python (likely implementation)
   - How it would map to XML (likely first markup language)
+</div>
 
 ## Execution and Verification of the System Description
 
