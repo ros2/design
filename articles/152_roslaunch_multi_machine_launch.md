@@ -220,10 +220,19 @@ $
 ```
 
 ```bash
-$ ros2 launcher list
+$ ros2 launcher list -v
 ab1e0138-bb22-4ec9-a590-cf377de42d0f: 5 nodes, 2 hosts
+    Launch host: 192.168.10.5
+    Launch time: Fri Sep 13 15:39:45 CDT 2019
+    Launch command: ros2 launcher launch package_foo bar.launch.py argument:=value
 50bda6fb-d451-4d53-8a2b-e8fcdce8170b: 2 nodes, 1 host
+    Launch host: 192.168.10.15
+    Launch time: Fri Sep 13 12:39:45 CDT 2019
+    Launch command: ros2 launcher launch demo_nodes_cpp talker_listener.launch.py
 5d186778-1f50-4828-9425-64cc2ed1342c: 16 nodes, 3 hosts
+    Launch host: 192.168.10.13
+    Launch time: Fri Sep 12 10:39:45 CDT 2019
+    Launch command: ros2 launcher launch package_foo bar2.launch.py
 $
 ```
 
