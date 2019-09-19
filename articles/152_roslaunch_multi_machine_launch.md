@@ -4,9 +4,7 @@ title: ROS 2 Multi-Machine Launching
 permalink: articles/roslaunch_mml.html
 abstract:
   Robotic systems are often distributed across multiple networked machines.
-  This document describes proposed modifications and enhancements to ROS2's
-  launch system to facilitate launching, monitoring, and shutting
-  down systems spread across multiple machines.
+  This document describes proposed modifications and enhancements to ROS2's launch system to facilitate launching, monitoring, and shutting down systems spread across multiple machines.
 author: '[Matt Lanting](https://github.com/mlanting)'
 published: false
 ---
@@ -22,32 +20,44 @@ published: false
 
 Authors: {{ page.author }}
 
-## Purpose
+## Context
 
-Allow a system of ROS nodes to be launched on a hardware architecture that is
-spread across multiple networked computers and facilitate introspection and
-management of the system from a single machine.
+Robotic platforms often consist of multiple computers communicating over a network, and users will want to be able to start and stop the software on such systems without needing to manage each machine individually.
+The launch system in ROS 1 included a <machine> tag for launch files that allowed users to include information about networked machines and how to connect so that processes could be started remotely.
+We would like to include this feature in the launch system for ROS 2 and even extend its capabilities based on things we've learned from working with multi-machine systems in ROS 1.
+This document elaborates on the details of launching remote operating system processes alluded to [here](https://github.com/ros2/design/blob/gh-pages/articles/150_roslaunch.md#remote-operating-system-processes) in the main ROS 2 ros_launch design document.
 
 ## Justification
 
-Nodes can need to run on different hosts for a variety of reasons.  Some possible
-use cases:
+Nodes may need to run on different hosts for a variety of reasons.
+Some possible use cases include:
 
-- A large robot could with hosts located physically near the hardware they are
-controlling such as cameras or other sensors
-- A robot with hosts with different architectures in order to use specialized
-processing hardware
+- A large robot with hosts located physically near the hardware they are controlling such as cameras or other sensors
+- A robot with hosts with different architectures in order to use specialized processing hardware
 - A robot with a cluster of machines that do distributed processing of data
 - A network of multiple virtual hosts for testing purposes
-- A swarm of independent drones that can cooperate but do not require
-communication with each other
-- A client computer is used to launch and monitor a system on a remote host but
-is not required for the system to operate
+- A swarm of independent drones that can cooperate but do not require communication with each other
+- A client computer is used to launch and monitor a system on a remote host but is not required for the system to operate
+
+## Purpose
+
+Allow a system of ROS nodes to be launched on a hardware architecture that is spread across multiple networked computers and facilitate introspection and management of the system from a single machine.
+
+## Goals
+
+- Allow ROS2 nodes to be launched remotely over a network.
+- Allow users to specify a networked machine on which to run a particular node.
+- Allow users to create a list of host machines to feed into the launch system.
+- Enable the launch system to use the list of hosts to distribute nodes or systems of nodes among.
+- Allow load-balancing of nodes or systems of nodes among machines when nodes do not need to be tied to a specific device.
+- Allow users to shutdown a system of ROS nodes remotely
+- Provide tools for introspection of ROS systems distributed across multiple machines.
+- Provide API to third-party orchestration tools.
+- Provide mechanisms for automated recovery of failed nodes in a distributed system.
 
 ## Capabilities
 
-In order to meet the above use cases, a launch system needs to have a number of
-capabilities, including:
+In order to meet the above use cases, a launch system needs to have a number of capabilities, including:
 
 - Connecting to a remote host and running nodes on it
 - Pushing configuration parameters for nodes to remote hosts
@@ -55,10 +65,7 @@ capabilities, including:
 - Recovering from failures by optionally restarting nodes
 - Gracefully shutting down nodes on every host
 
-Most of these are just extensions of the design goals for the single-machine
-version of roslaunch for ROS2, but in addition to extending those goals to
-remote machines, we would also like to consider a few more advanced features,
-including:
+Most of these are just extensions of the design goals for the single-machine version of roslaunch for ROS2, but in addition to extending those goals to remote machines, we would also like to consider a few more advanced features, including:
 
 - Load balancing nodes on distributed networks
 - Command line tools for managing and monitoring systems across machines
@@ -69,28 +76,22 @@ including:
 
 There are some outstanding issues that may complicate things:
 
-- How to group nodes/participants/processes is somewhat of an open issue with potential
-   implications for this part of ROS2.
+- How to group nodes/participants/processes is somewhat of an open issue with potential implications for this part of ROS2.
     - https://github.com/ros2/design/pull/250/files/8ccaac3d60d7a0ded50934ba6416550f8d2af332?short_path=dd776c0#diff-dd776c070ecf252bc4dcc4b86a97c888
     - The number of domain participants is limited per vendor (Connext is 120 per domain).
-- No `rosmaster` means there is no central mechanism for controlling modes or
-  distributing parameters
+- No `rosmaster` means there is no central mechanism for controlling modes or distributing parameters
 - Machines may be running different operating systems
-- If we intend to do any kind of load balancing, certain types of resources may
-    need to be transferred to other machines.
+- If we intend to do any kind of load balancing, certain types of resources may need to be transferred to other machines.
      - Calibration data, map files, training data, etc.
-     - Need to keep track of which machine has the most recent version of such
-        resources
-- Security: we'll need to manage credentials across numerous machines both for SSH
-    and secure DDS.
+     - Need to keep track of which machine has the most recent version of such resources
+- Security: we'll need to manage credentials across numerous machines both for SSH and secure DDS.
 
+## Proposed Approach
 
 ## Proposed Multi-Machine Launch Command Line Interface
 
-The multi-machine launching interface is controlled through the `launcher`
-command for the `ros2` command-line tool.  The existing `launch` command
-provides a subset of this functionality that is sufficient for single-machine
-launching.
+The multi-machine launching interface is controlled through the `launcher` command for the `ros2` command-line tool.
+The existing `launch` command provides a subset of this functionality that is sufficient for single-machine launching.
 
 ### Commands
 
@@ -114,8 +115,8 @@ Commands:
 
 #### `launch`
 
-The `ros2 launcher launch` is equivalent to `ros2 launch`, which is preserved
-for backwards compatibility and ease of use.  It is used to run a launch file.
+The `ros2 launcher launch` is equivalent to `ros2 launch`, which is preserved for backwards compatibility and ease of use.
+It is used to run a launch file.
 
 ```bash
 $ ros2 launcher launch -h
@@ -134,12 +135,10 @@ positional arguments:
 
 optional arguments:
   -h, --help            Show this help message and exit.
-  -d, --debug           Put the launch system in debug mode, provides more
-                        verbose output.
+  -d, --debug           Put the launch system in debug mode, provides more verbose output.
   -D, --detach          Detach from the launch process after it has started.
-  -p, --print, --print-description
-                        Print the launch description to the console without
-                        launching it.
+  -p, --print, --print-description 
+                        Print the launch description to the console without launching it.
   -s, --show-args, --show-arguments
                         Show arguments that may be given to the launch file.
   -a, --show-all-subprocesses-output
@@ -172,13 +171,10 @@ $ ros2 launcher launch demo_nodes_cpp talker_listener.launch.py
 [talker-1] [INFO] [rclcpp]: signal_handler(signal_value=2)
 ```
 
-Note how there is one difference from the old behavior of `ros2 launch`; the
-group of nodes is assigned a Launch System ID.  This is a unique identifier
-that can be used to track all of the nodes launched by a particular command
-across a network.
+Note how there is one difference from the old behavior of `ros2 launch`; the group of nodes is assigned a Launch System ID.
+This is a unique identifier that can be used to track all of the nodes launched by a particular command across a network.
 
-Additionally, it is possible to detach from a system and let it run in the
-background:
+Additionally, it is possible to detach from a system and let it run in the background:
 
 ```bash
 $ ros2 launcher launch -D demo_nodes_cpp talker_listener.launch.py
@@ -190,9 +186,7 @@ $
 
 #### `list`
 
-Since it is possible to launch a system of nodes that spans a network and detach
-from it, it is necessary to be able to query the network to find which systems
-are active.
+Since it is possible to launch a system of nodes that spans a network and detach from it, it is necessary to be able to query the network to find which systems are active.
 
 ```bash
 $ ros2 launcher list -h
@@ -238,8 +232,7 @@ $
 
 #### `attach`
 
-Since it is possible to detach from a launched system, it is useful for
-scripting or diagnostic purposes to be able to re-attach to it.
+Since it is possible to detach from a launched system, it is useful for scripting or diagnostic purposes to be able to re-attach to it.
 
 ```bash
 $ ros2 launcher attach -h
@@ -248,16 +241,13 @@ usage: ros2 launcher attach [-h] [-v] [--spin-time SPIN_TIME] [system_id]
 Blocks until all nodes running under the specified Launch System ID have exited
 
 positional arguments:
-  system_id          Launch System ID of the nodes to attach to; if less than
-                     a full UUID is specified, it will attach to the first
-                     Launch System it finds whose ID begins with that sub-string
+  system_id          Launch System ID of the nodes to attach to; if less than a full UUID is specified, it will attach to the first Launch System it finds whose ID begins with that sub-string
 
 optional arguments:
   -h, --help            Show this help message and exit.
   -v, --verbose         Provides more verbose output.
   --spin-time SPIN_TIME
-                        Spin time in seconds to wait for discovery (only
-                        applies when not using an already running daemon)
+                        Spin time in seconds to wait for discovery (only applies when not using an already running daemon)
 ```
 
 Example output:
