@@ -5,7 +5,7 @@ permalink: articles/roslaunch_xml.html
 abstract:
   The XML format for declarative launch descriptions in the ROS 2 launch system.
 author: '[Michel Hidalgo](https://github.com/hidmic)'
-published: false
+published: true
 ---
 
 - This will become a table of contents (this text will be scraped).
