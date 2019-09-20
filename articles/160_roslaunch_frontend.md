@@ -1,7 +1,7 @@
 ---
 layout: default
 title: ROS 2 Launch Static Descriptions - Implementation Considerations
-permalink: articles/launch_frontend.html
+permalink: articles/roslaunch_frontend.html
 abstract:
   The launch system in ROS 2 aims to support extension of static descriptions, so as to easily allow both exposing new features of the underlying implementation, which may or may not be extensible itself, and introducing new markup languages. This document discusses several approaches for implementations to follow.
 author: '[Michel Hidalgo](https://github.com/hidmic) [William Woodall](https://github.com/wjwwood)'
