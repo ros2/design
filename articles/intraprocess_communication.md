@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Intraprocess Communications in ROS 2
+title: Intra-process Communications in ROS 2
 permalink: articles/intraprocess_communications.html
-abstract: Description of the current intra-process communication mechanism in ROS2 and of its drawbacks. Design proposal for an improved implementation. Experimental results.
+abstract: Description of the current intra-process communication mechanism in ROS 2 and of its drawbacks. Design proposal for an improved implementation. Experimental results.
 published: true
 author: '[Alberto Soragna](https://github.com/alsora) [Juan Oxoby](https://github.com/joxoby) [Dhiraj Goel](https://github.com/dgoel)'
 ---
@@ -19,26 +19,26 @@ Original Author: {{ page.author }}
 
 ## Introduction
 
-The subscriptions and publications mechanisms in ROS2 fall in two categories:
+The subscriptions and publications mechanisms in ROS 2 fall in two categories:
 
-* intra-process: messages are sent from a publication to subscription via in-process memory.
-* inter-process: messages are sent via the underlying ROS2 middleware layer.
+* intra-process: messages are sent from a publisher to subscriptions via in-process memory.
+* inter-process: messages are sent via the underlying ROS 2 middleware layer.
 The specifics of how this happens depend on the chosen middleware implementation and may involve serialization steps.
 
 This design document presents a new implementation for the intra-process communication.
 
 ## Motivations for a new implementation
 
-Even if ROS2 supports intra-process communication, the implementation of this mechanism has still much space for improvement.
-Until ROS2 Crystal, major performance issues and the lack of support for shared pointer messages were preventing the use of this feature in real applications.
+Even if ROS 2 supports intra-process communication, the implementation of this mechanism has still much space for improvement.
+Until ROS 2 Crystal, major performance issues and the lack of support for shared pointer messages were preventing the use of this feature in real applications.
 
-With the ROS2 Dashing release, most of these issues have been addressed and the intra-process communication behavior has improved greatly ([see ticket](https://github.com/ros2/ros2/issues/649)).
+With the ROS 2 Dashing release, most of these issues have been addressed and the intra-process communication behavior has improved greatly ([see ticket](https://github.com/ros2/ros2/issues/649)).
 
 The current implementation is based on the creation of a ring buffer for each `Publisher` and on the publication of meta-messages through the middleware layer.
 When a `Publisher` has to publish intra-process, it will pass the message to the `IntraProcessManager`.
 Here the message will be stored in the ring buffer associated with the `Publisher`.
 In order to extract a message from the `IntraProcessManager` two pieces of information are needed: the id of the `Publisher` (in order to select the correct ring buffer) and the position of the message within its ring buffer.
-A meta-message with this information is created and sent through the ROS2 middleware to all the `Subscription`s, which can then retrieve the original message from the `IntraProcessManager`.
+A meta-message with this information is created and sent through the ROS 2 middleware to all the `Subscription`s, which can then retrieve the original message from the `IntraProcessManager`.
 
 ![Current IPC Block Diagram](../img/intraprocess_communication/old_ipc.png)
 
@@ -67,11 +67,11 @@ More details [here](https://index.ros.org/doc/ros2/Concepts/About-Quality-of-Ser
 
 The current implementation of intra-process communication has to send meta-messages from the `Publisher` to the `Subscription`s.
 This is done using the `rmw_publish` function, the implementation of which depends on the chosen middleware.
-This results in the performance of a ROS2 application with intra-process communication enabled being heavily dependent on the chosen RMW implementation.
+This results in the performance of a ROS 2 application with intra-process communication enabled being heavily dependent on the chosen RMW implementation.
 
 Given the fact that these meta-messages have only to be received from entities within the same process, there is space for optimizing how they are transmitted by each RMW.
 However, at the moment none of the supported RMW is actively tackling this issue.
-This results in that the performance of a single process ROS2 application with intra-process communication enabled are still worst than what you could expect from a non-ROS application sharing memory between its components.
+This results in that the performance of a single process ROS 2 application with intra-process communication enabled are still worst than what you could expect from a non-ROS application sharing memory between its components.
 
 In the following some experimental evidences are quickly presented.
 
@@ -93,10 +93,10 @@ The result is that from the latency and CPU utilization point of view, it is con
 
 ### Problems when both inter and intra-process communication are needed
 
-Currently, ROS2 does not provide any API for making nodes or `Publisher` and `Subscription` to ignore each other.
+Currently, ROS 2 does not provide any API for making nodes or `Publisher` and `Subscription` to ignore each other.
 This feature would be useful when both inter and intra-process communication are needed.
 
-The reason is that the current implementation of the ROS2 middleware will try to deliver inter-process messages also to the nodes within the same process of the `Publisher`, even if they should have received an intra-process message.
+The reason is that the current implementation of the ROS 2 middleware will try to deliver inter-process messages also to the nodes within the same process of the `Publisher`, even if they should have received an intra-process message.
 Note that these messages will be discarded, but they will still cause an overhead.
 
 The DDS specification provides ways for potentially fixing this problem, i.e. with the `ignore_participant`, `ignore_publication` and `ignore_subscription`operations.
@@ -115,7 +115,7 @@ The overhead caused by the additional publication of meta-messages can be potent
 
 The new proposal for intra-process communication addresses all the issues previously mentioned.
 It has been designed with performance in mind, so it avoids any communication through the middleware between nodes in the same process.
-Moreover, it supports all the ROS2 Quality of Service configurations.
+Moreover, it supports all the ROS 2 Quality of Service configurations.
 
 Consider a simple scenario, consisting of `Publisher`s and `Subscription`s all in the same process and with the durability QoS set to `volatile`.
 The proposed implementation creates one buffer per `Subscription`.
@@ -125,6 +125,7 @@ The executor can then pop the message from the buffer and trigger the callback o
 ![Proposed IPC Block Diagram](../img/intraprocess_communication/new_ipc.png)
 
 The choice of having independent buffers for each `Subscription` leads to the following advantages:
+
  - It is easy to support different QoS for each `Subscription`, while, at the same time, simplifying the implementation.
  - Multiple `Subscription`s can extract messages from their own buffer in parallel without blocking each other, thus providing an higher throughput.
 
@@ -151,7 +152,7 @@ A new class derived from `rclcpp::Waitable` is defined, denominated `Subscriptio
 An object of this type is created by each `Subscription` with intra-process communication enabled and it is used to notify the `Subscription` that a new message has been pushed into its ring buffer and that it needs to be processed.
 
 The `IntraProcessManager` class stores information about each `Publisher` and each `Subscription`, together with pointers to these structures.
-This allows to know which entities can communicate with each other and to have access to methods for pushing data into the buffers.
+This allows the system to know which entities can communicate with each other and to have access to methods for pushing data into the buffers.
 
 The decision whether to publish inter-process, intra-process or both is made every time the `Publisher::publish()` method is called.
 For example, if the `NodeOptions::use_intra_process_comms_` is enabled and all the known `Subscription`s are in the same process, then the message is only published intra-process.
@@ -196,7 +197,7 @@ It is added to the same callback group used for the standard inter-process commu
 1. User calls `Publisher::publish(std::unique_ptr<MessageT> msg)`.
 2. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `IntraProcessManager::do_intra_process_publish(uint64_t pub_id, std::unique_ptr<MessageT> msg)`.
 3. `IntraProcessManager::do_intra_process_publish(...)` uses the `uint64_t pub_id` to call `IntraProcessManager::get_subscription_ids_for_pub(uint64_t pub_id)`.
-This returns the ids correspondin to `Subscription`s that have a QoS compatible for receiving the message.
+This returns the ids corresponding to `Subscription`s that have a QoS compatible for receiving the message.
 These ids are divided into two sublists, according to the data-type that is stored in the buffer of each `Susbscription`: requesting ownership (`unique_ptr<MessageT>`) or accepting shared (`shared_ptr<MessageT>`, but also `MessageT` since it will copy data in any case).
 4. The message is "added" to the ring buffer of all the items in the lists.
 The `rcl_guard_condition_t` member of `SubscriptionIntraProcessWaitable` of each `Subscription` is triggered (this wakes up `rclcpp::spin`).
@@ -211,14 +212,14 @@ The way in which the `std::unique_ptr<MessageT>` message is "added" to a buffer,
 
 #### Publishing other message types
 
-The `Publisher::publish(...)` method is overloaded to support different message types.
+The `Publisher::publish(...)` method is overloaded to support different message types:
 
  - `unique_ptr<MessageT>`
  - `MessageT &`
  - `MessageT*`
  - `const shared_ptr<const MessageT>`
 
-The last two of them are actually deprecated since ROS2 Dashing.
+The last two of them are actually deprecated since ROS 2 Dashing.
 All these methods are unchanged with respect to the current implementation: they end up creating a `unique_ptr` and calling the `Publisher::publish(std::unique_ptr<MessageT> msg)` described above.
 
 ### Receiving intra-process messages
@@ -244,11 +245,11 @@ Note that in this step, if the type of the buffer is a smart pointer one, no mes
 2. The message is moved into a shared pointer `std::shared_ptr<MessageT> shared_msg = std::move(msg)`.
 3. `Publisher::publish(std::unique_ptr<MessageT> msg)` calls `IntraProcessManager::do_intra_process_publish(uint64_t pub_id, std::shared_ptr<MessageT> shared_msg)`.
 
-The following steps are identical to steps 3, 4 and 5 applied when publishing only intra-processs.
+The following steps are identical to steps 3, 4, and 5 applied when publishing only intra-process.
 
 4. `IntraProcessManager::do_intra_process_publish(...)` uses the `uint64_t pub_id` to call `IntraProcessManager::get_subscription_ids_for_pub(uint64_t pub_id)`.
 Then it calls `IntraProcessManager::find_matching_subscriptions(PublisherInfo pub_info)`.
-This returns the ids correspondin to `Subscription`s that have a QoS compatible for receiving the message.
+This returns the ids corresponding to `Subscription`s that have a QoS compatible for receiving the message.
 These ids are divided into two sublists, according to the data-type that is stored in the buffer of each `Susbscription`: requesting ownership (`unique_ptr<MessageT>`) or accepting shared (`shared_ptr<MessageT>`, but also `MessageT` since it will copy data in any case).
 5. The message is "added" to the ring buffer of all the items in the list.
 The `rcl_guard_condition_t` member of `SubscriptionIntraProcessWaitable` of each `Subscription` is triggered (this wakes up `rclcpp::spin`).
@@ -301,9 +302,7 @@ The solution to this issue consists in always publishing both intra and inter-pr
 For this reason, when `transient local` is enabled, the `do_intra_process_publish(...)` function will always process a shared pointer.
 This allows us to add the logic for storing the published messages into the buffers only in one of the two `do_intra_process_publish(...)` cases and also it allows to use buffers that have only to store shared pointers.
 
-
 ### Number of message copies
-
 
 In the previous sections, it has been briefly described how a message can be added to a buffer, i.e. if it is necessary to copy it or not.
 
@@ -358,7 +357,6 @@ The notation `@` indicates a memory address where the message is stored, differe
 | shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @2 <br> @1 <br> @1|
 | shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @2 <br> @3 <br> @1 <br> @1|
 
-
 The possibility of setting the data-type stored in each buffer becomes helpful when dealing with more particular scenarios.
 
 Considering a scenario with N `Subscription`s all taking a unique pointer.
@@ -391,15 +389,15 @@ The intra-process buffer will perform a copy of the message whenever necessary, 
 The implementation of the presented new intra-process communication mechanism is hosted on [GitHub here](https://github.com/alsora/rclcpp/tree/alsora/new_ipc_proposal).
 
 This section contains experimental results obtained comparing the current intra-process communication implementation with an initial implementation of the proposed one.
-The tests span multiple ROS2 applications and use-cases and have been validated on different machines.
+The tests span multiple ROS 2 applications and use-cases and have been validated on different machines.
 
-All the following experiments have been run using the ROS2 Dashing and with `-O2` optimization enabled.
+All the following experiments have been run using the ROS 2 Dashing and with `-O2` optimization enabled.
 
 ```
 colcon build --cmake-args  -DCMAKE_CXX_FLAGS="-O2" -DCMAKE_C_FLAGS="-O2"
 ```
 
-The first test has been carried out using the `intra_process_demo` package contained in the [ROS2 demos repository](https://github.com/ros2/demos).
+The first test has been carried out using the `intra_process_demo` package contained in the [ROS 2 demos repository](https://github.com/ros2/demos).
 A first application, called `image_pipeline_all_in_one`, is made of 3 nodes, where the fist one publishes a `unique_ptr<Image>` message.
 A second node subscribes to the topic and republishes the image after modifying it on a new topic.
 A third node subscribes to to this last topic.
@@ -411,7 +409,7 @@ The CPU usage and the latency have been obtained from `top` command and averaged
 
 Performance evaluation on a laptop computer with Intel i7-6600U CPU @ 2.60GHz.
 
-| ROS2 system                         |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
+| ROS 2 system                         |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
 | -------------                       |  -----   | ------------- | ------------ | ------- | -------- |
 | image_pipeline_all_in_one           |   off    | Fast-RTPS     |     1800     |   23    |    90    |
 | image_pipeline_all_in_one           | standard | Fast-RTPS     |      920     |   20    |    90    |
@@ -424,7 +422,7 @@ From this simple experiment is immediately possible to see the improvement in th
 However, an even bigger improvement is present when analyzing the results from more complex applications.
 
 The next results have been obtained running the iRobot benchmark application.
-This allows the user to specify the topology of a ROS2 graph that will be entirely run in a single process.
+This allows the user to specify the topology of a ROS 2 graph that will be entirely run in a single process.
 
 The application has been run with the topologies Sierra Nevada and Mont Blanc.
 Sierra Nevada is a 10-node topology and it contains 10 publishers and 13 subscriptions.
@@ -439,7 +437,7 @@ Note that, differently from the previous experiment where the ownership of the m
 
 Performance evaluation on a laptop computer with Intel i7-6600U CPU @ 2.60GHz.
 
-| ROS2 system                   |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
+| ROS 2 system                   |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
 | -------------                 |  -----   | ------------- | ------------ | ------- | -------- |
 | Sierra Nevada                 |   off    | Fast-RTPS     |      600     |   14    |    63    |
 | Sierra Nevada                 | standard | Fast-RTPS     |      650     |   16    |  73->79  |
@@ -451,7 +449,7 @@ Performance evaluation on a laptop computer with Intel i7-6600U CPU @ 2.60GHz.
 A similar behavior can be observed also running the application on resource constrained platforms.
 The following results have been obtained on a RaspberryPi 2.
 
-| ROS2 system                   |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
+| ROS 2 system                   |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
 | -------------                 |  -----   | ------------- | ------------ | ------- | -------- |
 | Sierra Nevada                 |   off    | Fast-RTPS     |      800     |   18    |    47    |
 | Sierra Nevada                 | standard | Fast-RTPS     |      725     |   20    |  54->58  |
@@ -473,7 +471,7 @@ The last experiment show how the current implementation performs in the case tha
 The test consists of running Sierra Nevada on RaspberryPi 2, and, in a separate desktop machine, a single node subscribing to all the available topics coming from Sierra Nevada.
 This use-case is common when using tools such as `rosbag` or `rviz`.
 
-| ROS2 system                   |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
+| ROS 2 system                   |  IPC     |    RMW        | Latency [us] | CPU [%] | RAM [Mb] |
 | -------------                 |  -----   | ------------- | ------------ | ------- | -------- |
 | Sierra Nevada + debug node    |   off    | Fast-RTPS     |      800     |   22    |    50    |
 | Sierra Nevada + debug node    | standard | Fast-RTPS     |     1100     |   35    |  60->65  |
@@ -481,7 +479,7 @@ This use-case is common when using tools such as `rosbag` or `rviz`.
 
 
 These results show that if there is at least one node in a different process, with the current implementation it is better to keep intra-process communication disabled.
-The proposed implementation does not require the ROS2 middleware when publishing intra-process.
+The proposed implementation does not require the ROS 2 middleware when publishing intra-process.
 This allows to easily remove the connections between nodes in the same process when it is required to publish also inter process, potentially resulting in a very small overhead with respect to the only intra-process case.
 
 
