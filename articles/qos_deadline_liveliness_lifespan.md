@@ -239,4 +239,4 @@ The ‘expiration time’ of each sample is computed by adding the duration spec
 The source timestamp is either automatically computed by the DDS Service each time the DataWriter write operation is called, or else supplied by the application by means of the write_w_timestamp operation.
 
 This QoS relies on the sender and receiving applications having their clocks sufficiently synchronized.
-If this is not the case and the DDS Service can detect it, the DataReader is allowed to use the reception timestamp instead of the source timestamp in its computation of the ‘expiration time.
+If this is not the case and the DDS Service can detect it, the DataReader is allowed to use the reception timestamp instead of the source timestamp in its computation of the expiration time.
