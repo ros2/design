@@ -88,7 +88,7 @@ These are the various changes that would be needed within ROS in order to native
 
 Both the Deadline and Liveliness policies generate events from the rmw layer of which the application will need to be informed.
 For Deadlines, the Subscriber receives event notifications if it doesn't receive anything within the deadline and the Publisher receives event notifications if it doesn't publish anything within the deadline.
-For Liveliness, Subscribers receive events when the Publisher they're listening to is no longer alive.
+For Liveliness, Subscribers receive events when there are no longer any Publishers alive to assert the topic is alive.
 Services generate similar events when Clients and Servers violate the defined policies.
 Both of these fall under a category of "Resource Status Events".
 
