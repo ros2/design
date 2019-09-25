@@ -25,7 +25,7 @@ Authors: {{ page.author }}
 This document elaborates on the details of launching remote operating system processes alluded to [here](https://github.com/ros2/design/blob/gh-pages/articles/150_roslaunch.md#remote-operating-system-processes) in the main ROS 2 ros_launch design document.
 
 Robotic platforms often consist of multiple computers communicating over a network, and users will want to be able to start and stop the software on such systems without needing to manage each machine individually.
-The launch system in ROS 1 included a <machine> tag for launch files that allowed users to include information about networked machines and how to connect so that processes could be started remotely.
+The launch system in ROS 1 included a `<machine>` tag for launch files that allowed users to include information about networked machines and how to connect so that processes could be started remotely.
 We would like to replicate that capability in the launch system for ROS 2 and extend its capabilities based on lessons learned from working with multi-machine systems in ROS 1.
 ROS 2 also has a few notable design differences from ROS 1 that will affect the way multi-machine launching is implemented.
 
@@ -33,13 +33,13 @@ ROS 2 also has a few notable design differences from ROS 1 that will affect the 
 ### Differences from ROS 1
 
 One of the most notable differences in ROS 2 is the lack of roscore.
-In ROS 1, roscore adds a rosmaster, a parameter server, and a logging node when it is run.
-Roslaunch would automatically run roscore if no current instance was already running.
-As a result, the launch command either had to be run specifically on the computer that roscore was meant to run on, or other steps would need to be taken to launch roscore on a remote machine before running the roslauch command.
+In ROS 1, roscore adds a `rosmaster`, a `parameter server`, and a `logging node` when it is run.
+Roslaunch would automatically run `roscore` if no current instance was already running.
+As a result, the `launch` command either had to be run specifically on the computer that roscore was meant to run on, or other steps would need to be taken to launch `roscore` on a remote machine before running the `roslauch` command.
 This could sometimes cause problems with systems running headlessly if the user wanted to interface with a client machine for launching and monitoring the system - the interface machine became a core component of the system, or the user had to ssh into the system's main machine to start it up which is what remote launching exists to do for you.
 In ROS 2, nodes use DDS to connect in a peer-to-peer fashion with no centralized naming and registration services to have to start up.
 *[TODO] the next couple lines don't really belong in a "Differences from ROS 1" section, but they come about as consequences of the previous line.*
-However, the launch system in ROS 2 currently provides a LaunchService for processing LaunchDescriptions, including setting up event handlers.
+However, the launch system in ROS 2 currently provides a `LaunchService` for processing `LaunchDescriptions`, including setting up event handlers.
 These events will not be visible to event handlers running on other machines, without creating additional handlers and subsribers for publishing and receiving events over the wire.
 
 
@@ -47,7 +47,7 @@ These events will not be visible to event handlers running on other machines, wi
 ## Goals
 
 Our primary goal is to eliminate the need for users to connect to multiple machines and manually launch different components of a system on each of them independently.
-[TODO] Extend this section by describing related goals of helping to keep files in sync across machines, facilitating initial setup and configuration, deployment of ROS packages, etc. and discussion about which to consider 'in scope'.
+*[TODO] Extend this section by describing related goals of helping to keep files in sync across machines, facilitating initial setup and configuration, deployment of ROS packages, etc. and discussion about which to consider 'in scope'.*
 
 ## Capabilities
 
@@ -61,7 +61,7 @@ In order to meet the above use goals, we will provide the following capabilities
 - Mechanisms for locating files and executables across machines
 - A grouping mechanism allowing collections of nodes to be stopped/introspected as a unit with the commandline tools
 
-[TODO] These are capabilities that we might not want to keep in scope for remote launching and instead present them as a different PR
+*[TODO] These are capabilities that we might not want to keep in scope for remote launching and instead present them as a different PR*
 - API to facilitate integration of third party orchestration tools such as Kubernetes or Ansible
 - Load balancing nodes on distributed networks (Possibly outsource this capability to the previously mentioned third-party tools)
 - Sharing and synchronizing files across machines
@@ -93,19 +93,19 @@ Create an action in `launch` called `ExecuteRemoteProcess` that extends the `Exe
 
 ### Spawn Remote LaunchServers
 
-The LaunchServer is the process that, given a LaunchDescription, visits all of the constituent LaunchDescriptionEntities, triggering them to perform their functions.
+The `LaunchServer` is the process that, given a `LaunchDescription`, visits all of the constituent `LaunchDescriptionEntities`, triggering them to perform their functions.
 Since the launch process involves more than simply executing nodes, it is unlikely that simply providing a way to execute nodes remotely will be adequate for starting non-trivial systems.
-The LaunchServer is responsible for things such as setting environment variables, registering listeners, emitting events,  filling out file and directory paths, declaring arguments, etc.
+The `LaunchServer` is responsible for things such as setting environment variables, registering listeners, emitting events,  filling out file and directory paths, declaring arguments, etc.
 Remote machines will need to be made aware of any environment changes that are in-scope for nodes that they will be executing, and events may need to be handled across machines.
 
-[TODO] there is a lot of fleshing out that should be done here, but I want to get the general idea out for your consideration while I iterate further
-One approach would be to add logic to the launch system allowing it to group LaunchDescriptionEntities containing the necessary actions and substitutions for successfully executing a node remotely, spawning a LaunchService on the remote machine, serializing the group of entities and sending them to the remote machine to be processed.
-This could turn out to be a recursive process depending on how a launch file creator has nested LaunchDescriptionEntities (which can themselves be LaunchDescriptions).
+*[TODO] there is a lot of fleshing out that should be done here, but I want to get the general idea out for your consideration while I iterate further.*
+One approach would be to add logic to the launch system allowing it to group `LaunchDescriptionEntities` containing the necessary actions and substitutions for successfully executing a node remotely, spawning a LaunchService on the remote machine, serializing the group of entities and sending them to the remote machine to be processed.
+This could turn out to be a recursive process depending on how a launch file creator has nested `LaunchDescriptionEntities` (which can themselves be `LaunchDescriptions`).
 Additional logic will be needed to detect cases where event emission and listener registration cross machine boundaries, and helper objects can be generated to forward events over the wire so handlers on other machines can react appropriately.
 
 ### Integrate an existing Third-Party tool
 
-[TODO] This is mostly just placehodler text to remind us to talk about it. I don't have my head wrapped around what this would look like well enough to describe it yet.
+*[TODO] This is mostly just placehodler text to remind us to talk about it. I don't have my head wrapped around what this would look like well enough to describe it yet.*
 I don't know exactly how this would look yet since I'm not very familiar with kubernetes, but it offers many of the capabilities we want plus more, and add mechanisms to facilitate its use could be very useful.
 That said, it's a rather large dependency to add, and not everything should be run in containers.
 
