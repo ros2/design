@@ -38,7 +38,7 @@ Roslaunch would automatically run roscore if no current instance was already run
 As a result, the launch command either had to be run specifically on the computer that roscore was meant to run on, or other steps would need to be taken to launch roscore on a remote machine before running the roslauch command.
 This could sometimes cause problems with systems running headlessly if the user wanted to interface with a client machine for launching and monitoring the system - the interface machine became a core component of the system, or the user had to ssh into the system's main machine to start it up which is what remote launching exists to do for you.
 In ROS 2, nodes use DDS to connect in a peer-to-peer fashion with no centralized naming and registration services to have to start up.
-[TODO] the next couple lines don't really beling in a "Differences from ROS 1" section, but they come about as consequences of the previous line.
+*[TODO] the next couple lines don't really belong in a "Differences from ROS 1" section, but they come about as consequences of the previous line.*
 However, the launch system in ROS 2 currently provides a LaunchService for processing LaunchDescriptions, including setting up event handlers.
 These events will not be visible to event handlers running on other machines, without creating additional handlers and subsribers for publishing and receiving events over the wire.
 
