@@ -81,6 +81,8 @@ There are some outstanding issues that may complicate things:
      - Need to keep track of which machine has the most recent version of such resources
 - Security: we'll need to manage credentials across numerous machines both for SSH and secure DDS.
 
+---
+
 ## Proposed Approach
 
 Following are some of the possible design approaches we have started considering.
@@ -110,6 +112,8 @@ I don't know exactly how this would look yet since I'm not very familiar with ku
 That said, it's a rather large dependency to add, and not everything should be run in containers.
 
 ### ??? [TODO] Add any other ideas you have
+
+---
 
 ## Proposed Multi-Machine Launch Command Line Interface
 
