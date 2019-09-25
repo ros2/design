@@ -22,55 +22,50 @@ Authors: {{ page.author }}
 
 ## Context
 
-Robotic platforms often consist of multiple computers communicating over a network, and users will want to be able to start and stop the software on such systems without needing to manage each machine individually.
-The launch system in ROS 1 included a <machine> tag for launch files that allowed users to include information about networked machines and how to connect so that processes could be started remotely.
-We would like to include this feature in the launch system for ROS 2 and even extend its capabilities based on things we've learned from working with multi-machine systems in ROS 1.
 This document elaborates on the details of launching remote operating system processes alluded to [here](https://github.com/ros2/design/blob/gh-pages/articles/150_roslaunch.md#remote-operating-system-processes) in the main ROS 2 ros_launch design document.
 
-## Justification
+Robotic platforms often consist of multiple computers communicating over a network, and users will want to be able to start and stop the software on such systems without needing to manage each machine individually.
+The launch system in ROS 1 included a <machine> tag for launch files that allowed users to include information about networked machines and how to connect so that processes could be started remotely.
+We would like to replicate that capability in the launch system for ROS 2 and extend its capabilities based on lessons learned from working with multi-machine systems in ROS 1.
+ROS 2 also has a few notable design differences from ROS 1 that will affect the way multi-machine launching is implemented.
 
-Nodes may need to run on different hosts for a variety of reasons.
-Some possible use cases include:
 
-- A large robot with hosts located physically near the hardware they are controlling such as cameras or other sensors
-- A robot with hosts with different architectures in order to use specialized processing hardware
-- A robot with a cluster of machines that do distributed processing of data
-- A network of multiple virtual hosts for testing purposes
-- A swarm of independent drones that can cooperate but do not require communication with each other
-- A client computer is used to launch and monitor a system on a remote host but is not required for the system to operate
+### Differences from ROS 1
 
-## Purpose
+One of the most notable differences in ROS 2 is the lack of roscore.
+In ROS 1, roscore adds a rosmaster, a parameter server, and a logging node when it is run.
+Roslaunch would automatically run roscore if no current instance was already running.
+As a result, the launch command either had to be run specifically on the computer that roscore was meant to run on, or other steps would need to be taken to launch roscore on a remote machine before running the roslauch command.
+This could sometimes cause problems with systems running headlessly if the user wanted to interface with a client machine for launching and monitoring the system - the interface machine became a core component of the system, or the user had to ssh into the system's main machine to start it up which is what remote launching exists to do for you.
+In ROS 2, nodes use DDS to connect in a peer-to-peer fashion with no centralized naming and registration services to have to start up.
+[TODO] the next couple lines don't really beling in a "Differences from ROS 1" section, but they come about as consequences of the previous line.
+However, the launch system in ROS 2 currently provides a LaunchService for processing LaunchDescriptions, including setting up event handlers.
+These events will not be visible to event handlers running on other machines, without creating additional handlers and subsribers for publishing and receiving events over the wire.
 
-Allow a system of ROS nodes to be launched on a hardware architecture that is spread across multiple networked computers and facilitate introspection and management of the system from a single machine.
+
 
 ## Goals
 
-- Allow ROS2 nodes to be launched remotely over a network.
-- Allow users to specify a networked machine on which to run a particular node.
-- Allow users to create a list of host machines to feed into the launch system.
-- Enable the launch system to use the list of hosts to distribute nodes or systems of nodes among.
-- Allow load-balancing of nodes or systems of nodes among machines when nodes do not need to be tied to a specific device.
-- Allow users to shutdown a system of ROS nodes remotely
-- Provide tools for introspection of ROS systems distributed across multiple machines.
-- Provide API to third-party orchestration tools.
-- Provide mechanisms for automated recovery of failed nodes in a distributed system.
+Our primary goal is to eliminate the need for users to connect to multiple machines and manually launch different components of a system on each of them independently.
+[TODO] Extend this section by describing related goals of helping to keep files in sync across machines, facilitating initial setup and configuration, deployment of ROS packages, etc. and discussion about which to consider 'in scope'.
 
 ## Capabilities
 
-In order to meet the above use cases, a launch system needs to have a number of capabilities, including:
+In order to meet the above use goals, we will provide the following capabilities:
 
 - Connecting to a remote host and running nodes on it
 - Pushing configuration parameters for nodes to remote hosts
-- Monitoring the status and tracking the lifecycle of nodes
-- Recovering from failures by optionally restarting nodes
-- Gracefully shutting down nodes on every host
-
-Most of these are just extensions of the design goals for the single-machine version of roslaunch for ROS2, but in addition to extending those goals to remote machines, we would also like to consider a few more advanced features, including:
-
-- Load balancing nodes on distributed networks
+- Monitoring the status and managing the lifecycles of nodes across hosts
+- Gracefully shutting down nodes across hosts
 - Command line tools for managing and monitoring systems across machines
 - Mechanisms for locating files and executables across machines
+- A grouping mechanism allowing collections of nodes to be stopped/introspected as a unit with the commandline tools
+
+[TODO] These are capabilities that we might not want to keep in scope for remote launching and instead present them as a different PR
+- API to facilitate integration of third party orchestration tools such as Kubernetes or Ansible
+- Load balancing nodes on distributed networks (Possibly outsource this capability to the previously mentioned third-party tools)
 - Sharing and synchronizing files across machines
+- Deployment and configuration of packages on remote machines
 
 ## Considerations
 
@@ -87,6 +82,34 @@ There are some outstanding issues that may complicate things:
 - Security: we'll need to manage credentials across numerous machines both for SSH and secure DDS.
 
 ## Proposed Approach
+
+Following are some of the possible design approaches we have started considering.
+This section should evolve to describe a complete and homogenous solution as we iterate over time, but at the moment may be a bit piecemeal as we explore ideas.
+The point is to capture all of our ideas and approaches to different pieces of the problem, even rejected approaches, and to facilitate discussion and maintain a record of our reasoning.
+
+### Simple Remote Process Execution
+
+Create an action in `launch` called `ExecuteRemoteProcess` that extends the `ExecuteProcess` action but includes parameters for the information needed to connect to a remote host and executes the process there.
+
+### Spawn Remote LaunchServers
+
+The LaunchServer is the process that, given a LaunchDescription, visits all of the constituent LaunchDescriptionEntities, triggering them to perform their functions.
+Since the launch process involves more than simply executing nodes, it is unlikely that simply providing a way to execute nodes remotely will be adequate for starting non-trivial systems.
+The LaunchServer is responsible for things such as setting environment variables, registering listeners, emitting events,  filling out file and directory paths, declaring arguments, etc.
+Remote machines will need to be made aware of any environment changes that are in-scope for nodes that they will be executing, and events may need to be handled across machines.
+
+[TODO] there is a lot of fleshing out that should be done here, but I want to get the general idea out for your consideration while I iterate further
+One approach would be to add logic to the launch system allowing it to group LaunchDescriptionEntities containing the necessary actions and substitutions for successfully executing a node remotely, spawning a LaunchService on the remote machine, serializing the group of entities and sending them to the remote machine to be processed.
+This could turn out to be a recursive process depending on how a launch file creator has nested LaunchDescriptionEntities (which can themselves be LaunchDescriptions).
+Additional logic will be needed to detect cases where event emission and listener registration cross machine boundaries, and helper objects can be generated to forward events over the wire so handlers on other machines can react appropriately.
+
+### Integrate an existing Third-Party tool
+
+[TODO] This is mostly just placehodler text to remind us to talk about it. I don't have my head wrapped around what this would look like well enough to describe it yet.
+I don't know exactly how this would look yet since I'm not very familiar with kubernetes, but it offers many of the capabilities we want plus more, and add mechanisms to facilitate its use could be very useful.
+That said, it's a rather large dependency to add, and not everything should be run in containers.
+
+### ??? [TODO] Add any other ideas you have
 
 ## Proposed Multi-Machine Launch Command Line Interface
 
