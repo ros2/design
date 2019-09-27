@@ -53,10 +53,11 @@ Our primary goal is to eliminate the need for users to connect to multiple machi
 
 In order to meet the above use goals, we will provide the following capabilities:
 
-- Connecting to a remote host and running nodes on it
-- Pushing configuration parameters for nodes to remote hosts
-- Monitoring the status and managing the lifecycles of nodes across hosts
-- Gracefully shutting down nodes across hosts
+- Connect to a remote host and running nodes on it
+- Support arbitrary remote execution or orchestration mechanisms (`ssh` by default)
+- Push configuration parameters for nodes to remote hosts
+- Monitor the status and managing the lifecycles of nodes across hosts
+- Gracefully shut down nodes across hosts
 - Command line tools for managing and monitoring systems across machines
 - Mechanisms for locating files and executables across machines
 - A grouping mechanism allowing collections of nodes to be stopped/introspected as a unit with the commandline tools
@@ -105,11 +106,18 @@ One approach would be to add logic to the launch system allowing it to group `La
 This could turn out to be a recursive process depending on how a launch file creator has nested `LaunchDescriptionEntities` (which can themselves be `LaunchDescriptions`).
 Additional logic will be needed to detect cases where event emission and listener registration cross machine boundaries, and helper objects can be generated to forward events over the wire so handlers on other machines can react appropriately.
 
-### Integrate an existing Third-Party tool
+### Define Remote Execution Mechanisms on a Per-Machine Basis
 
-*[TODO] This is mostly just placehodler text to remind us to talk about it. I don't have my head wrapped around what this would look like well enough to describe it yet.*
-I don't know exactly how this would look yet since I'm not very familiar with kubernetes, but it offers many of the capabilities we want plus more, and add mechanisms to facilitate its use could be very useful.
-That said, it's a rather large dependency to add, and not everything should be run in containers.
+Historically, ROS1 launched nodes by using `ssh` to connect to a remote machine and execute processes
+on it.  This is still a reasonable way of doing it and is the expected remote execution mechanism in most
+environments.
+
+Some hosts or environments may use a different mechanism, such as Windows Remote Shell on Windows hosts
+or `kubectl` for Kubernetes clusters.  There will be an abstract interface for remote execution mechanisms;
+it will be possible to write custom implementations that use arbitrary mechanisms, and the launch system
+can be configured to decide which mechanism to use on a per-machine basis.  When a launch system is run,
+information about all of the nodes assigned to a machine will be passed to the remote execution mechanism
+implementation so that it can execute them appropriately.
 
 ### ??? [TODO] Add any other ideas you have
 
@@ -117,41 +125,18 @@ That said, it's a rather large dependency to add, and not everything should be r
 
 ## Proposed Multi-Machine Launch Command Line Interface
 
-The multi-machine launching interface is controlled through the `launcher` command for the `ros2` command-line tool.
-The existing `launch` command provides a subset of this functionality that is sufficient for single-machine launching.
+Launching is controlled through the `launch` command for the `ros2` command-line tool.
 
 ### Commands
 
 ```bash
-$ ros2 launcher
-usage: ros2 launcher [-h] Call `ros2 launcher <command> -h` for more detailed usage. ...
+$ ros2 launch
+usage: ros2 launch (subcommand | [-h] [-d] [-D] [-p | -s] [-a]
+                                 package_name [launch_file_name]
+                                 [launch_arguments [launch_arguments ...]]) ...
 
-Various launching related sub-commands
-
-optional arguments:
-  -h, --help            show this help message and exit
-
-Commands:
-  launch       Run a launch file
-  list         Search for and list running launch systems
-  attach       Attach to a running launch system and wait for it to finish
-  term         Terminate a running launch system
-
-  Call `ros2 launcher <command> -h` for more detailed usage.
-```
-
-#### `launch`
-
-The `ros2 launcher launch` is equivalent to `ros2 launch`, which is preserved for backwards compatibility and ease of use.
-It is used to run a launch file.
-
-```bash
-$ ros2 launcher launch -h
-usage: ros2 launcher launch [-h] [-d] [-D] [-p | -s] [-a]
-                            package_name [launch_file_name]
-                            [launch_arguments [launch_arguments ...]] ...
-
-Run a launch file
+Without a subcommand, `ros2 launch` will run a launch file.  Call
+`ros2 launch <subcommand> -h` for more detailed usage.
 
 positional arguments:
   package_name          Name of the ROS package which contains the launch file
@@ -164,7 +149,7 @@ optional arguments:
   -h, --help            Show this help message and exit.
   -d, --debug           Put the launch system in debug mode, provides more verbose output.
   -D, --detach          Detach from the launch process after it has started.
-  -p, --print, --print-description 
+  -p, --print, --print-description
                         Print the launch description to the console without launching it.
   -s, --show-args, --show-arguments
                         Show arguments that may be given to the launch file.
@@ -172,12 +157,19 @@ optional arguments:
                         Show all launched subprocesses' output by overriding
                         their output configuration using the
                         OVERRIDE_LAUNCH_PROCESS_OUTPUT envvar.
+
+Subcommands:
+  list         Search for and list running launch systems
+  attach       Attach to a running launch system and wait for it to finish
+  term         Terminate a running launch system
+
+  Call `ros2 launch <subcommand> -h` for more detailed usage.
 ```
 
 Example output:
 
 ```bash
-$ ros2 launcher launch demo_nodes_cpp talker_listener.launch.py
+$ ros2 launch demo_nodes_cpp talker_listener.launch.py
 [INFO] [launch]: All log files can be found below /home/preed/.ros/log/2019-09-11-20-54-30-715383-regulus-2799
 [INFO] [launch]: Default logging verbosity is set to INFO
 [INFO] [launch]: Launch System ID is 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
@@ -204,7 +196,7 @@ This is a unique identifier that can be used to track all of the nodes launched 
 Additionally, it is possible to detach from a system and let it run in the background:
 
 ```bash
-$ ros2 launcher launch -D demo_nodes_cpp talker_listener.launch.py
+$ ros2 launch -D demo_nodes_cpp talker_listener.launch.py
 [INFO] [launch]: All log files can be found below /home/preed/.ros/log/2019-09-11-20-54-30-715383-regulus-2799
 [INFO] [launch]: Default logging verbosity is set to INFO
 [INFO] [launch]: Launch System ID is 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
@@ -216,8 +208,8 @@ $
 Since it is possible to launch a system of nodes that spans a network and detach from it, it is necessary to be able to query the network to find which systems are active.
 
 ```bash
-$ ros2 launcher list -h
-usage: ros2 launcher list [-h] [-v] [--spin-time SPIN_TIME]
+$ ros2 launch list -h
+usage: ros2 launch list [-h] [-v] [--spin-time SPIN_TIME]
 
 List running launch systems
 
@@ -233,7 +225,7 @@ optional arguments:
 Example output:
 
 ```bash
-$ ros2 launcher list
+$ ros2 launch list
 ab1e0138-bb22-4ec9-a590-cf377de42d0f
 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
 5d186778-1f50-4828-9425-64cc2ed1342c
@@ -241,19 +233,19 @@ $
 ```
 
 ```bash
-$ ros2 launcher list -v
+$ ros2 launch list -v
 ab1e0138-bb22-4ec9-a590-cf377de42d0f: 5 nodes, 2 hosts
     Launch host: 192.168.10.5
     Launch time: Fri Sep 13 15:39:45 CDT 2019
-    Launch command: ros2 launcher launch package_foo bar.launch.py argument:=value
+    Launch command: ros2 launch package_foo bar.launch.py argument:=value
 50bda6fb-d451-4d53-8a2b-e8fcdce8170b: 2 nodes, 1 host
     Launch host: 192.168.10.15
     Launch time: Fri Sep 13 12:39:45 CDT 2019
-    Launch command: ros2 launcher launch demo_nodes_cpp talker_listener.launch.py
+    Launch command: ros2 launch demo_nodes_cpp talker_listener.launch.py
 5d186778-1f50-4828-9425-64cc2ed1342c: 16 nodes, 3 hosts
     Launch host: 192.168.10.13
     Launch time: Fri Sep 12 10:39:45 CDT 2019
-    Launch command: ros2 launcher launch package_foo bar2.launch.py
+    Launch command: ros2 launch package_foo bar2.launch.py
 $
 ```
 
@@ -262,8 +254,8 @@ $
 Since it is possible to detach from a launched system, it is useful for scripting or diagnostic purposes to be able to re-attach to it.
 
 ```bash
-$ ros2 launcher attach -h
-usage: ros2 launcher attach [-h] [-v] [--spin-time SPIN_TIME] [system_id]
+$ ros2 launch attach -h
+usage: ros2 launch attach [-h] [-v] [--spin-time SPIN_TIME] [system_id]
 
 Blocks until all nodes running under the specified Launch System ID have exited
 
@@ -280,9 +272,9 @@ optional arguments:
 Example output:
 
 ```bash
-$ ros2 launcher attach 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
+$ ros2 launch attach 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
 Attached to Launch System 50bda6fb-d451-4d53-8a2b-e8fcdce8170b.
-(... in another terminal, run `ros2 launcher term 50bda6fb`...)
+(... in another terminal, run `ros2 launch term 50bda6fb`...)
 All nodes in Launch System 50bda6fb-d451-4d53-8a2b-e8fcdce8170b have exited.
 $
 ```
@@ -290,12 +282,12 @@ $
 Verbose mode:
 
 ```bash
-$ ros2 launcher attach -v 50bda6fb
+$ ros2 launch attach -v 50bda6fb
 Attached to Launch System 50bda6fb-d451-4d53-8a2b-e8fcdce8170b.
 Waiting for node /launch_ros
 Waiting for node /talker
 Waiting for node /listener
-(... in another terminal, run `ros2 launcher term 50bda6fb`...)
+(... in another terminal, run `ros2 launch term 50bda6fb`...)
 Node /launch_ros has exited
 Node /talker has exited
 Node /listener has exited
@@ -308,8 +300,8 @@ $
 Terminates all nodes that were launched under a specific Launch System ID.
 
 ```bash
-$ ros2 launcher term -h
-usage: ros2 launcher term [-h] [-v] [--spin-time SPIN_TIME] [system_id]
+$ ros2 launch term -h
+usage: ros2 launch term [-h] [-v] [--spin-time SPIN_TIME] [system_id]
 
 Terminates all nodes that were launched under a specific Launch System ID
 
@@ -330,7 +322,7 @@ optional arguments:
 Example output:
 
 ```bash
-$ ros2 launcher term 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
+$ ros2 launch term 50bda6fb-d451-4d53-8a2b-e8fcdce8170b
 Terminating Launch System 50bda6fb-d451-4d53-8a2b-e8fcdce8170b.
 $
 ```
