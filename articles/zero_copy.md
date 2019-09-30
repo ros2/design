@@ -38,13 +38,13 @@ There are two primary kinds of use cases when publishing data which are relevant
 2. The user borrows a message instance from the middleware, copies data into the message, and returns the ownership of the message during publish.
 
 Currently, only the first case is possible with the `rclcpp` API.
-After calling publish, the user still owns the message and may reuse it immedeately.
+After calling publish, the user still owns the message and may reuse it immediately.
 
 In order to support the second use case, we need a way for the user to get at least a single message from the middleware, which they may then populate, then return when publishing.
 
 In the second case, the memory that is used for the loaned message should be optionally provided by the middleware.
 For example, the middleware may use this opportunity to use a preallocated pool of message instances, or it may return instances of messages allocated in shared memory.
-However, if the middleware does not have special memory handling or preallocations, it may refuse to loan memory to the client library, and in that case, a user provided allocator should be used.
+However, if the middleware does not have special memory handling or pre-allocations, it may refuse to loan memory to the client library, and in that case, a user provided allocator should be used.
 This allows the user to have control over the allocation of the message when the middleware might otherwise use the standard allocator (new/malloc).
 
 #### Additional Publisher Use Case
@@ -62,19 +62,19 @@ There are two ways the users may take message instances from a subscription when
 1. Taking direction from the `Subscription` after polling it for data availability or waiting via a wait set.
 2. Using an `Executor`, which takes the data from the user and delivers it via a user-defined callback.
 
-Note: It is assumed that the user will be abe to take multiple messages at a time if they are available.
+Note: It is assumed that the user will be able to take multiple messages at a time if they are available.
 
 In the first case, the user could choose to either:
 
 * Manage the memory for the message instance themselves, providing a reference to it, into which the middleware should fill the data.
 * Take one or more loaned messages from the middleware and return the loans later.
 
-In the second case, the user is delegating the memory management ot he client library via the `Executor`.The `Executor` may or may not borrow data from the middleweare, but the user callback does not care, so this can be considered an implementation detail.
+In the second case, the user is delegating the memory management of the client library via the `Executor`.The `Executor` may or may not borrow data from the middleware, but the user callback does not care, so this can be considered an implementation detail.
 The user should be able to influence what the `Executor` does, and in the case that memory needs to be allocated, the user should be able to provide an allocator or memory management strategy which would influence the `Executor`'s behavior.
 
 ## Requirements
 
-Based on the the use cases above, the general requirements are as follows:
+Based on the use cases above, the general requirements are as follows:
 
 * Users must be able to avoid all memory operations and copies in at least one configuration.
 
