@@ -93,21 +93,20 @@ The `LaunchServer` is responsible for things such as setting environment variabl
 Remote machines will need to be made aware of any environment changes that are in-scope for nodes that they will be executing, and events may need to be handled across machines.
 
 One approach would be to add logic to the launch system allowing it to group `LaunchDescriptionEntities` containing the necessary actions and substitutions for successfully executing a node remotely, spawning a LaunchService on the remote machine, serializing the group of entities and sending them to the remote machine to be processed.
-This could turn out to be a recursive process depending on how a launch file creator has nested `LaunchDescriptionEntities` (which can themselves be `LaunchDescriptions`).
+This could turn out to be a recursive process depending on how `LaunchDescriptionEntity`'s are nested.
 Additional logic will be needed to detect cases where event emission and listener registration cross machine boundaries, and helper objects can be generated to forward events over the wire so handlers on other machines can react appropriately.
+
+LaunchServers would be the components with which the command line tools interact and need to have channels exposing information about the processes they've started, and for receiving user commands.
 
 ### Define Remote Execution Mechanisms on a Per-Machine Basis
 
-Historically, ROS1 launched nodes by using `ssh` to connect to a remote machine and execute processes
-on it.  This is still a reasonable way of doing it and is the expected remote execution mechanism in most
-environments.
+Historically, ROS1 launched nodes by using `ssh` to connect to a remote machine and execute processes on it.
+This is still a reasonable way of doing it and is the expected remote execution mechanism in most environments.
 
-Some hosts or environments may use a different mechanism, such as Windows Remote Shell on Windows hosts
-or `kubectl` for Kubernetes clusters.  There will be an abstract interface for remote execution mechanisms;
-it will be possible to write custom implementations that use arbitrary mechanisms, and the launch system
-can be configured to decide which mechanism to use on a per-machine basis.  When a launch system is run,
-information about all of the nodes assigned to a machine will be passed to the remote execution mechanism
-implementation so that it can execute them appropriately.
+Some hosts or environments may use a different mechanism, such as Windows Remote Shell on Windows hosts or `kubectl` for Kubernetes clusters.
+There will be an abstract interface for remote execution mechanisms;
+it will be possible to write custom implementations that use arbitrary mechanisms, and the launch system can be configured to decide which mechanism to use on a per-machine basis.
+When a launch system is run, information about all of the nodes assigned to a machine will be passed to the remote execution mechanism implementation so that it can execute them appropriately.
 
 ## Proposed Multi-Machine Launch Command Line Interface
 
