@@ -189,6 +189,12 @@ $ ros2 launch -D demo_nodes_cpp talker_listener.launch.py
 $
 ```
 
+A crucial difference here is that with ROS 1, the launch process was tied to the life of the system.  If the process exited, that would also terminate all of the nodes it had launched.  With ROS 2, the launch process can exit and leave the system running.
+
+One reason for this is that it was at odds with ROS 2's decentralized design paradigm.  Nodes do not need a `rosmaster` to communicate and can operate on physical networks that disconnect from or reconnect to each other.  Requiring a single `roslaunch` process that terminates the entire system when it exits is also introducing a single point of failure that had previously been avoided.
+
+A more practical reason is that in a multi-machine environment, it is often the case that the host doing the launching is not a critical part of the system and the rest of the system should not depend on it.  A common use case is that on a vehicle that has several headless hosts for running ROS nodes, you will have a separate laptop for monitoring or controlling those hosts; you will want to be able to launch your system from that laptop, but the system should not terminate just because your laptop goes to sleep or disconnects from the network.  The ROS 1 `roslaunch` system would require that `roslaunch` run on one of the vehicle hosts, and to do that you would need to either get remote shell access to one of them or write a custom set of services and launch scripts; in ROS 2, being able to detach from and reattach to a system makes that possible by design.
+
 #### `list`
 
 Since it is possible to launch a system of nodes that spans a network and detach from it, it is necessary to be able to query the network to find which systems are active.
@@ -208,7 +214,7 @@ optional arguments:
                         applies when not using an already running daemon)
 ```
 
-Example output:
+Here is a simple list that may be useful programmatically, but not so much for an end user:
 
 ```bash
 $ ros2 launch list
@@ -217,6 +223,8 @@ ab1e0138-bb22-4ec9-a590-cf377de42d0f
 5d186778-1f50-4828-9425-64cc2ed1342c
 $
 ```
+
+Here is a more verbose list that contains information a user can use to identify a system:
 
 ```bash
 $ ros2 launch list -v
