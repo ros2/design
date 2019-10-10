@@ -204,7 +204,7 @@ However, the [SROS 2 CLI](https://github.com/ros2/sros2) should include a tool `
 - Create directory tree containing all security files.
 - Create a new identity for a given node instance, generating a keypair and signing its x.509 certificate using the Identity CA.
 - Create a governance file that will encrypt all DDS traffic by default.
-- Support specifying node instance permissions in familiar ROS terms which are then automatically converted into low-level DDS permissions (**TODO**: link to upcoming SROS 2 policy file design).
+- Support specifying node instance permissions [in familiar ROS terms](/articles/ros2_access_control_policies.html) which are then automatically converted into low-level DDS permissions.
 - Support automatically discovering required permissions from a running ROS system.
 
 
