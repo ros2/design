@@ -52,6 +52,7 @@ The current implementation does not enforce the depth of the QoS history in a co
 The reason is that there is a single ring buffer per `Publisher` and its size is equal to the depth of the `Publisher`'s history.
 A `Publisher` stores a message in the ring buffer and then it sends a meta-message to allow a `Subscription` to retrieve it.
 The `Subscription` correctly stores meta-messages up to the number indicated by its depth of the history, but, depending on the frequency at which messages are published and callbacks are triggered, it may happen that a meta-message processed from the `Subscription` does not correspond anymore to a valid message in the ring buffer, because it has been already overwritten.
+This results in the loss of the message and it is also a difference in behavior between intra and inter-process communication, since, with the latter, the message would have been received.
 
 Moreover, even if the use of meta-messages allows to deleagate the enforcement of other QoS settings to the RMW layer, every time a message is added to the ring buffer the `IntraProcessManager` has to compute how many `Subscription`s will need it.
 This potentially breaks the advantage of having the meta-messages.
@@ -113,9 +114,8 @@ The overhead caused by the additional publication of meta-messages can be potent
 
 ### Overview
 
-The new proposal for intra-process communication addresses all the issues previously mentioned.
+The new proposal for intra-process communication addresses the issues previously mentioned.
 It has been designed with performance in mind, so it avoids any communication through the middleware between nodes in the same process.
-Moreover, it supports all the ROS 2 Quality of Service configurations.
 
 Consider a simple scenario, consisting of `Publisher`s and `Subscription`s all in the same process and with the durability QoS set to `volatile`.
 The proposed implementation creates one buffer per `Subscription`.
@@ -145,10 +145,15 @@ This is deduced looking at the output of `AnySubscriptionCallback::use_take_shar
 If the history QoS is set to `keep all`, the buffers are dynamically adjusted in size up to the maximum resource limits specified by the underlying middleware.
 On the other hand, if the history QoS is set to `keep last`, the buffers have a size equal to the depth of the history and they act as ring buffers (overwriting the oldest data when trying to push while its full).
 
+Note that in case of publishers with `keep all` and `reliable` communication, the behavior can be different from the one of inter-process communication.
+In the intra-process case, the middlewares use buffers in both publisher and subscription.
+If the subscription queue is full, the publisher one would start to fill and then finally the publish call would block when that queue is full.
+Since the intra-process communication uses a single queue on the subscription, this behavior can't be exactly emulated.
+
 Buffers are not only used in `Subscription`s but also in each `Publisher` with a durability QoS of type `transient local`.
 The data-type stored in the `Publisher` buffer is always `shared_ptr<const MessageT>`.
 
-A new class derived from `rclcpp::Waitable` is defined, denominated `SubscriptionIntraProcessWaitable`.
+A new class derived from `rclcpp::Waitable` is defined, which is named `SubscriptionIntraProcessWaitable`.
 An object of this type is created by each `Subscription` with intra-process communication enabled and it is used to notify the `Subscription` that a new message has been pushed into its ring buffer and that it needs to be processed.
 
 The `IntraProcessManager` class stores information about each `Publisher` and each `Subscription`, together with pointers to these structures.
@@ -265,7 +270,8 @@ Note that this `std::shared_ptr` has been just created from a `std::unique_ptr` 
  - `BufferT = shared_ptr<const MessageT>` Every buffer receives a shared pointer of the same `MessageT`, so no copies are required.
  - `BufferT = MessageT` A copy of the message is added to every buffer.
 
-The difference with publishing a unique_ptr is that here it is not possible to move the ownership of the message to one of the `Subscription`, potentially saving a copy.
+The difference with publishing a unique_ptr is that here it is not possible to save a copy.
+If you move the ownership of the published message to one of the `Subscription` (so potentially saving a copy as done in the previous case), you will need to create a new copy of the message for inter-process publication.
 
 ![Sequence UML diagram](../img/intraprocess_communication/intra_inter_process.png)
 
