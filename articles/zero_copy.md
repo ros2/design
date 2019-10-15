@@ -124,14 +124,14 @@ Introduce APIs for creating/destroying loaned messages, as well as structure for
 
 ```
 void *
-rmw_allocate_loaned_message(
+rmw_borrow_loaned_message(
   const rmw_publisher_t * publisher,
   const rosidl_message_type_support_t * type_support,
-  size_t message_size
+  void ** ros_message
 );
 
 rmw_ret_t
-rmw_deallocate_loaned_message(
+rmw_return_loaned_message(
   const rmw_publisher_t * publisher,
   void * loaned_message
 );
@@ -141,18 +141,30 @@ Extend publisher API for loaned messages:
 
 ```
 rmw_ret_t
-rmw_publish(
+rmw_publish_loaned_message(
   const rmw_publisher_t * publisher
   const void * ros_message
-  rmw_publisher_allocation_t * allocation,
-  bool is_loaned
+  rmw_publisher_allocation_t * allocation
 );
 ```
 
-Extend subscription API for taking loaned message:
+Extend subscription API for taking loaned message.
+Because a subscription does not necessarily allocate new memory for the loaned message during a take, the message only needs to be released rather than returned.
 
 ```
-// TODO
+rmw_ret_t
+rmw_take_loaned_message(
+  const rmw_subscription_t * subscription
+  void ** loaned_message,
+  book * taken,
+  rmw_subscription_allocation_t * allocation
+);
+
+rmw_ret_t
+rmw_release_loaned_message(
+  const rmw_subscription_t * subscription,
+  void * loaned_message
+);
 ```
 
 ### RCL API
@@ -161,14 +173,14 @@ Introduce APIs for creating/destroying loaned messages, as well as structure for
 
 ```
 void *
-rcl_allocate_loaned_message(
+rcl_borrow_loaned_message(
   const rcl_publisher_t * publisher,
   const rosidl_message_type_support_t * type_support,
-  size_t message_size
+  void ** ros_message
 );
 
 rcl_ret_t
-rcl_deallocate_loaned_message(
+rcl_return_loaned_message(
   const rcl_publisher_t * publisher,
   rcl_loaned_message_t * loaned_message
 );
@@ -178,11 +190,10 @@ Extend publisher API for loaned messages:
 
 ```
 rcl_ret_t
-rcl_publish(
+rcl_publish_loaned_message(
   const rcl_publisher_t * publisher,
   const void * ros_message,
-  rmw_publisher_allocation_t * allocation,
-  bool is_loaned
+  rmw_publisher_allocation_t * allocation
 );
 
 bool
@@ -192,7 +203,22 @@ rcl_publisher_can_loan_messages(const rcl_publisher_t * publisher);
 Extend subscription API for taking loaned message:
 
 ```
-// TODO
+rcl_ret_t
+rcl_take_loaned_message(
+  const rcl_subscription_t * subscription,
+  void ** loaned_message,
+  rmw_message_info_t * message_info,
+  rmw_subscription_allocation_t * allocation
+);
+
+rcl_ret_t
+rcl_release_loaned_message(
+  const rcl_subscription_t * subscription,
+  void * loaned_message
+);
+
+bool
+rcl_subscription_can_loan_messages(const rcl_subscription_t * subscription);
 ```
 
 ### RCLCPP LoanedMessage
@@ -246,4 +272,14 @@ rclcpp::Publisher::can_loan_messages()
 ```
 
 ### RCLCPP Subscription
+
+```
+/// Test if the middleware supports loaning messages
+bool
+rclcpp::Subscription::can_loan_messages()
+
+/// Subscription path for middlewares supporting loaned messages.
+void
+rclcpp::Subscription::handle_loaned_message(void * loaned_message, const rmw_message_info_t & message_info)
+```
 
