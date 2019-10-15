@@ -283,3 +283,74 @@ void
 rclcpp::Subscription::handle_loaned_message(void * loaned_message, const rmw_message_info_t & message_info)
 ```
 
+## Additional Considerations
+
+### Loaning non-POD messages
+
+This design document is limited to handling POD message types only.
+When performing a loan on a non-POD message, there is the additional consideration of ensuring that the allocators match between the `rclcpp` implementation and the underlying middleware.
+With the current message structures, the allocator itself may have an impact on the `sizeof()` the message type.
+
+This is best illustrated via the following example:
+
+```
+#include <string>
+
+// Example message with two allocated fields a and b.
+template <typename AllocatorT>
+struct Msg
+{
+  std::basic_string<char, std::char_traits<char>, AllocatorT> a;
+  int c;
+  std::basic_string<char, std::char_traits<char>, AllocatorT> b;
+};
+
+// Custom allocator with enough padding to change the sizeof(MyAllocator)
+template <class T>
+struct MyAllocator : public std::allocator<T>
+{
+  char padding[16];
+};
+
+int main()
+{
+  // Example message with the standard allocator.
+  Msg<std::allocator<char>> foo;
+  void * ptr = &foo;
+  // Same message contents, but casted to type including custom allocator.
+  auto & bar = *static_cast<Msg<MyAllocator<char>> *>(ptr);
+
+  // size of foo and bar are different on macOS and Linux with clang
+  // address of foo and bar should be the same
+  // address of foo.c and bar.c are different on macOS and Linux with clang.
+  printf("sizeof(foo) == %zu\n", sizeof(foo));
+  printf("&foo == %p\n", static_cast<void *>(&foo));
+  printf("&foo.c == %p\n", static_cast<void *>(&foo.c));
+  printf("sizeof(bar) == %zu\n", sizeof(bar));
+  printf("&bar == %p\n", static_cast<void *>(&bar));
+  printf("&bar.c == %p\n", static_cast<void *>(&bar.c));
+  return 0;
+}
+```
+
+Example output using `g++ --std=c++14`
+
+```
+sizeof(foo) == 72
+&foo == 0x7ffde46e0680
+&foo.c == 0x7ffde46e06a0
+sizeof(bar) == 72
+&bar == 0x7ffde46e0680
+&bar.c == 0x7ffde46e06a0
+```
+
+Example output using `clang++-7 -stdlib=libc++`
+
+```
+sizeof(foo) == 56
+&foo == 0x7ffc37971460
+&foo.c == 0x7ffc37971478
+sizeof(bar) == 88
+&bar == 0x7ffc37971460
+&bar.c == 0x7ffc37971488
+```
