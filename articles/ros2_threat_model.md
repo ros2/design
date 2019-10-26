@@ -885,8 +885,6 @@ Berkeley, CA, USA: USENIX Association, 2011.</a></td>
   <td class="success">✓</td>
   <td class="success">✓</td>
   <td class="success">✓</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
   <td>
     <ul>
       <li>Implement authentication and authorization methods.</li>
@@ -921,8 +919,6 @@ Berkeley, CA, USA: USENIX Association, 2011.</a></td>
   <td class="danger">✘</td>
   <td class="danger">✘</td>
   <td class="danger">✘</td>
-  <td class="danger">✘</td>
-  <td class="success">✓</td>
   <td>
     <ul>
       <li>Communications with the remote application interface should be done over a secure channel.</li>
@@ -954,8 +950,6 @@ Berkeley, CA, USA: USENIX Association, 2011.</a></td>
   <td class="danger">✘</td>
   <td class="success">✓</td>
   <td class="danger">✘</td>
-  <td class="success">✓</td>
-  <td class="success">✓</td>
   <td class="success">✓</td>
   <td class="success">✓</td>
   <td class="success">✓</td>
@@ -1344,8 +1338,6 @@ Cyber-Physical Threats on Robotic Platforms.” Sensors 18, no. 5 (May 21,
     <td class="danger">✘</td>
     <td class="danger">✘</td>
     <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="success">✓</td>
     <td>
       <ul>
         <li>Configuration data should be considered as private.</li>
@@ -1657,8 +1649,6 @@ manipulation.</li>
     <td class="danger">✘</td>
     <td class="success">✓</td>
     <td class="danger">✘</td>
-    <td class="danger">✘</td>
-    <td class="danger">✘</td>
     <td>
       <ul>
         <li>Actuators should embed an identifier.</li>
@@ -1813,8 +1803,6 @@ Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
     <td class="success">✓</td>
     <td class="success">✓</td>
     <td class="success">✓</td>
-    <td class="success">✓</td>
-    <td class="success">✓</td>
     <td>
       <ul>
         <li>Close the communication port to external communications or disable the service on non-development devices.</li>
@@ -1841,8 +1829,6 @@ Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
     <td class="warning">▲</td>
     <td class="warning">▲</td>
     <td class="danger">✘</td>
-    <td class="warning">▲</td>
-    <td class="warning">▲</td>
     <td class="warning">▲</td>
     <td class="warning">▲</td>
     <td class="warning">▲</td>
@@ -1886,8 +1872,6 @@ Onboard Aerospace Systems.” IEEE Security &amp; Privacy 10, no. 4 (July
   <td class="danger">✘</td>
   <td class="success">✓</td>
   <td class="danger">✘</td>
-  <td class="warning">▲</td>
-  <td class="success">✓</td>
   <td>
     <ul>
       <li>Remote users should be granted minimum privileges</li>
