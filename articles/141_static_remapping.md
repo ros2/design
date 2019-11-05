@@ -440,7 +440,7 @@ All relative names are expanded to the new namespace before any remapping rules 
 This also isn't a true remapping rule, but the syntax is similar.
 In ROS 1 the argument `__name:=` could change the node's name.
 Here the syntax is the same, and additionally it can be prefixed with a node's current name.
-The argument `__node:=` is identical.
+The argument `__node:=` has the same effect.
 The replacement side must have a single token.
 Log messages use the new name immediately.
 All private names are expanded to the new name before any remapping rules are applied to them.
