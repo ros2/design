@@ -63,7 +63,7 @@ While developers will be able to define the set of rules securing their own ROS 
 Without that expertise, the entire node graph cannot be properly locked down.
 Consider a complex and popular upstream component, perhaps parts of the navigation stack. **Every end user** of this component must duplicate the effort of attempting to properly lock it down.
 
-If ROS 2 provided a way for upstream package authors to specify the interface required by the nodes in their package, and if the tools to generate security policies from that interface existed, neither of these problems would exist. (**TODO**: link to upcoming design doc about using node IDL in ROS 2 security)
+If ROS 2 provided a way for upstream package authors to specify the interface required by the nodes in their package, and if the tools to generate security policies from that interface existed, neither of these problems would exist.
 
 ### Other motivations
 
