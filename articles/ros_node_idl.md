@@ -85,11 +85,11 @@ The interface may cover only a subset of nodes in a package, as long as the node
 
 Here is an example IDL for a package containing two nodes:
 
-{%include_relative ros2_node_interface_declaration/interface_declaration.xml}
+{% include_relative ros2_node_idl/interface_declaration.xml %}
 
 Once an IDL file is written, it is exported from the package manifest:
 
-{%include_relative ros2_node_interface_declaration/package.xml}
+{% include_relative ros2_node_idl/package.xml %}
 
 ### Schema for `package.xml`'s export tag
 
