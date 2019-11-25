@@ -117,8 +117,8 @@ However, the keyword is likely solidly descriptive enough to either be accepted 
 
 #### `interface`
 
-This tag contains the package interface, made up of a collection of node interfaces.
-Root tag of the IDL file. There must be only one <interface> tag per IDL file.
+Root tag of the IDL file, it is made up of a collection of node interfaces.
+There must be only one tag per IDL file.
 
 Attributes:
 - **version**: version of schema in use, allowing for future revisions.
