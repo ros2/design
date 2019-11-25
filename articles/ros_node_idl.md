@@ -94,6 +94,8 @@ Once an IDL file is written, it is exported from the package manifest:
 
 {% include_relative ros2_node_idl/package.xml %}
 
+Note that several IDL files can be exported, allowing for writing an IDL file per node.
+
 ### Schema for `package.xml`'s export tag
 
 #### `interface`
