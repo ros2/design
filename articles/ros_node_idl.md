@@ -57,7 +57,8 @@ Currently policy files can be created in one of two ways:
 - A snapshot of the live ROS 2 graph can be taken and written into a policy that covers its current state via `ros2 security generate_policy`.
 
 While the first option is obviously very tedious and error-prone, the second only partially alleviates the burden due to the fact that it cannot fully cover the dynamic nature of a ROS 2 graph and all of its interactions.
-More problematic than these issues, though, is that both options put the onus of security squarely on the shoulders of end users. This introduces two problems:
+More problematic than these issues, though, is that both options put the onus of security squarely on the shoulders of end users.
+This introduces two problems:
 
 While developers will be able to define the set of rules securing their own ROS 2 nodes, the nodes developed in-house are often outnumbered by upstream components when it comes to the entire node graph, and the developers are typically not experts in every component being used.
 Without that expertise, the entire node graph cannot be properly locked down.
