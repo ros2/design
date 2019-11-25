@@ -2,7 +2,7 @@
 <interface version="1">
   <node name="node_1" >
     <parameter name="verbose" type="bool" />
-    <topic name="chatter" type="std_msgs/String" publisher="true" />
+    <topic name="chatter" type="std_msgs/msg/String" publisher="true" />
   </node>
 
   <node name="node_2" >
