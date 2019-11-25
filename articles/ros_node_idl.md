@@ -68,7 +68,8 @@ If ROS 2 provided a way for upstream package authors to specify the interface re
 ### Other motivations
 
 Outside of security, there are several fascinating possibilities unlocked by having such an interface.
-For example, consider how this could impact [ROS 2 launch] [launch_ros]. It would be able to statically (i.e. before running anything) determine if parameter names or remappings are incorrect, among other similar sanity checks.
+For example, consider how this could impact [ROS 2 launch][launch_ros].
+It would be able to statically (i.e. before running anything) determine if parameter names or remappings are incorrect, among other similar sanity checks.
 Another example of the usefulness of having a static interface is the ability to create graphical tools for putting a ROS system together.
 Yet another example would be an additional feature in `ros2 pkg create` that would allow a developer to hand it an IDL and have it generate scaffolding for a node with that interface.
 
