@@ -39,7 +39,8 @@ It therefore calls for the creation of a standardized way to explicitly define a
 
 This article defines a high-level abstraction allowing upstream packages to specify the communication requirements of the nodes in the package, such that the final user, be it a developer or a static analysis tool, can benefit from it.
 The Interface Definition Language (IDL) specified in the next section is meant to be distributed alongside its associated package.
-This is true for the package source and also for the generated release. Whether the interface is declared or not is up to the package author and should not prevent the correct execution of any system pre-existing the IDL.
+This is true for the package source and also for the generated release.
+Whether the interface is declared or not is up to the package author and should not prevent the correct execution of any system pre-existing the IDL.
 Similarly, the declared interface may be only partial and allow for the full use of pre-existing systems and the use of dependent systems on the parts covered by the partial interface.
 
 ## Motivation
