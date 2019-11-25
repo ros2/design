@@ -1,45 +1,15 @@
-<!-- Main design proposal, similar to ROS launch -->
-<interfaces>
-  <node name="my_node" ns=”/” >
+```xml
+<interface version="1">
+  <node name="node_1" >
     <parameter name="verbose" type="bool" />
-    <message name="chatter" type="std_msgs/String" publisher="true" />
+    <topic name="chatter" type="std_msgs/String" publisher="true" />
   </node>
 
-  <node name="my_other_node" ns=”/” >
-    <parameter name="verbose" type="bool" />
+  <node name="node_2" >
     <parameter name="rate" type="int" />
-    <message name="clock" type="rosgraph_msg/Clock" subscribe="true" />
-    <message name="/foo/bar" type="std_msgs/String" publisher="true" subscribe="false" />
+    <topic name="/foo/bar" type="std_msgs/String" subscribe="true" />
     <service name="/example_service" type="std_srvs/srv/Empty" client="true" />
     <action name="/example_action", type="example_interfaces/action/Fibonacci" client="true" />
   </node>
-</interfaces>
+</interface>
 ```
-
-<!-- Other design option closer to current SROS2 policy -->
-```xml
-<interfaces>
-  <node ns=”/” name="my_node">
-    <parameter name="verbose" type="bool" />
-    <messages publish="true">
-      <message  type="std_msgs/String">chatter</message>
-    </messages>
-  </node>
-
-  <node ns=”/” name="my_other_node">
-    <parameter name="verbose" type="bool" />
-    <parameter name="rate" type="int" />
-    <messages subscribe="true">
-      <message  type="rosgraph_msg/Clock">clock</message>
-    </messages>
-    <messages publish="true">
-      <message type="std_msgs/String">/foo/bar<message/>
-    </messages>
-    <services client="true">
-    <service type="std_srvs/srv/Empty">example_service</service>
-    </services>
-    <actions client="true">
-      <action type="example_interfaces/action/Fibonacci">example_action</action>
-    </actions>
-  </node>
-</interfaces>

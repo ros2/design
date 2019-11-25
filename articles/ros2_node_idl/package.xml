@@ -1,9 +1,10 @@
+```xml
 <package format="2">
-  <name>foo</name>
+  <name>example-package</name>
 
   <!-- snip -->
 
   <export>
-    <interface declaration=”${prefix}/interface_declaration.xml”/>
+    <interface path=”${prefix}/interface_declaration.xml”/>
   </export>
-</package>
+```
