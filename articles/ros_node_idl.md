@@ -1,15 +1,14 @@
 ---
 layout: default
-title: ROS 2 Interface Definition Language
+title: ROS 2 Node Interface Definition Language
 permalink: articles/ros2_node_interface_definition_language.html
 abstract:
   This article specifies the ROS 2 Interface Definition Language, a simple and standardized manner to export the complete interface (action/message/parameter/service) of node(s) in a package.
 author: >
   [Jérémie Deray](https://github.com/artivis),
   [Kyle Fazzari](https://github.com/kyrofa)
-
 published: true
-categories: Security
+categories: Interfaces
 ---
 
 {:toc}
