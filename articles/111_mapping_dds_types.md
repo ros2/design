@@ -25,7 +25,7 @@ Original Author: {{ page.author }}
 
 ## Scope
 
-This article specifies the mapping between ROS interface types defined in the [interface definition article](interface_definition.html) and DDS types defined in the [Interface Definition Language](https://www.omg.org/spec/IDL/About-IDL/).
+This article specifies the mapping between ROS interface types defined in the [interface definition article](interface_definition.html) and DDS types defined in the [Interface Definition Language](https://www.omg.org/spec/IDL/3.5).
 
 ## Mapping of primitive types
 
