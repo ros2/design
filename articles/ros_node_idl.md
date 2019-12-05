@@ -78,6 +78,24 @@ Yet another example would be an additional feature in `ros2 pkg create` that wou
 These examples are only a subset of use-cases made possible by such an interface.
 It's clear that this is useful well beyond security.
 
+## Challenges to overcome
+
+This proposal has a number of potential upsides, but it also has some downsides worthy of discussion.
+
+### This is only really useful if it gains significant adoption in upstream packages
+
+It's true that, if not all of the packages in one's system have adopted this, its gains are incomplete.
+However, it's still useful even if only a subset of the packages adopt it (e.g. one's own packages), which means even without signifant upstream adoption it will still be useful to individuals or organizations.
+Upstream packages that haven't adopted this simply won't benefit from it.
+Also, its usefulness hopefully outweighs the work required to implement it upstream, and it's certainly something that can be contributed by community members given that the interface would be reviewed by the experts in the package.
+
+### Declared and actual interface can get out of sync
+
+This is certainly a concern: an out-of-date interface is debatably less useful than having no interface at all.
+There are a number of possibilities that will help with this issue.
+One possibility is to more tightly couple the declared and actual interface by creating a library that consumes the declared interface and creates the corresponding ROS entities.
+Another is the fact that, as soon as the node is running, RCL itself (or another `ros2` command) can verify that the actual interface properly corresponds to the declared interface, and can act appropriately.
+
 ## Package interface
 
 How do upstream packages specify their interface requirements?
