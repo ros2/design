@@ -162,6 +162,8 @@ Valid values are any ROS action types.
 Valid values are "true" or "false". Defaults to "false".
 - **client**: Whether or not the node provides a client for the action.
 Valid values are "true" or "false". Defaults to "false".
+- **qos**: The Quality of Service setting for the action.
+Defaults to [rcl_action_qos_profile_status_default][rcl_action_qos_profile_status_default_link]
 
 #### `parameter`
 
@@ -184,6 +186,8 @@ Valid values are any ROS service types.
 Valid values are "true" or "false". Defaults to "false".
 - **client**: Whether or not the node provides a client for the service.
 Valid values are "true" or "false". Defaults to "false".
+- **qos**: The Quality of Service setting for the service.
+Defaults to [rmw_qos_profile_services_default][rmw_qos_profile_services_default_link]
 
 #### `topic`
 
@@ -197,9 +201,14 @@ Valid values are any ROS message types.
 Valid values are "true" or "false". Defaults to "false".
 - **subscription**: Whether or not the node subscribes to the topic.
 Valid values are "true" or "false". Defaults to "false".
+- **qos**: The Quality of Service setting for the topic.
+Defaults to [rmw_qos_profile_default][rmw_qos_profile_default_link]
 
 [dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
 [sros2_design]: /articles/ros2_dds_security.html
 [launch_ros]: https://github.com/ros2/launch_ros
 [xml_wiki]: https://en.wikipedia.org/wiki/xml
 [rep149_export]: http://www.ros.org/reps/rep-0149.html#export
+[rcl_action_qos_profile_status_default_link]: https://github.com/ros2/rcl/blob/master/rcl_action/include/rcl_action/default_qos.h
+[rmw_qos_profile_services_default_link]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L64
+[rmw_qos_profile_default_link]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L51
