@@ -162,7 +162,9 @@ Valid values are any ROS action types.
 Valid values are "true" or "false". Defaults to "false".
 - **client**: Whether or not the node provides a client for the action.
 Valid values are "true" or "false". Defaults to "false".
-- **qos**: The Quality of Service setting for the action.
+
+Sub-tag:
+- **qos**: The Quality of Service setting for the action - see the [qos tag](####qos).
 Defaults to [rcl_action_qos_profile_status_default][rcl_action_qos_profile_status_default_link]
 
 #### `parameter`
@@ -186,7 +188,9 @@ Valid values are any ROS service types.
 Valid values are "true" or "false". Defaults to "false".
 - **client**: Whether or not the node provides a client for the service.
 Valid values are "true" or "false". Defaults to "false".
-- **qos**: The Quality of Service setting for the service.
+
+Sub-tag:
+- **qos**: The Quality of Service setting for the service - see the [qos tag](####qos).
 Defaults to [rmw_qos_profile_services_default][rmw_qos_profile_services_default_link]
 
 #### `topic`
@@ -201,8 +205,26 @@ Valid values are any ROS message types.
 Valid values are "true" or "false". Defaults to "false".
 - **subscription**: Whether or not the node subscribes to the topic.
 Valid values are "true" or "false". Defaults to "false".
-- **qos**: The Quality of Service setting for the topic.
+
+Sub-tag:
+- **qos**: The Quality of Service setting for the topic - see the [qos tag](####qos).
 Defaults to [rmw_qos_profile_default][rmw_qos_profile_default_link]
+
+#### `qos`
+
+Define the quality of service. It reflects the qos parameters of the [rmw_qos_profile_t][rmw_qos_profile_t] structure.  
+This tag is a sub-element of either an action, a service or a topic.
+
+Attributes:
+- **history**: The size of the message queue.
+- **reliability**: The reliability QoS policy setting.
+- **durability**: The durability QoS policy setting.
+- **deadline**: The period at which messages are expected to be sent/received.
+- **lifespan**: The age at which messages are considered expired and no longer valid.
+- **liveliness**: Liveliness QoS policy setting.
+- **liveliness_lease_duration**: The time within which the RMW node or publisher must show that it is alive.
+- **avoid_ros_namespace_conventions**: If true, any ROS specific namespacing conventions will be circumvented.
+
 
 [dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
 [sros2_design]: /articles/ros2_dds_security.html
@@ -212,3 +234,4 @@ Defaults to [rmw_qos_profile_default][rmw_qos_profile_default_link]
 [rcl_action_qos_profile_status_default_link]: https://github.com/ros2/rcl/blob/master/rcl_action/include/rcl_action/default_qos.h
 [rmw_qos_profile_services_default_link]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L64
 [rmw_qos_profile_default_link]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L51
+[rmw_qos_profile_t]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h#L299
