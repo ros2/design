@@ -223,7 +223,7 @@ rcl_subscription_can_loan_messages(const rcl_subscription_t * subscription);
 
 ### RCLCPP LoanedMessage
 
-In order to support loaned messages in `rclcpp`, we tntroduce the concept of a `LoanedMessage`.
+In order to support loaned messages in `rclcpp`, we introduce the concept of a `LoanedMessage`.
 A `LoanedMessage` provides a wrapper around the underlying loan mechanisms, and manages the loan's lifecycle.
 
 ```
