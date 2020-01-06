@@ -85,7 +85,7 @@ This proposal has a number of potential upsides, but it also has some downsides 
 ### This is only really useful if it gains significant adoption in upstream packages
 
 It's true that, if not all of the packages in one's system have adopted this, its gains are incomplete.
-However, it's still useful even if only a subset of the packages adopt it (e.g. one's own packages), which means even without signifant upstream adoption it will still be useful to individuals or organizations.
+However, it's still useful even if only a subset of the packages adopt it (e.g. one's own packages), which means even without significant upstream adoption it will still be useful to individuals or organizations.
 Upstream packages that haven't adopted this simply won't benefit from it.
 Also, its usefulness hopefully outweighs the work required to implement it upstream, and it's certainly something that can be contributed by community members given that the interface would be reviewed by the experts in the package.
 
