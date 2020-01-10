@@ -18,15 +18,15 @@ categories: Middleware
 
 Original Author: {{ page.author }}
 
-## Introduction
+## Background
 
-### What is a `Node`?
+### `Node`
 
 In ROS, a `Node` is an entity used to group other entities.
 For example: `Publishers`, `Subscriptions`, `Services`, `Clients`.
 `Nodes` ease organization and code reuse, as they can be composed and launched in different ways.
 
-### What is a `Domain Participant`?
+### `Domain Participant`
 
 A `Domain Participant` is a type of DDS entity.
 `Participants` also group other entities, like `Publishers`, `Subscribers`, `Data Writters`, `Data Readers`, etc.
@@ -41,7 +41,16 @@ But participants do more than that:
 
 For those reasons, `Participants` are heavyweight.
 
-### Current status
+Note: This might actually depend on the DDS implementation, some of them share these resources between `Participants` (e.g. OpenSplice).
+Many `DDS` vendors don't do this (e.g.: `rti Connext` and `Fast-RTPS`), and they actually recommend creating just one `Participant` per process.
+
+### `Context`
+
+The `ROS Context` is the no-global state of an init-shutdown cycle.
+It also encapsulates shared state between nodes and other entities.
+In most applications, there is only one `ROS Context` in a process.
+
+## Current status
 
 There is a one-to-one mapping between `Nodes` and `DDS Participants`.
 This simplified the design, as `DDS Participants` provide the same organization that a `Node` needs.
@@ -54,28 +63,19 @@ For example, [RTI connext](https://community.rti.com/kb/what-maximum-number-part
 The goal of this proposal is to improve overall performance by avoiding the creation of one `Domain Participant` per `Node`.
 API changes will be avoided, if possible.
 
-### What is a participant mapped to?
+### Mapping of the `Participant` to a `ROS` entity
 
-There are two main alternatives:
-- One participant per process.
-- One participant per context.
+There are two main alternatives, besides the current mapping to a `Node`:
+- Using one participant per process.
+- Using one participant per context.
 
 The second approach allows more flexibility.
 Considering that by default there's only one context per process, it wouldn't affect the case where each node runs in its own process.
-And even in the case that multiple nodes are running in a single process it allows to group them into different context - ranging from a separate context for each node, over grouping a few nodes in the same context, to using a single context for all nodes.
+In the case where multiple nodes are running in a single process, we have different options for grouping them by - ranging from a separate context for each node, over grouping a few nodes in the same context, to using a single context for all nodes.
 
-### What is a Node now?
+In any of both options, a `Node` stops being a real middleware node, and starts being just a collection of `ROS` entities.
 
-There's no lightweight DDS equivalent of a ROS `Node`, so these must be implemented on top of it.
-A `Node` should be able to:
-- Create other entities as `Publishers`, `Subscriptions`, `Services` and `Clients`.
-  `Nodes` should own those entities, that is to say, those entity shouldn't outlive a `Node`.
-- List all its entities.
-
-For all the entities, it should be possible to get the `Node` that created them.
-Each `Participant` should store all the information needed about its nodes, and communicate it other `Participants`.
-
-### How `Node` information is communicated?
+### ROS specific discovery information
 
 #### Using a topic
 
@@ -83,14 +83,14 @@ The name of all the available `Nodes`, and its `Publishers`, `Subscriptions`, `S
 This information can be communicated using a `topic`.
 That topic will be an implementation detail and hidden to the user (i.e.: the `rt/` prefix won't be added to this `DDS topic`).
 
-A message could be sent for:
-- Each `Node`
-- Each `Participant`
+One message could be sent for each:
+- `Node`
+- `Participant`
 
 The second option reduces the amount of messages.
 It also allow organizing the data using the `Participant` GUID as the key.
 It's not possible to organize the data using the `Node` name as a key, because it can collide.
-`Node` name uniqueness can be enforced using a collision resolution mechanism, but it can be detected beforehand (i.e.: this information will be needed by the resolution mechanism).
+`Node` name uniqueness can be enforced using a collision resolution mechanism, but it can't be detected beforehand.
 In the following, the second option will be considered.
 
 ##### State Message
@@ -99,14 +99,17 @@ Each `Participant` will send a message representing their state.
 A keyed topic could be used for communicating it.
 The `Participant` GUID can be used as the key.
 This helps for keeping only one message per `Participant` in the history (see [QoS for communicating node information](#QoS-for-communicating-node-information)).
-The rest of the message will be a sequence of with the information of each node.
-That message should contain the `Node` name, and four sequences:
+The rest of the message will be a sequence with information for each node.
+For each `Node`, the message should contain the `Node` name, and four sequences:
 - GUID of its `Publishers`
 - GUID of its `Subscriptions`
 - GUID of its `Services`
 - GUID of its `Clients`
 
 Vector bounds: TBD
+
+This state message is sent each time a new `ROS Entity` is created.
+e.g.: A participant will updates its message when a new `Node` is created.
 
 ##### QoS for communicating node information
 
@@ -118,15 +121,15 @@ For that reason, the QoS of the `Publishers` should be:
 - History depth: 1
 - Reliability: Reliable
 
-Considering that a keyed topic will be used, in which the history depth apply for each key, only one `Publisher` per process will be needed.
-In that case, `unregister_instance` can be used for delete that key from the history (see [RTI Managing Data Instances](https://community.rti.com/static/documentation/connext-dds/5.2.3/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/Managing_Data_Instances__Working_with_Ke.htm)).
-
+If a keyed topic is used, in which the history depth apply for each key, only one `Publisher` per process will be needed.
 The QoS of the `Subscriber` should be:
 
 - Durability: Transient Local
 - History: Keep Last
 - History depth: 1
 - Reliability: Reliable
+
+In case keyed topics aren't used, `keep all` history should be used.
 
 The subscriber could access data in two different ways:
 - Polled and accessed using `Subscriber` read method when needed.
@@ -143,10 +146,12 @@ Organizing a complex message in it won't be easy nor performant.
 
 Similarly to `UserData`, `GroupData` is a available in `Publishers` and `Subscribers`.
 These entities only need to communicate the GUID of the `Participant` and the `Node` name from which it was created.
-This idea can be combined with a topic just publishing the list of `Node` names, without including all the other vectors in the message.
-Although, it is more difficult to communicate this information for `Services` and `Clients`, as they use behind the scenes just a `DDS Publisher` and `Subscriber`.
+This idea can be combined with a topic just publishing a list of `Node` names of a `Participant`.
 
-### Which layer will be implemented in?
+Support for `GroupData` was not available in some of the `DDS-vendors` at the moment of the implementation.
+For that reason this option was discarded.
+
+### Implementation
 
 The implementation can be done in two different ways:
 
@@ -158,14 +163,14 @@ The first approach have the following disadvantages:
   Actually, all the `Node` related API in `rmw` doesn't have more sense.
 - Currently, no threads are created in the `rcl` layer.
   It will be needed in case `Node` discovery is done in this layer.
-- It will force to build the concept of `Node` on top of the underlying middleware in use, regardless if the middleware already has a lightweight entity similar to a `Node`.
+- It will force us to build the concept of `Node` on top of the underlying middleware, regardless if the middleware already has a lightweight entity similar to a `Node`.
 - It will break API in many layers.
 
 
 The second approach has the following disadvantages:
-- Each `rmw` have to reimplement node discovery logic.
-  - It can be worked arround creating a new common package that uses the abstractions in `rmw`.
-    Each of the implementations that wants to use this should depend on this common package.
+- Each RMW implementation has to reimplement node discovery logic.
+  This can be avoided by arround creating a new common package that uses the abstractions in `rmw`.
+  Each of the implementations that wants to use this should depend on this common package.
 
 The second approach is preferred, as it is more flexible and it avoids breaking API in many layers.
 
@@ -175,27 +180,45 @@ The second approach is preferred, as it is more flexible and it avoids breaking 
 
 In `DDS`, security can be specified at a `Participant` level.
 If one `Node` is mapped to one `Participant`, individual configuration of its security key and access control policy is possible.
-From a security point of view, only being able to configure it at a `Participant` (or per process) level is enough.
+From a security point of view, only being able to configure it at a `Participant` (or per process) level should be enough.
 There's not much sense on having different access control policies for `Nodes` in the same process.
 As they share the same address space, other vulnerabilities are possible.
 
-##### How to create a new security key?
+##### Security directory of each participant
 
-Before, we were creating a key for each `Node`.
-The full name of the node was used for creating it.
+Before, the environment variable `ROS_SECURITY_DIRECTORY` specified the root path of the keystore.
+The security files for each participant were found using the node name from that root.
 
-If we create one `Participant` per context, we will only need a key for each of them, and not one per `Node`.
-There are two alternatives:
+With this proposal, it won't be possible to find the security files from the node name, as the `Participant` will be associated with a `Context`.
 
-- Add the concept of `Context` name (or `Participant` name).
-  In this way, the key of each participant could be specified independently.
-- Use one key per process.
-  All the `Participants` within one process will use the same key.
+A few alternatives are possible:
+- Add a name to the `Context`, and use the same directory discovery logic.
+- Just be able to pass a directory to each process. All the `Contexts` in a process will use the same security files.
 
-##### How to specify access policies?
+The first alternative is more flexible, as it allows to specify different security files for `Contexts` in the same process.
+That's particuarly useful for some use cases, e.g.: domain bridges.
 
-Access control policies could still be specified per `Node` basis.
-When a `Participant` is created, it should look at the access control policies of each of its `Nodes` and compose them in a single configuration.
+The `Context` name will be available in ros2 graph API.
+That will allow adapting the tool that generates the policy files from a running example.
+
+The `Context` doesn't pretend to be unique, and it's just a way of specifying configurations.
+Particularly, for specifying the security directory.
+There will be a default context name, so a default security directory can be specified.
+It should be possible to remap this name, to allow easy deployment of nodes.
+
+##### Generating DDS permissions files from ROS policies files
+
+Currently, ROS access control policy files allows specifying privilages to each `Node`.
+From that file, the required DDS permission file is generated.
+
+Considering this proposal, there are a few alternatives:
+- Contexts are added to the policy file.
+- A tool for generating a permission file from multiple ROS policy files is added.
+
+In the first case, the `Context` will work as a way of grouping all the privilages of its nodes.
+That also will work for `rmw` implementations where a `Node` can have separate policy files, in which case the context grouping will just be ignored.
+
+A tool for combining policies files can be added, regardless if the policy file format is changed or not.
 
 #### Node Name Uniqueness
 
