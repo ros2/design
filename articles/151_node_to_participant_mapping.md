@@ -24,7 +24,7 @@ Original Author: {{ page.author }}
 
 In ROS, a `Node` is an entity used to group other entities.
 For example: `Publishers`, `Subscriptions`, `Services`, `Clients`.
-`Nodes` ease organization and code reuse, as they can be composed and launched in different ways.
+`Nodes` ease organization and code reuse, as they can be composed in different ways.
 
 ### `Domain Participant`
 
@@ -32,10 +32,10 @@ A `Domain Participant` is a type of DDS entity.
 `Participants` also group other entities, like `Publishers`, `Subscribers`, `Data Writters`, `Data Readers`, etc.
 But participants do more than that:
 
-- Each `Participant` does discovery by its own.
+- Each `Participant` participates in discovery.
   Creating more than one `Participant` increases cpu usage and network IO load.
 - Each `Participant` keeps track of other `Domain Participants` and DDS entities.
-  Using more than one will duplicate that data.
+  Using more than one will duplicate that data within a single process.
 - Each `Participant` may create multiple threads for event handling, discovery, etc.
   The number of threads created per participant depend on the DDS vendor (e.g.: [connext](https://community.rti.com/best-practices/create-few-domainparticipants-possible)).
 
@@ -139,7 +139,7 @@ The second option allows better organization of this information (e.g.: in hash 
 
 #### Using USER_DATA and GROUP_DATA QoSPolicy
 
-Each `Participant` could have in its user data the list of node names that owns.
+Each `Participant` could store in its user data, the list of node names that it owns.
 When this data is changed, each `ParticipantListener` will be notified.
 This is not a good option, as `UserData` is just a sequence of bytes.
 Organizing a complex message in it won't be easy nor performant.
@@ -155,12 +155,12 @@ For that reason this option was discarded.
 
 The implementation can be done in two different ways:
 
-- Through rmw implementations to rcl.
-- Modify rmw implementations without modifying rmw API (as long as possible).
+- Implementing the discovery logic in `rcl`.
+- Modifying rmw implementations without modifying rmw API (as long as possible).
 
 The first approach have the following disadvantages:
 - There is no `Node` concept in `rmw` layer, as `Node` discovery is solved in `rcl`.
-  Actually, all the `Node` related API in `rmw` doesn't have more sense.
+  Actually, all the `Node` APIs in `rmw` will not longer make sense.
 - Currently, no threads are created in the `rcl` layer.
   It will be needed in case `Node` discovery is done in this layer.
 - It will force us to build the concept of `Node` on top of the underlying middleware, regardless if the middleware already has a lightweight entity similar to a `Node`.
@@ -181,7 +181,7 @@ The second approach is preferred, as it is more flexible and it avoids breaking 
 In `DDS`, security can be specified at a `Participant` level.
 If one `Node` is mapped to one `Participant`, individual configuration of its security key and access control policy is possible.
 From a security point of view, only being able to configure it at a `Participant` (or per process) level should be enough.
-There's not much sense on having different access control policies for `Nodes` in the same process.
+It does not make much sense to have different access control policies for `Nodes` in the same process.
 As they share the same address space, other vulnerabilities are possible.
 
 ##### Security directory of each participant
@@ -240,20 +240,19 @@ There's an `ignore_local_publications` option that can be set when [creating a s
 That option avoids receiving messages from `Publishers` within the same `Node`.
 This wasn't implemented in all the rmw implementations (e.g.: [FastRTPS](https://github.com/ros2/rmw_fastrtps/blob/099f9eed9a0f581447405fbd877c6d3b15f1f26e/rmw_fastrtps_cpp/src/rmw_subscription.cpp#L118)).
 
-For emulating this behavior, messages could be ignored by checking from what `Node` the `Publisher` was created.
-This should be possible by querying the state messages, or the local cache were they are organized.
+After this change, implementing this feature will be less direct.
+Some extra logic needs to be added in order to identify from which `Node` a `Publisher` was created.
 
 
 #### Intra process communication
 
 Currently, intra-process communication can be enable disabled in each `Publisher` and `Subscription`.
-There is only one reason for that: intraprocess communication doesn't support all QoS policies.
+An important reason for being able to selectively enable intra-process is that intraprocess communication doesn't support all QoS policies.
 
 Inter process messages from `Publishers` that can also communicate with a `Subscription` using the intra process layer are ignored before handling the callback.
 The same problem will happen when having only one `Participant` per context, and it can be solved in the same fashion.
 
 If in the future our intra process communication support all the QoS policies, we could forbid the possibility of enabling and dissabling it at `Node`, `Publisher`, `Subscription` level.
-Configuring intra process communication with `Context` granularity should be enough.
 
 #### Launching rclpy nodes
 
