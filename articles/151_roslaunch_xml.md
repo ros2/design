@@ -95,8 +95,8 @@ The `<let>` tags allows for definition of scoped launch file configuration varia
 ##### Examples
 
 ```
-<let var="foo" value="$(env BAR)"/>
-<let var="baz" value="false"/>
+<let name="foo" value="$(env BAR)"/>
+<let name="baz" value="false"/>
 ```
 
 #### `<arg>` Tag
