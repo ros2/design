@@ -17,7 +17,7 @@ published: false
 
 ## Overview
 
-There is a need to eliminate unnecessary copies throughout the ROS2 stack to maximize performance and determinism.
+There is a need to eliminate unnecessary copies throughout the ROS 2 stack to maximize performance and determinism.
 In order to eliminate copies, the user must have more advanced control over memory management in the client library and middleware.
 One method of eliminating copies is via message loaning, that is the middleware can loan messages that are populated by the end user.
 This document outlines desired changes in the middleware and client libraries required to support message loaning.
@@ -59,7 +59,7 @@ This is a narrow use case and will require additional interfaces to support, the
 
 There are two ways the users may take message instances from a subscription when data is available:
 
-1. Taking direction from the `Subscription` after polling it for data availability or waiting via a wait set.
+1. Taking directly from the `Subscription` after polling it for data availability or waiting via a wait set.
 2. Using an `Executor`, which takes the data from the user and delivers it via a user-defined callback.
 
 Note: It is assumed that the user will be able to take multiple messages at a time if they are available.
@@ -156,7 +156,7 @@ rmw_ret_t
 rmw_take_loaned_message(
   const rmw_subscription_t * subscription
   void ** loaned_message,
-  book * taken,
+  bool * taken,
   rmw_subscription_allocation_t * allocation
 );
 
