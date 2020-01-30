@@ -142,8 +142,8 @@ Extend publisher API for loaned messages:
 ```
 rmw_ret_t
 rmw_publish_loaned_message(
-  const rmw_publisher_t * publisher
-  const void * ros_message
+  const rmw_publisher_t * publisher,
+  const void * ros_message,
   rmw_publisher_allocation_t * allocation
 );
 ```
@@ -154,7 +154,7 @@ Because a subscription does not necessarily allocate new memory for the loaned m
 ```
 rmw_ret_t
 rmw_take_loaned_message(
-  const rmw_subscription_t * subscription
+  const rmw_subscription_t * subscription,
   void ** loaned_message,
   bool * taken,
   rmw_subscription_allocation_t * allocation
