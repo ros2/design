@@ -93,7 +93,8 @@ The following requirements should hold whether the user is polling or using a wa
 * The user must be able to get a loaned message from the middleware when calling take.
 * The user must be able to get a sequence of loaned messages from the middleware when calling take.
 * The loaned message or sequence must be returned by the user.
-  * In general, users should return loans as soon as feasibly possible, as the underlying mechanism has finite resources to loan messages from. Holding loans too long may cause messages to dropped or publications to stall.
+  * In general, users should return loans as soon as feasibly possible, as the underlying mechanism has finite resources to loan messages from.
+    Holding loans too long may cause messages to dropped or publications to stall.
 * When not taking a loan, the middleware should not do anything "special", that is that the user must be able to influence the allocation.
 
 ### Special Requirements
