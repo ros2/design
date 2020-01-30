@@ -93,7 +93,7 @@ The following requirements should hold whether the user is polling or using a wa
 * The user must be able to get a loaned message from the middleware when calling take.
 * The user must be able to get a sequence of loaned messages from the middleware when calling take.
 * The loaned message or sequence must be returned by the user.
-* When taking a loan, the middleware should not do anything "special", that is that the user must be able to influence the allocation.
+* When not taking a loan, the middleware should not do anything "special", that is that the user must be able to influence the allocation.
 
 ### Special Requirements
 
