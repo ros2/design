@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Legacy interface definition using .msg / .srv / .action files
+title: Interface definition using .msg / .srv / .action files
 permalink: articles/legacy_interface_definition.html
 abstract:
   This article specifies the file format coming from ROS 1 describing the data structures exchanged by ROS components to interact with each other.
@@ -21,7 +21,7 @@ Original Author: {{ page.author }}
 
 ## Scope
 
-This article specifies the legacy file format describing the data structures which are being used to exchange information between components.
+This article specifies the file format coming from ROS 1 describing the data structures which are being used to exchange information between components.
 The data structures are defined in a programming language agnostic way.
 The format is based on the [<code>.msg</code> format definition](http://wiki.ros.org/msg#Message_Description_Specification) from ROS 1.
 
@@ -261,11 +261,11 @@ A service file contains two message definitions which are separated by a line wh
 
 ## Conversion to IDL
 Code is generated for defined interfaces to be usable by different client libraries.
-Interfaces described using the legacy format are first converted to [IDL](idl_interface_definition.html).
+Interfaces described using the above format are first converted to [IDL](idl_interface_definition.html).
 Code generation uses the generated file.
 
 <div class="alert alert-info" markdown="1">
-  A structure defined in the legacy format can be empty / contain no members.
+  A structure defined in the above format can be empty / contain no members.
   In that case the generated `.idl` structure will have a dummy member
   (`uint8 structure_needs_at_least_one_member`) to satisfy the requirement from
   IDL of not being empty.
