@@ -53,9 +53,16 @@
             </li>{% endif %}{% endfor %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            <!-- Login is disabled until login mechanism is updated since GitHub deprecated the access_token method: -->
+            <!--   https://developer.github.com/changes/2019-11-05-deprecated-passwords-and-authorizations-api/#authenticating-using-query-parameters -->
+            <!--
             <a href="https://github.com/login/oauth/authorize?client_id={{ site.oauth_client_id }}&amp;scope=read:org"
                class="login-btn btn btn-default navbar-btn">
               <span class="glyphicon glyphicon-user"></span> &nbsp;Login with Github
+            </a>
+            -->
+            <a href="" class="login-btn btn btn-default navbar-btn">
+              <span class="glyphicon glyphicon-user"></span> &nbsp;Login disabled for now
             </a>
           </ul>
         </div><!--/.nav-collapse -->
