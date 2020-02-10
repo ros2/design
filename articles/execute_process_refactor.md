@@ -262,12 +262,12 @@ These parameters are drawn from the current `launch_ros.actions.Node`.
 |Argument|Description|
 |---|---|
 |node_executable|the name of the executable to find if a package is provided or otherwise a path to the executable to run.|
-|package|the package in which the node executable can be found|
-|node_name|the name of the node|
-|node_namespace|the ros namespace for this Node|
-|parameters|list of names of yaml files with parameter rules, or dictionaries of parameters.|
-|remappings|ordered list of 'to' and 'from' string pairs to be passed to the node as ROS remapping rules|
-|arguments|list of extra arguments for the node|
+|package|name of the ROS package the node executable lives in|
+|node_name| name the node should have                                    |
+|node_namespace|namespace the node should create topics/services/etc in|
+|parameters| list of either paths to yaml files or dictionaries of parameters |
+|remappings|list of from/to pairs for remapping names|
+|arguments|container specific arguments to be passed to the node|
 
 #### Properties
 
@@ -293,7 +293,7 @@ Most parameters would be passed to the new superclass.
 |---|---|
 |node_plugin|name of the plugin to be loaded|
 
-Additional parameters that may be passed, which are handled by `launch_ros.descriptions.Node`: `node_executable`, `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`.
+Additional parameters that may be passed, which are handled by `launch_ros.descriptions.Node`: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`. Note that the parameter `node_executable` would not be passed to the superclass, as it is not applicable to this object.
 
 #### Properties
 
@@ -309,7 +309,7 @@ No events would be handled or emitted.
 
 ### launch.actions.ExecuteLocalProcess
 
-This class would represent the execution-time aspects of `launch.actions.ExecuteProcess`. The new `process_description` constructor parameter could be either a `launch.descriptions.Process` or a `launch_ros.descriptions.Node`; node-specific functionality is limited to proper configuration of the command line to be executed, so no special execution wrapper is needed. This is not the case for lifecycle nodes or composable nodes, which do require custom execution wrappers, described below.
+Extends the `launch.actions.Action` class. This class would represent the execution-time aspects of `launch.actions.ExecuteProcess`. The new `process_description` constructor parameter could be either a `launch.descriptions.Process` or a `launch_ros.descriptions.Node`; node-specific functionality is limited to proper configuration of the command line to be executed, so no special execution wrapper is needed. This is not the case for lifecycle nodes or composable nodes, which do require custom execution wrappers, described below.
 
 This class is simplified from the current `launch.actions.ExecuteProcess` by removing the logic relating to process definition/configuration, and by removing the logic regarding substitutions thereof.
 
@@ -433,3 +433,77 @@ Methods available from `launch.actions.ExecuteLocalProcess` are inherited: `get_
 #### Events
 
 Inherits events from `launch.actions.ExecuteLocalProcess`, but does not define any additional events.
+
+## Future Extension
+
+One topic of interest is the ability to launch nodes on remote machines as part of more complex systems. While the current refactoring will not attempt to implement this functionality, such functionality could be implemented using sibling classes to those described above.
+
+### launch.actions.ExecuteSshProcess
+
+Extends the `launch.actions.Action` class. This class would represent the execution-time aspects of an analog to `launch.actions.ExecuteProcess` which executes the given process via an SSH connection. This likely would be a remote machine in virtually all usages. This is *not* a subclass of the proposed `launch.actions.ExecuteLocalProcess` class; certain features provided by that class are not available from standard SSH connections.
+
+It is also conceivable that this class, or one like it, could be constructed to simultaneously execute multiple processes over a single SSH connection. If this is attempted, several features such as input/output pipes would likely no longer be feasible.
+
+Similar sibling classes could also be defined to combine SSH and Lifecycle or SSH and Composable Node containers.
+
+#### Constructor
+
+| Argument               | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| process\_description   | the `launch.descriptions.Process` to execute as a local process |
+| connection_description | an object defining the SSH connection information, such as host, port, user, etc. |
+| prefix                 | a set of commands/arguments to preceed the `cmd`, used for things like `gdb`/`valgrind` and defaults to the `LaunchConfiguration` called `launch-prefix` |
+| output                 | configuration for process output logging. Defaults to `log` i.e. log both `stdout` and `stderr` to launch main log file and stderr to the screen. |
+| output\_format         | for logging each output line, supporting `str.format()` substitutions with the following keys in scope: `line` to reference the raw output line and `this` to reference this action instance. |
+| log\_cmd               | if `True`, prints the final cmd before executing the process, which is useful for debugging when substitutions are involved. |
+| on\_exit               | list of actions to execute upon process exit.                |
+
+The following constructor parameters which were present in the proposed `launch.actions.ExecuteLocalProcess` are not provided as part of this class due to the SSH execution environment.
+
+| Argument        | Rationale for Exclusion                                      |
+| --------------- | ------------------------------------------------------------ |
+| shell           | The process is being executed through SSH, which is by definition a shell |
+| sigterm_timeout | Signal handling across SSH is not robust                     |
+| sigkill_timeout | Signal handling across SSH is not robust                     |
+| emulate_tty     | The process is being executed through SSH, which may restrict flexibility of TTY choice |
+
+#### Properties
+
+| Name            | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| process_details | `None` if the process is not yet started; otherwise an object containing information such as the command, working directory, environment, and process ID |
+
+Additional properties provide access to constructor parameters for `process_description`, `connection_description`, and `output`.
+
+#### Methods
+
+| Name               | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| get_sub_entities   | Override. If on_exit was provided in the constructor, returns that; otherwise returns an empty list. |
+| execute            | Override. Establishes event handlers for process execution, passes the execution context to the process definition for substitution expansion, then uses `osrf_pycommon.process_utils.async_execute_process` to launch the defined process. |
+| get_asyncio_future | Override. Return an asyncio Future, used to let the launch system know when we're done. |
+
+This assumes the SSH interface is provided by a library with get_asyncio_future support; if such a library is not found/used, an alternate method for providing the appropriate feedback will be required.
+
+#### Events
+
+##### Handled Events
+
+| Event Type                              | Description                                                  |
+| --------------------------------------- | ------------------------------------------------------------ |
+| `launch.events.process.ShutdownProcess` | begins standard shutdown procedure for a running executable  |
+| `launch.events.process.ProcessStdin`    | passes the text provided by the event to the stdin of the process |
+| `launch.events.Shutdown`                | same as ShutdownProcess                                      |
+
+The `launch.events.process.SignalProcess` event is not handled by this class, due to the difficulty in managing signals across SSH. The `ProcessStdin` event may need to be evaluated, depending on the SSH interface.
+
+##### Emitted Events
+
+| Event Type                             | Description                                                  |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `launch.events.process.ProcessStarted` | emitted when the process starts                              |
+| `launch.events.process.ProcessExited`  | emitted when the process exits; event contains return code   |
+| `launch.events.process.ProcessStdout`  | emitted when the process produces data the stdout pipe; event contains the data from the pipe |
+| `launch.events.process.ProcessStderr`  | emitted when the process produces data the stderr pipe; event contains the data from the pipe |
+
+The `ProcessStdout` and `ProcessStderr` events may need to be evaluated, depending on the SSH interface.
