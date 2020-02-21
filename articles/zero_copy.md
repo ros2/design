@@ -4,7 +4,7 @@ title: Zero Copy via Loaned Messages
 permalink: articles/zero_copy.html
 abstract:
 author: '[Karsten Knese](https://github.com/karsten1987) [William Woodall](https://github.com/wjwwood) [Michael Carroll](https://github.com/mjcarroll)'
-published: false
+published: true
 ---
 
 {:toc}
