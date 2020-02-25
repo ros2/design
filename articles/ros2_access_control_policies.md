@@ -99,10 +99,28 @@ Attributes:
 - **version**: declared version of schema version in use
   - Allows for advancing future revisions of the schema
 
+### `<contexts>` Tag
+
+Encapsulates a sequence of unique contexts.
+This method of nesting sequences allows for additional tags to be extended to the `<policy>` root.
+
+### `<context>` Tag
+
+Encapsulates a collection of profiles.
+This is specific to a context as determined by associative attributes.
+
+Attributes:
+- **path**: Fully qualified context path
+
+Given that multiple nodes can be composed into a single process, a context is used to contain the collection of profiles of all respective nodes.
+A context may therefor be considered the union of contained profiles.
+Note that the union of profiles within a context will result in denied privileges of any profile to supersede all allowed privileges for every profile.
+See section `<profile>` Tag for more info on MAC is applied. 
+
 ### `<profiles>` Tag
 
 Encapsulates a sequence of unique profiles.
-This method of nesting sequences allows for additional tags to be extended to the `<policy>` root.
+This method of nesting sequences allows for additional tags to be extended to the `<context>` root.
 
 ### `<profile>` Tag
 
