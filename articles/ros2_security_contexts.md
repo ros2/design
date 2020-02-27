@@ -37,7 +37,7 @@ Participant is the object representing a single entity on the network, in the ca
 ### Namespaces
 
 Namespaces are a fundamental design pattern in ROS and are widely used to organize and differentiate many types of resources as to be uniquely identifiable; i.e. for topics, services, actions, and node names.
-As such, the concept of namespaceing is well know and understood by current users, as well as strongly supported with the existing tooling.
+As such, the concept of namespacing is well know and understood by current users, as well as strongly supported with the existing tooling.
 Namespaces are often configurable at runtime via command line arguments or statically/programmatically via launch file declarations.
 
 Previously, the Fully Qualified Name (FQN) of a node was used directly by a selected security directory lookup strategy to load the necessary key material.
