@@ -47,8 +47,7 @@ However, with the advent of contexts, such a direct mapping of FQN to security a
 
 With the advent of ROS 2, multiple nodes may now be composed into one process for improved performance.
 Previously however, each node would retain it's one to one mapping to a separate middleware ``Participant``.
-Given the non-negligible overhead incurred of multiple ``Participant``s per process, a concept of contexts was introduced.
-Contexts permit a many-to-one mapping of nodes to ``Participant`` by grouping many nodes per context, and one ``Participant`` per context.
+Given the non-negligible overhead incurred of multiple ``Participant``s per process, a change was introduced to map a single ``Participant`` to a context, and allow for multiple nodes to share that context.
 
 Based on the DDS Security specification v1.1, a ``Participant`` can only utilise a single security identity; consequently the access control permissions applicable to every node mapped to a given context must be consolidated and combined into a single set of security artifacts.
 As such, additional tooling and extensions to SROS 2 are necessary to support this new paradigm.
