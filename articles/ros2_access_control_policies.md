@@ -113,7 +113,7 @@ Attributes:
 - **path**: Fully qualified context path
 
 Given that multiple nodes can be composed into a single process, a context is used to contain the collection of profiles of all respective nodes.
-A context may therefor be considered the union of contained profiles.
+A context may therefore be considered the union of contained profiles.
 Note that the union of profiles within a context will result in denied privileges of any profile to supersede all allowed privileges for every profile.
 See section `<profile>` Tag for more info on MAC is applied. 
 
