@@ -41,7 +41,7 @@ As such, the concept of namespacing is well known and understood by current user
 Namespaces are often configurable at runtime via command line arguments or statically/programmatically via launch file declarations.
 
 Previously, the Fully Qualified Name (FQN) of a node was used directly by a selected security directory lookup strategy to load the necessary key material.
-However, with the advent of contexts, such a direct mapping of FQN to security artifacts may no longer suffice.
+However, now that Participants map to contexts and not nodes, such a direct mapping of node FQN to security artifacts is no longer appropriate.
 
 ### Contexts
 
