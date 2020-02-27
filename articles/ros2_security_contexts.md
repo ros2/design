@@ -32,7 +32,7 @@ Before detailing the SROS 2 integration of the contexts, the following concepts 
 
 ### Participant
 
-Participant is the object representing a single entity on the network, in the case of DDS the ``Participant`` is a DDS DomainParticipant and the object to which a set of access control and security identity apply.
+Participant is the object representing a single entity on the network. In the case of DDS, the ``Participant`` is a DDS DomainParticipant, which has both access control permissions and a security identity.
 
 ### Namespaces
 
