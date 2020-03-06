@@ -22,7 +22,7 @@
     </xs:complexType>
 
     <xs:complexType name="Context">
-        <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <xs:element name="profiles" type="Profiles" />
         </xs:sequence>
         <xs:attribute name="path" type="xs:string" use="required" />
@@ -32,6 +32,10 @@
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <xs:element name="profile" type="Profile" />
         </xs:sequence>
+        <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element name="metadata" type="xsd:anyType" />
+        </xs:sequence>
+        <xs:attribute name="type" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="Profile">

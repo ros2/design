@@ -119,8 +119,11 @@ See section `<profile>` Tag for more info on MAC is applied.
 
 ### `<profiles>` Tag
 
-Encapsulates a sequence of unique profiles.
-This method of nesting sequences allows for additional tags to be extended to the `<context>` root.
+Encapsulates a sequence of unique profiles and designated metadata.
+This method of nesting sequences allows for additional tags to be extended to the `<context>` root, as well as associating particular metadata or constraints to the contained profile elements. 
+
+Attributes:
+- **type**: Specifies the transport type of profiles and metadata
 
 ### `<profile>` Tag
 
@@ -136,6 +139,19 @@ Additionally, as with many other MAC languages, while composed privileges may ov
 That is to say the priority of denied privileges conservatively supersedes allowed privileges, avoiding potential lapses in PoLP.
 This method of flatting privileges enables users to provision general access to a larger set of objects, while simultaneously revoking access to a smaller subset of sensitive objects.
 Although recursion of qualifiers is subsequently prevented, transformations are subsequently simplified, preventing potential for unintended access.
+
+### `<metadata>` Tag
+
+Encapsulates arbitrary metadata or constraints.
+This could include transport specific permission details applicable to sibling profile elements.
+There can only one `metadata` element per `profiles` parent element.
+
+Attributes:
+- To be defined
+
+Given the use cases for bridge interfaces where a context's credentials may be used to interconnect across multiple transports or to transport specific domains, it may be necessary to qualify certain profile sequences with particular constraints, while doing so multiple times for separate profiles per context.
+This allows advanced users to holistically control the intersect of permissions across transport domains, while retaining accurate model fidelity of security permissions.
+Given how security sensitive bridge interfaces are and the attack surface they expose, it is vital that information flow control within a bridge remains formally verifiable for safe and secure operation.
 
 #### Privileges
 
