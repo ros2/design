@@ -209,7 +209,7 @@ contexts/
 ### Context path orthogonal to namespace
 
 An alternative to reusing namespaces to hint the context path could be to completely disassociate the two entirely, treating the context path as it's own unique identifier.
-However, having to book keep both identifier spaces simulations may introduce to many degrees of freedom that a human could groc or easily introspect via tooling.
+However, having to book keep both identifier spaces simultaneously may introduce to many degrees of freedom that a human could groc or easily introspect via tooling.
 
 #### `<push_ros_namespace namespace="..." context="foo"/>`
 
