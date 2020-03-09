@@ -125,19 +125,15 @@ Let's delve further into these.
 
 #### Directory tree of all security files
 
-RCL supports finding security files in one directory that is the root of a directory structure corresponding to the fully-qualified names of every context (e.g. namespace + context name).
+RCL supports finding security files in one directory that is within the root context directory structure corresponding to the fully-qualified path of every context.
 For example, for the `/front/camera` context, the directory structure would look like:
 
     <root>
-    └── contexts
-        └── front
-            └── camera
-                ├── cert.pem
-                ├── key.pem
-                ├── ...
-
-To be clear: this directory structure needs to reflect the state of the running system.
-In other words, it does not contain a set of files per context on disk, but per context instance _in the ROS graph_.
+    └── front
+        └── camera
+            ├── cert.pem
+            ├── key.pem
+            ├── ...
 
 The set of files expected within each context instance directory are:
 
@@ -148,20 +144,20 @@ The set of files expected within each context instance directory are:
 - **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
 - **permissions.p7s**: The XML document that specifies the permissions of this particular context instance to the **Access control** plugin (also signed by the Permissions CA).
 
-This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the directory tree.
+This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the contexts directory tree.
 
 
 ##### Support security files lookup methods
 
 If using the directory tree approach to organize security files, RCL supports two different methods for looking up a given context instance's security files in the tree:
 
-- **Exact**: Only load security files from a directory exactly matching the fully-qualified name of the context.
-For example, given a context "baz_123" within the "/foo/bar/" namespace, only load security files from `<root>/contexts/foo/bar/baz_123/`.
+- **Exact**: Only load security files from a directory exactly matching the fully-qualified path of the context.
+For example, given a context "baz_123" within the "/foo/bar/" subpath, only load security files from `<root>/foo/bar/baz_123/`.
 This is the default behavior.
 - **Prefix**: Attempt to load the most specific set of security files, but if they can't be found, check for security files under a less-specific context path.
-For example, given a context "baz_123" within the "/foo/bar/" namespace, load security files from `<root>/contexts/foo/bar/baz_123/`.
-However, if that directory doesn't exist, find the most specific (i.e. longest) context path that _does_ have security files within that namespace (e.g. `<root>/contexts/foo/bar/baz_12/`, or `<root>/contexts/foo/bar/baz/`, etc.).
-Note that it will not search higher in the namespace hierarchy.
+For example, given a context "baz_123" within the "/foo/bar/" subpath, load security files from `<root>/foo/bar/baz_123/`.
+However, if that directory doesn't exist, find the most specific (i.e. longest) context path that _does_ have security files within that subpath (e.g. `<root>/foo/bar/baz_12/`, or `<root>/foo/bar/baz/`, etc.).
+Note that it will not search higher in the subpath hierarchy.
 
 The desired lookup method can be specified by setting the `$ROS_SECURITY_LOOKUP_TYPE` environment variable to "MATCH_EXACT" (case-sensitive) for the **Exact** method, or "MATCH_PREFIX" (case-sensitive) for the **Prefix** method.
 
