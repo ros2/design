@@ -144,7 +144,12 @@ The set of files expected within each context instance directory are:
 - **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
 - **permissions.p7s**: The XML document that specifies the permissions of this particular context instance to the **Access control** plugin (also signed by the Permissions CA).
 
-This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the contexts directory tree.
+This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the contexts directory tree, and then specifying the context path using the `--ros-args` runtime argument `--contex-path`, e.g.:
+
+``` shell
+export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts"
+ros2 run <package> <executable> --ros-args --contex-path="/front/camera"
+```
 
 
 ##### Support security files lookup methods
@@ -168,8 +173,20 @@ RCL supports specifying the path to a directory containing the set of security f
 The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual context instance directories.
 
 This can be specified by setting the `$ROS_SECURITY_CONTEXT_DIRECTORY` environment variable to point to the directory containing the security files.
-Note that this setting takes precedence over `$ROS_SECURITY_ROOT_DIRECTORY`.
+Note that this setting takes precedence over `$ROS_SECURITY_ROOT_DIRECTORY` with `--contex-path`.
 
+Note the following two examples load from the same context path as demonstrated prior:
+
+``` shell
+export ROS_SECURITY_CONTEXT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts/front/camera"
+ros2 run <package> <executable>
+```
+
+``` shell
+export ROS_SECURITY_ROOT_DIRECTORY="/dev/null"
+export ROS_SECURITY_CONTEXT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts/front/camera"
+ros2 run <package> <executable> --ros-args --contex-path="/spam"
+```
 
 ### Support for both permissive and strict enforcement of security
 
