@@ -76,8 +76,8 @@ keystore
 │   └── ca.key.pem
 └── public
     ├── ca.cert.pem
-    ├── identity_ca.cert.pem
-    └── permissions_ca.cert.pem
+    ├── identity_ca.cert.pem -> ca.cert.pem
+    └── permissions_ca.cert.pem -> ca.cert.pem
 ```
 
 
@@ -85,7 +85,7 @@ keystore
 
 The ``public`` directory contains anything permissible as public, such as public certificates for the identity or permissions certificate authorities.
 As such, this can be given read access to all executables.
-Note that in the default case, both the `identity_ca` and `permissions_ca` are the same CA certificate.
+Note that in the default case, both the `identity_ca` and `permissions_ca` points to the same CA certificate.
 
 ### ``private``
 
@@ -122,9 +122,9 @@ $ tree contexts/
 contexts/
 ├── cert.pem
 ├── governance.p7s
-├── identity_ca.cert.pem
+├── identity_ca.cert.pem -> ../public/identity_ca.cert.pem
 ├── key.pem
-├── permissions_ca.cert.pem
+├── permissions_ca.cert.pem -> ../public/permissions_ca.cert.pem
 └── permissions.p7s
 ```
 
@@ -159,6 +159,8 @@ contexts/
 ├── permissions_ca.cert.pem
 └── permissions.p7s
 ```
+
+> Symbolic links suppressed for readability
 
 ### Relatively pushed qualified context path
 
