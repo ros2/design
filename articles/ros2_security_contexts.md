@@ -274,7 +274,7 @@ To be sure though, the setting of security environment variables from within lau
 ### Composable nodes in container
 
 Given that containers can be dynamic, where nodes can be added or removed at runtime, there is perhaps some question as to how containers should integrate with secure contexts.
-In roslaunch, the namespace in scope at the container's instantiation could be used to resolve the container's specified relative context path, thus to all nodes/components inside that container.
+In ros2launch, the namespace in scope at the container's instantiation could be used to resolve the container's specified relative context path, thus to all nodes/components inside that container.
 This should be further deliberated when eventually extending the launch API for containers.
 
 ### Migration for RMW implementations
