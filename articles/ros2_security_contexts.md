@@ -104,7 +104,7 @@ The `ROS_SECURITY_ROOT_DIRECTORY` environment variable should by convention poin
 Given the normative case where a context within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the context.
 To highlight this interdependency, and to help avoid context path collisions, a hierarchy borrowing namespaces is appropriate. 
 By convention, roslaunch could be used to prefix relative context paths for single process node or containers using the namespace in scope, to enable a convention of composable launch files with adjustable and parameterized context paths.
-Given the runtime command argument for specifying the fully qualified context path, roslaunch would accordly resolve relative context paths for executables, as defined by launch attributes.
+Given the runtime command argument for specifying the fully qualified context path, ros2launch would accordingly resolve relative context paths for executables, as defined by launch attributes.
 
 ### Unqualified context path
 
