@@ -125,7 +125,7 @@ Let's delve further into these.
 
 #### Directory tree of all security files
 
-RCL supports finding security files in one directory that is within the root context directory structure corresponding to the fully-qualified path of every context.
+RCL supports finding security files in one directory that is within the root `contexts` directory structure corresponding to the fully-qualified path of every context.
 For example, for the `/front/camera` context, the directory structure would look like:
 
     <root>
