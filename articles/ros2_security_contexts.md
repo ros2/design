@@ -23,8 +23,12 @@ categories: Security
 
 Original Author: {{ page.author }}
 
-
-TODO: Some concise overview introduction here
+This design document formalizes the integration of contexts in ROS2 with security.
+In summary, all context's within a process must load a common context path that contains the unique runtime security artifacts.
+Multiple context paths can be encapsulated in a single security policy to accurately model the information flow control.
+Users can tune the fidelity of such models by controlling at what scope context paths are applied at deployment.
+E.g. one unique context path per OS process, or per OS user, or per device/robot, or per swarm, etc.
+The rest of this document details how context paths can be organized and used by convention.
 
 ## Concepts
 
@@ -32,7 +36,8 @@ Before detailing the SROS 2 integration of the contexts, the following concepts 
 
 ### Participant
 
-Participant is the object representing a single entity on the network. In the case of DDS, the ``Participant`` is a DDS DomainParticipant, which has both access control permissions and a security identity.
+Participant is the object representing a single entity on the network.
+In the case of DDS, the ``Participant`` is a DDS DomainParticipant, which has both access control permissions and a security identity.
 
 ### Namespaces
 
@@ -51,7 +56,6 @@ Given the non-negligible overhead incurred of multiple ``Participant``s per proc
 
 Based on the DDS Security specification v1.1, a ``Participant`` can only utilise a single security identity; consequently the access control permissions applicable to every node mapped to a given context must be consolidated and combined into a single set of security artifacts.
 As such, additional tooling and extensions to SROS 2 are necessary to support this new paradigm.
-
 
 ## Keystore
 
@@ -92,15 +96,19 @@ This directory should be redacted before deploying the keystore onto the target 
 
 The ``contexts`` directory contains the security artifacts associated with individual contexts, and thus node directories are no longer relevant.
 Similar to node directories however, the `contexts` folder may still recursively nest sub-paths for organizing separate contexts.
+The `ROS_SECURITY_ROOT_DIRECTORY` environment variable should by convention point to this directory.
 
 
 ## Runtime
 
-TODO: Some transition paragraph here about ros launch
+Given the normative case where a context within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the context.
+To highlight this interdependency, and to help avoid context path collisions, a hierarchy borrowing namespaces is appropriate. 
+By convention, roslaunch could be used to prefix relative context paths for single process node or containers using the namespace in scope, to enable a convention of composable launch files with adjustable and parameterized context paths.
+Given the runtime command argument for specifying the fully qualified context path, roslaunch would accordly resolve relative context paths for executables, as defined by launch attributes.
 
 ### Unqualified context path
 
-For nodes with unqualified context paths, the context directory will subsequently default to the root level context.
+For single process nodes with unqualified context paths, the context directory will subsequently default to the root level context.
 
 ``` xml
 <launch>
@@ -122,7 +130,7 @@ contexts/
 
 ### Pushed unqualified context path
 
-For nodes with unqualified context paths pushed by a namespace, the context directory will subsequently be pushed to the relative sub-folder.
+For single process nodes with unqualified context paths pushed by a namespace, the context directory will subsequently be pushed to the relative sub-folder.
 
 ``` xml
 <launch>
@@ -154,7 +162,7 @@ contexts/
 
 ### Relatively pushed qualified context path
 
-For nodes with qualified context paths pushed by a namespace, the qualified context directory will subsequently be pushed to the relative sub-folder.
+For single process nodes with qualified context paths pushed by a namespace, the qualified context directory will subsequently be pushed to the relative sub-folder.
 
 ``` xml
 <launch>
@@ -180,7 +188,7 @@ contexts/
 
 ### Fully qualified context path
 
-For nodes with absolute context paths, namespaces do not subsequently push the relative sub-folder.
+For single process nodes with absolute context paths, namespaces do not subsequently push the relative sub-folder.
 
 ``` xml
 <launch>
@@ -209,7 +217,8 @@ contexts/
 ### Context path orthogonal to namespace
 
 An alternative to reusing namespaces to hint the context path could be to completely disassociate the two entirely, treating the context path as it's own unique identifier.
-However, having to book keep both identifier spaces simultaneously may introduce to many degrees of freedom that a human could groc or easily introspect via tooling.
+Having to book keep both identifier spaces simultaneously may introduce too many degrees of freedom that a human could groc or easily introspect via tooling.
+However, doing so would still be possible given such namespacing conventions are bypassable in roslaunch and not implemented directly in RCL.
 
 #### `<push_ros_namespace namespace="..." context="foo"/>`
 
@@ -221,14 +230,12 @@ Keeps pushing contexts close/readable to pushing of namespaces.
 TODO: Describe added `push_ros_context` element.
 Keeps pushing context path independent/flexable from namespaces.
 
-
 ## Concerns
 
 ### Multiple namespaces per context
 
-For circumstances where users may compose multiple nodes of dissimilar namespaces into a single context, the user must subsequently specify a common fully qualified context path for each node to compose, as the varying different namespaces would not push to a common context.
-For circumstances where the context path is orthogonal to node namespace, the use of fully qualifying all relevant nodes is could be tedious, but could perhaps could still be parametrized via the use of `<var/>`, and `<arg/>` substitution and expansion.
-
+For circumstances where users may compose multiple nodes of dissimilar namespaces into a single context, the user must still subsequently specify a common context path that is applicable for all nodes composed.
+For circumstances where the context path is orthogonal to node namespace, the use of fully qualifying all relevant context paths could be tedious, but could perhaps could still be parametrized via the use of `<var/>`, and `<arg/>` substitution and expansion.
 
 ### Modeling permissions of nodes in a process v.s. permission of the middleware ``Participant``
 
@@ -248,10 +255,9 @@ If a process contains a single context, this reconciles the permissions of a ``P
 However, should multiple contexts be used per process, then such security guaranties are again lost because both contexts will share the same memory space.
 Thus it should be asked whether if multiple contexts per process should even be supported.
 
-
 In summary, the distinction here is that before, the composition of multiple permissions could not be conveyed to the tooling.
 Whether nodes could gain the permission of others in the same process space is not the hinge point of note; it's the fact that such side effects could not be formally modeled or accounted for by the designer.
-It will now be possible with contexts, however allowing for multiple contexts per process will reintroduce and exacerbates the same modeling inaccuracies.
+It will now be possible with contexts, however allowing for multiple contexts per process that load separate credentials would reintroduce and exacerbate the same modeling inaccuracies.
 
 ### Composable launchfile includes
 
@@ -262,12 +268,13 @@ Authors can selectively choose what attributes to expose as input arguments, whi
 In case of contexts, it is not inherently clear what best practices either package authors or users should employ to retain a composable and intuitive launchfile structure. E.g:
 Should authors parametrize context paths for each node as input arguments?
 Should users push namespaces of included launchfiles to separate contexts?
-Should the setting of security environment variables be discouraged from within launchfiles, limiting the use of simple static analysis of launchfiles combined with Node IDL for procedural context generation?
+
+To be sure though, the setting of security environment variables from within launchfiles should be discouraged, as this would restrict the use of static analysis of launchfiles combined with Node IDL for procedural context generation.
 
 ### Composable nodes in container
 
 Given that containers can be dynamic, where nodes can be added or removed at runtime, there is perhaps some question as to how containers should integrate with secure contexts.
-The most straightforward approach is perhaps only specifying the context wherever the container is first defined/launched, applying to the container participant, thus to all nodes/components inside that container.
+In roslaunch, the namespace in scope at the container's instantiation could be used to resolve the container's specified relative context path, thus to all nodes/components inside that container.
 This should be further deliberated when eventually extending the launch API for containers.
 
 ### Migration for RMW implementations
