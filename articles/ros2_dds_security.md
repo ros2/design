@@ -144,7 +144,7 @@ The set of files expected within each context instance directory are:
 - **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
 - **permissions.p7s**: The XML document that specifies the permissions of this particular context instance to the **Access control** plugin (also signed by the Permissions CA).
 
-This can be specified by setting the `$ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the contexts directory tree, and then specifying the context path using the `--ros-args` runtime argument `--context`, e.g.:
+This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the contexts directory tree, and then specifying the context path using the `--ros-args` runtime argument `--context`, e.g.:
 
 ``` shell
 export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts"
@@ -164,7 +164,7 @@ For example, given a context "baz_123" within the "/foo/bar/" subpath, load secu
 However, if that directory doesn't exist, find the most specific (i.e. longest) context path that _does_ have security files within that subpath (e.g. `<root>/foo/bar/baz_12/`, or `<root>/foo/bar/baz/`, etc.).
 Note that it will not search higher in the subpath hierarchy.
 
-The desired lookup method can be specified by setting the `$ROS_SECURITY_LOOKUP_TYPE` environment variable to "MATCH_EXACT" (case-sensitive) for the **Exact** method, or "MATCH_PREFIX" (case-sensitive) for the **Prefix** method.
+The desired lookup method can be specified by setting the `ROS_SECURITY_LOOKUP_TYPE` environment variable to "MATCH_EXACT" (case-sensitive) for the **Exact** method, or "MATCH_PREFIX" (case-sensitive) for the **Prefix** method.
 
 
 #### Manual specification
@@ -172,8 +172,8 @@ The desired lookup method can be specified by setting the `$ROS_SECURITY_LOOKUP_
 RCL supports specifying the path to a directory containing the set of security files for the exact context instance that needs to be launched.
 The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual context instance directories.
 
-This can be specified by setting the `$ROS_SECURITY_CONTEXT_DIRECTORY` environment variable to point to the directory containing the security files.
-Note that this setting takes precedence over `$ROS_SECURITY_ROOT_DIRECTORY` with `--context`.
+This can be specified by setting the `ROS_SECURITY_CONTEXT_DIRECTORY` environment variable to point to the directory containing the security files.
+Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--context`.
 
 Note the following two examples load from the same context path as demonstrated prior:
 
@@ -196,7 +196,7 @@ Contexts with the security features enabled will not communicate with contexts t
 This is the default behavior.
 - **Strict mode**: Try to find security files, and if they can't be found, fail to run the context.
 
-The type of mode desired can be specified by setting the `$ROS_SECURITY_STRATEGY` environment variable to "Enforce" (case-sensitive) for strict mode, and anything else for permissive mode.
+The type of mode desired can be specified by setting the `ROS_SECURITY_STRATEGY` environment variable to "Enforce" (case-sensitive) for strict mode, and anything else for permissive mode.
 
 
 ### Support for a master "on/off" switch for all SROS 2 features
@@ -204,7 +204,7 @@ The type of mode desired can be specified by setting the `$ROS_SECURITY_STRATEGY
 In addition to the supported features just discussed, RCL also supports a master shutoff for security features for easy experimentation.
 If it's turned off (the default), none of the above security features will be enabled.
 
-In order to enable SROS 2, set the `$ROS_SECURITY_ENABLE` environment variable to "true" (case-sensitive).
+In order to enable SROS 2, set the `ROS_SECURITY_ENABLE` environment variable to "true" (case-sensitive).
 To disable, set to any other value.
 
 
