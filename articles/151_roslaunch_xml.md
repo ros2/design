@@ -94,7 +94,7 @@ The `<let>` tags allows for definition of scoped launch file configuration varia
 
 ##### Examples
 
-```
+```xml
 <let name="foo" value="$(env BAR)"/>
 <let name="baz" value="false"/>
 ```
