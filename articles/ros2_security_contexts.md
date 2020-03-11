@@ -24,7 +24,7 @@ categories: Security
 Original Author: {{ page.author }}
 
 This design document formalizes the integration of contexts in ROS 2 with security.
-In summary, all contexts within a process must load a common context path that contains the unique runtime security artifacts.
+In summary, all context instances within a process must load a common context path that contains the runtime security artifacts unique to that context path, yet each process may not necessarily have a unique context path.
 Multiple context paths can be encapsulated in a single security policy to accurately model the information flow control.
 Users can tune the fidelity of such models by controlling at what scope context paths are applied at deployment.
 E.g. one unique context path per OS process, or per OS user, or per device/robot, or per swarm, etc.
