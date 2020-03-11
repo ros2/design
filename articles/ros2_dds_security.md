@@ -151,22 +151,6 @@ export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts"
 ros2 run <package> <executable> --ros-args --context="/front/camera"
 ```
 
-
-##### Support security files lookup methods
-
-If using the directory tree approach to organize security files, RCL supports two different methods for looking up a given context instance's security files in the tree:
-
-- **Exact**: Only load security files from a directory exactly matching the fully-qualified path of the context.
-For example, given a context "baz_123" within the "/foo/bar/" subpath, only load security files from `<root>/foo/bar/baz_123/`.
-This is the default behavior.
-- **Prefix**: Attempt to load the most specific set of security files, but if they can't be found, check for security files under a less-specific context path.
-For example, given a context "baz_123" within the "/foo/bar/" subpath, load security files from `<root>/foo/bar/baz_123/`.
-However, if that directory doesn't exist, find the most specific (i.e. longest) context path that _does_ have security files within that subpath (e.g. `<root>/foo/bar/baz_12/`, or `<root>/foo/bar/baz/`, etc.).
-Note that it will not search higher in the subpath hierarchy.
-
-The desired lookup method can be specified by setting the `ROS_SECURITY_LOOKUP_TYPE` environment variable to "MATCH_EXACT" (case-sensitive) for the **Exact** method, or "MATCH_PREFIX" (case-sensitive) for the **Prefix** method.
-
-
 #### Manual specification
 
 RCL supports specifying the path to a directory containing the set of security files for the exact context instance that needs to be launched.
