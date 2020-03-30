@@ -1,0 +1,74 @@
+@startuml
+
+participant Publisher
+participant IntraProcessManager
+participant IntraProcessImpl
+collections Subscriptions
+
+[-> Publisher: publish(unique_msg)
+
+Publisher -> IntraProcessManager : do_intra_process_publish(\nid, unique_msg)
+
+IntraProcessManager -> IntraProcessImpl : get_subscription_ids_for_pub(id)
+
+IntraProcessImpl --> IntraProcessManager : take_shared_ids, take_owned_ids
+note left
+	these are lists of subscriptions
+	with QoS compatible with publisher
+	divided according to the type 
+	stored in their buffers
+end note
+
+alt take_owned_ids.size() == 0
+	
+	IntraProcessManager -> IntraProcessManager : promote unique_msg \nto shared_msg
+
+	loop for id : take_shared_ids
+		IntraProcessManager -> IntraProcessImpl : get_subscription(id)
+
+		IntraProcessManager -> Subscriptions : add_message_to_buffer(shared_msg)
+
+		IntraProcessManager -> Subscriptions : trigger_guard_condition()
+	end
+
+else take_owned_ids.size() > 0 && take_shared_ids.size() <= 1
+
+	loop for id : (take_shared_ids + take_owned_ids)
+
+		IntraProcessManager -> IntraProcessImpl : get_subscription(id)
+
+		IntraProcessManager -> IntraProcessManager : Copy unique_msg\n (except last iter)
+		
+		IntraProcessManager -> Subscriptions : add_message_to_buffer(unique_msg)
+
+		IntraProcessManager -> Subscriptions : trigger_guard_condition()
+	end
+
+
+else take_owned_ids.size() > 0 && take_shared_ids.size() > 1
+
+	IntraProcessManager -> IntraProcessManager : copy unique_msg to shared_msg
+
+	loop for id : take_shared_ids
+		IntraProcessManager -> IntraProcessImpl : get_subscription(id)
+
+		IntraProcessManager -> Subscriptions : add_message_to_buffer(shared_msg)
+
+		IntraProcessManager -> Subscriptions : trigger_guard_condition()
+	end
+
+	loop for id : take_owned_ids
+
+		IntraProcessManager -> IntraProcessImpl : get_subscription(id)
+
+		IntraProcessManager -> IntraProcessManager : Copy unique_msg\n (except last iter)	
+		
+		IntraProcessManager -> Subscriptions : add_message_to_buffer(unique_msg)
+
+		IntraProcessManager -> Subscriptions : trigger_guard_condition()
+	end
+
+
+end
+
+@enduml
