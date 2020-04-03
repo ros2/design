@@ -156,19 +156,19 @@ ros2 run <package> <executable> --ros-args --security-context="/front/camera"
 RCL supports specifying the path to a directory containing the set of security files for the exact context instance that needs to be launched.
 The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual context instance directories.
 
-This can be specified by setting the `ROS_SECURITY_CONTEXT_DIRECTORY` environment variable to point to the directory containing the security files.
+This can be specified by setting the `ROS_SECURITY_DIRECTORY_OVERRIDE` environment variable to point to the directory containing the security files.
 Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--security-context`.
 
 Note the following two examples load from the same context path as demonstrated prior:
 
 ``` shell
-export ROS_SECURITY_CONTEXT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts/front/camera"
+export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/contexts/front/camera"
 ros2 run <package> <executable>
 ```
 
 ``` shell
 export ROS_SECURITY_ROOT_DIRECTORY="/dev/null"
-export ROS_SECURITY_CONTEXT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts/front/camera"
+export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/contexts/front/camera"
 ros2 run <package> <executable> --ros-args --security-context="/spam"
 ```
 
