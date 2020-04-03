@@ -224,13 +224,13 @@ However, doing so would still be possible given such namespacing conventions are
 
 #### `<push_ros_namespace namespace="..." context="foo"/>`
 
-TODO: Describe added `context` attribute to `push_ros_namespace` element.
-Keeps pushing contexts close/readable to pushing of namespaces.
+One such approach could be done by adding a `context` attribute to `push_ros_namespace` element.
+This also keeps the pushing of contexts close/readable to pushing of namespaces.
 
 #### `<push_ros_context context="foo"/>`
 
-TODO: Describe added `push_ros_context` element.
-Keeps pushing context path independent/flexable from namespaces.
+Another alternative approach could be to add an entirely new `push_ros_context` element.
+This could ensure the pushing of context path independent/flexable from namespaces.
 
 ## Concerns
 
