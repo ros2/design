@@ -125,15 +125,18 @@ Let's delve further into these.
 
 #### Directory tree of all security files
 
-RCL supports finding security files in one directory that is within the root `contexts` directory structure corresponding to the fully-qualified path of every context.
+RCL supports finding security files in one directory that is inside the reserved `contexts` subfolder, within the root keystore, corresponding to the fully-qualified path of every context.
 For example, for the `/front/camera` context, the directory structure would look like:
 
     <root>
-    └── front
-        └── camera
-            ├── cert.pem
-            ├── key.pem
-            ├── ...
+    ├── contexts
+    │   └── front
+    │       └── camera
+    │           ├── cert.pem
+    │           ├── key.pem
+    │           ├── ...
+    └── public
+        ├── ...
 
 The set of files expected within each context instance directory are:
 
@@ -144,10 +147,10 @@ The set of files expected within each context instance directory are:
 - **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
 - **permissions.p7s**: The XML document that specifies the permissions of this particular context instance to the **Access control** plugin (also signed by the Permissions CA).
 
-This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the contexts directory tree, and then specifying the context path using the `--ros-args` runtime argument `--security-context`, e.g.:
+This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the keystore directory tree, and then specifying the context path using the `--ros-args` runtime argument `--security-context`, e.g.:
 
 ``` shell
-export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore/contexts"
+export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore"
 ros2 run <package> <executable> --ros-args --security-context="/front/camera"
 ```
 
