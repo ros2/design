@@ -62,7 +62,7 @@ As such, additional tooling and extensions to SROS 2 are necessary to support th
 With the additional structure of contexts, it’s perhaps best to take the opportunity to restructure the keystore layout as well.
 Rather than a flat directory of namespaced node security directories, we can push all such security directories down into a designated `contexts` sub-folder.
 Similarly, private and public keystore materials can also be pushed down into their own respective sub-folders within the root keystore directory.
-This is reminiscent of the pattern used earlier Keymint [1].
+This is reminiscent of the pattern used earlier in Keymint [1].
 
 
 ```
