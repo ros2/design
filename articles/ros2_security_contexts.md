@@ -8,7 +8,7 @@ author:  >
   [Ruffin White](https://github.com/ruffsl),
   [Mikael Arguedas](https://github.com/mikaelarguedas)
 
-published: false
+published: true
 categories: Security
 ---
 
