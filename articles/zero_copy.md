@@ -28,7 +28,7 @@ The motivation for message loaning is to increase performance and determinism in
 
 As additional motivation, there are specific middleware implementations that allow for zero-copy via shared memory mechanisms.
 These enhancements would allow ROS 2 to take advantage of the shared memory mechanisms exposed by these implementations.
-An example of zero-copy transfer is [RTI Connext DDS Micro](https://community.rti.com/static/documentation/connext-micro/3.0.0/doc/html/usersmanual/zerocopy.html).
+Examples of zero-copy transfer are [RTI Connext DDS Micro](https://community.rti.com/static/documentation/connext-micro/3.0.0/doc/html/usersmanual/zerocopy.html) and [Eclipse iceoryx](https://github.com/eclipse/iceoryx).
 
 ### Publisher Use Cases
 
