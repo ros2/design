@@ -45,7 +45,7 @@ Let's delve a little further into those first three plugins.
 
 ## Authentication
 
-The **Authentication** plugin (see section 8.3 of the [DDS-Security spec][dds_security]) is central to the entire SPI architecture, as it provides the concept of a confirmed identity without which further enforcement would be impossible (e.g. it would be awfully hard to make sure a given ROS context could only access specific topics if it was impossible to securely determine which context it was).
+The **Authentication** plugin (see section 8.3 of the [DDS-Security spec][dds_security]) is central to the entire SPI architecture, as it provides the concept of a confirmed identity without which further enforcement would be impossible (e.g. it would be awfully hard to make sure a given ROS identity could only access specific topics if it was impossible to securely determine which identity it was).
 
 The SPI architecture allows for a number of potential authentication schemes, but ROS 2 uses the builtin authentication plugin (called "DDS:Auth:PKI-DH", see section 9.3 of the [DDS-Security spec][dds_security]), which uses the proven Public Key Infrastructure (PKI).
 It requires a public and private key per domain participant, as well as an x.509 certificate that binds the participant's public key to a specific name.
@@ -114,7 +114,7 @@ Let's discuss each of these in turn.
 ### Security files for each domain participant
 
 As stated earlier, the DDS-Security plugins require a set of security files (e.g. keys, governance and permissions files, etc.) per domain participant.
-Domain participants map to a specific instance of a context in ROS 2, so each context requires a set of these files.
+Domain participants map to a process in ROS 2, so each process requires a set of these files.
 RCL supports being pointed at a directory containing security files in two different ways:
 
 - Directory tree of all security files.
@@ -125,11 +125,11 @@ Let's delve further into these.
 
 #### Directory tree of all security files
 
-RCL supports finding security files in one directory that is inside the reserved `contexts` subfolder, within the root keystore, corresponding to the fully-qualified path of every context.
-For example, for the `/front/camera` context, the directory structure would look like:
+RCL supports finding security files in one directory that is inside the reserved `enclaves` subfolder, within the root keystore, corresponding to the fully-qualified path of every enclave.
+For example, for the `/front/camera` enclave, the directory structure would look like:
 
     <root>
-    ├── contexts
+    ├── enclaves
     │   └── front
     │       └── camera
     │           ├── cert.pem
@@ -138,50 +138,50 @@ For example, for the `/front/camera` context, the directory structure would look
     └── public
         ├── ...
 
-The set of files expected within each context instance directory are:
+The set of files expected within each enclave instance directory are:
 
 - **identity_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Authentication** plugin (the "Identity" CA).
-- **cert.pem**: The x.509 certificate of this context instance (signed by the Identity CA).
-- **key.pem**: The private key of this context instance.
+- **cert.pem**: The x.509 certificate of this enclave instance (signed by the Identity CA).
+- **key.pem**: The private key of this enclave instance.
 - **permissions_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Access control** plugin (the "Permissions" CA).
 - **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
-- **permissions.p7s**: The XML document that specifies the permissions of this particular context instance to the **Access control** plugin (also signed by the Permissions CA).
+- **permissions.p7s**: The XML document that specifies the permissions of this particular enclave instance to the **Access control** plugin (also signed by the Permissions CA).
 
-This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the keystore directory tree, and then specifying the context path using the `--ros-args` runtime argument `--security-context`, e.g.:
+This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the keystore directory tree, and then specifying the enclave path using the `--ros-args` runtime argument `--security-enclave`, e.g.:
 
 ``` shell
 export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore"
-ros2 run <package> <executable> --ros-args --security-context="/front/camera"
+ros2 run <package> <executable> --ros-args --security-enclave="/front/camera"
 ```
 
 #### Manual specification
 
-RCL supports specifying the path to a directory containing the set of security files for the exact context instance that needs to be launched.
-The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual context instance directories.
+RCL supports specifying the path to a directory containing the set of security files for the process that needs to be launched.
+The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual enclave directories.
 
 This can be specified by setting the `ROS_SECURITY_DIRECTORY_OVERRIDE` environment variable to point to the directory containing the security files.
-Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--security-context`.
+Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--security-enclave`.
 
-Note the following two examples load from the same context path as demonstrated prior:
+Note the following two examples load from the same enclave path as demonstrated prior:
 
 ``` shell
-export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/contexts/front/camera"
+export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
 ros2 run <package> <executable>
 ```
 
 ``` shell
 export ROS_SECURITY_ROOT_DIRECTORY="/dev/null"
-export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/contexts/front/camera"
-ros2 run <package> <executable> --ros-args --security-context="/spam"
+export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
+ros2 run <package> <executable> --ros-args --security-enclave="/spam"
 ```
 
 ### Support for both permissive and strict enforcement of security
 
-Contexts with the security features enabled will not communicate with contexts that don't, but what should RCL do if one tries to launch a context that has no discernable keys/permissions/etc.? It has two options:
+Processes with the security features enabled will not communicate with processes that don't, but what should RCL do if one tries to launch a process that has no discernable enclave with keys/permissions/etc.? It has two options:
 
-- **Permissive mode**: Try to find security files, and if they can't be found, launch the context without enabling any security features.
+- **Permissive mode**: Try to find security files, and if they can't be found, launch the process without enabling any security features.
 This is the default behavior.
-- **Strict mode**: Try to find security files, and if they can't be found, fail to run the context.
+- **Strict mode**: Try to find security files, and if they can't be found, fail to run the process.
 
 The type of mode desired can be specified by setting the `ROS_SECURITY_STRATEGY` environment variable to "Enforce" (case-sensitive) for strict mode, and anything else for permissive mode.
 
@@ -203,9 +203,9 @@ However, the [SROS 2 CLI](https://github.com/ros2/sros2) should include a tool `
 
 - Create Identity and Permissions CA.
 - Create directory tree containing all security files.
-- Create a new identity for a given context instance, generating a keypair and signing its x.509 certificate using the Identity CA.
+- Create a new identity for a given enclave, generating a keypair and signing its x.509 certificate using the Identity CA.
 - Create a governance file that will encrypt all DDS traffic by default.
-- Support specifying context instance permissions [in familiar ROS terms](/articles/ros2_access_control_policies.html) which are then automatically converted into low-level DDS permissions.
+- Support specifying enclave permissions [in familiar ROS terms](/articles/ros2_access_control_policies.html) which are then automatically converted into low-level DDS permissions.
 - Support automatically discovering required permissions from a running ROS system.
 
 
