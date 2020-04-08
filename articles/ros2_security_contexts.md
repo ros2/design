@@ -1,9 +1,9 @@
 ---
 layout: default
-title: ROS 2 Security Contexts
-permalink: articles/ros2_security_contexts.html
+title: ROS 2 Security Enclaves
+permalink: articles/ros2_security_enclaves.html
 abstract:
-  This article specifies the integration between security and contexts.
+  This article specifies the integration of security enclaves.
 author:  >
   [Ruffin White](https://github.com/ruffsl),
   [Mikael Arguedas](https://github.com/mikaelarguedas)
@@ -23,16 +23,16 @@ categories: Security
 
 Original Author: {{ page.author }}
 
-This design document formalizes the integration of contexts in ROS 2 with security.
-In summary, all context instances within a process must load a common context path that contains the runtime security artifacts unique to that context path, yet each process may not necessarily have a unique context path.
-Multiple context paths can be encapsulated in a single security policy to accurately model the information flow control.
-Users can tune the fidelity of such models by controlling at what scope context paths are applied at deployment.
-E.g. one unique context path per OS process, or per OS user, or per device/robot, or per swarm, etc.
-The rest of this document details how context paths can be organized and used by convention.
+This design document formalizes the integration of ROS 2 with security enclaves.
+In summary, all processes must load a common enclave that contains the runtime security artifacts unique to that enclave, yet each process may not necessarily have a unique enclave.
+Multiple enclaves can be encapsulated in a single security policy to accurately model the information flow control.
+Users can tune the fidelity of such models by controlling at what scope enclaves are applied at deployment.
+E.g. one unique enclave per OS process, or per OS user, or per device/robot, or per swarm, etc.
+The rest of this document details how enclaves can be organized and used by convention.
 
 ## Concepts
 
-Before detailing the SROS 2 integration of the contexts, the following concepts are introduced.
+Before detailing the SROS 2 integration of the enclaves, the following concepts are introduced.
 
 ### Participant
 
@@ -54,13 +54,13 @@ With the advent of ROS 2, multiple nodes may now be composed into one process fo
 Previously however, each node would retain it's one to one mapping to a separate middleware ``Participant``.
 Given the non-negligible overhead incurred of multiple ``Participant``s per process, a change was introduced to map a single ``Participant`` to a context, and allow for multiple nodes to share that context.
 
-Based on the DDS Security specification v1.1, a ``Participant`` can only utilise a single security identity; consequently the access control permissions applicable to every node mapped to a given context must be consolidated and combined into a single set of security artifacts.
+Based on the DDS Security specification v1.1, a ``Participant`` can only utilise a single security identity; consequently the access control permissions applicable to every node mapped to a given context must be consolidated and combined into a single set of security artifacts, or enclave.
 As such, additional tooling and extensions to SROS 2 are necessary to support this new paradigm.
 
 ## Keystore
 
-With the additional structure of contexts, it’s perhaps best to take the opportunity to restructure the keystore layout as well.
-Rather than a flat directory of namespaced node security directories, we can push all such security directories down into a designated `contexts` sub-folder.
+With the addition of contexts, it’s perhaps best to take the opportunity to restructure the keystore layout as well.
+Rather than a flat directory of namespaced node security directories, we can push all such security directories down into a designated `enclaves` sub-folder.
 Similarly, private and public keystore materials can also be pushed down into their own respective sub-folders within the root keystore directory.
 This is reminiscent of the pattern used earlier in Keymint [1].
 
@@ -68,7 +68,7 @@ This is reminiscent of the pattern used earlier in Keymint [1].
 ```
 $ tree keystore/
 keystore
-├── contexts
+├── enclaves
 │   └── ...
 │       └── ...
 ├── private
@@ -92,23 +92,23 @@ Note that in the default case, both the `identity_ca` and `permissions_ca` point
 The ``private`` directory contains anything permissable as private, such as private key material for aforementioned certificate authorities.
 This directory should be redacted before deploying the keystore onto the target device/robot.
 
-### ``contexts``
+### ``enclaves``
 
-The ``contexts`` directory contains the security artifacts associated with individual contexts, and thus node directories are no longer relevant.
-Similar to node directories however, the `contexts` folder may still recursively nest sub-paths for organizing separate contexts.
+The ``enclaves`` directory contains the security artifacts associated with individual enclaves, and thus node directories are no longer relevant.
+Similar to node directories however, the `enclaves` folder may still recursively nest sub-paths for organizing separate enclaves.
 The `ROS_SECURITY_ROOT_DIRECTORY` environment variable should by convention point to this directory.
 
 
 ## Runtime
 
-Given the normative case where a context within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the context.
-To highlight this interdependency, and to help avoid context path collisions, a hierarchy borrowing namespaces is appropriate. 
-By convention, ros2launch could be used to prefix relative context paths for single process node or containers using the namespace in scope, to enable a convention of composable launch files with adjustable and parameterized context paths.
-Given the runtime command argument for specifying the fully qualified context path, ros2launch would accordingly resolve relative context paths for executables, as defined by launch attributes.
+Given the normative case where a enclave within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the enclave.
+To highlight this interdependency, and to help avoid enclave path collisions, a hierarchy borrowing namespaces is appropriate. 
+By convention, ros2launch could be used to prefix relative enclave paths for single process node or containers using the namespace in scope, to enable a convention of composable launch files with adjustable and parameterized enclave paths.
+Given the runtime command argument for specifying the fully qualified enclave path, ros2launch would accordingly resolve relative enclave paths for executables, as defined by launch attributes.
 
-### Unqualified context path
+### Unqualified enclave path
 
-For single process nodes with unqualified context paths, the context directory will subsequently default to the root level context.
+For single process nodes with unqualified enclave paths, the enclave directory will subsequently default to the root level enclave.
 
 ``` xml
 <launch>
@@ -118,8 +118,8 @@ For single process nodes with unqualified context paths, the context directory w
 ```
 
 ```
-$ tree contexts/
-contexts/
+$ tree enclaves/
+enclaves/
 ├── cert.pem
 ├── governance.p7s
 ├── identity_ca.cert.pem -> ../public/identity_ca.cert.pem
@@ -128,9 +128,9 @@ contexts/
 └── permissions.p7s
 ```
 
-### Pushed unqualified context path
+### Pushed unqualified enclave path
 
-For single process nodes with unqualified context paths pushed by a namespace, the context directory will subsequently be pushed to the relative sub-folder.
+For single process nodes with unqualified enclave paths pushed by a namespace, the enclave directory will subsequently be pushed to the relative sub-folder.
 
 ``` xml
 <launch>
@@ -143,8 +143,8 @@ For single process nodes with unqualified context paths pushed by a namespace, t
 ```
 
 ```
-$ tree --dirsfirst contexts/
-contexts/
+$ tree --dirsfirst enclaves/
+enclaves/
 ├── foo
 │   ├── cert.pem
 │   ├── governance.p7s
@@ -162,22 +162,22 @@ contexts/
 
 > Symbolic links suppressed for readability
 
-### Relatively pushed qualified context path
+### Relatively pushed qualified enclave path
 
-For single process nodes with qualified context paths pushed by a namespace, the qualified context directory will subsequently be pushed to the relative sub-folder.
+For single process nodes with qualified enclave paths pushed by a namespace, the qualified enclave directory will subsequently be pushed to the relative sub-folder.
 
 ``` xml
 <launch>
   <group>
     <push_ros_namespace namespace="foo"/>
-    <node pkg="demo_nodes_cpp" exec="listener" context="bar"/>
+    <node pkg="demo_nodes_cpp" exec="listener" enclave="bar"/>
   </group>
 </launch>
 ```
 
 ```
-$ tree --dirsfirst contexts/
-contexts/
+$ tree --dirsfirst enclaves/
+enclaves/
 └── foo
     └── bar
         ├── cert.pem
@@ -188,22 +188,22 @@ contexts/
         └── permissions.p7s
 ```
 
-### Fully qualified context path
+### Fully qualified enclave path
 
-For single process nodes with absolute context paths, namespaces do not subsequently push the relative sub-folder.
+For single process nodes with absolute enclave paths, namespaces do not subsequently push the relative sub-folder.
 
 ``` xml
 <launch>
   <group>
     <push_ros_namespace namespace="foo"/>
-    <node pkg="demo_nodes_cpp" exec="listener" context="/bar"/>
+    <node pkg="demo_nodes_cpp" exec="listener" enclave="/bar"/>
   </group>
 </launch>
 ```
 
 ```
-$ tree --dirsfirst contexts/
-contexts/
+$ tree --dirsfirst enclaves/
+enclaves/
 └── bar
     ├── cert.pem
     ├── governance.p7s
@@ -218,26 +218,26 @@ contexts/
 
 ### Context path orthogonal to namespace
 
-An alternative to reusing namespaces to hint the context path could be to completely disassociate the two entirely, treating the context path as it's own unique identifier.
+An alternative to reusing namespaces to hint the enclave path could be to completely disassociate the two entirely, treating the enclave path as it's own unique identifier.
 Having to book keep both identifier spaces simultaneously may introduce too many degrees of freedom that a human could groc or easily introspect via tooling.
 However, doing so would still be possible given such namespacing conventions are bypassable in roslaunch and not implemented directly in RCL.
 
-#### `<push_ros_namespace namespace="..." context="foo"/>`
+#### `<push_ros_namespace namespace="..." enclave="foo"/>`
 
-One such approach could be done by adding a `context` attribute to `push_ros_namespace` element.
-This also keeps the pushing of contexts close/readable to pushing of namespaces.
+One such approach could be done by adding a `enclave` attribute to `push_ros_namespace` element.
+This also keeps the pushing of enclaves close/readable to pushing of namespaces.
 
-#### `<push_ros_context context="foo"/>`
+#### `<push_ros_enclave enclave="foo"/>`
 
-Another alternative approach could be to add an entirely new `push_ros_context` element.
-This could ensure the pushing of context path independent/flexable from namespaces.
+Another alternative approach could be to add an entirely new `push_ros_enclave` element.
+This could ensure the pushing of enclave path independent/flexable from namespaces.
 
 ## Concerns
 
 ### Multiple namespaces per context
 
-For circumstances where users may compose multiple nodes of dissimilar namespaces into a single context, the user must still subsequently specify a common context path that is applicable for all nodes composed.
-For circumstances where the context path is orthogonal to node namespace, the use of fully qualifying all relevant context paths could be tedious, but could perhaps could still be parametrized via the use of `<var/>`, and `<arg/>` substitution and expansion.
+For circumstances where users may compose multiple nodes of dissimilar namespaces into a single context, the user must still subsequently specify a common enclave path that is applicable for all nodes composed.
+For circumstances where the enclave path is orthogonal to node namespace, the use of fully qualifying all relevant enclave paths could be tedious, but could perhaps could still be parametrized via the use of `<var/>`, and `<arg/>` substitution and expansion.
 
 ### Modeling permissions of nodes in a process v.s. permission of the middleware ``Participant``
 
@@ -246,44 +246,44 @@ Each ``Participant`` subsequently load a security identity and access control cr
 However, all nodes in that process share the same memory space and can thus access data from other nodes.
 There is a mismatch between the middleware credentials/permissions loaded and the resources accessible within the process.
 
-By using contexts, all nodes in a context share the same security identity and access control credentials.
+By using enclaves, all nodes in a context share the same security identity and access control credentials.
 This inevitably means that code compiled to node ``foo`` can access credentials/permissions only trusted to node ``bar``.
 This consequence of composition could unintendedly subvert the minimal spanning policy as architected by the policy designer or measured/generated via ROS 2 tooling/IDL.
 
-With the introduction of contexts, it becomes possible to describe the union of access control permission by defining a collection of SROS 2 policy profiles as element within a specific context.
+With the introduction of enclaves, it becomes possible to describe the union of access control permission by defining a collection of SROS 2 policy profiles as element within a specific enclave.
 This would allow for formal analysis tooling [2] to check for potential violations in information flow control given the composing of nodes at runtime.
-If a process contains a single context, this reconciles the permissions of a ``Participant`` and the ones of the process.
+If a process loads a single enclave, this reconciles the permissions of a ``Participant`` and the ones of the process.
 
-However, should multiple contexts be used per process, then such security guaranties are again lost because both contexts will share the same memory space.
-Thus it should be asked whether if multiple contexts per process should even be supported.
+However, should multiple enclaves be loaded per process, then such security guaranties are again lost because of shared same memory space.
+Thus it should be asked whether if multiple enclaves per process should even be supported.
 
-In summary, the distinction here is that before, the composition of multiple permissions could not be conveyed to the tooling.
+In summary, the distinction here is that before, the composition of multiple node permissions could not be conveyed to the tooling.
 Whether nodes could gain the permission of others in the same process space is not the hinge point of note; it's the fact that such side effects could not be formally modeled or accounted for by the designer.
-It will now be possible with contexts, however allowing for multiple contexts per process that load separate credentials would reintroduce and exacerbate the same modeling inaccuracies.
+It will now be possible with enclaves, however allowing for multiple contexts per process that load separate enclaves would reintroduce and exacerbate the same modeling inaccuracies.
 
 ### Composable launchfile includes
 
-A particular challenge in using launchfiles with security contexts is that of keeping the include hierarchy composable.
+A particular challenge in using launchfiles with security enclaves is that of keeping the include hierarchy composable.
 An inherit tradeoff between simplicity and configurability can arise when writing launchfiles for downstream use.
 Authors can selectively choose what attributes to expose as input arguments, while users may implicitly override provided defaults.
 
-In case of contexts, it is not inherently clear what best practices either package authors or users should employ to retain a composable and intuitive launchfile structure. E.g:
-Should authors parametrize context paths for each node as input arguments?
-Should users push namespaces of included launchfiles to separate contexts?
+In case of enclaves, it is not inherently clear what best practices either package authors or users should employ to retain a composable and intuitive launchfile structure. E.g:
+Should authors parametrize enclave paths for each node as input arguments?
+Should users push namespaces of included launchfiles to unique enclaves?
 
-To be sure though, the setting of security environment variables from within launchfiles should be discouraged, as this would restrict the use of static analysis of launchfiles combined with Node IDL for procedural context generation.
+To be sure though, the setting of security environment variables from within launchfiles should be discouraged, as this would restrict the use of static analysis of launchfiles combined with Node IDL for procedural policy generation.
 
 ### Composable nodes in container
 
-Given that containers can be dynamic, where nodes can be added or removed at runtime, there is perhaps some question as to how containers should integrate with secure contexts.
-In ros2launch, the namespace in scope at the container's instantiation could be used to resolve the container's specified relative context path, thus to all nodes/components inside that container.
+Given that containers can be dynamic, where nodes can be added or removed at runtime, there is perhaps some question as to how containers should integrate with secure enclaves.
+In ros2launch, the namespace in scope at the container's instantiation could be used to resolve the container's specified relative enclave path, thus to all nodes/components inside that container.
 This should be further deliberated when eventually extending the launch API for containers.
 
 ### Migration for RMW implementations
 
 As it may take time before all RMW implementations implement the new system of contexts, a defined fallback behavior should still be designated.
-For such implementations, the context security directory determined by RCL should be loaded for the participant as per the priority of context setting specified in the "ROS 2 DDS-Security integration" design doc.
-This primarily desists the use of including the node name in the default lookup path, consequently getting users in the habit of creating separate contexts for separate processes, or explicitly specifying unique context names via launchfiles.
+For such implementations, the enclave security directory determined by RCL should be loaded for the participant as specified in the "ROS 2 DDS-Security integration" design doc.
+This primarily desists the use of including the node name in the default lookup path, consequently getting users in the habit of creating separate enclaves for separate processes, or explicitly specifying unique enclave paths via launchfiles.
 
 ## References
 
