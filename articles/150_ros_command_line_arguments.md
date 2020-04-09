@@ -78,6 +78,7 @@ As a quick summary of ROS command line capabilities:
   - to `rosout`, use `--enable-rosout-logs` or `--disable-rosout-logs`
   - to `stdout`, use `--enable-stdout-logs` or `--disable-stdout-logs`
   - to a external logging library, use `--enable-external-lib-logs` or `--disable-external-lib-logs`
+- For enclave assignment, use either `--enclave value` or `-e value` where value is fully qualified enclave path.
 
 For name remapping and parameter assignment, specific nodes can be targeted by prepending the option value with the node name followed by a colon `:`, as in `--remap my_node:from:=to` and `--param my_node:name:=value`.
 
@@ -200,6 +201,25 @@ ros2 run some_package some_ros_executable --ros-args --disable-rosout-logs --dis
 ```
 
 Logging is fully enabled by default, thus `--enable-*` options are usually redundant unless a `--disable-*` option found earlier in the command line is being overridden.
+
+#### Enclave assignments
+
+Enclave assignment may be achieved using the `--enclave`/`-e` option.
+This option takes a single string `value` assignment statement, where `value` is where value is fully qualified enclave path used to locate the respective security artifacts within the configured keystore.
+
+As an example, to assign a enclave path `/foo/bar` one may execute:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args --enclave="/foo/bar"
+```
+
+or its shorter equivalent:
+
+```sh
+ros2 run some_package some_ros_executable --ros-args -e "/foo/bar"
+```
+
+As is, this enclave assignment applies to each and every context that `some_ros_executable` spawns unless explicitly ignored in code or overridden via security environment variables.  
 
 ## Implementation
 

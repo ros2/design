@@ -147,11 +147,11 @@ The set of files expected within each enclave instance directory are:
 - **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
 - **permissions.p7s**: The XML document that specifies the permissions of this particular enclave instance to the **Access control** plugin (also signed by the Permissions CA).
 
-This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the keystore directory tree, and then specifying the enclave path using the `--ros-args` runtime argument `--security-enclave`, e.g.:
+This can be specified by setting the `ROS_SECURITY_ROOT_DIRECTORY` environment variable to point to the root of the keystore directory tree, and then specifying the enclave path using the `--ros-args` runtime argument `-e`, `--enclave`, e.g.:
 
 ``` shell
 export ROS_SECURITY_ROOT_DIRECTORY="/home/bob/.ros/sros2_keystore"
-ros2 run <package> <executable> --ros-args --security-enclave="/front/camera"
+ros2 run <package> <executable> --ros-args --enclave="/front/camera"
 ```
 
 #### Manual specification
@@ -160,7 +160,7 @@ RCL supports specifying the path to a directory containing the set of security f
 The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual enclave directories.
 
 This can be specified by setting the `ROS_SECURITY_DIRECTORY_OVERRIDE` environment variable to point to the directory containing the security files.
-Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--security-enclave`.
+Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--enclave`.
 
 Note the following two examples load from the same enclave path as demonstrated prior:
 
@@ -172,7 +172,7 @@ ros2 run <package> <executable>
 ``` shell
 export ROS_SECURITY_ROOT_DIRECTORY="/dev/null"
 export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
-ros2 run <package> <executable> --ros-args --security-enclave="/spam"
+ros2 run <package> <executable> --ros-args --enclave="/spam"
 ```
 
 ### Support for both permissive and strict enforcement of security
