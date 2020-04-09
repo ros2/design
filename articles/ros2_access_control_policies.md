@@ -112,7 +112,11 @@ This is specific to an enclave as determined by associative attributes.
 Attributes:
 - **path**: Fully qualified enclave path
 
+Given that multiple nodes can be composed into a single process, an enclave is used to contain the collection of profiles of all respective nodes.
 An enclave may therefore be considered the union of contained profiles.
+Note that the union of profiles within an enclave will result in denied privileges of any profile to supersede all allowed privileges for every profile.
+E.g. if a profile asks for a permission but a matching permission has been explicitly denied by another profile in the enclave, the deny rule will take precedence.
+See section `<profile>` Tag for more info on how MAC is applied. 
 
 ### `<profiles>` Tag
 

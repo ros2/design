@@ -55,6 +55,7 @@ Previously however, each node would retain it's one to one mapping to a separate
 Given the non-negligible overhead incurred of multiple ``Participant``s per process, a change was introduced to map a single ``Participant`` to a context, and allow for multiple nodes to share that context.
 
 Based on the DDS Security specification v1.1, a ``Participant`` can only utilise a single security identity; consequently the access control permissions applicable to every node mapped to a given context must be consolidated and combined into a single set of security artifacts, or enclave.
+Thus, all contexts and their respective participants in each process will then use that single enclave.
 As such, additional tooling and extensions to SROS 2 are necessary to support this new paradigm.
 
 ## Keystore
