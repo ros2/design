@@ -177,11 +177,11 @@ ros2 run <package> <executable> --ros-args --enclave="/spam"
 
 ### Support for both permissive and strict enforcement of security
 
-Processes with the security features enabled will not communicate with processes that don't, but what should RCL do if one tries to launch a process that has no discernable enclave with keys/permissions/etc.? It has two options:
+Participants with the security features enabled will not communicate with participants that don't, but what should RCL do if one tries to launch a participant that has no discernable enclave with keys/permissions/etc.? It has two options:
 
-- **Permissive mode**: Try to find security files, and if they can't be found, launch the process without enabling any security features.
+- **Permissive mode**: Try to find security files, and if they can't be found, launch the participant without enabling any security features.
 This is the default behavior.
-- **Strict mode**: Try to find security files, and if they can't be found, fail to run the process.
+- **Strict mode**: Try to find security files, and if they can't be found, fail to run the participant.
 
 The type of mode desired can be specified by setting the `ROS_SECURITY_STRATEGY` environment variable to "Enforce" (case-sensitive) for strict mode, and anything else for permissive mode.
 

@@ -24,7 +24,7 @@ categories: Security
 Original Author: {{ page.author }}
 
 This design document formalizes the integration of ROS 2 with security enclaves.
-In summary, all processes must load a common enclave that contains the runtime security artifacts unique to that enclave, yet each process may not necessarily have a unique enclave.
+In summary, all secure processes must use an enclave that contains the runtime security artifacts unique to that enclave, yet each process may not necessarily have a unique enclave.
 Multiple enclaves can be encapsulated in a single security policy to accurately model the information flow control.
 Users can tune the fidelity of such models by controlling at what scope enclaves are applied at deployment.
 E.g. one unique enclave per OS process, or per OS user, or per device/robot, or per swarm, etc.
