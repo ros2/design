@@ -165,12 +165,12 @@ Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with 
 Note that the following two examples load from the same enclave path as demonstrated prior:
 
 ``` shell
+export ROS_SECURITY_ROOT_DIRECTORY="/dev/null"
 export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
 ros2 run <package> <executable>
 ```
 
 ``` shell
-export ROS_SECURITY_ROOT_DIRECTORY="/dev/null"
 export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
 ros2 run <package> <executable> --ros-args --enclave="/spam"
 ```
