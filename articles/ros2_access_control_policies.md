@@ -107,15 +107,12 @@ This method of nesting sequences allows for additional tags to be extended to th
 ### `<enclave>` Tag
 
 Encapsulates a collection of profiles.
-This is specific to a enclave as determined by associative attributes.
+This is specific to an enclave as determined by associative attributes.
 
 Attributes:
 - **path**: Fully qualified enclave path
 
-Given that multiple nodes can be composed into a single process, a enclave is used to contain the collection of profiles of all respective nodes.
-A enclave may therefore be considered the union of contained profiles.
-Note that the union of profiles within a enclave will result in denied privileges of any profile to supersede all allowed privileges for every profile.
-See section `<profile>` Tag for more info on MAC is applied. 
+An enclave may therefore be considered the union of contained profiles.
 
 ### `<profiles>` Tag
 
@@ -149,7 +146,7 @@ There can only one `metadata` element per `profiles` parent element.
 Attributes:
 - To be defined
 
-Given the use cases for bridge interfaces where a enclave's credentials may be used to interconnect across multiple transports or to transport specific domains, it may be necessary to qualify certain profile sequences with particular constraints, while doing so multiple times for separate profiles per enclave.
+Given the use cases for bridge interfaces where an enclave's credentials may be used to interconnect across multiple transports or to transport specific domains, it may be necessary to qualify certain profile sequences with particular constraints, while doing so multiple times for separate profiles per enclave.
 This allows advanced users to holistically control the intersect of permissions across transport domains, while retaining accurate model fidelity of security permissions.
 Given how security sensitive bridge interfaces are and the attack surface they expose, it is vital that information flow control within a bridge remains formally verifiable for safe and secure operation.
 

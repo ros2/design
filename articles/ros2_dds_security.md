@@ -162,7 +162,7 @@ The set of files expected within that directory are the same as outlined in the 
 This can be specified by setting the `ROS_SECURITY_DIRECTORY_OVERRIDE` environment variable to point to the directory containing the security files.
 Note that this setting takes precedence over `ROS_SECURITY_ROOT_DIRECTORY` with `--enclave`.
 
-Note the following two examples load from the same enclave path as demonstrated prior:
+Note that the following two examples load from the same enclave path as demonstrated prior:
 
 ``` shell
 export ROS_SECURITY_DIRECTORY_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"

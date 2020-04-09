@@ -205,9 +205,9 @@ Logging is fully enabled by default, thus `--enable-*` options are usually redun
 #### Enclave assignments
 
 Enclave assignment may be achieved using the `--enclave`/`-e` option.
-This option takes a single string `value` assignment statement, where `value` is where value is fully qualified enclave path used to locate the respective security artifacts within the configured keystore.
+This option takes a single string `value` assignment statement, where `value` is a fully qualified enclave path used to locate the respective security artifacts within the configured keystore.
 
-As an example, to assign a enclave path `/foo/bar` one may execute:
+As an example, to assign an enclave path `/foo/bar` one may execute:
 
 ```sh
 ros2 run some_package some_ros_executable --ros-args --enclave="/foo/bar"

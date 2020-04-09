@@ -109,7 +109,7 @@ Introspective tooling and launchfile interfaces should be updated to help lessen
 
 ### Runtime
 
-Given the normative case where a enclave within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the enclave.
+Given the normative case where an enclave within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the enclave.
 To highlight this interdependency, and to help avoid enclave path collisions, a hierarchy borrowing namespaces is appropriate. 
 By convention, ros2launch could be used to prefix relative enclave paths for single process node or containers using the namespace in scope, to enable a convention of composable launch files with adjustable and parameterized enclave paths.
 Given the runtime command argument for specifying the fully qualified enclave path, ros2launch would accordingly resolve relative enclave paths for executables, as defined by launch attributes.
