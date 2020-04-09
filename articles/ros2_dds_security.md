@@ -114,7 +114,7 @@ Let's discuss each of these in turn.
 ### Security files for each domain participant
 
 As stated earlier, the DDS-Security plugins require a set of security files (e.g. keys, governance and permissions files, etc.) per domain participant.
-Domain participants map to a process in ROS 2, so each process requires a set of these files.
+Domain participants map to a context within process in ROS 2, so each process requires a set of these files.
 RCL supports being pointed at a directory containing security files in two different ways:
 
 - Directory tree of all security files.

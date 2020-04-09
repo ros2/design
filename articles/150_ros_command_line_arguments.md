@@ -219,7 +219,7 @@ or its shorter equivalent:
 ros2 run some_package some_ros_executable --ros-args -e "/foo/bar"
 ```
 
-As is, this enclave assignment applies to each and every context that `some_ros_executable` spawns unless explicitly ignored in code or overridden via security environment variables.  
+As is, this enclave assignment applies to each and every Domain Participant that `some_ros_executable` spawns unless explicitly ignored in code or overridden via security environment variables.  
 
 ## Implementation
 
