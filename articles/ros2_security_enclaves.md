@@ -98,6 +98,11 @@ The ``enclaves`` directory contains the security artifacts associated with indiv
 Similar to node directories however, the `enclaves` folder may still recursively nest sub-paths for organizing separate enclaves.
 The `ROS_SECURITY_ROOT_DIRECTORY` environment variable should by convention point to this directory.
 
+## Integration
+
+With the introduction of contexts into rcl, instead of relying on node namespaces to lookup security artifacts from the keystore, the enclave path is now completely disassociated from node namespaces, instead serving as its own unique resource identifier.
+Although having to book keep both identifier spaces simultaneously may introduce more degrees of freedom, it should still be possible to organize enclaves within the keystore to mimic node namespace hierarchy for transparent traceability of allocated permissions.
+
 ## Future Work
 
 Introspective tooling and launchfile interfaces should be updated to help lessen the complexity introduced with the migration to contexts and enclaves.
@@ -218,12 +223,6 @@ enclaves/
 
 
 ## Alternatives
-
-### Context path orthogonal to namespace
-
-An alternative to reusing namespaces to hint the enclave path could be to completely disassociate the two entirely, treating the enclave path as it's own unique identifier.
-Having to book keep both identifier spaces simultaneously may introduce too many degrees of freedom that a human could groc or easily introspect via tooling.
-However, doing so would still be possible given such namespacing conventions are bypassable in roslaunch and not implemented directly in RCL.
 
 #### `<push_ros_namespace namespace="..." enclave="foo"/>`
 
