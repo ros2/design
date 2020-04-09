@@ -98,8 +98,11 @@ The ``enclaves`` directory contains the security artifacts associated with indiv
 Similar to node directories however, the `enclaves` folder may still recursively nest sub-paths for organizing separate enclaves.
 The `ROS_SECURITY_ROOT_DIRECTORY` environment variable should by convention point to this directory.
 
+## Future Work
 
-## Runtime
+Introspective tooling and launchfile interfaces should be updated to help lessen the complexity introduced with the migration to contexts and enclaves.
+
+### Runtime
 
 Given the normative case where a enclave within a policy may be specific to a single node/container process, the namespace the node is remapped to will inevitably affect the required security permissions necessary within the enclave.
 To highlight this interdependency, and to help avoid enclave path collisions, a hierarchy borrowing namespaces is appropriate. 
