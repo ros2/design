@@ -156,22 +156,21 @@ ros2 run <package> <executable> --ros-args --enclave="/front/camera"
 
 #### Manual specification
 
-RCL supports specifying the path to a directory containing the set of security files for the process that needs to be launched.
-The set of files expected within that directory are the same as outlined in the "Directory tree of all security files" section above for individual enclave directories.
-
-This can be specified by setting the `ROS_SECURITY_ENCLAVE_OVERRIDE` environment variable to point to the directory containing the security files.
+RCL also supports specifying the enclave path for the process that needs to be launched using an overriding environmental variable.
+This can be done by setting the `ROS_SECURITY_ENCLAVE_OVERRIDE` environment variable to an alternate enclave path within the keystore.
 Note that this setting takes precedence over `ROS_SECURITY_KEYSTORE` with `--enclave`.
 
 Note that the following two examples load from the same enclave path as demonstrated prior:
 
 ``` shell
-export ROS_SECURITY_KEYSTORE="/dev/null"
-export ROS_SECURITY_ENCLAVE_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
+export ROS_SECURITY_KEYSTORE="/home/bob/.ros/sros2_keystore"
+export ROS_SECURITY_ENCLAVE_OVERRIDE="/front/camera"
 ros2 run <package> <executable>
 ```
 
 ``` shell
-export ROS_SECURITY_ENCLAVE_OVERRIDE="/home/bob/.ros/sros2_keystore/enclaves/front/camera"
+export ROS_SECURITY_KEYSTORE="/home/bob/.ros/sros2_keystore"
+export ROS_SECURITY_ENCLAVE_OVERRIDE="/front/camera"
 ros2 run <package> <executable> --ros-args --enclave="/spam"
 ```
 
