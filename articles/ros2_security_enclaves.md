@@ -97,7 +97,7 @@ This directory should be redacted before deploying the keystore onto the target 
 
 The ``enclaves`` directory contains the security artifacts associated with individual enclaves, and thus node directories are no longer relevant.
 Similar to node directories however, the `enclaves` folder may still recursively nest sub-paths for organizing separate enclaves.
-The `ROS_SECURITY_ROOT_DIRECTORY` environment variable should by convention point to this directory.
+The `ROS_SECURITY_KEYSTORE` environment variable should by convention point to this directory.
 
 ## Integration
 
