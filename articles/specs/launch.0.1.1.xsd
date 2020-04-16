@@ -28,7 +28,7 @@
         <xs:element name="arg">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Declares launch file-level arguments.
+              Declares a launch file argument.
             </xs:documentation>
           </xs:annotation>
 
@@ -477,7 +477,7 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
-      <!-- <xs:assert test="(@name and not(@from)) or (not(@name) and @from)"/> -->
+      <xs:assert test="(@name and not(@from)) or (not(@name) and @from)"/>
     </xs:complexType>
   </xs:element>
 
@@ -521,32 +521,31 @@
             environment variable settings for the launched ROS node.
           </xs:documentation>
         </xs:annotation>
-
         <xs:element ref="env"/>
         <xs:element ref="param"/>
         <xs:element ref="remap"/>
       </xs:choice>
-          <xs:attribute name="package" type="xs:string" use="required">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Name of the package where the node is to be found.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-    <xs:attribute name="executable" type="xs:string" use="required">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Name of the node executable.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-    <xs:attribute name="name" type="xs:string" use="optional">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          A name for the launched ROS node.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
+      <xs:attribute name="package" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the package where the node is to be found.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="executable" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the node executable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="name" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A name for the launched ROS node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="args" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
