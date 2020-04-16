@@ -8,80 +8,82 @@
     </xs:documentation>
   </xs:annotation>
 
-  <xs:element name="launch" maxOccurs="1">
+  <xs:element name="launch">
     <xs:annotation>
       <xs:documentation xml:lang="en">
         The root element of a launch file.
       </xs:documentation>
     </xs:annotation>
 
-    <xs:choice minOccurs="1" maxOccurs="unbounded">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          A collection of actions to be launched in order of appearance, plus
-          launch arguments for callers to provide, either through a tool or
-          by inclusion.
-        </xs:documentation>
-      </xs:annotation>
-
-      <xs:element name="arg">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            Declares launch file-level arguments.
+            A collection of actions to be launched in order of appearance, plus
+            launch arguments for callers to provide, either through a tool or
+            by inclusion.
           </xs:documentation>
         </xs:annotation>
 
-        <xs:complexType>
-          <xs:attribute name="name" type="xs:string" use="required">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                Name of the launch argument.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
-          <xs:attribute name="value" type="xs:string" use="optional">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                Fixed value for the launch argument, disables overrides.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
-          <xs:attribute name="default" type="xs:string" use="optional">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                Default value for the launch argument, used if non is provided.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
-          <xs:attribute name="description" type="xs:string" use="optional">
-            <xs:annotation>
-              <xs:documentation xml:lang="en">
-                Brief description of the launch argument.
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
-        </xs:complexType>
-      </xs:element>
-      <xs:element ref="let"/>
-      <xs:element ref="node"/>
-      <xs:element ref="executable"/>
-      <xs:element ref="include"/>
-      <xs:element ref="group"/>
-      <xs:element ref="set_env"/>
-      <xs:element ref="unset_env"/>
-    </xs:choice>
-    <xs:attribute name="version" use="required">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Launch XML schema version in use.
-        </xs:documentation>
-      </xs:annotation>
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:pattern value="[0-9]+\.[0-9]+\.[0-9]+"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+        <xs:element name="arg">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Declares a launch file argument.
+            </xs:documentation>
+          </xs:annotation>
+
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Name of the launch argument.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="value" type="xs:string" use="optional">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Fixed value for the launch argument, disables overrides.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="default" type="xs:string" use="optional">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Default value for the launch argument, used if non is provided.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="description" type="xs:string" use="optional">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+                  Brief description of the launch argument.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="let"/>
+        <xs:element ref="node"/>
+        <xs:element ref="executable"/>
+        <xs:element ref="include"/>
+        <xs:element ref="group"/>
+        <xs:element ref="set_env"/>
+        <xs:element ref="unset_env"/>
+      </xs:choice>
+      <xs:attribute name="version" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Launch XML schema version in use.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+\.[0-9]+\.[0-9]+"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="let">
@@ -117,29 +119,6 @@
     </xs:annotation>
 
     <xs:complexType>
-      <xs:attribute name="file" type="xs:string" use="required">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            Path to the launch file to be included.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="if" type="xs:string" use="optional">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            A predicate to condition launch inclusion i.e. only do
-            so if the predicate evaluates to a truthy value.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="unless" type="xs:string" use="optional">
-        <xs:annotation>
-          <xs:documentation xml:lang="en">
-            A predicate to condition launch inclusion i.e. do
-            so unless the predicate evaluates to a truthy value.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:attribute>
       <xs:sequence minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation xml:lang="en">
@@ -172,6 +151,29 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Path to the launch file to be included.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="if" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition launch inclusion i.e. only do
+            so if the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unless" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A predicate to condition launch inclusion i.e. do
+            so unless the predicate evaluates to a truthy value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 
@@ -519,33 +521,31 @@
             environment variable settings for the launched ROS node.
           </xs:documentation>
         </xs:annotation>
-
         <xs:element ref="env"/>
         <xs:element ref="param"/>
         <xs:element ref="remap"/>
       </xs:choice>
-    </xs:complexType>
-    <xs:attribute name="package" type="xs:string" use="required">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Name of the package where the node is to be found.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-    <xs:attribute name="executable" type="xs:string" use="required">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Name of the node executable.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-    <xs:attribute name="name" type="xs:string" use="optional">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          A name for the launched ROS node.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
+      <xs:attribute name="package" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the package where the node is to be found.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="executable" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Name of the node executable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="name" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            A name for the launched ROS node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="args" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
@@ -608,5 +608,6 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
+    </xs:complexType>
   </xs:element>
 </xs:schema>
