@@ -39,7 +39,7 @@ YAML is currently supported too, and other markup languages could be added.
 ### Schema Definition
 
 ```xml
-{% include_relative specs/launch.0.1.0.xsd %}
+{% include_relative specs/launch.0.1.1.xsd %}
 ```
 
 ### Tags Semantics
