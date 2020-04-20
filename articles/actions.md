@@ -106,7 +106,7 @@ In C++, the generated code should be in the namespace and folder `action` instea
 In ROS 1, `rostopic list` would show all action topics in its output.
 In ROS 2, `ros2 topic list` and `ros2 service list` will not show topics and services used by actions by default.
 They can still be shown by passing an option to the commands to show hidden services and topics.
-The tool `ros2 action list` will produce list of action names provided by action servers (see [Intropsection tools](#introspection-tools)).
+The tool `ros2 action list` will produce list of action names provided by action servers (see [Introspection tools](#introspection-tools)).
 
 ## Action Interface Definition
 
