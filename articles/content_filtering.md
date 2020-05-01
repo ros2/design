@@ -169,14 +169,7 @@ There will be no need to expose ContentFilter concept for user. ContentFilteredT
 
 feedback topic is user defined message type dependent on action name but it also includes goal id([GoalInfo](https://github.com/ros2/rcl_interfaces/blob/master/action_msgs/msg/GoalInfo.msg)). Goal id will be internally handled and client issues ContentFilteredTopic API to notify the publication(server) what subscription(client) is interested in. status topic is constructed with [GoalStatus](https://github.com/ros2/rcl_interfaces/blob/master/action_msgs/msg/GoalStatus.msg), this can be also taken care with feedback mostly same design.
 
-```sequence
-ActionServer->ActionClient: server ready
-ActionClient->ActionServer: subscribe feedback & status topic
-ActionClient-->ActionServer: ask if ContentFilteredTopic supported
-ActionClient-->ActionServer: set filter expression and parameter based on goal id
-ActionServer->ActionClient: publish feedback & status
-Note over ActionClient: Filtering Process(if not filtered)
-```
+<img src="../img/content_filter/action_sequence_with_filter.png">
 
 #### Parameter Events
 
@@ -199,14 +192,7 @@ It would be good to create ContentFilteredTopic for each of them. This can make 
   User API will be added to manage filtering configuration, so that user application can set its own filter_expression and expression_parameters. Also using AsyncParametersClient::on_parameter_event, user can take care of the parameter event with user callback only for filtered parameter events.
   **[T.B.D] Filtering should be compatible for user even if rmw_implementation does not support ContentFilteredTopic, this can be done with using ParameterEventsFilter. But the problem here is ParameterEventsFilter only filters parameter name and event type such as NEW, DELETED, CHANGED. there is a huge gap of the flexibility that dds filtering expression and parameter expression possesses. This is what we need to discuss.**
 
-```sequence
-ParameterEventSubscription->ParameterEventPublication: subscribe /parameter_events
-ParameterEventSubscription-->ParameterEventPublication: ask if ContentFilteredTopic is supported
-ParameterEventSubscription-->ParameterEventPublication: set filter expression on /parameter_events
-ParameterEventPublication->ParameterEventSubscription: publish /parameter_events
-Note over ParameterEventSubscription: Internal Filtering Process(if not filtered)
-Note over ParameterEventSubscription: user callback fired(via on_parameter_event)
-```
+<img src="../img/content_filter/parameter_event_sequence_with_filter.png">
 
 ### Interfaces
 
