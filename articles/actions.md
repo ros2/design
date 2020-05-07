@@ -205,8 +205,8 @@ Usage examples can be found in the [examples](https://github.com/ros2/examples) 
 
 C++:
 
-- [examples/rclcpp/minimal_action_server](https://github.com/ros2/examples/tree/master/rclcpp/minimal_action_server)
-- [examples/rclcpp/minimal_action_client](https://github.com/ros2/examples/tree/master/rclcpp/minimal_action_client)
+- [examples/rclcpp/minimal_action_server](https://github.com/ros2/examples/tree/master/rclcpp/actions/minimal_action_server)
+- [examples/rclcpp/minimal_action_client](https://github.com/ros2/examples/tree/master/rclcpp/actions/minimal_action_client)
 
 Python:
 
