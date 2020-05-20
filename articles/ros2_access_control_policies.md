@@ -32,7 +32,7 @@ A policy serves as a high-level abstraction of privileges associated with attrib
 ## Concepts
 
 Before detailing the SROS 2 policy design of the [access control](https://en.wikipedia.org/wiki/Computer_access_control), by which the system constrains the ability of a subject to access an object, it is important to establish a few concepts useful in formalizing the design approach in terms of security.
-In this context, a subject may be thought of as a participant on a distributed data-bus (e.g. a ROS node in the computation graph), whereas an object may be an instance of a particular subsystem (e.g. a ROS topic), and access is defined as the capability to act upon that object (e.g. publish or subscribe).
+In this setting, a subject may be thought of as a participant on a distributed data-bus (e.g. a ROS node in the computation graph), whereas an object may be an instance of a particular subsystem (e.g. a ROS topic), and access is defined as the capability to act upon that object (e.g. publish or subscribe).
 
 ### Mandatory Access Control
 
@@ -99,10 +99,32 @@ Attributes:
 - **version**: declared version of schema version in use
   - Allows for advancing future revisions of the schema
 
+### `<enclaves>` Tag
+
+Encapsulates a sequence of unique enclaves.
+This method of nesting sequences allows for additional tags to be extended to the `<policy>` root.
+
+### `<enclave>` Tag
+
+Encapsulates a collection of profiles.
+This is specific to an enclave as determined by associative attributes.
+
+Attributes:
+- **path**: Fully qualified enclave path
+
+Given that multiple nodes can be composed into a single process, an enclave is used to contain the collection of profiles of all respective nodes.
+An enclave may therefore be considered the union of contained profiles.
+Note that the union of profiles within an enclave will result in denied privileges of any profile to supersede all allowed privileges for every profile.
+E.g. if a profile asks for a permission but a matching permission has been explicitly denied by another profile in the enclave, the deny rule will take precedence.
+See section `<profile>` Tag for more info on how MAC is applied. 
+
 ### `<profiles>` Tag
 
-Encapsulates a sequence of unique profiles.
-This method of nesting sequences allows for additional tags to be extended to the `<policy>` root.
+Encapsulates a sequence of unique profiles and designated metadata.
+This method of nesting sequences allows for additional tags to be extended to the `<enclave>` root, as well as associating particular metadata or constraints to the contained profile elements. 
+
+Attributes:
+- **type**: Specifies the transport type of profiles and metadata
 
 ### `<profile>` Tag
 
@@ -118,6 +140,19 @@ Additionally, as with many other MAC languages, while composed privileges may ov
 That is to say the priority of denied privileges conservatively supersedes allowed privileges, avoiding potential lapses in PoLP.
 This method of flatting privileges enables users to provision general access to a larger set of objects, while simultaneously revoking access to a smaller subset of sensitive objects.
 Although recursion of qualifiers is subsequently prevented, transformations are subsequently simplified, preventing potential for unintended access.
+
+### `<metadata>` Tag
+
+Encapsulates arbitrary metadata or constraints.
+This could include transport specific permission details applicable to sibling profile elements.
+There can only one `metadata` element per `profiles` parent element.
+
+Attributes:
+- To be defined
+
+Given the use cases for bridge interfaces where an enclave's credentials may be used to interconnect across multiple transports or to transport specific domains, it may be necessary to qualify certain profile sequences with particular constraints, while doing so multiple times for separate profiles per enclave.
+This allows advanced users to holistically control the intersect of permissions across transport domains, while retaining accurate model fidelity of security permissions.
+Given how security sensitive bridge interfaces are and the attack surface they expose, it is vital that information flow control within a bridge remains formally verifiable for safe and secure operation.
 
 #### Privileges
 
@@ -286,8 +321,8 @@ Yet, if the intended purpose of SROS 2 policy becomes that of an intermediate re
 ROS 2 allows for the remapping of many namespaced subsystems at runtime, such as when reusing launch files to orchestrate larger applications.
 While it is perhaps unreasonable to expect this dynamic flexibility from staticky provisioned permissions without allocating such capabilities prior, it should be made possible to infer the necessary capabilities from composed launch files and similar orchestrations.
 
-Static analysis of such remapping in conjunction with the context of the nominal requirements of respective nodes could be used to auto generate the new satisfactory policies.
-However, inferring such context from the source code could be equated to the halting problem.
+Static analysis of such remapping in conjunction with the setting of the nominal requirements of respective nodes could be used to auto generate the new satisfactory policies.
+However, inferring such policies from the source code could be equated to the halting problem.
 Thus, it stands to reason nodes could instead provide a manifest or IDL defining these nominal requirements so that permission may as easily be remapped, at least at design time.
 
 ## References

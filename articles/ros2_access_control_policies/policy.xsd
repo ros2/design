@@ -10,15 +10,34 @@
     <xs:element name="policy" type="Policy" />
     <xs:complexType name="Policy">
         <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="enclaves" type="Enclaves" />
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required" fixed="0.2.0"/>
+    </xs:complexType>
+
+    <xs:complexType name="Enclaves">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="enclave" type="Enclave" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Enclave">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <xs:element name="profiles" type="Profiles" />
         </xs:sequence>
-        <xs:attribute name="version" type="xs:string" use="required" />
+        <xs:attribute name="path" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="Profiles">
-        <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <xs:element name="profile" type="Profile" />
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="profile" type="Profile" />
+            </xs:sequence>
+            <xs:sequence minOccurs="0" maxOccurs="1">
+                <xs:element name="metadata" type="xs:anyType" />
+            </xs:sequence>
         </xs:sequence>
+        <xs:attribute name="type" type="xs:string" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="Profile">
