@@ -39,7 +39,7 @@ There are 4 primary states:
 - `Active`
 - `Finalized`
 
-To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state.
+To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state or the `Inactive` state.
 
 There are also 6 transition states which are intermediate states during a requested transition.
 
@@ -88,6 +88,8 @@ In the inactive state, any data that arrives on managed topics will not be read 
 Data retention will be subject to the configured QoS policy for the topic.
 
 Any managed service requests to a node in the inactive state will not be answered (to the caller, they will fail immediately).
+
+If an error that cannot be handled by the node/system occurs in this state, the node will transition to `ErrorProcessing`.
 
 #### Valid transitions out of Inactive
 
