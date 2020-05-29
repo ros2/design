@@ -39,7 +39,7 @@ There are 4 primary states:
 - `Active`
 - `Finalized`
 
-To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state or the `Inactive` state.
+To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state, the `Inactive` state, or the `Unconfigured`.
 
 There are also 6 transition states which are intermediate states during a requested transition.
 
