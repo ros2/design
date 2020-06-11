@@ -35,13 +35,13 @@ Creating more Participants adds overhead to an application:
 - Each Participant participates in discovery.
   Creating more than one Participant usually increases CPU usage and network IO load.
 - Each Participant keeps track of other DDS entities.
-  Using more than one within a single process will result in data duplication.
+  Using more than one within a single process may result in data duplication.
 - Each Participant may create multiple threads for event handling, discovery, etc.
-  The number of threads created per Participant depend on the DDS vendor (e.g.: [RTI Connext](https://community.rti.com/best-practices/create-few-domainParticipants-possible)).
+  The number of threads created per Participant depends on the DDS vendor (e.g.: [RTI Connext](https://community.rti.com/best-practices/create-few-domainParticipants-possible)).
 
 For those reasons, a Participant is a heavyweight entity.
 
-Note: This might actually depend on the DDS implementation, some of them share these resources between Participants (e.g. OpenSplice).
+Note: This might actually depend on the DDS vendor, some of them share these resources between Participants (e.g. `OpenSplice`).
 Many DDS vendors, however, do not perform this kind of optimization (e.g.: `RTI Connext` and `Fast-RTPS`), and actually recommend creating just one Participant per process.
 
 ### Context
@@ -69,10 +69,10 @@ There are two alternatives, besides the one-to-one Node to Participant mapping u
 - Using one Participant per process.
 - Using one Participant per Context.
 
-The second approach allows more flexibility, and it will allow creating more than one Participant for applications that need it e.g. domain bridge applications.
+The second approach is much more flexibility, allowing more than one Participant in a single application for those that need it e.g. domain bridge applications.
 Thus, a one-to-one Participant to Context mapping was chosen.
 
-When the case where multiple Nodes are running in a single process, there are different options for grouping them by - ranging from a separate context for each Node, over grouping a few Nodes in the same context, to using a single context for all Nodes.
+When multiple Nodes are running in a single process, there are different options for grouping them by - ranging from a separate context for each Node, over grouping a few Nodes in the same context, to using a single context for all Nodes.
 For most applications, only one Context is created.
 
 ### Discovery information
@@ -100,7 +100,7 @@ This topic is considered an implementation detail, and not all `rmw` implementat
 Thus, all the necessary logic has to be in the rmw implementation itself or in an upstream package.
 Implementing this logic in `rcl` would make it part of the API, and not an implementation detail.
 
-To avoid code repetition, a common implementation of the logic was done in [rmw_dds_common](https://github.com/ros2/rmw_dds_common/).
+To avoid code repetition, a common implementation of this logic is provided by the [rmw_dds_common](https://github.com/ros2/rmw_dds_common/) package.
 
 #### Details of the ROS discovery topic
 
@@ -149,7 +149,7 @@ Instead of using a custom topic to share the extra ROS specific discovery inform
 - Reader user `userData`: Node name/namespace.
 - Writer user `userData`: Node name/namespace.
 
-That information would be enough to satisfy ROS 2 required graph API.
+That information would be enough to satisfy ROS required graph API.
 This mechanism would also preclude having a topic that has to be read and written by all Nodes, which is better from a security perspective.
 
 This alternative wasn't implemented because of lack of support in some of the currently supported DDS vendors.
