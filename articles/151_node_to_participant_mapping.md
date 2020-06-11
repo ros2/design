@@ -69,7 +69,7 @@ There are two alternatives, besides the one-to-one Node to Participant mapping u
 - Using one Participant per process.
 - Using one Participant per Context.
 
-The second approach is much more flexibility, allowing more than one Participant in a single application for those that need it e.g. domain bridge applications.
+The second approach is much more flexible, allowing more than one Participant in a single application for those that need it e.g. domain bridge applications.
 Thus, a one-to-one Participant to Context mapping was chosen.
 
 When multiple Nodes are running in a single process, there are different options for grouping them by - ranging from a separate context for each Node, over grouping a few Nodes in the same context, to using a single context for all Nodes.
