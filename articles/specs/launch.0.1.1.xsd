@@ -532,7 +532,7 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="executable" type="xs:string" use="required">
+      <xs:attribute name="exec" type="xs:string" use="required">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             Name of the node executable.
