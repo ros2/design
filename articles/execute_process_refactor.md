@@ -347,7 +347,7 @@ It would not inherit from any other class, and would have a subset of the fields
 
 #### Constructor
 
-These parameters are drawn from the shared parameters of the current `launch_ros.actions.Node` and `launch_ros.descriptions.ComposableNode`.
+These parameters are drawn from the shared parameters of the current `launch_ros.actions.Node` and `launch_ros.descriptions.ComposableNode`, and introduces a new collection of `traits`, described in following classes.
 
 | Argument       | Description                                                  |
 | -------------- | ------------------------------------------------------------ |
@@ -357,10 +357,11 @@ These parameters are drawn from the shared parameters of the current `launch_ros
 | parameters     | List of either paths to yaml files or dictionaries of parameters |
 | remappings     | List of from/to pairs for remapping names                    |
 | arguments      | Container specific arguments to be passed to the node        |
+| traits      | Additional features of the node, specifically Lifecycle or Composable information|
 
 #### Properties
 
-Accessors would be provided for the various constructor parameters: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, and `arguments`.
+Accessors would be provided for the various constructor parameters: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, and `traits`.
 
 #### Methods
 
@@ -369,7 +370,7 @@ To support better isolation of class functionality, substitutions will be perfor
 
 | Name    | Description                                                  |
 | ------- | ------------------------------------------------------------ |
-| prepare | Takes a given LaunchContext and Action, and performs actions necessary to prepare the node for execution in that context. This will primarily consist of expanding various substitutions, but may additionally add event handlers related to the Action which will be invoked. |
+| prepare | Takes a given LaunchContext and Action, and performs actions necessary to prepare the node for execution in that context. This will primarily consist of expanding various substitutions, but may additionally add event handlers related to the Action which will be invoked. Additionally, this will call the `prepare()` method of any defined traits. |
 
 This function would match that of the current `launch_ros.actions.Node` internal method `_perform_substitutions`.
 
@@ -377,18 +378,67 @@ This function would match that of the current `launch_ros.actions.Node` internal
 
 No events would be handled or emitted.
 
-### launch_ros.descriptions.LifecycleNode
+### launch_ros.descriptions.ComposableNode
 
-This class would extend the `launch_ros.descriptions.Node` class, and provide the additional functionality required for managing lifecycle node events that are currently defined in `launch_ros.actions.LifecycleNode`. 
+This class would extend the `launch_ros.descriptions.Node` class, and provide the additional information required for defining a node which can be launched in a composable context. 
 
 #### Constructor
 
-No additional constructor parameters are defined in this class.
-All parameters which are handled by `launch_ros.descriptions.Node` may be passed to the constructor: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, and `arguments`.
+Most parameters would be passed to the superclass.
+
+|Argument|Description|
+|---|---|
+|node_plugin|Name of the plugin to be loaded|
+
+Additional parameters that may be passed, which are handled by `launch_ros.descriptions.NodeBase`: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, `traits`.
 
 #### Properties
 
-Constructor properties available from ``launch_ros.descriptions.Node`` are inherited: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, and `arguments`.
+Accessors would be provided for the additional constructor parameter: `node_plugin`.
+Inherited accessors would also be available: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, and `traits`.
+
+#### Methods
+
+No methods would be defined or overridden.
+
+#### Events
+
+No events would be handled or emitted.
+
+### launch_ros.traits.NodeTrait
+This abstract class would not extend any others, and would provide a common interface to allow definition of traits which apply to `launch_ros.descriptions.Node` objects.
+
+#### Constructor
+
+This constructor would take no parameters, and should not be used directly.
+
+#### Properties
+
+This object would expose no properties.
+
+#### Methods
+
+To allow a trait to perform its actions, the `prepare()` method will be called prior to execution.
+
+| Name    | Description                                                  |
+| ------- | ------------------------------------------------------------ |
+| prepare | Abstract method which takes a given Node, LaunchContext, and Action, and performs actions necessary to prepare the node for execution in that context.|
+
+#### Events
+
+No events would be handled or emitted.
+
+### launch_ros.traits.HasLifecycle
+
+This class would extend the `launch_ros.traits.NodeTrait` class, and provide the additional functionality required for managing lifecycle node events that are currently defined in `launch_ros.actions.LifecycleNode`. 
+
+#### Constructor
+
+The constructor for this trait would take no parameters, as it serves only to assert that the ROS2 Lifecycle events are implemented by the `launch_ros.descriptions.Node`, and appropriate events should be managed.
+
+#### Properties
+
+This object would expose no properties.
 
 #### Methods
 
@@ -410,42 +460,9 @@ Constructor properties available from ``launch_ros.descriptions.Node`` are inher
 | ----------------------------------------- | ------------------------------------------------------------ |
 | `launch.events.lifecycle.StateTransition` | This event is emitted when a message is published to the "`/<node_name>/transition_event`" topic, indicating the lifecycle node represented by this action changed state |
 
-### launch_ros.descriptions.ExecutableNode
+### launch_ros.traits.ComposesNodes
 
-This class would represent the information required to define a node which might be run as a single executable.
-It would inherit from `launch.descriptions.Executable`, contain a `launch_ros.descriptions.Node`, and populate its fields in the same manner as the current `launch_ros.actions.Node`.
-
-#### Constructor
-
-These parameters are drawn from the current `launch_ros.actions.Node`.
-
-REQUEST FOR COMMENT: Currently, this calls out the node as a `launch_ros.descriptions.Node` object parameter; would this be better styled by accepting a flat list to make the inner Node less visible to users?
-
-| Argument        | Description                                                  |
-| --------------- | ------------------------------------------------------------ |
-| node_executable | The name of the executable to find if a package is provided or otherwise a path to the executable to run. |
-| node            | The `launch_ros.descriptions.Node` (or subclass thereof) which is being run. |
-
-Most parameters which are handled by `launch.descriptions.Executable` may be passed to the constructor: `name`, `cwd`, `env`, and `additional_env`. 
-Note that the `cmd` parameter would *not* be passed through; the command would be constructed per ROS Node execution context.
-
-#### Properties
-
-Accessors would be provided for the various constructor parameters: `node_executable` and `node`.
-Inherited accessors would also be available: `cmd`, `name`, `cwd`, `env`, and `additional_env`.
-
-#### Methods
-
-This class would override the `apply_context` method of `launch.descriptions.Executable` to additionally invoke the `apply_context` method of the `launch_ros.descriptions.Node`, then invoke the superclass method itself.
-This function would match that of the current `launch_ros.actions.Node` internal method `_perform_substitutions`.
-
-#### Events
-
-No events would be handled or emitted.
-
-### launch_ros.descriptions.ComposableNode
-
-This class would be modified to inherit from `launch_ros.descriptions.Node`. 
+This class would extend the `launch_ros.traits.NodeTrait` class, and provide the additional information required for launching composable nodes that are currently defined in `launch_ros.descriptions.ComposableNode`. 
 
 #### Constructor
 
@@ -453,14 +470,37 @@ Most parameters would be passed to the new superclass.
 
 |Argument|Description|
 |---|---|
-|node_plugin|Name of the plugin to be loaded|
-
-Additional parameters that may be passed, which are handled by `launch_ros.descriptions.Node`: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`.
+|nodes|Collection of `launch_ros.descriptions.ComposableNode` objects that should be launched inside the `launch_ros.descriptions.Node` with this trait.|
 
 #### Properties
 
-Accessors would be provided for the additional constructor parameter: `node_plugin`.
-Inherited accessors would also be available: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, and `arguments`.
+Accessors would be provided for the constructor parameter: `nodes`.
+
+#### Methods
+
+| Name    | Description                                                  |
+| ------- | ------------------------------------------------------------ |
+| prepare | Overridden. Adds an event handler to launch the defined composable nodes in the container once the container is started. |
+
+#### Events
+
+No events would be handled or emitted.
+
+### launch_ros.traits.IsExecutable
+
+This class would extend the `launch_ros.traits.NodeTrait` class, and provide the additional information required for launching executable nodes that are currently defined in `launch_ros.actions.Node`. 
+
+#### Constructor
+
+Most parameters would be passed to the new superclass.
+
+|Argument|Description|
+|---|---|
+|node_executable|Name of the executable to find|
+
+#### Properties
+
+Accessors would be provided for the constructor parameter: `node_exectuable`.
 
 #### Methods
 
@@ -470,33 +510,36 @@ No custom methods would be defined or overridden.
 
 No events would be handled or emitted.
 
-### launch_ros.descriptions.ExecutableNodeContainer
+### launch_ros.descriptions.RosExecutable
 
-This class would extend the `launch_ros.descriptions.ExecutableNode` class, and provide the additional functionality required for loading multiple nodes into a single container.
+This class would represent the information required to run a ROS-aware process and inherit from `launch.descriptions.Executable`.
+It would not include execution-time details, nor provide monitoring of the process after launch. 
 
 #### Constructor
 
-The description of the composable node container itself should be provided as the parameters passed to ``launch_ros.descriptions.ExecutableNode``; child nodes would be provided as an additional constructor parameter.
+| Argument        | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| nodes             | A list of `launch_ros.descriptions.Node` objects which are part of the executable. |
 
-| Argument                       | Description                                            |
-| ------------------------------ | ------------------------------------------------------ |
-| composable\_node\_descriptions | Optional descriptions of composable nodes to be loaded |
-
-All parameters which are handled by ``launch_ros.descriptions.ExecutableNode`` may be passed to the constructor: `node_executable`, `node`, `name`, `cwd`, `env`, and `additional_env`.
+Additional parameters that may be passed, which are handled by `launch.actions.ExecuteProcess`: `cmd`, `name`, `cwd`, `env`, `additional_env`.
+NOTE: To allow ROS to determine the appropriate executable based on the package and executable name, the `cmd` parameter should *NOT* be specified. When `cmd` is not specified, this class will determine the appropriate executable if and only if exactly one of the nodes it contains has the `launch_ros.traits.IsExecutable` trait.
 
 #### Properties
 
-Properties available from ``launch_ros.descriptions.ExecutableNode`` are inherited: `process_details`, along with constructor parameters for `process_description`, `shell`, and `output`.
+Accessors would be provided for the constructor parameter: `nodes`.
+Inherited accessors would also be available: `cmd`, `name`, `cwd`, `env`, and `additional_env`.
 
 #### Methods
 
-| Name    | Description                                                  |
-| ------- | ------------------------------------------------------------ |
-| prepare | Overridden. Calls the superclass to prepare node-related information, calls `prepare` on each composable node, and adds actions to the target Action to load the contained nodes once the process is started, then calls the superclass to execute the parsed command. |
+| Name          | Description                                                  |
+| ------------- | ------------------------------------------------------------ |
+| apply\_context | Overridden. Calls `prepare()` on each `launch_ros.descriptions.Node`, and determines the appropriate executable if necessary. |
+
+In constructing the command line parameters for execution, if more than one node is defined, all appropriate parameters will be prefixed with the node name as necessary.
 
 #### Events
 
-Inherits events from `launch.actions.ExecuteLocalProcess`, but does not define any additional events.
+No events would be handled nor emitted.
 
 ## Future Extension
 
