@@ -238,7 +238,7 @@ Supposing the executable only has a node named `my_node`, this will result in `m
 
 The following precedence order applies to remapping rules:
 
-* Arguments are parsed from the leftmost to the rightmost. In case of contradictory assignments, the leftmost argument prevails.
+* Arguments are parsed from left to right. In case of overlapping rules, the leftmost argument prevails.
 * Arguments targeting a specific node DO NOT prevail arguments targeting all the nodes in the executable.
 
 As an example:
