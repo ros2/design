@@ -226,7 +226,7 @@ As is, this enclave assignment applies to each and every Domain Participant that
 The following precedence order applies to parameter assignments:
 
 * Arguments targeting a specific node prevail arguments targeting all the nodes in the executable.
-* Arguments are parsed from the leftmost to the rightmost. In case of contradictory assignments, the rightmost argument prevails.
+* Arguments are parsed left to right. In case of contradictory assignments, the rightmost argument prevails.
 
 As an example:
 
