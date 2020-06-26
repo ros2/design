@@ -223,10 +223,10 @@ As is, this enclave assignment applies to each and every Domain Participant that
 
 #### Precedence order of command line arguments
 
-The following precedence order applies to parameter assignments:
+##### Parameter assignments
 
 * Arguments targeting a specific node prevail arguments targeting all the nodes in the executable.
-* Arguments are parsed left to right. In case of contradictory assignments, the rightmost argument prevails.
+* Arguments are parsed left to right. In case of overlapping parameter assignments, the rightmost argument prevails.
 
 As an example:
 
@@ -236,7 +236,7 @@ ros2 run some_package some_exec --ros-args -r my_topic:=asd -r my_topic:=bsd -p 
 
 Assuming that `some_exec` only has a node named `my_node`, this will result in `my_param` being set to `1` and `another_param` being set to `2`.
 
-The following precedence order applies to remapping rules:
+##### Remapping rules
 
 * Arguments are parsed from left to right. In case of overlapping rules, the leftmost argument prevails.
 * Arguments targeting a specific node DO NOT prevail arguments targeting all the nodes in the executable.
@@ -249,7 +249,7 @@ ros2 run some_package some_exec --ros-args -r my_topic:=first -r my_topic:=secon
 
 Assuming that `some_exec` only has a node named `my_node`, this will result in `my_topic` being remapped to `first` and `another_topic` being remapped to `first`.
 
-In the case of parameter files, the following precedence apply:
+##### Parameter files
 
 * Parameter assignments targeting a specific node prevail over those using wildcards.
 * Within a file, in case of the overlapping assignments, the last assignment applies (i.e.: the one closest to EOF).
