@@ -252,7 +252,7 @@ Assuming that `some_exec` only has a node named `my_node`, this will result in `
 In the case of parameter files, the following precedence apply:
 
 * Parameter assignments targeting a specific node prevail over those using wildcards.
-* Within a file, in case of the contradictory assignments, the last assignment applies (i.e.: the one nearer to the end of the file).
+* Within a file, in case of the overlapping assignments, the last assignment applies (i.e.: the one closest to EOF).
 * Parameter files have the same precedence that command line parameter assignments. They are parsed from left to right, and the rightmost argument prevails.
 
 As an example:
