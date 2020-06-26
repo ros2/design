@@ -324,7 +324,7 @@ It also increases command line verbosity.
 
 ## Precedence order discussion
 
-There are some issues of the current precedence rules:
+There are some issues with the current precedence rules:
 
 * Precedence orders for remapping rules and parameter assignments are inconsistent.
 * In the past, inconsistencies were detected between `rclcpp` and `rclpy` ([example issue](https://github.com/ros2/rclcpp/issues/953)).
