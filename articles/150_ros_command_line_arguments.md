@@ -234,7 +234,7 @@ As an example:
 ros2 run some_package some_exec --ros-args -r my_topic:=asd -r my_topic:=bsd -p my_node:my_param:=1 -p my_param:=2 -p another_param:=1 -p another_param:=2
 ```
 
-Supposing the executable only has a node named `my_node`, this will result in `my_param` being set to `1` and `another_param` being set to `2`.
+Assuming that `some_exec` only has a node named `my_node`, this will result in `my_param` being set to `1` and `another_param` being set to `2`.
 
 The following precedence order applies to remapping rules:
 
