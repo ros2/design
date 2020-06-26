@@ -344,7 +344,7 @@ LaunchDescription([
 ```
 
 Where `my_params.yaml` can be find in *Precedence order of command line arguments* section.
-The parameter file is assigning `my_int` to `2`.
+The parameter file is assigning `2` to `my_int`.
 Launch cannot know the fully qualified name of the node at launch time, as the node namespace wasn't specified.
 Thus, it needs to use a "wildcard" rule for the assignment made in the dictionary, and it won't override the parameter file assignment.
 
