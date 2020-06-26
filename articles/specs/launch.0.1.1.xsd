@@ -525,14 +525,14 @@
         <xs:element ref="param"/>
         <xs:element ref="remap"/>
       </xs:choice>
-      <xs:attribute name="package" type="xs:string" use="required">
+      <xs:attribute name="pkg" type="xs:string" use="required">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             Name of the package where the node is to be found.
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="executable" type="xs:string" use="required">
+      <xs:attribute name="exec" type="xs:string" use="required">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             Name of the node executable.
