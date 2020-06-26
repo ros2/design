@@ -247,7 +247,7 @@ As an example:
 ros2 run some_package some_exec --ros-args -r my_topic:=first -r my_topic:=second -r my_node:another_topic:=first -r another_topic:=second
 ```
 
-Supposing the executable only has a node named `my_node`, this will result in `my_topic` being remapped to `first` and `another_topic` being remapped to `first`.
+Assuming that `some_exec` only has a node named `my_node`, this will result in `my_topic` being remapped to `first` and `another_topic` being remapped to `first`.
 
 In the case of parameter files, the following precedence apply:
 
