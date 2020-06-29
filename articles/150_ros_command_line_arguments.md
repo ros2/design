@@ -167,7 +167,7 @@ another_node:
      string_param: bar
 ```
 
-#### Multiple Logging level assignments
+#### Multiple logging level assignments
 
 Logging level assignments have two means of settings which are a global logging level and other logging levels for specific loggers. Minimum logging level can be externally set using the `--log-level` option.
 
