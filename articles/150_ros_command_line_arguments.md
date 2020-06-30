@@ -169,7 +169,7 @@ another_node:
 
 #### Multiple logging level assignments
 
-Logging level assignments have two means of settings which are a global logging level and other logging levels for specific loggers. Minimum logging level can be externally set using the `--log-level` option.
+Minimum logging level can be externally set either globally or per logger using the `--log-level` option.
 
 As an example, to set a global logging level to `DEBUG` for `some_ros_executable`, one may execute:
 
@@ -177,13 +177,13 @@ As an example, to set a global logging level to `DEBUG` for `some_ros_executable
 ros2 run some_package some_ros_executable --ros-args --log-level DEBUG
 ```
 
-Some specific loggers can be set using the `--log-level` option as well, the format as follows:
+Some specific loggers can be set using the `--log-level` option as well:
 
 ```sh
 ros2 run some_package some_ros_executable --ros-args --log-level talker1:=DEBUG --log-level talker2:=WARN
 ```
 
-Note that the logging level of a specific logger can override the global logging level for this logger.
+The minimum logging level of a specific logger will override the globally specified minimum logger level.
 
 See `rcutils` and `rcl` logging documentation for reference on existing logging levels.
 
