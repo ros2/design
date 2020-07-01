@@ -184,6 +184,7 @@ ros2 run some_package some_ros_executable --ros-args --log-level talker1:=DEBUG 
 ```
 
 The minimum logging level of a specific logger will override the globally specified minimum logger level.
+If a logging level is specified more than once in the passed command line arguments, the last one prevails.
 
 See `rcutils` and `rcl` logging documentation for reference on existing logging levels.
 
