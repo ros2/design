@@ -38,21 +38,49 @@ Each field is described by a *type* and a *name*.
 
 A single data structure is called *message*.
 Each message has a *name*.
-Together with the name of the *package* a message can be uniquely identified.
 
 ### Services
 
 For request / reply style communication the two exchanged data structures are related.
 These pairs of data structures are called *services*.
-A service is identified by its *name* and the *package* it is in.
 Each service describes two messages, one for the request data structure, one for the reply data structure.
 
 ### Actions
 
 For longer running request / reply style communication with feedback about the progress the exchanged data structures are related.
 These triplets of data structures are called *actions*.
-An action is identified by its *name* and the *package* it is in.
 Each action describes three messages, one for the goal data structure, one for the result data structure, and one for the feedback data structure.
+
+### Identifying data structures
+
+Every data structure can be uniquely referenced with a *uniform resource identifier* (URI) and a *uniform resource locator* (URL)
+as described by [IDL - Interface Identification](idl_interface_definition.html#interface-identification)
+
+#### Messages
+
+- URI: `rosidl:<package_name>/msg/<name>`
+- URL: `package://<package_name>/msg/<name>`
+
+#### Services
+
+- URI: `rosidl:<package_name>/srv/<name>`
+- URL: `package://<package_name>/srv/<name>`
+
+The underlying message definitions that make up a service are located in the same file (ie. have the same URL) and are in the `srv` namespace:
+
+- URI: `rosidl:<package_name>/srv/<name>_Request`
+- URI: `package://<package_name>/srv/<name>_Response`
+
+#### Actions
+
+- URI: `rosidl:<package_name>/action/<name>`
+- URL: `package://<package_name>/action/<name>`
+
+The underlying message and service definitions that make up an action are located in the same file (ie. have the same URL) and are in the `action` namespace:
+
+- URI: `rosidl:<package_name>/action/<name>_Goal`
+- URI: `rosidl:<package_name>/action/<name>_Result`
+- URI: `rosidl:<package_name>/action/<name>_Feedback`
 
 ### Field types
 
