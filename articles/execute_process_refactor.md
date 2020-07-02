@@ -1,8 +1,8 @@
 # Refactoring ExecuteProcess in ROS2
 
 Initially proposed in [114](https://github.com/ros2/launch/issues/114), this document describes changes to `ExecuteProcess` and related classes.
-As initially implemented, some aspects of this are tightly coupled to both the implementation chosen and the assumption that processes will execute only in the local environment of the launch process itself.
-The following changes are designed to provide a more decoupled architecture that will ease support of launching processes locally, remotely, or potentially in containerized environments.
+As initially implemented, some aspects of this class are tightly coupled to both the implementation chosen and the assumption that processes will execute only in the local environment of the launch process itself.
+The following changes are designed to provide a more decoupled architecture that will ease support of launching processes locally, remotely, and potentially in containerized environments.
 Additionally, these changes will support the goal of decoupling the description of an executable from the actual action of executing it.
 These changes are designed so that existing systems may continue to use the interface before these changes without modification; newer systems may find benefits from adapting to the newer syntax, particularly when composing more complicated environments.
 
@@ -282,7 +282,7 @@ No events would be handled nor emitted.
 
 Extends the `launch.actions.Action` class.
 This class would represent the execution-time aspects of `launch.actions.ExecuteProcess`.
-The new `process_description` constructor parameter could be a `launch.descriptions.Executable`, a `launch_ros.descriptions.Node`, or one of the other subclasses.
+The new `process_description` constructor parameter could be a `launch.descriptions.Executable` or a subclass.
 
 This class is simplified from the current `launch.actions.ExecuteProcess` by removing the logic relating to process definition/configuration, and by removing the logic regarding substitutions thereof.
 
@@ -351,7 +351,6 @@ These parameters are drawn from the shared parameters of the current `launch_ros
 
 | Argument       | Description                                                  |
 | -------------- | ------------------------------------------------------------ |
-| package        | name of the ROS package the node executable lives in         |
 | node_name      | Name the node should have                                    |
 | node_namespace | Namespace the node should create topics/services/etc in      |
 | parameters     | List of either paths to yaml files or dictionaries of parameters |
@@ -361,7 +360,7 @@ These parameters are drawn from the shared parameters of the current `launch_ros
 
 #### Properties
 
-Accessors would be provided for the various constructor parameters: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, and `traits`.
+Accessors would be provided for the various constructor parameters: `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, and `traits`.
 
 #### Methods
 
@@ -388,14 +387,15 @@ Most parameters would be passed to the superclass.
 
 |Argument|Description|
 |---|---|
+| package        | Optional. Name of the ROS package the node plugin lives in. If not specified, the package of the containing executable will be assumed.         |
 |node_plugin|Name of the plugin to be loaded|
 
-Additional parameters that may be passed, which are handled by `launch_ros.descriptions.NodeBase`: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, `traits`.
+Additional parameters that may be passed, which are handled by `launch_ros.descriptions.NodeBase`: `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, `traits`.
 
 #### Properties
 
-Accessors would be provided for the additional constructor parameter: `node_plugin`.
-Inherited accessors would also be available: `package`, `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, and `traits`.
+Accessors would be provided for the additional constructor parameters: `package`, `node_plugin`.
+Inherited accessors would also be available: `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, and `traits`.
 
 #### Methods
 
@@ -486,30 +486,6 @@ Accessors would be provided for the constructor parameter: `nodes`.
 
 No events would be handled or emitted.
 
-### launch_ros.traits.IsExecutable
-
-This class would extend the `launch_ros.traits.NodeTrait` class, and provide the additional information required for launching executable nodes that are currently defined in `launch_ros.actions.Node`. 
-
-#### Constructor
-
-Most parameters would be passed to the new superclass.
-
-|Argument|Description|
-|---|---|
-|node_executable|Name of the executable to find|
-
-#### Properties
-
-Accessors would be provided for the constructor parameter: `node_exectuable`.
-
-#### Methods
-
-No custom methods would be defined or overridden.
-
-#### Events
-
-No events would be handled or emitted.
-
 ### launch_ros.descriptions.RosExecutable
 
 This class would represent the information required to run a ROS-aware process and inherit from `launch.descriptions.Executable`.
@@ -519,6 +495,8 @@ It would not include execution-time details, nor provide monitoring of the proce
 
 | Argument        | Description                                                  |
 | --------------- | ------------------------------------------------------------ |
+| package        | name of the ROS package the node executable lives in         |
+|node_executable|Name of the executable to find|
 | nodes             | A list of `launch_ros.descriptions.Node` objects which are part of the executable. |
 
 Additional parameters that may be passed, which are handled by `launch.actions.ExecuteProcess`: `cmd`, `name`, `cwd`, `env`, `additional_env`.
@@ -526,7 +504,7 @@ NOTE: To allow ROS to determine the appropriate executable based on the package 
 
 #### Properties
 
-Accessors would be provided for the constructor parameter: `nodes`.
+Accessors would be provided for the constructor parameters: `package`, `node_executable`, `nodes`.
 Inherited accessors would also be available: `cmd`, `name`, `cwd`, `env`, and `additional_env`.
 
 #### Methods
@@ -559,7 +537,7 @@ If this is attempted, several features such as input/output pipes would likely n
 
 | Argument               | Description                                                  |
 | ---------------------- | ------------------------------------------------------------ |
-| process\_description   | The `launch.descriptions.Executable` to execute as a local process |
+| process\_description   | The `launch.descriptions.Executable` to execute as a remote process |
 | connection_description | An object defining the SSH connection information, such as host, port, user, etc. |
 | prefix                 | A set of commands/arguments to preceed the `cmd`, used for things like `gdb`/`valgrind` and defaults to the `LaunchConfiguration` called `launch-prefix` |
 | output                 | Configuration for process output logging. Defaults to `log` i.e. log both `stdout` and `stderr` to launch main log file and stderr to the screen. |
