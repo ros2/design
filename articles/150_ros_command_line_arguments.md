@@ -180,7 +180,7 @@ ros2 run some_package some_ros_executable --ros-args --log-level DEBUG
 Loggers can be set using the `--log-level` option as well:
 
 ```sh
-ros2 run some_package some_ros_executable --ros-args --log-level talker1:=DEBUG --log-level talker2:=WARN rclcpp:=DEBUG
+ros2 run some_package some_ros_executable --ros-args --log-level talker1:=DEBUG --log-level talker2:=WARN --log-level rclcpp:=DEBUG
 ```
 
 The minimum logging level of a specific logger will override the globally specified minimum logger level.
