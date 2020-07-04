@@ -4,8 +4,7 @@ This repository is a [Jekyll](http://jekyllrb.com/) website hosted on [Github Pa
 
 The repository/website is meant to be a point around which users can collaborate on the ROS 2 design efforts as well as capture those discussions for posterity.
 
-The best mailing list for discussing these topics is [ros-sig-ng-ros@googlegroups.com](mailto:ros-sig-ng-ros@googlegroups.com).
-You can view the archives [here](https://groups.google.com/forum/?fromgroups#!forum/ros-sig-ng-ros)
+The best place for discussing these topics is [the Next Generation ROS category on the ROS Discourse](https://discourse.ros.org/c/ng-ros).
 
 ## Working Locally
 
