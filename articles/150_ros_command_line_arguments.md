@@ -230,6 +230,72 @@ ros2 run some_package some_ros_executable --ros-args -e "/foo/bar"
 
 As is, this enclave assignment applies to each and every Domain Participant that `some_ros_executable` spawns unless explicitly ignored in code or overridden via security environment variables.  
 
+#### Precedence order of command line arguments
+
+##### Parameter assignments
+
+* Arguments targeting a specific node prevail arguments targeting all the nodes in the executable.
+* Arguments are parsed left to right. In case of overlapping parameter assignments, the rightmost argument prevails.
+
+As an example:
+
+```sh
+ros2 run some_package some_exec --ros-args -r my_topic:=asd -r my_topic:=bsd -p my_node:my_param:=1 -p my_param:=2 -p another_param:=1 -p another_param:=2
+```
+
+Assuming that `some_exec` only has a node named `my_node`, this will result in `my_param` being set to `1` and `another_param` being set to `2`.
+
+##### Remapping rules
+
+* Arguments are parsed from left to right. In case of overlapping rules, the leftmost argument prevails.
+* Arguments targeting a specific node DO NOT prevail arguments targeting all the nodes in the executable.
+
+As an example:
+
+```sh
+ros2 run some_package some_exec --ros-args -r my_topic:=first -r my_topic:=second -r my_node:another_topic:=first -r another_topic:=second
+```
+
+Assuming that `some_exec` only has a node named `my_node`, this will result in `my_topic` being remapped to `first` and `another_topic` being remapped to `first`.
+
+##### Parameter files
+
+* Parameter assignments targeting a specific node prevail over those using wildcards.
+* Within a file, in case of the overlapping assignments, the last assignment applies (i.e.: the one closest to EOF).
+* Parameter files have the same precedence that command line parameter assignments. They are parsed from left to right, and the rightmost argument prevails.
+
+As an example:
+
+```yaml
+# my_params.yaml
+my_node:
+    ros__parameters:
+        my_int: 1
+        my_int: 2
+        another_int: 1
+        my_float: 1.0
+        another_float: 1.0
+my_node:
+    ros__parameters:
+        another_int: 2
+/**:
+    ros__parameters:
+        my_int: 3
+        global_int: 1
+```
+
+```sh
+ros2 run some_package some_exec --ros-args --params-file my_params.yaml
+```
+
+will result in: my_int=2, another_int=2, global_int=1, my_float=1.0, another_float=1.0
+
+```sh
+ros2 run some_package some_exec --ros-args -p my_node:global_int:=2 -p my_float:=2.0 --params-file my_params.yaml -p my_float:=3.0 -p my_node:another_float:=2.0
+```
+
+will result in: my_int=2, another_int=2, global_int=2, my_float=1.0, another_float=2.0
+
 ## Implementation
 
 ### Extraction
@@ -264,3 +330,50 @@ This signficantly increases command line verbosity, but still avoids the need fo
 Remove the need for double dash tokens (`--`), conventionally used to signify the end of CLI options for a command, by adding the `--ros-` prefix to all ROS specific command line flags e.g. `--ros-remap`, `--ros-param`, etc.
 In exchange, it makes argument extraction slightly more difficult as all options must be known ahead of time, whereas `--ros-args`-based namespacing can achieve the same with a couple rules.
 It also increases command line verbosity.
+
+## Precedence order discussion
+
+There are some issues with the current precedence rules:
+
+* Precedence orders for remapping rules and parameter assignments are inconsistent.
+* In the past, inconsistencies were detected between `rclcpp` and `rclpy` ([example issue](https://github.com/ros2/rclcpp/issues/953)).
+* Weird interaction with launch files.
+
+Example of the last item:
+
+```python
+LaunchDescription([
+  Node(
+    package='my_pkg',
+    exec='my_exec',
+    name='my_node',
+    parameters=['/path/to/my_params.yaml', {'my_int': '3'}]
+  )
+])
+```
+
+Where `my_params.yaml` can be find in *Precedence order of command line arguments* section.
+The parameter file is assigning `2` to `my_int`.
+Launch cannot know the fully qualified name of the node at launch time, as the node namespace wasn't specified.
+Thus, it needs to use a "wildcard" rule for the assignment made in the dictionary, and it won't override the parameter file assignment.
+
+Before https://github.com/ros2/launch_ros/pull/154 was merged, it was impossible to override a parameter assignment in a parameter file that targeted an specific node from a launch file.
+Now it's possible by doing:
+
+```python
+LaunchDescription([
+  Node(
+    package='my_pkg',
+    exec='my_exec',
+    name='my_node',
+    namespace='my_ns',
+    parameters=['/path/to/my_params.yaml', {'my_int': '3'}]
+  )
+])
+```
+
+As the fully qualified node name is known at launch time in this last case, `my_int` will be set to `3`.
+
+Possible solutions:
+* Warn when parameter files and parameter dictionaries are combined in `Node`, and the fully qualified node name is not known.
+* Modify precedence between wildcard and not wildcard assignments.
