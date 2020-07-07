@@ -165,7 +165,7 @@ eProsima's implementation also includes a minimum DDS API, IDL support, and auto
 
 Given the relatively strong LGPL option and the encouraging but custom license from RTI, it seems that depending on and even distributing DDS as a dependency should be straightforward.
 One of the goals of this proposal would be to make ROS 2 DDS vendor agnostic.
-So, just as an example, if the default implementation is Connext, but someone wants to use one of the LGPL options like OpenSplice, FastRTPS or Cyclone DDS, they simply need to recompile the ROS source code with some options flipped and they can use the implementation of their choice.
+So, just as an example, if the default implementation is Connext, but someone wants to use one of the Apache 2 options like Fast DDS or Cyclone DDS, they simply need to recompile the ROS source code with some options flipped and they can use the implementation of their choice.
 
 This is made possible because of the fact that DDS defines an API in its specification.
 Research has shown that making code which is vendor agnostic is possible if not a little painful since the APIs of the different vendors is almost identical, but there are minor differences like return types (pointer versus shared_ptr like thing) and header file organization.
