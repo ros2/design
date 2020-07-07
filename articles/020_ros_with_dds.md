@@ -151,7 +151,7 @@ It is available on [Github](https://github.com):
 ADLINK's implementation comes with a basic, functioning build system and was fairly easy to package.
 OpenSplice appears to be the number two DDS implementation in use, but that is hard to tell for sure.
 
-ADLINK also supports heavily the Eclipse Cyclone DDS implementation [https://github.com/eclipse-cyclonedds/cyclonedds] (https://www.adlinktech.com/en/CycloneDDS).  Cyclone DDS is licensed under Eclipse Public License - v 2.0 ( https://www.eclipse.org/legal/epl-2.0/).
+ADLINK also contributes to Eclipse Cyclone DDS [https://github.com/eclipse-cyclonedds/cyclonedds] (https://www.adlinktech.com/en/CycloneDDS).  Cyclone DDS is licensed under the Eclipse Public License - v 2.0 ( https://www.eclipse.org/legal/epl-2.0/).
 
 TwinOaks's CoreDX DDS implementation is proprietary only, but apparently they specialize in minimal implementations which are able to run on embedded devices and even bare metal.
 
