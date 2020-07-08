@@ -114,7 +114,7 @@ From RTI's website ([http://community.rti.com/kb/xml-qos-example-using-rti-conne
 > In some circumstances, the TCP protocol might be needed for discovery and data exchange.
 > For more information on the RTI TCP Transport, please refer to the section in the RTI Core Libraries and Utilities User Manual titled "RTI TCP Transport".
 
-From ADLINK's website, they support TCP Since OpenSplice v6.4, supports shared memory as a transport and as an in-memory database.
+From ADLINK's website, they support TCP as of OpenSplice v6.4, supports shared memory as a transport and as an in-memory database.
 
 [https://www.adlinktech.com/en/data-distribution-service.aspx](https://www.adlinktech.com/en/data-distribution-service.aspx)
 
