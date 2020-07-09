@@ -1,12 +1,13 @@
 ---
 layout: default
-title: ROS 2 Node Interface Definition Language
-permalink: articles/ros2_node_interface_definition_language.html
+title: ROS 2 Node Definition Language
+permalink: articles/ros2_node_definition_language.html
 abstract:
-  This article specifies the ROS 2 Interface Definition Language, a simple and standardized manner to export the complete interface (action/message/parameter/service) of node(s) in a package.
+  This article specifies the ROS 2 Node Definition Language, a simple and standardized manner to export the complete interface (action/message/parameter/service) of node(s) in a package.
 author: >
   [Jérémie Deray](https://github.com/artivis),
   [Kyle Fazzari](https://github.com/kyrofa)
+  [Ted Kern](https://github.com/arnatious)
 published: true
 categories: Interfaces
 ---
@@ -38,13 +39,13 @@ While it is usually readily available to a developer looking at the code, it can
 It therefore calls for the creation of a standardized way to explicitly define and export this information.
 
 This article defines a high-level abstraction allowing upstream packages to specify the communication requirements of the nodes in the package, such that the final user, be it a developer or a static analysis tool, can benefit from it.
-The Interface Definition Language (IDL) specified in the next section is meant to be distributed alongside its associated package, be it in the source code or a generated release packaging format (e.g. debian).
-Whether the interface is declared or not is up to the package author and should not prevent the correct execution of any system pre-existing the IDL.
+The Node Definition Language (NoDL) specified in the next section is meant to be distributed alongside its associated package, be it in the source code or a generated release packaging format (e.g. debian).
+Whether the interface is declared or not is up to the package author and should not prevent the correct execution of any system pre-existing the NoDL.
 Similarly, the declared interface may be only partial and allow for the full use of pre-existing systems and the use of dependent systems on the parts covered by the partial interface.
 
 ## Motivation
 
-While initially being approached from a ROS 2 Security perspective, the abstraction level of the IDL allows for the developments of other functionalities and tools.
+While initially being approached from a ROS 2 Security perspective, the abstraction level of the NoDL allows for the developments of other functionalities and tools.
 
 ### Security motivation
 
@@ -85,7 +86,7 @@ Such assertions could include:
 These assertions results would then be summarized in a logging file for later debugging.
 
 Another example of the usefulness of having a static interface is the ability to create graphical tools for putting a ROS system together.
-Yet another example would be an additional feature in `ros2 pkg create` that would allow a developer to hand it an IDL and have it generate scaffolding for a node with that interface.
+Yet another example would be an additional feature in `ros2 pkg create` that would allow a developer to hand it a NoDL and have it generate scaffolding for a node with that interface.
 
 These examples are only a subset of use-cases made possible by such an interface.
 It's clear that this is useful well beyond security.
@@ -113,43 +114,63 @@ Another is the fact that, as soon as the node is running, RCL itself (or another
 How do upstream packages specify their interface requirements?
 Through a high-level description of all the actions, parameters, services and topics, provided or required, by each node within the package.
 
-The package interface is defined in a separate [XML][xml_wiki] file and exported from the `package.xml` using [REP 149's export mechanism][rep149_export], thereby avoiding pollution of the package manifest.
+The package interface is defined in a separate [XML][xml_wiki] file with suffix `.nodl.xml`.
+This XML file is exported to the [ament index][ament_index], either manually in the case of python projects or with a helper CMake macro.
 The interface may cover only a subset of nodes in a package, as long as the nodes that _are_ covered are done so completely.
 
-Here is an example IDL for a package containing two nodes:
+Here is an example NoDL for a package containing two nodes:
 
-{% include_relative ros2_node_idl/interface_declaration.xml %}
+{% include_relative ros2_nodl/interface_declaration.xml %}
 
-Once an IDL file is written, it is exported from the package manifest:
+Once an NoDL file is written, it is exported from either `CMakeLists.txt` or `setup.py` (more details below).
+Note that several NoDL files can be exported, allowing for writing one NoDL file per node if desired.
 
-{% include_relative ros2_node_idl/package.xml %}
+### Exporting a NoDL to the Ament Index
 
-Note that several IDL files can be exported, allowing for writing an IDL file per node.
+Per the design philosophy of the [ament index][ament_index], files will be installed in two locations.
+In the case of a package named `Foo`, the NoDL file `foo.nodl.xml` should be placed in the package share directory, `share/foo/foo.nodl.xml`.
+A corresponding marker file, `share/ament_index/nodl_desc/foo`, should be created.
+It is either empty or contains the relative path to the `foo.nodl.xml` file.
 
-### Schema for `package.xml`'s export tag
+#### CMake Macro
+
+For packages using ament_cmake, the package `ament_nodl` provides the macro `nodl_export_node_description_file` which performs the export described in [Exporting a NoDL to the Ament Index](#exporting-a-nodl-to-the-ament-index).
+
+For a package `Foo`, containing `foo.nodl.xml`, the following lines are added to `CMakeLists.txt`:
+
+```cmake
+find_package(ament_nodl REQUIRED)
+nodl_export_node_description_file(foo.nodl.xml)
+```
+
+#### setup.py
+
+In the case of setup.py, placement of the NoDL file and marker in the index must be done manually alongside the placement of the package's marker in the ament index.
+One can re-use the same empty marker file placed in the package index.
+An example `data_files` argument to `setuptools.setup()` in `setup.py` follows:
+
+```python
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/ament_index/resource_index/nodl_desc',
+            ['resource/' + package_name]),
+        ('share/' + package_name,
+            ['package.xml', package_name + '.nodl.xml']),
+    ],
+```
+
+### NoDL Schema
+
+An `.xsd` xml schema is provided alongside the NoDL implementation.
+This can be used to programmatically validate the NoDL's `.xml` document.
+There are some semantics that cannot be expressed in this schema, so the the `.xsd` is not authoritative.
+Rather, it is a heuristic, and the [NoDL reference implementation][nodl-reference] can reject a document that does not conform to other requirements.
 
 #### `interface`
 
-This is how the package exports its defined IDL for other tools to consume.
-
-Attributes:
-
-**path**:  Path to XML file containing IDL
-
-Note that the introduction of the `interface` tag within the `export` tag of the package manifest raises a small difficulty with regards to the [REP 149][rep149_export].
-The REP specifies:
-
-> To avoid potential collisions, an export tag should have the same name as the package which is meant to process it. The content of that tag is up to the package to define and use.
-
-Considering the high level abstraction of the IDL, the `interface` tag is not meant for a specific package but rather declares intrinsic properties for anyone to process it.
-However, the keyword is likely solidly descriptive enough to either be accepted as falling under [REP 149][rep149_export] or else to motivate an amendment of the REP.
-
-### IDL Schema
-
-#### `interface`
-
-Root tag of the IDL file, it is made up of a collection of node interfaces.
-There must be only one tag per IDL file.
+Root tag of the NoDL file, it is made up of a collection of node interfaces.
+There must be only one tag per NoDL file.
 
 Attributes:
 - **version**: version of schema in use, allowing for future revisions.
@@ -161,6 +182,7 @@ It is specific to a node as determined by its associated attributes.
 
 Attributes:
 - **name**: The base name of the node.
+- **executable**: The name of the generated executable that contains the node.
 
 #### `action`
 
@@ -174,10 +196,6 @@ Valid values are any ROS action types.
 Valid values are "true" or "false". Defaults to "false".
 - **client**: Whether or not the node provides a client for the action.
 Valid values are "true" or "false". Defaults to "false".
-
-Sub-tag:
-- **qos**: The Quality of Service setting for the action - see the [qos tag](####qos).
-Defaults to [rcl_action_qos_profile_status_default][rcl_action_qos_profile_status_default_link]
 
 #### `parameter`
 
@@ -201,10 +219,6 @@ Valid values are "true" or "false". Defaults to "false".
 - **client**: Whether or not the node provides a client for the service.
 Valid values are "true" or "false". Defaults to "false".
 
-Sub-tag:
-- **qos**: The Quality of Service setting for the service - see the [qos tag](####qos).
-Defaults to [rmw_qos_profile_services_default][rmw_qos_profile_services_default_link]
-
 #### `topic`
 
 Define the interface for a given topic.
@@ -218,32 +232,10 @@ Valid values are "true" or "false". Defaults to "false".
 - **subscription**: Whether or not the node subscribes to the topic.
 Valid values are "true" or "false". Defaults to "false".
 
-Sub-tag:
-- **qos**: The Quality of Service setting for the topic - see the [qos tag](####qos).
-Defaults to [rmw_qos_profile_default][rmw_qos_profile_default_link]
-
-#### `qos`
-
-Define the quality of service. It reflects the qos parameters of the [rmw_qos_profile_t][rmw_qos_profile_t] structure.  
-This tag is a sub-element of either an action, a service or a topic.
-
-Attributes:
-- **history**: The size of the message queue.
-- **reliability**: The reliability QoS policy setting.
-- **durability**: The durability QoS policy setting.
-- **deadline**: The period at which messages are expected to be sent/received.
-- **lifespan**: The age at which messages are considered expired and no longer valid.
-- **liveliness**: Liveliness QoS policy setting.
-- **liveliness_lease_duration**: The time within which the RMW node or publisher must show that it is alive.
-- **avoid_ros_namespace_conventions**: If true, any ROS specific namespacing conventions will be circumvented.
-
 
 [dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
 [sros2_design]: /articles/ros2_dds_security.html
 [launch_ros]: https://github.com/ros2/launch_ros
 [xml_wiki]: https://en.wikipedia.org/wiki/xml
-[rep149_export]: http://www.ros.org/reps/rep-0149.html#export
-[rcl_action_qos_profile_status_default_link]: https://github.com/ros2/rcl/blob/master/rcl_action/include/rcl_action/default_qos.h
-[rmw_qos_profile_services_default_link]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L64
-[rmw_qos_profile_default_link]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h#L51
-[rmw_qos_profile_t]: https://github.com/ros2/rmw/blob/master/rmw/include/rmw/types.h#L299
+[ament_index]: https://github.com/ament/ament_cmake/blob/master/ament_cmake_core/doc/resource_index.md#integration-with-other-systems
+[nodl_reference]: https://github.com/ubuntu-robotics/nodl
