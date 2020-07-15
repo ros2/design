@@ -387,10 +387,10 @@ Most parameters would be passed to the superclass.
 
 |Argument|Description|
 |---|---|
-| package        | Optional. Name of the ROS package the node plugin lives in. If not specified, the package of the containing executable will be assumed.         |
+| package        | Optional. Name of the ROS package the node plugin lives in. If not specified, the package of the containing executable will be assumed. This may fail if context regarding the executable is not available.        |
 |node_plugin|Name of the plugin to be loaded|
 
-Additional parameters that may be passed, which are handled by `launch_ros.descriptions.NodeBase`: `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, `traits`.
+Additional parameters that may be passed, which are handled by `launch_ros.descriptions.Node`: `node_name`, `node_namespace`, `parameters`, `remappings`, `arguments`, `traits`.
 
 #### Properties
 
@@ -496,11 +496,10 @@ It would not include execution-time details, nor provide monitoring of the proce
 | Argument        | Description                                                  |
 | --------------- | ------------------------------------------------------------ |
 | package        | name of the ROS package the node executable lives in         |
-|node_executable|Name of the executable to find|
+| executable_name |Name of the executable to find|
 | nodes             | A list of `launch_ros.descriptions.Node` objects which are part of the executable. |
 
-Additional parameters that may be passed, which are handled by `launch.actions.ExecuteProcess`: `cmd`, `name`, `cwd`, `env`, `additional_env`.
-NOTE: To allow ROS to determine the appropriate executable based on the package and executable name, the `cmd` parameter should *NOT* be specified. When `cmd` is not specified, this class will determine the appropriate executable if and only if exactly one of the nodes it contains has the `launch_ros.traits.IsExecutable` trait.
+Additional parameters that may be passed, which are handled by `launch.actions.Executable`: `name`, `cwd`, `env`, `additional_env`.
 
 #### Properties
 
