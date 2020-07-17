@@ -123,7 +123,7 @@ To avoid code repetition, a common implementation of this logic is provided by t
 Previously, each Node could have different security artifacts.
 That was possible because each Node was mapped to one Participant.
 The new approach allows to specify different security artifacts for each process.
-For more details, see [ROS 2 Security Enclaves](ros2_security_enclaves.md).
+For more details, see [ROS 2 Security Enclaves](182_ros2_security_enclaves.md).
 
 #### Ignore local publications option
 
