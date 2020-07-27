@@ -174,7 +174,7 @@ It would be good to create ContentFilteredTopic for each of them. This can make 
   - input: rmw_subscription_t, rmw_node_t, parent topic information.
   - output: rmw_subscription_t (with new data reader)
 - `rmw_cft_set/get_expression_parameters` interface.
-  - input: `DDSContentFilteredTopic`, (string sequence) expression parameters.
+  - input: rmw_subscription_t, (string sequence) expression parameters.
 
 #### rclcpp(rclpy)
 
