@@ -21,14 +21,14 @@ Original Author: {{ page.author }}
 
 ## Overview
 
-`ROS 2` added the [Quality of Service (QoS)](qos.md) to publishers, subscriptions, clients and services.
-Up `ROS 2 Foxy`, the `QoS` can only be specified in code.
-To avoid recompiling the source code with patched `QoS`, node implementers have used different mechanisms to configure `QoS` profiles:
+ROS 2 added the concept of [Quality of Service (QoS)](qos.md) settings to publishers, subscriptions, clients and services.
+As of ROS 2 Foxy Fitzroy, QoS settings can only be specified in code.
+To avoid recompiling the source code with patched QoS, node implementers have used different mechanisms to configure QoS profiles:
 - Command line arguments
 - ROS parameters
-- Combining system default QoS with vendor specific `QoS` profiles.
+- Combining system default QoS with vendor specific QoS profiles.
 
-Instead of having different ways of externally specifying `QoS` for the different endpoints, it would be good to have a standardized way to specific `QoS` profiles.
+Instead of having different ways of externally specifying QoS for the different entities, it would be good to have a standardized way to select QoS settings.
 
 ## QoS file format
 
@@ -40,9 +40,9 @@ ROS 2 can use a simpler approach, leveraging node name uniqueness <sup id="back_
 
 ### Nodes
 
-In an acceptable `QoS` file format, it should be to distinguish `QoS` settings targeted to different nodes.
-Thus, a top level tag to identify the node should be available.
-Example alternatives:
+QoS settings apply to entities that are associated with ROS nodes.
+Thus, a top level tag to identify the node should be available in the file format.
+Here are a couple of examples:
 
 ```xml
 <qos_profiles>
@@ -58,9 +58,9 @@ Example alternatives:
         ...
 ```
 
-### Endpoint type
+### Entity type
 
-It should be possible to distinguish between the different endpoint types in a qos profile file.
+It should be possible to distinguish between the different entity types in a QoS profile file.
 For example:
 
 ```xml
@@ -91,11 +91,11 @@ For example:
 
 Besides `publisher` and `subscription` tags, `client` and `service` should be allowed.
 
-### QoS profiles ids (optional)
+### QoS profiles IDs (optional)
 
-In the case that a node wants to create two `publishers` on the same topic with different QoS, the above format wouldn't allow to identify uniquely the `publisher`. The same applies to other kinds of endpoints.
+In the case that a node wants to create two `publishers` on the same topic with different QoS, the above format wouldn't allow to identify uniquely the `publisher`. The same applies to other kinds of entitys.
 
-To solve that issue, the format could allow an using a profile id, instead of the topic name:
+To solve this issue, the format could support using a profile ID, in addition to the topic name:
 
 ```xml
 <qos_profiles>
@@ -103,9 +103,9 @@ To solve that issue, the format could allow an using a profile id, instead of th
         <publisher topic_name="asd" profile_id="1">
             ...
         </publisher>
-        <subscription topic_name="asd" profile_id="2">
+        <publisher topic_name="asd" profile_id="2">
             ...
-        </subscription>
+        </publisher>
     </node>
 <qos_profiles>
 ```
@@ -118,7 +118,7 @@ To solve that issue, the format could allow an using a profile id, instead of th
             profile_id: 1
             qos:
                 ...
-        subscription:
+        publisher:
             topic_name: asd
             profile_id: 2
             qos:
@@ -126,11 +126,11 @@ To solve that issue, the format could allow an using a profile id, instead of th
 ```
 
 `rcl` API would need to be extended to support profiles id.
-This mechanism should be avoided, except in the few use cases where there are collisions.
+Users should only use this mechanism to avoid collisions.
 
-### Default profiles for endpoints in different nodes
+### Default profiles for entitys in different nodes
 
-It is common to have several nodes creating the same endpoint, and the same qos profile is desired in all of them.
+It is common to have several nodes creating the same entity, and the same qos profile is desired in all of them.
 A default tag can be added to solve this:
 
 ```xml
@@ -176,11 +176,11 @@ A default tag can be added to solve this:
 Topic, services and node names in the parameter file would be interpreted as the already remapped names. e.g.:
 
 ```bash
-ros2run <package_name> <exec_name> --ros-args -r chatter:=my_chatter --qos-file /path/to/qos/file
+ros2 run <package_name> <exec_name> --ros-args -r chatter:=my_chatter --qos-file /path/to/qos/file
 ```
 
 The topic that will be looked up in the qos profile file is `my_chatter`, and not `chatter`.
-Relatives topic/service names will be allowed used under a `node` tag, but it will not be allowed under the `default` tag.
+Relative topic/service names will be allowed used under a `node` tag, but it will not be allowed under the `default` tag.
 In that case, they will be extended with the namespace specified in the parent `node` tag.
 
 ### Rationale
@@ -192,7 +192,7 @@ Applying remapping rules to the names in the file will only add complexity and b
 ## rcl API
 
 
-The proposed API aims to decouple the object that represents the loaded `QoS` profile file from the loader.
+The proposed API aims to decouple the object that represents the loaded QoS profile file from the loader.
 
 ### rcl_qos_loaded_profiles_t
 
@@ -286,7 +286,7 @@ Optionally, we could also add in `rcl_node_options_t` a boolean to indicate to u
 A new argument will be needed to allow the user to specify which file to load.
 
 ```bash
-ros2run <package_name> <exec_name> --ros-args --qos-file /path/to/qos/file
+ros2 run <package_name> <exec_name> --ros-args --qos-file /path/to/qos/file
 ```
 
 This loading mechanism will be equivalent to setting the `rcl_qos_loaded_profiles_t` member in init options.
@@ -295,7 +295,7 @@ This loading mechanism will be equivalent to setting the `rcl_qos_loaded_profile
 
 ### Loading qos profiles in composable nodes
 
-The interface definition of the [LoadNode](https://github.com/ros2/rcl_interfaces/blob/master/composition_interfaces/srv/LoadNode.srv) service could be extended with a field to specify the desired `QoS` of the loaded node.
+The interface definition of the [LoadNode](https://github.com/ros2/rcl_interfaces/blob/master/composition_interfaces/srv/LoadNode.srv) service could be extended with a field to specify the desired QoS of the loaded node.
 
 In that way, the user loading the node is responsible of passing the desired QoS, instead of the node container.
 The message to be sent could be loaded from a qos profile file.
@@ -303,18 +303,10 @@ The message to be sent could be loaded from a qos profile file.
 #### Proposed interfaces
 
 ```
-# EndpointQoS.msg
+# EntityQoS.msg
 
 string name  # This can be either a topic or service name
-uint8 type  # Endpoint type. An enum that can be a publisher/subscription/topic/service
-QoS qos  # Message that defines the qos
-```
-
-```
-# EndpointQoS.msg
-
-string name  # This can be either a topic or service name
-uint8 type  # Endpoint type. An enum that can be a publisher/subscription/topic/service
+uint8 type  # Entity type. An enum that can be a publisher/subscription/topic/service
 QoS qos  # Message that defines the qos
 ```
 
@@ -324,7 +316,7 @@ QoS qos  # Message that defines the qos
 # Current request fields
 ...
 # New field
-EndpointQoS[] requested_qos_profiles  # new field to allow loading user requested qos profiles
+EntityQoS[] requested_qos_profiles  # new field to allow loading user requested qos profiles
 ---
 # Current response definition
 ...
@@ -332,7 +324,7 @@ EndpointQoS[] requested_qos_profiles  # new field to allow loading user requeste
 
 A `rcl_qos_loaded_profiles_t` can be constructed from the received message and passed to the node options of the node to be loaded.
 
-TBD: `QoS` message definition.
+TBD: QoS message definition.
 
 ### Support in launch files
 
@@ -372,7 +364,7 @@ To make this use case easier, the following options can be added:
 
 ## Which QoS policies can be externally modified?
 
-It might not make sense to be able to externally modify some of the `QoS` policies.
+It might not make sense to be able to externally modify some of the QoS policies.
 For example, modifying `rmw_qos_liveliness_policy_t` externally to `MANUAL_BY_TOPIC`.
 
 ### Analysis for each policy
@@ -384,7 +376,7 @@ Thus, it does not make sense to restrict the external configurability of them.
 
 #### Deadline
 
-If the node is not listening to "deadline missed" events for that endpoint, modifying it externally won't have any effect.
+If the node is not listening to "deadline missed" events for that entity, modifying it externally won't have any effect.
 For nodes that are using this feature, allowing to externally configure it makes sense.
 
 #### Liveliness and liveliness_lease_duration
@@ -399,4 +391,4 @@ Authors that support both manual by topic and automatic liveliness can provide a
 
 ### Alternatives
 
-There could be a callback mechanism, in which the node's author validates that the `QoS` profile that is going to be applied is valid.
+There could be a callback mechanism, in which the node's author validates that the QoS profile that is going to be applied is valid.
