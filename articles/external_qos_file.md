@@ -32,7 +32,8 @@ Instead of having different ways of externally specifying QoS for the different 
 
 ## QoS file format
 
-DDS uses the concept of QoS profiles ([rti documentation](https://community.rti.com/examples/using-qos-profiles)), in which each profile has a name. When creating an entity (e.g. a `DataWriter`), the passed profile name will be looked up in the qos profiles file being used, and the QoS can be loaded in that way.
+DDS uses the concept of QoS profiles ([rti documentation](https://community.rti.com/examples/using-qos-profiles)), in which each profile has a name.
+When creating an entity (e.g. a `DataWriter`), the passed profile name will be looked up in the QoS profiles file being used, and the QoS can be loaded in that way rather than from hard-coded values in the source code.
 
 ROS 2 can use a simpler approach, leveraging node name uniqueness <sup id="back_node_name_uniqueness">[1](#to_node_name_uniqueness)</sup>.
 
