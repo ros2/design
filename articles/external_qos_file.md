@@ -35,7 +35,10 @@ Instead of having different ways of externally specifying QoS for the different 
 DDS uses the concept of QoS profiles, in which each profile has a name.
 When creating an entity (e.g. a `DataWriter`), the passed profile name will be looked up in the QoS profiles file being used, and the QoS can be loaded in that way rather than from hard-coded values in the source code.
 
-ROS 2 can use a simpler approach, leveraging node name uniqueness <sup id="back_node_name_uniqueness">[1](#to_node_name_uniqueness)</sup>.
+If ROS would have QoS profiles names, like in DDS, collisions between those names in nodes written by different authors could happen.
+Thus, QoS profiles names would need the full power of remapping and expansion.
+
+This proposal uses the opposite approach, identifying an entity leveraging node name uniqueness <sup id="back_node_name_uniqueness">[1](#to_node_name_uniqueness)</sup> and through the use of topic/service names.
 
 <b id="to_node_name_uniqueness">1</b> Node name uniqueness is not being enforced up to Foxy, though it is assumed. [↩](#back_node_name_uniqueness)
 
@@ -129,7 +132,7 @@ To solve this issue, the format could support using a profile ID, in addition to
 `rcl` API would need to be extended to support profiles id.
 Users should only use this mechanism to avoid collisions.
 
-### Default profiles for entitys in different nodes
+### Default profiles for entities in different nodes
 
 It is common to have several nodes creating the same entity, and the same qos profile is desired in all of them.
 A default tag can be added to solve this:
@@ -171,6 +174,114 @@ A default tag can be added to solve this:
             qos:
                 ...
 ```
+
+## Named QoS profiles
+
+The file can also include named QoS profiles, that can be referenced within the same file:
+
+```xml
+<qos_profiles>
+    <profiles>
+        <qos name="reliable_depth_100">
+            <reliability>reliable</reliability>
+            <history_depth>100</history_depth>
+            <history>keep_last</history>
+        </qos>
+    </profiles>
+    <node name="my_node" namespace="/my_ns/nested_ns">
+        <publisher topic_name="asd">
+            <qos base="reliable_depth_100"/>  <!--Uses exactly reliable_depth_100 profile-->
+        </publisher>
+        <publisher topic_name="bsd">
+            <qos base="reliable_depth_100">  <!--Uses reliable_depth_100 profile as a base, and overrides the durability policy-->
+                <lifespan>10s</lifespan>
+            </qos>
+        </publisher>
+    </node>
+<qos_profiles>
+```
+
+```yaml
+/**:
+    ros__qos_profiles:
+        profiles:
+            reliable_depth_100:
+                reliability: reliable
+                history_depth: 100
+                history: keep_last
+/my_ns/nested_ns/my_node:
+    ros__qos_profiles:
+        publisher:
+            topic_name: asd
+            qos:
+                base: reliable_depth_100
+        publisher:
+            topic_name: bsd
+            qos:
+                base: reliable_depth_100
+                lifespan: 10s
+```
+
+This mechanism will help ensuring matching QoS profile, where that's needed in the system.
+
+Having some implicitly defined named profiles can become handy to easily write profiles.
+The following could be implicitly defined:
+
+- ros_default: Equivalent to `rmw_qos_profile_default`.
+- ros_sensor_data: Equivalent to `rmw_qos_profile_sensor_data`.
+- ros_service_default: Equivalent to `rmw_qos_profile_services_default` (as of ROS 2 Foxy, the same as `ros_default`).
+- ros_system_default: Equivalent to `rmw_qos_profile_system_default`.
+
+See [qos_profiles.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h).
+
+## Implicit base profile
+
+It might happen that a QoS profile is not fully specified and no base profile was chosen, in that case there will be an implicit QoS profile.
+If there was a profile defined in the `<default>` section for the same topic or the same service, that one will be used:
+
+```xml
+<qos_profiles>
+    <default>
+        <publisher topic_name="/my_ns/nested_ns/asd">
+            <reliability>reliable</reliability>
+            <history_depth>100</history_depth>
+        </publisher>
+    </default>
+    <node name="my_node" namespace="/my_ns/nested_ns">
+        <publisher topic_name="asd">
+            <history_depth>1000</history_depth>  <!--Overrides the history depth of 100 defined above.-->
+        </publisher>
+    </node>
+<qos_profiles>
+```
+
+```yaml
+/**:
+    ros__qos_profiles:
+        publisher:
+            topic_name: /my_ns/nested_ns/asd
+            qos:
+                reliability: reliable
+                history_depth: 100
+/my_ns/nested_ns/my_node:
+    ros__qos_profiles:
+        publisher:
+            topic_name: asd
+            qos:
+                history_depth: 1000
+```
+
+If that doesn't happen, `rmw_qos_profile_default` is used as a base.
+
+### Rationale
+
+There are other options to handle a non fully specified qos profile:
+
+- Reject those qos profiles, and force users to specify all policies.
+- Use the original qos profile specified in code as a base profile.
+
+The first option would be extremely verbose, and it doesn't make much sense to explicitly set some QoS settings like `lifespan` when you don't care about them.
+The last option is possible, but it would be hard to tell what was the original profile, and code would have been to be carefully checked.
 
 ## Interaction with remapping and expansion
 
@@ -345,13 +456,13 @@ YAML advantages:
 
 ## Explicitly allowing external configurability in entities
 
-Both node and init options could have a flag to ignore the new `--qos-file` argument.
-In a similar way, there could be an option for publishers/subscriptions/clients and services to allow side loading their qos or not.
+The node options could have a flag to ignore the new `--qos-file` argument.
+In a similar way, there could be an option for publishers/subscriptions/clients and services to allow loading the QoS from an external source (side load).
 
 In nodes designed to be reused, it does make sense to allow side-loading the qos settings of all entities.
 To make this use case easier, the following options can be added:
 
-- `rcl_init_options_t` is extended with a `bool allow_side_loading_qos`.
+- `rcl_node_options_t` is extended with a `bool allow_side_loading_qos`.
 - The following enum is defined:
   ```c
   typedef enum rcl_side_load_qos_t {
@@ -360,8 +471,7 @@ To make this use case easier, the following options can be added:
       RCL_SIDE_LOAD_QOS_DISABLED;
   } rcl_side_load_qos_t;
   ```
-- A `rcl_side_load_qos_t allow_side_loading_qos` member is added to `rcl_node_options_t`, it will copy the behavior defined in the `rcl_init_options_t` of its parent context when the enum value is `RCL_SIDE_LOAD_QOS_DEFAULT`.
-- In a similar way, publisher/subscription/client/service options will have a `rcl_side_load_qos_t allow_side_loading_qos` that will copy the behavior set in the node in case `RCL_SIDE_LOAD_QOS_DEFAULT` is used.
+- A `rcl_side_load_qos_t allow_side_loading_qos` member is added to publisher/subscription/client/service options, it will copy the behavior defined in the `rcl_node_options_t` of its parent node when the enum value is `RCL_SIDE_LOAD_QOS_DEFAULT`.
 
 ## Which QoS policies can be externally modified?
 
@@ -390,9 +500,10 @@ In the case of the liveliness kind, `MANUAL_BY_TOPIC` policy does not make sense
 Do not allow externally loading the `liveliness` qos policy, and allow loading all the others.
 Authors that support both manual by topic and automatic liveliness can provide a parameter or argument to configure it.
 
-### Alternatives
+### QoS verification callbacks
 
-There could be a callback mechanism, in which the node's author validates that the QoS profile that is going to be applied is valid.
+The node author can, optionally, add a callback to verify that the side loaded QoS is valid for that node.
+e.g.: the node author might want to ensure non-lossy QoS.
 
 ## References
 
