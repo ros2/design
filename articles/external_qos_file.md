@@ -505,6 +505,32 @@ Authors that support both manual by topic and automatic liveliness can provide a
 The node author can, optionally, add a callback to verify that the side loaded QoS is valid for that node.
 e.g.: the node author might want to ensure non-lossy QoS.
 
+## Alternatives
+
+Instead of a parameter file, we could use a well known set of parameters to specify the QoS profiles.
+For example:
+
+```yaml
+/my_ns/my_node:
+    ros__parameters:
+        publisher./my/topic.reliability: reliable
+        publisher./my/topic.history_depth: 100
+/**:
+    ros__parameters:
+        client./my/service.reliability: reliable
+```
+
+There are some disadvantages of this approach:
+
+- Parameters can only be scalar values or uniform lists, and none of those alternatives can represent completely a QoS profile.
+  Thus, multiple parameters are needed to define a single profile, making the definition of them extremely verbose.
+- A profile cannot be defined and reused, like in the proposed parameter file format.
+  Thus, when profiles of different entities are required to match, it's easier to make a mistake.
+- Parameters can be modified. We would need parameter callbacks rejecting changes in any of the parameters that are intended to modify QoS profiles, so only parameter overrides can be used for them.
+
+QoS settings could also be specified using command line arguments.
+The disadvantages are similar to making use of parameters for defining QoS profiles.
+
 ## References
 
 - [rti documentation](https://community.rti.com/examples/using-qos-profiles)
