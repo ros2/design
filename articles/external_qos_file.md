@@ -273,60 +273,6 @@ If there was a profile defined in the `<default>` section for the same topic or 
 
 If that doesn't happen, `rmw_qos_profile_default` is used as a base.
 
-### rmw implementation specific payload (extension)
-
-There are currently QoS settings that are supported by DDS and not by ROS.
-An user might want to make use of them, and they won't find an easy way to do that without exposing the QoS setting on ROS.
-
-There are some cases where an user might want to use a vendor specific QoS extension, for example rti allows defining [flow controllers](https://community.rti.com/static/documentation/connext-dds/5.2.0/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/CreatingandConfigCustomFlowC.htm) in publishers.
-
-Though a DDS vendor specific QoS profile file can be used to set up these QoS settings, you currently can only use the default qos profile.
-There's no way to match ROS entities to the DDS QoS profile names.
-
-This problem can be solved in two ways:
-- Having conventions to match DDS QoS profiles names to ROS entities.
-  This has been proposed in https://github.com/ros2/rmw_fastrtps/pull/335, and could work well for most use cases.
-- Adding a rmw implementation specific "payload" that it's then used by the rmw implementation.
-  In DDS based implementations, this payload can be just the profile name.
-
-As an example of the second alternative:
-
-```xml
-<qos_profiles>
-    <node name="my_node" namespace="/my_ns/nested_ns">
-        <publisher topic_name="asd">
-            <rmw_payload>
-                <profile_name>my_qos_profile_name</profile_name>
-            </rmw_payload>
-        </publisher>
-    </node>
-<qos_profiles>
-```
-
-```yaml
-/my_ns/nested_ns/my_node:
-    ros__qos_profiles:
-        publisher:
-            topic_name: asd
-            rmw_payload:
-                profile_name: my_qos_profile_name
-```
-
-For this to work, `rmw_qos_profile_t` will need to be extended with a `rmw_qos_profile_payload_t` member defined like:
-
-```c
-typedef struct rmw_qos_profile_payload_t {
-  char * key_value_pairs[2];
-} rmw_qos_profile_payload_t;
-```
-
-It would be up to the implementation what to do with the passed key value pairs.
-
-Note:
-  The proposed API is limited, if we would want for example to define vendor specific QoS inline in the ROS QoS profile file.
-  If YAML format is used, we could take advantage of it's natural representation of integers,floats,etc, instead of forcing everything to be an string.
-  The complexity of this approach doesn't seem to be worth it.
-
 ### Rationale
 
 There are other options to handle a non fully specified qos profile:
@@ -495,6 +441,60 @@ TBD: QoS message definition.
 ### Support in launch files
 
 `launch_ros.actions.Node` and `launch_ros.actions.LoadComposableNode` actions could support a qos file argument in their constructors.
+
+### rmw implementation specific payload
+
+There are currently QoS settings that are supported by DDS and not by ROS.
+An user might want to make use of them, and they won't find an easy way to do that without exposing the QoS setting on ROS.
+
+There are some cases where an user might want to use a vendor specific QoS extension, for example rti allows defining [flow controllers](https://community.rti.com/static/documentation/connext-dds/5.2.0/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/CreatingandConfigCustomFlowC.htm) in publishers.
+
+Though a DDS vendor specific QoS profile file can be used to set up these QoS settings, you currently can only use the default qos profile.
+There's no way to match ROS entities to the DDS QoS profile names.
+
+This problem can be solved in two ways:
+- Having conventions to match DDS QoS profiles names to ROS entities.
+  This has been proposed in https://github.com/ros2/rmw_fastrtps/pull/335, and could work well for most use cases.
+- Adding a rmw implementation specific "payload" that it's then used by the rmw implementation.
+  In DDS based implementations, this payload can be just the profile name.
+
+As an example of the second alternative:
+
+```xml
+<qos_profiles>
+    <node name="my_node" namespace="/my_ns/nested_ns">
+        <publisher topic_name="asd">
+            <rmw_payload>
+                <profile_name>my_qos_profile_name</profile_name>
+            </rmw_payload>
+        </publisher>
+    </node>
+<qos_profiles>
+```
+
+```yaml
+/my_ns/nested_ns/my_node:
+    ros__qos_profiles:
+        publisher:
+            topic_name: asd
+            rmw_payload:
+                profile_name: my_qos_profile_name
+```
+
+For this to work, `rmw_qos_profile_t` will need to be extended with a `rmw_qos_profile_payload_t` member defined like:
+
+```c
+typedef struct rmw_qos_profile_payload_t {
+  char * key_value_pairs[2];
+} rmw_qos_profile_payload_t;
+```
+
+It would be up to the implementation what to do with the passed key value pairs.
+
+Note:
+  The proposed API is limited, if we would want for example to define vendor specific QoS inline in the ROS QoS profile file.
+  If YAML format is used, we could take advantage of it's natural representation of integers,floats,etc, instead of forcing everything to be an string.
+  The complexity of this approach doesn't seem to be worth it.
 
 ## File format
 
