@@ -53,7 +53,7 @@ Here are a couple of examples:
     <node name="my_node" namespace="/my_ns/nested_ns">
         ...
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
@@ -77,7 +77,7 @@ For example:
             ...
         </subscription>
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
@@ -111,7 +111,7 @@ To solve this issue, the format could support using a profile ID, in addition to
             ...
         </publisher>
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
@@ -149,7 +149,7 @@ A default tag can be added to solve this:
             ...  <!--QoS settings here will override the ones in `default`. The settings specified in `default` will be used as a base.-->
         </publisher>
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
@@ -198,7 +198,7 @@ The file can also include named QoS profiles, that can be referenced within the 
             </qos>
         </publisher>
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
@@ -252,7 +252,7 @@ If there was a profile defined in the `<default>` section for the same topic or 
             <history_depth>1000</history_depth>  <!--Overrides the history depth of 100 defined above.-->
         </publisher>
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
@@ -438,6 +438,61 @@ A `rcl_qos_loaded_profiles_t` can be constructed from the received message and p
 
 TBD: QoS message definition.
 
+### QoS profiles for actions
+
+Currently, there is a collection of [5 QoS profiles](https://github.com/ros2/rcl/blob/af438bcca1ffb69714c0b225ba0f80aceab04906/rcl_action/include/rcl_action/action_client.h#L44-L52) to be set for creating an action, that will set the QoS profiles of the topics and services making up the action.
+The file format should support actions, if not the user would have to use the topics and service names with the mangling `rcl` applies, which is a bit hard to remember.
+For the most common use cases, it makes sense to set the 5 QoS profiles to the same settings:
+
+```xml
+<qos_profiles>
+    <node name="my_node" namespace="/my_ns/nested_ns">
+        <action_client name="my_action">
+            <qos>
+                <history_depth>100</history_depth>
+            </qos>
+        </action_client>
+    </node>
+</qos_profiles>
+```
+
+```yaml
+/my_ns/nested_ns/my_node:
+    ros__qos_profiles:
+        action:
+            name: my_action
+            qos:
+                history_depth: 100
+```
+
+The file format could also support to set each of the QoS profiles individually:
+
+```xml
+<qos_profiles>
+    <node name="my_node" namespace="/my_ns/nested_ns">
+        <action_client name="my_action">
+            <feedback>
+                <qos>
+                    <history_depth>100</history_depth>
+                </qos>
+            <feedback>
+        </action_client>
+    </node>
+</qos_profiles>
+```
+
+```yaml
+/my_ns/nested_ns/my_node:
+    ros__qos_profiles:
+        action_client:
+            name: my_action
+            feedback:
+                qos:
+                    history_depth: 100
+```
+
+It would be worth revisiting if having 5 different QoS profiles for defining actions make sense before extending the file format in such a way.
+
 ### Support in launch files
 
 `launch_ros.actions.Node` and `launch_ros.actions.LoadComposableNode` actions could support a qos file argument in their constructors.
@@ -469,7 +524,7 @@ As an example of the second alternative:
             </rmw_payload>
         </publisher>
     </node>
-<qos_profiles>
+</qos_profiles>
 ```
 
 ```yaml
