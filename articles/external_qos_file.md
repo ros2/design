@@ -243,8 +243,10 @@ If there was a profile defined in the `<default>` section for the same topic or 
 <qos_profiles>
     <default>
         <publisher topic_name="/my_ns/nested_ns/asd">
-            <reliability>reliable</reliability>
-            <history_depth>100</history_depth>
+            <qos>
+                <reliability>reliable</reliability>
+                <history_depth>100</history_depth>
+            </qos>
         </publisher>
     </default>
     <node name="my_node" namespace="/my_ns/nested_ns">
@@ -519,9 +521,11 @@ As an example of the second alternative:
 <qos_profiles>
     <node name="my_node" namespace="/my_ns/nested_ns">
         <publisher topic_name="asd">
-            <rmw_payload>
-                <profile_name>my_qos_profile_name</profile_name>
-            </rmw_payload>
+            <qos>
+                <rmw_payload>
+                    <profile_name>my_qos_profile_name</profile_name>
+                </rmw_payload>
+            </qos>
         </publisher>
     </node>
 </qos_profiles>
@@ -550,6 +554,9 @@ Note:
   The proposed API is limited, if we would want for example to define vendor specific QoS inline in the ROS QoS profile file.
   If YAML format is used, we could take advantage of it's natural representation of integers,floats,etc, instead of forcing everything to be an string.
   The complexity of this approach doesn't seem to be worth it.
+Note 2:
+  The rmw specific payload could simply be an string, instead of key value pairs.
+  In that case, the `profile_name` sub-tag would be deleted and `my_qos_profile_name` would be the content of the string.
 
 ## File format
 
