@@ -543,8 +543,10 @@ As an example of the second alternative:
 For this to work, `rmw_qos_profile_t` will need to be extended with a `rmw_qos_profile_payload_t` member defined like:
 
 ```c
+typedef char * rmw_qos_profile_payload_item_t[2];
+
 typedef struct rmw_qos_profile_payload_t {
-  char * key_value_pairs[2];
+  rmw_qos_profile_payload_item_t * key_value_pairs;
 } rmw_qos_profile_payload_t;
 ```
 
