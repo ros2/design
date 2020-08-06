@@ -104,10 +104,10 @@ To solve this issue, the format could support using a profile ID, in addition to
 ```xml
 <qos_profiles>
     <node name="my_node" namespace="/my_ns/nested_ns">
-        <publisher topic_name="asd" profile_id="1">
+        <publisher topic_name="asd" profile_id="my_pub_profile_1">
             ...
         </publisher>
-        <publisher topic_name="asd" profile_id="2">
+        <publisher topic_name="asd" profile_id="my_pub_profile_2">
             ...
         </publisher>
     </node>
@@ -119,12 +119,12 @@ To solve this issue, the format could support using a profile ID, in addition to
     ros__qos_profiles:
         publisher:
             topic_name: asd
-            profile_id: 1
+            profile_id: my_pub_profile_1
             qos:
                 ...
         publisher:
             topic_name: asd
-            profile_id: 2
+            profile_id: my_pub_profile_2
             qos:
                 ...
 ```
