@@ -309,7 +309,7 @@ The proposed API aims to decouple the object that represents the loaded QoS prof
 
 ### rcl_qos_loaded_profiles_t
 
-Structure that represents the loaded qos profiles file.
+Structure that represents the loaded QoS profiles file.
 
 ```c
 /// Default initializer
