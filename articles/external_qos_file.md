@@ -279,7 +279,7 @@ If that doesn't happen, `rmw_qos_profile_default` is used as a base.
 
 There are other options to handle a non fully specified QoS profile:
 
-- Reject those qos profiles, and force users to specify all policies.
+- Reject those QoS profiles, and force users to specify all policies.
 - Use the original qos profile specified in code as a base profile.
 
 The first option would be extremely verbose, and it doesn't make much sense to explicitly set some QoS settings like `lifespan` when you don't care about them.
