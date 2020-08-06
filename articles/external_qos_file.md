@@ -134,7 +134,7 @@ Users should only use this mechanism to avoid collisions.
 
 ### Default profiles for entities in different nodes
 
-It is common to have several nodes creating the same entity, and the same qos profile is desired in all of them.
+It is common to have several nodes creating the same entity, and the same QoS profile is desired in all of them.
 A default tag can be added to solve this:
 
 ```xml
