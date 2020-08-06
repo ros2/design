@@ -385,7 +385,7 @@ rcl_ret_t
 rcl_qos_profiles_builder_get_loaded_profiles(rcl_qos_profiles_builder_t * builder, rcl_qos_loaded_profiles_t * lp);
 ```
 
-How to parse a `rmw_qos_profile_t` from the qos file is up to the specific loader.
+How to parse a `rmw_qos_profile_t` from the QoS file is up to the specific loader.
 
 ### Usage in init options and node options
 
