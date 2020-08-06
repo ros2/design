@@ -406,7 +406,7 @@ This loading mechanism will be equivalent to setting the `rcl_qos_loaded_profile
 
 ## Further extensions
 
-### Loading qos profiles in composable nodes
+### Loading QoS profiles in composable nodes
 
 The interface definition of the [LoadNode](https://github.com/ros2/rcl_interfaces/blob/master/composition_interfaces/srv/LoadNode.srv) service could be extended with a field to specify the desired QoS of the loaded node.
 
