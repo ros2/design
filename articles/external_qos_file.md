@@ -305,7 +305,6 @@ Applying remapping rules to the names in the file will only add complexity and b
 
 ## rcl API
 
-
 The proposed API aims to decouple the object that represents the loaded QoS profile file from the loader.
 
 ### rcl_qos_loaded_profiles_t
