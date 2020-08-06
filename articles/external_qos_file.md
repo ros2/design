@@ -443,30 +443,6 @@ TBD: QoS message definition.
 
 Currently, there is a collection of [5 QoS profiles](https://github.com/ros2/rcl/blob/af438bcca1ffb69714c0b225ba0f80aceab04906/rcl_action/include/rcl_action/action_client.h#L44-L52) to be set for creating an action, that will set the QoS profiles of the topics and services making up the action.
 The file format should support actions, if not the user would have to use the topics and service names with the mangling `rcl` applies, which is a bit hard to remember.
-For the most common use cases, it makes sense to set the 5 QoS profiles to the same settings:
-
-```xml
-<qos_profiles>
-    <node name="my_node" namespace="/my_ns/nested_ns">
-        <action_client name="my_action">
-            <qos>
-                <history_depth>100</history_depth>
-            </qos>
-        </action_client>
-    </node>
-</qos_profiles>
-```
-
-```yaml
-/my_ns/nested_ns/my_node:
-    ros__qos_profiles:
-        action:
-            name: my_action
-            qos:
-                history_depth: 100
-```
-
-The file format could also support to set each of the QoS profiles individually:
 
 ```xml
 <qos_profiles>
@@ -492,7 +468,7 @@ The file format could also support to set each of the QoS profiles individually:
                     history_depth: 100
 ```
 
-It would be worth revisiting if having 5 different QoS profiles for defining actions make sense before extending the file format in such a way.
+If in the future we have a single object for defining action QoS, the format should be revisited.
 
 ### Support in launch files
 
