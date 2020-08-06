@@ -293,7 +293,7 @@ Topic, services and node names in the parameter file would be interpreted as the
 ros2 run <package_name> <exec_name> --ros-args -r chatter:=my_chatter --qos-file /path/to/qos/file
 ```
 
-The topic that will be looked up in the qos profile file is `my_chatter`, and not `chatter`.
+The topic that will be looked up in the QoS profile file is `my_chatter`, and not `chatter`.
 Relative topic/service names will be allowed used under a `node` tag, but it will not be allowed under the `default` tag.
 In that case, they will be extended with the namespace specified in the parent `node` tag.
 
