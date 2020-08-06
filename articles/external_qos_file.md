@@ -496,7 +496,7 @@ It would be worth revisiting if having 5 different QoS profiles for defining act
 
 ### Support in launch files
 
-`launch_ros.actions.Node` and `launch_ros.actions.LoadComposableNode` actions could support a qos file argument in their constructors.
+`launch_ros.actions.Node` and `launch_ros.actions.LoadComposableNode` actions could support a QoS file argument in their constructors.
 
 ### rmw implementation specific payload
 
