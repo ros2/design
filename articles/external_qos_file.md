@@ -578,21 +578,21 @@ YAML advantages:
 ## Explicitly allowing external configurability in entities
 
 The node options could have a flag to ignore the new `--qos-file` argument.
-In a similar way, there could be an option for publishers/subscriptions/clients and services to allow loading the QoS from an external source (side load).
+In a similar way, there could be an option for publishers/subscriptions/clients and services to allow overriding the QoS from an external source.
 
-In nodes designed to be reused, it does make sense to allow side-loading the qos settings of all entities.
+In nodes designed to be reused, it does make sense to allow overriding the qos settings of all entities.
 To make this use case easier, the following options can be added:
 
-- `rcl_node_options_t` is extended with a `bool allow_side_loading_qos`.
+- `rcl_node_options_t` is extended with a `bool enable_qos_overrides`.
 - The following enum is defined:
   ```c
-  typedef enum rcl_side_load_qos_t {
-      RCL_SIDE_LOAD_QOS_DEFAULT;
-      RCL_SIDE_LOAD_QOS_ENABLED;
-      RCL_SIDE_LOAD_QOS_DISABLED;
-  } rcl_side_load_qos_t;
+  typedef enum rcl_enable_qos_overrides_t {
+      RCL_ENABLE_QOS_OVERRIDES_DEFAULT;
+      RCL_ENABLE_QOS_OVERRIDES_ENABLED;
+      RCL_ENABLE_QOS_OVERRIDES_DISABLED;
+  } rcl_enable_qos_overrides_t;
   ```
-- A `rcl_side_load_qos_t allow_side_loading_qos` member is added to publisher/subscription/client/service options, it will copy the behavior defined in the `rcl_node_options_t` of its parent node when the enum value is `RCL_SIDE_LOAD_QOS_DEFAULT`.
+- A `rcl_enable_qos_overrides_t enable_qos_overrides` member is added to publisher/subscription/client/service options, it will copy the behavior defined in the `rcl_node_options_t` of its parent node when the enum value is `RCL_ENABLE_QOS_OVERRIDES_DISABLED`.
 
 ## Which QoS policies can be externally modified?
 
@@ -618,7 +618,7 @@ In the case of the liveliness kind, `MANUAL_BY_TOPIC`, it does not make sense if
 
 ### QoS verification callbacks
 
-The node author can, optionally, add a callback to verify that the side loaded QoS is valid for that node.
+The node author can, optionally, add a callback to verify that the QoS override is valid for that node.
 e.g.: the node author might want to ensure non-lossy QoS.
 
 The format could support changing the liveliness QoS too.
