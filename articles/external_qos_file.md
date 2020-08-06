@@ -617,15 +617,14 @@ For nodes that are using this feature, allowing to externally configure it makes
 Different values of `liveliness_lease_duration` always make sense, regardless of how the node is implemented.
 In the case of the liveliness kind, `MANUAL_BY_TOPIC` policy does not make sense if the author of the node doesn't thought about it.
 
-### Proposed solution
-
-Do not allow externally loading the `liveliness` qos policy, and allow loading all the others.
-Authors that support both manual by topic and automatic liveliness can provide a parameter or argument to configure it.
-
 ### QoS verification callbacks
 
 The node author can, optionally, add a callback to verify that the side loaded QoS is valid for that node.
 e.g.: the node author might want to ensure non-lossy QoS.
+
+The format could support changing the liveliness QoS too.
+Node's author supporting different kinds of liveliness could check in the callback what liveliness kind was set, to then act accordingly.
+The default callback will reject QoS profiles with a liveliness different to the one specified in code.
 
 ## Alternatives
 
