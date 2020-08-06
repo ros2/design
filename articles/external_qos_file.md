@@ -569,6 +569,7 @@ As showed in the above examples, both YAML or XML can correctly represent the de
 
 XML advantages:
 - Can be easily verified.
+
 YAML advantages:
 - It can be argued that the format is simpler and more readable than XML.
 - The format proposed in the above examples can easily be integrated with the current parameter file format.
