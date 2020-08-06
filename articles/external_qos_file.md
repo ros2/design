@@ -554,8 +554,10 @@ YAML advantages:
 
 ## Explicitly allowing external configurability in entities
 
-The node options could have a flag to ignore the new `--qos-file` argument.
-In a similar way, there could be an option for publishers/subscriptions/clients and services to allow overriding the QoS from an external source.
+Nodes should have an option to enable having their QoS settings configured externally.
+This gives authors the ability to define the allowable range of behavior for their nodes.
+Furthermore, the option to externally configure QoS settings should be disabled by default (ie. node authors must opt-in).
+The rationale for an opt-in policy is to force node authors to have to think about the implications of allowing various QoS changes to the node entities.
 
 In nodes designed to be reused, it does make sense to allow overriding the qos settings of all entities.
 To make this use case easier, the following options can be added:
