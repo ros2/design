@@ -614,7 +614,7 @@ For nodes that are using this feature, allowing to externally configure it makes
 #### Liveliness and liveliness_lease_duration
 
 Different values of `liveliness_lease_duration` always make sense, regardless of how the node is implemented.
-In the case of the liveliness kind, `MANUAL_BY_TOPIC` policy does not make sense if the author of the node doesn't thought about it.
+In the case of the liveliness kind, `MANUAL_BY_TOPIC`, it does not make sense if the node author hasn't considered it.
 
 ### QoS verification callbacks
 
