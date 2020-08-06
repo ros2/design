@@ -277,7 +277,7 @@ If that doesn't happen, `rmw_qos_profile_default` is used as a base.
 
 ### Rationale
 
-There are other options to handle a non fully specified qos profile:
+There are other options to handle a non fully specified QoS profile:
 
 - Reject those qos profiles, and force users to specify all policies.
 - Use the original qos profile specified in code as a base profile.
