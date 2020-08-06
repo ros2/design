@@ -232,7 +232,7 @@ The following could be implicitly defined:
 - ros_service_default: Equivalent to `rmw_qos_profile_services_default` (as of ROS 2 Foxy, the same as `ros_default`).
 - ros_system_default: Equivalent to `rmw_qos_profile_system_default`.
 
-See [qos_profiles.h](https://github.com/ros2/rmw/blob/master/rmw/include/rmw/qos_profiles.h).
+See [qos_profiles.h](https://github.com/ros2/rmw/blob/0176872b10ff502ae34fa3eef5e900145f18b0b3/rmw/include/rmw/qos_profiles.h).
 
 ## Implicit base profile
 
