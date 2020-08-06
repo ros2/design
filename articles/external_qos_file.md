@@ -411,7 +411,7 @@ This loading mechanism will be equivalent to setting the `rcl_qos_loaded_profile
 The interface definition of the [LoadNode](https://github.com/ros2/rcl_interfaces/blob/master/composition_interfaces/srv/LoadNode.srv) service could be extended with a field to specify the desired QoS of the loaded node.
 
 In that way, the user loading the node is responsible of passing the desired QoS, instead of the node container.
-The message to be sent could be loaded from a qos profile file.
+The message to be sent could be loaded from a QoS profile file.
 
 #### Proposed interfaces
 
