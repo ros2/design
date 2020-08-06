@@ -419,6 +419,7 @@ The message to be sent could be loaded from a QoS profile file.
 # EntityQoS.msg
 
 string name  # This can be either a topic or service name
+string profile_id  # ID for disambiguate entities
 uint8 type  # Entity type. An enum that can be a publisher/subscription/topic/service
 QoS qos  # Message that defines the qos
 ```
