@@ -97,7 +97,7 @@ Besides `publisher` and `subscription` tags, `client` and `service` should be al
 
 ### QoS profiles IDs (optional)
 
-In the case that a node wants to create two `publishers` on the same topic with different QoS, the above format wouldn't allow to identify uniquely the `publisher`. The same applies to other kinds of entitys.
+In the case that a node wants to create two `publishers` on the same topic with different QoS, the above format wouldn't allow to uniquely identify the `publisher`. The same applies to other kinds of entitys.
 
 To solve this issue, the format could support using a profile ID, in addition to the topic name:
 
