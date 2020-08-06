@@ -503,7 +503,7 @@ It would be worth revisiting if having 5 different QoS profiles for defining act
 There are currently QoS settings that are supported by DDS and not by ROS.
 An user might want to make use of them, and they won't find an easy way to do that without exposing the QoS setting on ROS.
 
-There are some cases where an user might want to use a vendor specific QoS extension, for example rti allows defining [flow controllers](https://community.rti.com/static/documentation/connext-dds/5.2.0/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/CreatingandConfigCustomFlowC.htm) in publishers.
+There are some cases where an user might want to use a vendor specific QoS extension, for example RTI allows defining [flow controllers](https://community.rti.com/static/documentation/connext-dds/5.2.0/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/CreatingandConfigCustomFlowC.htm) in publishers.
 
 Though a DDS vendor specific QoS profile file can be used to set up these QoS settings, you currently can only use the default qos profile.
 There's no way to match ROS entities to the DDS QoS profile names.
