@@ -129,7 +129,7 @@ To solve this issue, the format could support using a profile ID, in addition to
                 ...
 ```
 
-`rcl` API would need to be extended to support profiles id.
+`rcl` API would need to be extended to support profiles IDs.
 Users should only use this mechanism to avoid collisions.
 
 ### Default profiles for entities in different nodes
