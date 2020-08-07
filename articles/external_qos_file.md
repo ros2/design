@@ -476,8 +476,8 @@ An user might want to make use of them, and they won't find an easy way to do th
 
 There are some cases where an user might want to use a vendor specific QoS extension, for example RTI allows defining [flow controllers](https://community.rti.com/static/documentation/connext-dds/5.2.0/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/CreatingandConfigCustomFlowC.htm) in publishers.
 
-Though a DDS vendor specific QoS profile file can be used to set up these QoS settings, you currently can only use the default qos profile.
-There's no way to match ROS entities to the DDS QoS profile names.
+Though a DDS vendor specific QoS profile file can be created by the user to set up these QoS settings, you can only make use of the default QoS profile defined in the file.
+This is a consequence of not being able to match ROS entities to DDS QoS profile names.
 
 This problem can be solved in two ways:
 - Having conventions to match DDS QoS profiles names to ROS entities.
