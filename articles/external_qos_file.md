@@ -559,7 +559,7 @@ This gives authors the ability to define the allowable range of behavior for the
 Furthermore, the option to externally configure QoS settings should be disabled by default (ie. node authors must opt-in).
 The rationale for an opt-in policy is to force node authors to have to think about the implications of allowing various QoS changes to the node entities.
 
-In nodes designed to be reused, it does make sense to allow overriding the qos settings of all entities.
+In nodes designed to be reused, it does generally make sense to allow overriding the qos settings of all (or most) sub-entities.
 To make this use case easier, the following options can be added:
 
 - `rcl_node_options_t` is extended with a `bool enable_qos_overrides`.
@@ -572,6 +572,8 @@ To make this use case easier, the following options can be added:
   } rcl_enable_qos_overrides_t;
   ```
 - A `rcl_enable_qos_overrides_t enable_qos_overrides` member is added to publisher/subscription/client/service options, it will copy the behavior defined in the `rcl_node_options_t` of its parent node when the enum value is `RCL_ENABLE_QOS_OVERRIDES_DISABLED`.
+
+In this way the author can easily opt-in the feature in a Node, and opt-out it in the sub-entities where is not desired.
 
 ## Which QoS policies can be externally modified?
 
