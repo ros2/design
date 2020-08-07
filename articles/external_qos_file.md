@@ -526,12 +526,7 @@ typedef struct rmw_qos_profile_payload_t {
 It would be up to the implementation what to do with the passed key value pairs.
 
 Note:
-  The proposed API is limited, if we would want for example to define vendor specific QoS inline in the ROS QoS profile file.
-  If YAML format is used, we could take advantage of it's natural representation of integers,floats,etc, instead of forcing everything to be an string.
-  The complexity of this approach doesn't seem to be worth it.
-Note 2:
-  The rmw specific payload could simply be an string, instead of key value pairs.
-  In that case, the `profile_name` sub-tag would be deleted and `my_qos_profile_name` would be the content of the string.
+  The proposed API is limited in that it treats all value as strings instead of taking advantage of natural representations supported by some markup languages.
 
 ## File format
 
@@ -550,6 +545,8 @@ YAML advantages:
 
 Using yaml sounds preferred.
 libyaml is already a dependency of `rcl`, and the proposed format can be easily merged with the existing parameter file format if that's desired in the future.
+
+Though through the document examples were showed both in XML and YAML, supporting both doesn't sound like a good idea.
 
 ## Explicitly allowing external configurability in entities
 
