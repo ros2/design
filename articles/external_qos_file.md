@@ -273,17 +273,10 @@ If there was a profile defined in the `<default>` section for the same topic or 
                 history_depth: 1000
 ```
 
-If that doesn't happen, `rmw_qos_profile_default` is used as a base.
+If no base profile is specified and no default profile exists for an entity, then the QoS settings set by the node's author are used as a base.
+For topics in the `default` section or for named QoS profiles, `rmw_qos_profile_default` is used as the implicit base.
 
-### Rationale
-
-There are other options to handle a non fully specified QoS profile:
-
-- Reject those QoS profiles, and force users to specify all policies.
-- Use the original QoS profile specified in code as a base profile.
-
-The first option would be extremely verbose, and it doesn't make much sense to explicitly set some QoS settings like `lifespan` when you don't care about them.
-The last option is possible, but it would be hard to tell what was the original profile, and code would have been to be carefully checked.
+Note: We could make the `base` attribute mandatory for profiles in the `default` or `profiles` section.
 
 ## Interaction with remapping and expansion
 
@@ -317,6 +310,7 @@ rcl_qos_loaded_profiles_t
 rcl_get_default_initialized_qos_loaded_profiles();
 
 /// Gets qos for a publisher
+// The qos argument is "inout", it's original value is used as a default.
 rcl_ret_t
 rcl_qos_loaded_profiles_get_publisher_qos(
     const rcl_qos_loaded_profiles_t * lp,
