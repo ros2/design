@@ -546,6 +546,11 @@ YAML advantages:
   That integration would lead in a unique "configuration file", that could be further extended in the future.
   For example, passing remapping rules in it.
 
+### Author's opinion
+
+Using yaml sounds preferred.
+libyaml is already a dependency of `rcl`, and the proposed format can be easily merged with the existing parameter file format if that's desired in the future.
+
 ## Explicitly allowing external configurability in entities
 
 Nodes should have an option to enable having their QoS settings configured externally.
