@@ -485,6 +485,10 @@ This problem can be solved in two ways:
 - Adding a rmw implementation specific "payload" that it's then used by the rmw implementation.
   In DDS based implementations, this payload can be just the profile name.
 
+The first alternative is limited, as the proposed convention would use exactly the same profile in all publishers in a topic.
+This convention can be modified to match node name, topic name and profile id, but that approach will be hard to understand.
+The second approach leverages the new file format and is more powerful.
+
 As an example of the second alternative:
 
 ```xml
