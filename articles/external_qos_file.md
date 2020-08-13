@@ -465,6 +465,40 @@ The file format should support actions, if not the user would have to use the to
 
 If in the future we have a single object for defining action QoS, the format should be revisited.
 
+### Wildcard matching
+
+The `Implicit base profile` section proposes some sort of node name wildcard matching.
+The proposed yaml format uses wildcard matching explicitly.
+
+There could be topic/service name wildcard matching too, for example:
+
+```xml
+<qos_profiles>
+    <node name="my_node" namespace="/my_ns/nested_ns">
+        <publisher topic_name="/prefix/*">
+            <history_depth>1000</history_depth>  <!--Overrides the history depth of 100 defined above.-->
+        </publisher>
+    </node>
+</qos_profiles>
+```
+
+```yaml
+/my_ns/nested_ns/my_node:
+    ros__qos_profiles:
+        publisher:
+            topic_name: /prefix/*
+            qos:
+                history_depth: 1000
+```
+
+Proposed wildcard matching rules:
+
+- Multiple tokens matcher (**).
+  - /**: Matches any topic/service name (e.g.: `/asd/bsd` or `/asd`).
+  - /**/suffix: Matches any topic with the same name, ignoring the namespace. `suffix` can be a single token.
+- Single token matcher (*):
+  - /my/custom/namespace/*: Matches any topic with the same namespace.
+
 ### Support in launch files
 
 `launch_ros.actions.Node` and `launch_ros.actions.LoadComposableNode` actions could support a QoS file argument in their constructors.
