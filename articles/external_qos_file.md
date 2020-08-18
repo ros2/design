@@ -292,9 +292,9 @@ In that case, they will be extended with the namespace specified in the parent `
 
 ### Rationale
 
-Parameter files works in the same way.
-The usefulness of this kind of files is to allow the user to configure a set of nodes easily for a particular use case.
-Applying remapping rules to the names in the file will only add complexity and be more confusing.
+- Parameter files works in the same way.
+- The usefulness of this kind of files is to allow the user to configure a set of nodes easily for a particular use case.
+- Applying remapping rules to the names in the file will only add complexity and be more confusing.
 
 ## rcl API
 
