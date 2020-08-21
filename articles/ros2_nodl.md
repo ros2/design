@@ -192,10 +192,8 @@ Attributes:
 - **name**: The name of the action.
 - **type**: The type of the action.
 Valid values are any ROS action types.
-- **server**: Whether or not the node provides an action server for the action.
-Valid values are "true" or "false". Defaults to "false".
-- **client**: Whether or not the node provides a client for the action.
-Valid values are "true" or "false". Defaults to "false".
+- **role**: The type of communication the node performs with this action.
+Valid values are "server", "client", or "both".
 
 #### `parameter`
 
@@ -214,10 +212,8 @@ Attributes:
 - **name**: The name of the service.
 - **type**: The type of the service.
 Valid values are any ROS service types.
-- **server**: Whether or not the node provides a server for the service.
-Valid values are "true" or "false". Defaults to "false".
-- **client**: Whether or not the node provides a client for the service.
-Valid values are "true" or "false". Defaults to "false".
+- **role**: The type of communication the node performs with this service.
+Valid values are "server", "client", or "both".
 
 #### `topic`
 
@@ -227,10 +223,8 @@ Attributes:
 - **name**: The name of the topic.
 - **type**: The type of the message.
 Valid values are any ROS message types.
-- **publisher**: Whether or not the node publishes on the topic.
-Valid values are "true" or "false". Defaults to "false".
-- **subscription**: Whether or not the node subscribes to the topic.
-Valid values are "true" or "false". Defaults to "false".
+- **role**: The type of communication the node performs on this topic.
+Valid values are "publisher", "subscription", or "both".
 
 
 [dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
