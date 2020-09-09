@@ -30,6 +30,13 @@ To avoid recompiling the source code with patched QoS, node implementers have us
 
 Instead of having different ways of externally specifying QoS for the different entities, it would be good to have a standardized way to select QoS settings.
 
+Here are different mechanism added in different packages:
+
+- rosbag2 has an ad-hoc mechanism to override QoS profiles when recording or doing playback ([docs](https://index.ros.org/doc/ros2/Tutorials/Ros2bag/Overriding-QoS-Policies-For-Recording-And-Playback/)).
+- Image pipeline nodes use some parameters to allow changing some of the policies ([PR](https://github.com/ros-perception/image_pipeline/pull/521)).
+- Ouster drivers also use some parameters to allow changing some policies ([PR](https://github.com/ros-drivers/ros2_ouster_drivers/pull/26)).
+- Gazebo ROS packages allows configuring QoS profiles of the plugins in the SDF file ([issue](https://github.com/ros-simulation/gazebo_ros_pkgs/issues/1079)).
+
 ## QoS file format
 
 DDS uses the concept of QoS profiles, in which each profile has a name.
