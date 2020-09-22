@@ -255,6 +255,7 @@ Example rules are:
 - `foo:=bar`
 - `/foo/bar:=fiz/buzz`
 - `nodename:~/foo:=foo`
+- `/ns1/nodename:foo:=bar`
 - `**/foo:=\1/bar`
 
 #### Match Part of a Rule
@@ -265,7 +266,7 @@ The match part of a rule uses these operators:
 - `**` matches zero or more tokens delimited by slashes
 - `rosservice://` prefixed to the match makes the rule apply to only services
 - `rostopic://` prefixed to the match makes the rule apply to only topics
-- `nodename:` prefixed to the match makes it apply only to a node with that name
+- `nodename:` prefixed to the match makes it apply only to a node with that name, which could be a FQN
 
 The operators `*` and `**` are similar to the globbing behavior in bash.
 `**` behaves similar to its use in bash>=4.0 with the globstar option set.
@@ -324,8 +325,8 @@ The replacement must be a single token which will become the node's new name.
 
 Remapping rules are applied in the following order:
 
-1. Node name remapping
 1. Namespace remapping
+1. Node name remapping
 1. All other rules
 
 Within each category, the rules are applied in the order in which the user gave them.
@@ -339,8 +340,8 @@ Within each category, the rules are applied in the order in which the user gave 
 **Example of node/namespace remapping order:**
 
 - A node has name `talker`
-- A user gives the rules `talker:__ns:=/my_namespace` then `talker:__node:=foo`
-- The final namespace is the default `/` because the node name remap is applied before the namespace remap
+- A user gives the rules `talker:__ns:=/my_namespace` then `/talker:__node:=foo`
+- The final node name is the default `talker` because the namespace remap is applied before the node name remap
 
 **Example of a default and node specific namespace remap:**
 
