@@ -91,7 +91,7 @@ node->create_publisher(
   QosOverridingOptions{true});  // allow_reconfigurable all qos
 ```
 
-That will automatically declare the parameters for reconfiguring the qos policies that can be overridden in the following way:
+That will automatically declare the parameters for reconfiguring the QoS policies that can be overridden in the following way:
 
 ```yaml
 /my/ns/node_name:
