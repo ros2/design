@@ -34,7 +34,7 @@ Up to now, different workarounds have been used in order to provide this reconfi
 - ROS parameters to set particular policies.
 - Combining parameters, the system default QoS profile, and vendor specific QoS profiles.
 
-Some real example applying this mechanisms:
+Here are some examples applying these mechanisms:
 
 - rosbag2 has an ad-hoc mechanism to override QoS profiles when recording or doing playback ([docs](https://index.ros.org/doc/ros2/Tutorials/Ros2bag/Overriding-QoS-Policies-For-Recording-And-Playback/)).
 - Image pipeline nodes use some parameters to allow changing some of the policies ([PR](https://github.com/ros-perception/image_pipeline/pull/521)).
