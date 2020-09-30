@@ -371,4 +371,4 @@ TBD
 
 - The QoS provided by the user in the publisher/subscription constructor is used as a default.
 - Those defaults are overridden with the values provided in parameters, if the user allowed this kind of reconfigurability.
-- If the policy was set to `RMW_QOS_*_POLICY_DEFAULT`, the qos resolution mechanism provided by the rmw vendor will be applied (e.g. DDS XML profile files). If not, the previous policy value is the final one.
+- After the two items above were completed, if a policy value is `RMW_QOS_*_POLICY_DEFAULT` then the qos resolution mechanism provided by the rmw vendor will be applied (e.g. DDS XML profile files).
