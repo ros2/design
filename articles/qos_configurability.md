@@ -57,7 +57,7 @@ This proposal was written with the following requirements in mind:
   - Rationale: Though you can currently pass a custom QoS profiles to services or actions, configuring them is quite fragile and some of the policies cannot be modified (e.g. best effort services don't work).
   Until a better QoS profile for services and actions is designed, this feature won't be exposed.
 - Shall only allow changing QoS at startup time, and not during runtime by default.
-  - Allowing runtime reconfiguration of QoS is a complex topic, and out of the goal of this proposal.
+  - Rationale: Allowing runtime reconfiguration of QoS is a complex topic, and purposefully left out of scope in this proposal.
 - Shall have a way of reusing the same QoS profile.
   - Rationale: Not having a way of setting the same QoS profile to different entities will make configuring entities which profiles must match (or be compatible) error prone.
 
