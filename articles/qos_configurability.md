@@ -41,7 +41,7 @@ Here are some examples applying these mechanisms:
 - Ouster drivers also use some parameters to allow changing some policies ([PR](https://github.com/ros-drivers/ros2_ouster_drivers/pull/26)).
 - Gazebo ROS packages allows configuring QoS profiles of the plugins in the SDF file ([issue](https://github.com/ros-simulation/gazebo_ros_pkgs/issues/1079)).
 
-Not providing an standard mechanism for reconfiguring QoS result in a lot of slightly different interfaces to do the same thing, thus making painful to end users to figure out how to reconfigure QoS in different nodes in their system.
+Not providing an standard mechanism for reconfiguring QoS results in a lot of slightly different interfaces to do the same thing, creating a pain point for end users when figuring out how to reconfigure QoS for nodes in their system.
 
 ## Design goals
 
