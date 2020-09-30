@@ -66,7 +66,7 @@ This proposal was written with the following requirements in mind:
 A previous proposal (see PR [#296](https://github.com/ros2/design/pull/296)) suggested using a new file format for reconfiguring QoS policies.
 Some concerns were raised by the community:
 1. It adds a different mechanism to the ones that already exist.
-    Newcomers has yet to learn another thing.
+    Newcomers have to learn yet another thing.
 1. QoS settings are not conceptually different to other parameters, e.g.: publishing rate.
 1. It adds a new mechanism to configure QoS profiles.
 
