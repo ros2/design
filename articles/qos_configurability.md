@@ -365,7 +365,7 @@ We could, for example, leverage yaml anchors to allow this:
           history_depth: 100  # override the history depth
 ```
 
-### Extending the ROS qos profile with a rmw vendor specific payload
+### Extending the ROS QoS profile with a rmw vendor specific payload
 
 TBD
 
