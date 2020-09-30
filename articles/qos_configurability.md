@@ -325,7 +325,7 @@ node->create_publisher(
     QosOverridingOptions{QosPolicyKind::Durability});
 ```
 
-The above API mentions having some "defaults". 
+The above API mentions having some default set of QoS settings that are reconfigurable. 
 The intent is to provide a less verbose option, where the user can opt-in to reconfigurability of these default QoS settings with a single flag.
 
 Proposed defaults:
