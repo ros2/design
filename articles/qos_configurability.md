@@ -115,7 +115,7 @@ node->create_publisher(
   });
 ```
 
-The user provided QoS callback will be internally used as a [parameters callback](https://github.com/ros2/rclcpp/blob/3a4ac0ca2093d12035070443692798b0c9f9da3a/rclcpp/include/rclcpp/node_interfaces/node_parameters_interface.hpp#L183), but it has a more friendly interface for the user.
+The user provided QoS callback will be internally used as a [parameters callback](https://github.com/ros2/rclcpp/blob/3a4ac0ca2093d12035070443692798b0c9f9da3a/rclcpp/include/rclcpp/node_interfaces/node_parameters_interface.hpp#L183), but we provide a more user-friendly interface.
 
 ## Analysis of parameter API features and limitations
 
