@@ -124,7 +124,7 @@ The user provided QoS callback will be internally used as a [parameters callback
 ROS 2 currently provides read only parameters.
 They can be modified at startup time by providing an override (e.g. `--ros-args -p <param_name> <param_value>`), but they cannot be dynamically changed later.
 
-This perfectly matches the goal of the proposal of not making qos settings reconfigurable.
+This perfectly matches the goal of the proposal of not making QoS settings reconfigurable during runtime.
 
 ### Parameter events
 
