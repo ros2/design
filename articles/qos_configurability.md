@@ -326,7 +326,7 @@ node->create_publisher(
 ```
 
 The above API mentions having some "defaults". 
-The intend of that is to provide a less verbose option, in which case the user can opt-in qos reconfigurability by only opting-in a flag.
+The intent is to provide a less verbose option, where the user can opt-in to reconfigurability of these default QoS settings with a single flag.
 
 Proposed defaults:
 - Reliability
