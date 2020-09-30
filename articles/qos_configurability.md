@@ -131,7 +131,7 @@ This perfectly matches the goal of the proposal of not making QoS settings recon
 Up to ROS 2 Foxy, read-only parameters generate a parameter event with its initial value when declared.
 If we start declaring parameters for each QoS policies of many entities, the amount of parameter events at startup time will significantly increase.
 
-To avoid this issue, a way to opt-out parameter events for a given parameter could be added (should that be the default for read-only parameters??).
+To avoid this issue, a way to opt-out of parameter events for a given parameter could be added (should that be the default for read-only parameters??).
 
 ### Parameter callbacks
 
