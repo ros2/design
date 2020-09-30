@@ -305,7 +305,6 @@ create_publisher(
 node->create_publisher(
     "my_topic",
     user_qos_provided_in_code_1,
-    rclcpp::KeepLast(10),
     {  // implicit, to lower verbosity
         {QosPolicyKind::Reliability, QosPolicyKind::History, QosPolicyKind::HistoryDepth}, // only declare parameters for history depth, history kind, reliability
         [](const QoSProfile qos) -> bool {
@@ -317,14 +316,12 @@ node->create_publisher(
 // nothing is reconfigurable
 node->create_publisher(
     "my_topic",
-    user_qos_provided_in_code_2,
-    rclcpp::KeepLast(10));
+    user_qos_provided_in_code_2);
 
 // allow reconfiguring durability
 node->create_publisher(
     "another_topic",
     user_qos_provided_in_code_3,
-    rclcpp::KeepLast(10),
     QosOverridingOptions{QosPolicyKind::Durability});
 ```
 
