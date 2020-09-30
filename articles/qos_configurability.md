@@ -336,15 +336,9 @@ Proposed defaults:
 
 TBD: Do we want defaults?
 
-## Reconfigurability of topics the ROS 2 core creates
-
-TBD: discuss reconfigurability of topics packages in the ROS 2 core creates here, e.g.: clock, rosout, tf, tf_static, etc.
-
-## Further enhancements
-
 ### Reusing profiles
 
-The above proposal doesn't include a mechanism to reuse the same qos profile in the parameter files.
+It isn't currently possible to reuse a group of parameters in a parameter file.
 We could, for example, leverage yaml anchors to allow this:
 
 ```yaml
@@ -364,6 +358,10 @@ We could, for example, leverage yaml anchors to allow this:
           <<: *profileA,
           history_depth: 100  # override the history depth
 ```
+
+## Reconfigurability of topics the ROS 2 core creates
+
+TBD: discuss reconfigurability of topics packages in the ROS 2 core creates here, e.g.: clock, rosout, tf, tf_static, etc.
 
 ### Extending the ROS QoS profile with a rmw vendor specific payload
 
