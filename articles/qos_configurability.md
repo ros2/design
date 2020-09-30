@@ -181,7 +181,7 @@ Parameters URIs currently look like:
 rosparam://my/full/namespace/node_name/param_group.nested_param_group.param_name
 ```
 
-For the following qos policy:
+For the following QoS policy:
 - Full node name: `/asd/bsd/my_node`
 - Entity: `publisher`
 - Topic name: `/foo/bar/topic_name`
