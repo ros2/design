@@ -56,55 +56,55 @@ Its presence as part of the docs site should be made well-known from the overvie
 
 Every package's "home page" should be reachable with minimal effort by the scheme `docs.ros.org/p/<package_name>/`, which will redirect to default language and version, `docs.ros.org/<lang>/<distro>/p/<package_name>/`  
 
-**Package documentation must be maintainable in its repository without going through a third party.**
+**Package documentation must be maintainable in its repository without going through a third party**
 
 Maintainers and contributors will only have to work on their package's documentation within its repository.
 The details of building and hosting will not be a concern of package maintainers.
 
 Despite being hosted alongside the generic documentation, working on a package's documentation will not require any work on the repositories of the generic documentation (currently `ros2/ros2_documentation`) or the site repository (currently `ros-infrastructure/rosindex`).
 
-**Support C++ and Python API docs generation**
+**The system must support C++ and Python API docs generation**
 
 The system will automatically extract API docs for these languages from the source code in package repositories and build the output on the docs site.
 
-**Allow package documentation to be versioned per ROS 2 distribution**
+**The system must allow package documentation to be versioned per ROS 2 distribution**
 
 The docs site and buildfarm will allow documentation for the latest version of a package corresponding to each ROS 2 distribution the docs site supports versioning for.
 This means no versioning for several versions of a package per ROS 2 distribution.
 The package repository can still maintain it's own docs for previous versions, they just won't be hosted on our site.
 
-**The buildfarm automatically builds package documentation**
+**The buildfarm must automatically build package documentation**
 
 Changes to the documentation in a package repository shouldn't require the maintainer to trigger a build or anything like that.
 The changes should be automatically updated to the site.
 
-**Automatically generate content for a package so it's listed on docs.ros.org even if the package maintainer does not explicitly set up anything in the package repository**
+**The system must automatically generate content for a package so it's listed on docs.ros.org even if the package maintainer does not explicitly set up anything in the package repository**
 
 Maintainers can explicitly opt out of being listed, but otherwise by default some package info will be listed for every available package.
 
-**Support cross-referencing between packages**
+**The systems must support cross-referencing between packages**
 
 A stable linking process will be in place to cross-reference between package docs despite their originating from separate repositories.
 
-**Maintainers should not have to avoid certain file names because of possible collisions with auto-generated content on the system's side**
+**The system must prevent the possibility of package file names (created by maintainers) colliding with auto-generated content (from the system's side)**
 
 When writing package documentation, maintainers should not have to concern themselves with auto-generated content, like the current `/changelogs` and `/symbols` directories in the current `docs.ros.org` API docs structure for ROS 1.
 
 ### Secondary requirements
 
-**Ability to include free form documentation, like tutorials, design docs, etc., alongside generated API docs on docs.ros.org**
+**Package maintainers should have the ability to include free form documentation, like tutorials, design docs, etc., alongside generated API docs on docs.ros.org**
 
-**Provide a standardized interface for generating an index page/landing page for packages, consistent across ROS 2**
+**The system should provide a standardized interface for generating an index page/landing page for packages, consistent across ROS 2**
 
-**Standardized method for generating package documentation locally, including build error alerts**
+**The system should provide a standardized method for generating package documentation locally, including build error alerts**
 
-**Make the system extensible for more languages**
+**The system should be extensible for more languages**
 
-**Switching between versions (distributions) while viewing a package's documentation**
+**Users should be able to switch between versions (distributions) while viewing a package's documentation**
 
-**Table of contents on docs.ros.org/p/ listing all packages with documentation**
+**docs.ros.org/p/ should present a table of contents listing all packages with documentation**
 
-**Support for building documentation for more than one version of a package per ROS 2 distribution**
+**The system should support building documentation for more than one version of a package per ROS 2 distribution**
 
 
 ## Design
