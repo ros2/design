@@ -22,12 +22,14 @@ Original Author: {{ page.author }}
 ROS 2 is lacking a process for the conglomeration of package documentation.
 Discoverability for package documentation (and documentation in general) is one of the most frequent user complaints.
 
-With a standardized package documentation process that encourages package maintainers to robustly document their packages, and presents the results alongside ROS 2's general documentation, issues of discoverability and consistency will be addressed.
+The goal of this design is to standardize a documentation process for ROS 2 packages to encourage maintainers to robustly document their packages.
+The results will be presented in a consistent way alongside the general ROS 2 documentation, making the documentation as a whole discoverable and consistent.
 
 In general, our vision for the system is:
 
 - Package maintainers document their packages in their repositories following some guidelines or templates we recommend
-- Package documentation from the repositories is built on our documentation site by our buildfarm in an automatic process with no extra input from the maintainers
+- Package documentation from the repositories is built on the ROS 2 infrastructure and deployed to the ROS 2 documentation site in an automatic process with no input from the maintainer besides an opt-in `doc` block in the distribution.yaml
+  - See [REP 141](https://www.ros.org/reps/rep-0141.html) for more context.
 - Package documentation is indexed alongside ROS 2's generic content on our docs site
 
 ## Context
@@ -43,14 +45,14 @@ That project, in the implementation phase now, includes some keys points that af
 ## Requirements
 
 The "Primary requirements" are those that must be in place for the system to be functional and achieve its purpose.
-The "Secondary requirements" are important features and functionality that are not necessary to roll out the first stage of implementation, but should be carried out following the system's roll out.
+The "Secondary requirements" are important features and functionality that are not necessary to roll out the first stage of implementation, but should be carried out as soon as possible following the initial roll out.
 
 ### Primary requirements
 
 **All package documentation must be available with the rest of the ROS 2 documentation under a single domain**
 
 Package documentation will be treated the same as the generic ROS 2 documentation.
-Its presence as part of the docs site should be made well-known from the overview as well as any entry point into the docs site, and be intuitive from the organization and layout of the site.
+Its presence as part of the docs site should be made well-known from the site's overview as well as from any entry point into the docs site, and be intuitive from the organization and layout of the site.
 
 **Package documentation must have an easily navigable and intuitive URL structure**
 
@@ -70,13 +72,14 @@ The system will automatically extract API docs for these languages from the sour
 **The system must allow package documentation to be versioned per ROS 2 distribution**
 
 The docs site and buildfarm will allow documentation for the latest version of a package corresponding to each ROS 2 distribution the docs site supports versioning for.
-This means no versioning for several versions of a package per ROS 2 distribution.
-The package repository can still maintain it's own docs for previous versions, they just won't be hosted on our site.
+The package repository can still maintain it's own docs for previous versions.
+
+While multiple package versions per distribution will not initially be supported, the URL structure will support the addition of this feature in the future (mentioned in the Secondary requirements below).
 
 **The buildfarm must automatically build package documentation**
 
-Changes to the documentation in a package repository shouldn't require the maintainer to trigger a build or anything like that.
-The changes should be automatically updated to the site.
+Changes to the documentation in a package repository shouldn't require the maintainer to manually trigger a build.
+The changes should be automatically built and uploaded to the site.
 
 **The system must automatically generate content for a package so it's listed on docs.ros.org even if the package maintainer does not explicitly set up anything in the package repository**
 
