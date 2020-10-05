@@ -26,7 +26,7 @@ With a standardized package documentation process that encourages package mainta
 
 In general, our vision for the system is:
 
-- Package maintainers document their packages (API docs, manually written content, etc) in their packages' repositories following some guidelines or templates we recommend
+- Package maintainers document their packages in their repositories following some guidelines or templates we recommend
 - Package documentation from the repositories is built on our documentation site by our buildfarm in an automatic process with no extra input from the maintainers
 - Package documentation is indexed alongside ROS 2's generic content on our docs site
 
@@ -92,6 +92,19 @@ When writing package documentation, maintainers should not have to concern thems
 
 ### Secondary requirements
 
+**Ability to include free form documentation, like tutorials, design docs, etc., alongside generated API docs on docs.ros.org**
+
+**Provide a standardized interface for generating an index page/landing page for packages, consistent across ROS 2**
+
+**Standardized method for generating package documentation locally, including build error alerts**
+
+**Make the system extensible for more languages**
+
+**Switching between versions (distributions) while viewing a package's documentation**
+
+**Table of contents on docs.ros.org/p/ listing all packages with documentation**
+
+**Support for building documentation for more than one version of a package per ROS 2 distribution**
 
 
 ## Design
