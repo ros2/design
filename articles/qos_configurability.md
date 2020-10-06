@@ -254,6 +254,9 @@ node->create_publisher(
 
 ### Lowering the amount of declared parameters
 
+This two subsections describe some optional mechanism to lower the amount of declared parameters.
+The two mechanism are compatible with what it was said before and are not mutually exclusive.
+
 #### Hidden parameters
 
 Currently, ROS 2 has the concept of hidden topics and services.
@@ -265,7 +268,7 @@ ros2 topic --include-hidden-topics list  # Will list hidden topics.
 ```
 
 Similarly, hidden parameters could be added.
-All the parameters used for overriding QoS could be declared as hidden, thus avoiding noise for the user in commands like `ros2 param list`.
+All the parameters used for overriding QoS could be declared as hidden, thus avoiding "noise" in commands like `ros2 param list`.
 
 #### Only declaring some parameters
 
