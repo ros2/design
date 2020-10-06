@@ -43,23 +43,24 @@ Here are some examples applying these mechanisms:
 
 Not providing an standard mechanism for reconfiguring QoS results in a lot of slightly different interfaces to do the same thing, creating a pain point for end users when figuring out how to reconfigure QoS for nodes in their system.
 
-## Design goals
+## Design goals and other constraints
 
-This proposal was written with the following requirements in mind:
+This proposal was written with the following goals in mind:
 
-- Shall be opt-in on a per entity basis.
+- The node's author should be able to control which entities have reconfigurable QoS, and if a profile is valid or not.
   - Rationale: Allowing to change all QoS policies could break a contract the node's implementer assumed.
   For example, the node's implementer may have assumed that the data was durable and not volatile.
-  Allowing the node's author to only accept some reconfigurations will avoid user errors.
-- Shall allow the developer to accept/reject changes to a QoS profile with a validation callback.
-  - See rationale above.
-- Shall only apply to publisher/subscriber QoS.
-  - Rationale: Though you can currently pass a custom QoS profiles to services or actions, configuring them is quite fragile and some of the policies cannot be modified (e.g. best effort services don't work).
-  Until a better QoS profile for services and actions is designed, this feature won't be exposed.
-- Shall only allow changing QoS at startup time, and not during runtime by default.
-  - Rationale: Allowing runtime reconfiguration of QoS is a complex topic, and purposefully left out of scope in this proposal.
-- Shall have a way of reusing the same QoS profile.
-  - Rationale: Not having a way of setting the same QoS profile to different entities will make configuring entities which profiles must match (or be compatible) error prone.
+- QoS should not be dynamically reconfigurable.
+  - Rationale: Allowing runtime reconfiguration of QoS is complex, and in many cases it involves tearing down the previous entity and creating a new one.
+  That process can cause loss of messages, and thus providing an automatic mechanism for it is not ideal.
+- It should be possible to reuse the same QoS profile for different entities.
+  - Rationale: Not having a way of setting the same QoS profile to different entities can cause errors, considering that in many cases it's desired to have matching qos.
+
+The following constraint was also considered in the design:
+
+- Only apply to publisher/subscriber QoS.
+  - Rationale: QoS profiles for services and actions are not well defined currently, and modifying them is not recommended.
+  Thus, making them reconfigurable doesn't make much sense right now.
 
 ## Adding a new mechanism vs using parameters
 
