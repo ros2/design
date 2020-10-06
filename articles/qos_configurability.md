@@ -25,7 +25,7 @@ Provide an standard way to configure QoS settings of different entities in the R
 
 ## Motivation
 
-Up to ROS 2 Foxy, there's no standard mechanism to reconfigure QoS settings at startup.
+Up to ROS 2 Foxy, there's no standard mechanism to override QoS settings when creating a node.
 It's quite common in the ROS 2 community to reuse nodes that other people have written and in a lot of use cases allowing QoS profiles to be changed make sense.
 
 Up to now, different workarounds have been used in order to provide this reconfigurability:
@@ -123,14 +123,17 @@ The user provided QoS callback will be internally used as a [parameters callback
 ### Read-only parameters
 
 ROS 2 currently provides read only parameters.
-They can be modified at startup time by providing an override (e.g. `--ros-args -p <param_name> <param_value>`), but they cannot be dynamically changed later.
+They can be modified when constructing a node by providing overrides (e.g. `--ros-args -p <param_name> <param_value>`), but they cannot be dynamically changed after the node was constructed.
 
 This perfectly matches the goal of the proposal of not making QoS settings reconfigurable during runtime.
+
+Note: parameter overrides can be constructed dynamically and then used to create a node, but it's not possible to modify the parameter after the node construction.
+This allows, for example, to pass parameter overrides when dynamically adding a node to a component container.
 
 ### Parameter events
 
 Up to ROS 2 Foxy, read-only parameters generate a parameter event with its initial value when declared.
-If we start declaring parameters for each QoS policies of many entities, the amount of parameter events at startup time will significantly increase.
+If we start declaring parameters for each QoS policies of many entities, the amount of parameter events at startup time will significantly increase, as the declaration of each parameter generates an event.
 
 To avoid this issue, a way to opt-out of parameter events for a given parameter could be added (should that be the default for read-only parameters??).
 
