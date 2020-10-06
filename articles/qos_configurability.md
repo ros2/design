@@ -135,7 +135,9 @@ This allows, for example, to pass parameter overrides when dynamically adding a 
 Up to ROS 2 Foxy, read-only parameters generate a parameter event with its initial value when declared.
 If we start declaring parameters for each QoS policies of many entities, the amount of parameter events at startup time will significantly increase, as the declaration of each parameter generates an event.
 
-To avoid this issue, a way to opt-out of parameter events for a given parameter could be added (should that be the default for read-only parameters??).
+To avoid this issue, a way to opt-out parameter events when declaring a parameter could be added.
+
+Note: Opting-out generating a parameter event when setting/unsetting a parameter could also be possible, but not required for this.
 
 ### Parameter callbacks
 
