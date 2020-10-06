@@ -324,7 +324,7 @@ node->create_publisher(
         [](const QoSProfile qos) -> bool {
             return qos.is_keep_all() || qos.history_depth() > 10u;  // constrains involving more than one QoS in callbacks
         },
-        "my_id",  // id to disambiguate entities in same topic
+        "my_id"  // id to disambiguate entities in same topic
     });
 
 // nothing is reconfigurable
@@ -334,21 +334,32 @@ node->create_publisher(
 
 // allow reconfiguring durability
 node->create_publisher(
-    "another_topic",
+    "other_topic",
     user_qos_provided_in_code_3,
     QosOverridingOptions{QosPolicyKind::Durability});
+
+// "default" policies are reconfigurable
+node->create_publisher(
+    "another_topic",
+    user_qos_provided_in_code_4,
+    QosOverridingOptions{true});
 ```
 
-The above API mentions having some default set of QoS settings that are reconfigurable. 
-The intent is to provide a less verbose option, where the user can opt-in to reconfigurability of these default QoS settings with a single flag.
+The intent of being able to opt-in a set of "default" policies is to make the API easier to use and less verbose.
 
-Proposed defaults:
+All policies could be included in the "set" of default reconfigurable policies, with some exceptions:
+- Liviliness kind: It requires special care by the node's author.
+- Lifespan: It only applies to publishers, thus it shouldn't be declared for subscribers.
+  It also only applies for "transient local" durability, so it shouldn't be reconfigurable if durability isn't.
+
+We could also have a restricted list of default policies to be declared in parameters:
 - Reliability
 - History kind
 - History depth
-- Durability
 
-TBD: Do we want defaults?
+which are the ones that usually require reconfigurability.
+
+TBD: The defaults could be different to the ones proposed above.
 
 ### Reusing profiles
 
