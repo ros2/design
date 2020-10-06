@@ -257,10 +257,15 @@ node->create_publisher(
 #### Hidden parameters
 
 Currently, ROS 2 has the concept of hidden topics and services.
-Those aren't listed in the cli tool commands, except when the user explicitly asks them to be included.
+Those aren't showed by the cli tools, except explicitly requested:
+
+```bash
+ros2 topic list  # Will not list hidden topics.
+ros2 topic --include-hidden-topics list  # Will list hidden topics.
+```
 
 Similarly, hidden parameters could be added.
-That will avoid showing a big list of all policies.
+All the parameters used for overriding QoS could be declared as hidden, thus avoiding noise for the user in commands like `ros2 param list`.
 
 #### Only declaring some parameters
 
