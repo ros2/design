@@ -262,7 +262,7 @@ The two mechanism are compatible with what it was said before and are not mutual
 #### Hidden parameters
 
 Currently, ROS 2 has the concept of hidden topics and services.
-Those aren't showed by the cli tools, except explicitly requested:
+Those aren't shown by the cli tools, except when explicitly requested:
 
 ```bash
 ros2 topic list  # Will not list hidden topics.
