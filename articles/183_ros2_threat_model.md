@@ -151,7 +151,7 @@ system.
 
 **Assets** represent any user, resource (e.g. disk space), or property (e.g. physical
 safety of users) of the system that should be defended against attackers.
-Properties of assets can be related to acheiving the business goals of the robot.
+Properties of assets can be related to achieving the business goals of the robot.
 For example, sensor data is a resource/asset of the system and the privacy of that
 data is a system property and a business goal.
 
@@ -163,7 +163,7 @@ channels, API, sensors, etc.).
 Actors are divided into multiple categories based on whether or not they are
 physically present next to the robot (could the robot harm them?), are they
 human or not and are they a "power user" or not.
-A power user is defined as someone who is knowledgeable and execute tasks which are normally
+A power user is defined as someone who is knowledgeable and executes tasks which are normally
 not done by end-users (build and debug new software, deploy code, etc.).
 
 <div class="table">
@@ -210,7 +210,7 @@ not done by end-users (build and debug new software, deploy code, etc.).
     <td class="danger">N</td>
     <td class="success">Y</td>
     <td class="success">Y</td>
-    <td>A developer buildling a cloud service connected to the robot or an
+    <td>A developer building a cloud service connected to the robot or an
         analyst who has been granted access to robot data.</td>
   </tr>
   <tr>
@@ -245,7 +245,7 @@ attack).
   </tr>
   <tr>
     <td>Robot Data Stores Privacy</td>
-    <td>Robot persistant data (logs, software, etc.) must not be accessible by
+    <td>Robot persistent data (logs, software, etc.) must not be accessible by
         unauthorized actors.</td>
   </tr>
 
@@ -322,7 +322,7 @@ with the system?).
   <tr>
     <td>Robot Code Deployment Infrastructure</td>
     <td>Deployment infrastructure for binaries or configuration files are
-    granted read/write access to the robot computers filesystems.</td>
+    granted read/write access to the robot computer's filesystems.</td>
   </tr>
   <tr>
     <td>Sensors</td>
@@ -370,7 +370,7 @@ This component may communicate through unsafe channels with other
 driver nodes to reduce sensor data fusion latency.
 Trusting components is never ideal but it may be acceptable if the software is well-controlled.
 
-On the opposite, an non-trusted node can be a third-party object tracker.
+On the opposite, a non-trusted node can be a third-party object tracker.
 Deploying this node without adequate sandboxing could impact:
 
 * User privacy: the node is streaming back user video without their consent
@@ -1098,7 +1098,7 @@ Situation Management (CogSIMA), 1–5. Savannah, GA, USA: IEEE, 2017.</a>
       </td>
     </tr>
     <tr>
-      <td>An attacker gains access to the robot OS though its administration
+      <td>An attacker gains access to the robot OS through its administration
 interface.</td>
       <td class="danger">✘</td>
       <td class="success">✓</td>
@@ -1393,7 +1393,7 @@ configuration to a safe state if the robot becomes unavailable.</li>
 System)</th>
     </tr>
     <tr>
-      <td>An attacker modifies the robot file system by physically acessing
+      <td>An attacker modifies the robot file system by physically accessing
 it.</td>
       <td class="danger">✘</td>
       <td class="success">✓</td>
@@ -1430,7 +1430,7 @@ it.</td>
       <td></td>
     </tr>
     <tr>
-      <td>An attacker eavesdrops on the robot file system by physically acessing
+      <td>An attacker eavesdrops on the robot file system by physically accessing
 it.</td>
       <td class="danger">✘</td>
       <td class="danger">✘</td>
@@ -1459,7 +1459,7 @@ it.</td>
       <td>
         <ul>
           <li>Robot filesystem must be encrypted.
-              They key should be stored in a secure enclave (TPM).</li>
+              The key should be stored in a secure enclave (TPM).</li>
           <li>Robot filesystem should be wiped out if the robot perimeter is breached.</li>
         </ul>
       </td>
@@ -1496,7 +1496,7 @@ it.</td>
           <li>Robot components disk quota should be bounded.</li>
           <li>Disk usage should be properly monitored, logged and reported.</li>
           <li>Optionally, components may have the option to run w/o any file system access.
-              This should be prefered whenever possible.</li>
+              This should be preferred whenever possible.</li>
         </ul>
       </td>
       <td></td>
@@ -1733,7 +1733,7 @@ E-Stop</td>
       <th colspan="29">Embedded / Hardware / Auxilliary Functions</th>
     </tr>
     <tr>
-      <td>An attacker compromises the software or send malicious commands to
+      <td>An attacker compromises the software or sends malicious commands to
 drain the robot battery.</td>
       <td class="danger">✘</td>
       <td class="danger">✘</td>
@@ -1958,7 +1958,7 @@ access.</li>
       <td></td>
     </tr>
     <tr>
-      <td>An attacker alters or delete robot cloud data.</td>
+      <td>An attacker alters or deletes robot cloud data.</td>
       <td class="danger">✘</td>
       <td class="success">✓</td>
       <td class="danger">✘</td>
@@ -1985,7 +1985,7 @@ access.</li>
       <td class="danger">✘</td>
       <td>
         <ul>
-          <li>Cloud data should be have propery backup mechanisms.</li>
+          <li>Cloud data should have proper backup mechanisms.</li>
           <li>Cloud data access should be audited.
               If an intrusion is detected, a process to restore the system back to a previous
               "uncompromised" state should be available.</li>
@@ -2065,7 +2065,7 @@ the deployment service should be done over a secure channel.</li>
       <td></td>
     </tr>
     <tr>
-      <td>An attacker intercepts the binaries sent by the depoyment service.</td>
+      <td>An attacker intercepts the binaries sent by the deployment service.</td>
       <td class="danger">✘</td>
       <td class="danger">✘</td>
       <td class="success">✓</td>
@@ -2179,7 +2179,7 @@ The following steps are recommended in order to extend this document with additi
   * Use cases
 1. Design security boundary and architectural schemas for the robotic application.
 1. Evaluate and prioritize entry points
-  * Make use of the RSF[rsf] to find applicable weaknessess on the robot.
+  * Make use of the RSF[rsf] to find applicable weaknesses on the robot.
   * Take existing documentation as help for finding applicable entry points.
 1. Evaluate existing threats based on general threat table and add new ones to the specific threat
    table.
@@ -2315,7 +2315,7 @@ dependencies.
 
 * A test engineer is testing the robot.
 * A user operates the robot with the joystick.
-* A business analysts periodically checks dashboards with performance
+* A business analyst periodically checks dashboards with performance
   information for the robot in the AWS Cloudwatch web console.
 
 ##### Robot Data Assets
@@ -2390,7 +2390,7 @@ dependencies.
     * AWS CloudWatch data is accessible from public AWS API endpoints, if
       credentials are available for the corresponding AWS account.
     * AWS CloudWatch can be credentials can allow attackers to access other
-      cloud ressources depending on how the account has been configured.
+      cloud resources depending on how the account has been configured.
   * Secret Management
     * DDS / ROS Topics
       * If SROS is enabled, private keys are stored on the local filesystem.
@@ -2405,7 +2405,7 @@ dependencies.
 #### Use case scenarios
 
 * Development, Testing and Validation
-  * An engineer develops code or run tests on the robot.
+  * An engineer develops code or runs tests on the robot.
     They may:
     * Restart the robot
     * Restart the ROS graph
@@ -2830,7 +2830,7 @@ TurtleBot Raspberry Pi.</td>
     <td class="success">✘</td>
     <td class="success">✘</td>
     <td class="warning">✘/✓</td>
-    <td>A malicious node attemps to write a compromised kernel to
+    <td>A malicious node attempts to write a compromised kernel to
         <code>/boot</code></td>
     <td> </td>
     <td class="warning">TurtleBot / Zymbit Key integration will mostly mitigate
@@ -2878,7 +2878,7 @@ this threat.</td>
     <td class="success">✘</td>
     <td class="success">✘</td>
     <td class="warning">✘/✓</td>
-    <td>A malicious node attemps to write a compromised kernel to
+    <td>A malicious node attempts to write a compromised kernel to
         <code>/boot</code></td>
     <td></td>
     <td class="warning">TurtleBot / Zymbit Key integration will mostly mitigate
@@ -2895,7 +2895,7 @@ data.</td>
     <td class="success">✘</td>
     <td class="success">✘</td>
     <td class="warning">✘/✓</td>
-    <td>A malicious node attemps to write a compromised kernel to
+    <td>A malicious node attempts to write a compromised kernel to
 <code>/boot</code></td>
     <td> </td>
     <td class="warning">TurtleBot / Zymbit Key integration will mostly mitigate
@@ -2904,7 +2904,7 @@ this threat.</td>
   </tr>
 
   <tr>
-    <td rowspan="2">An attacker gains access to the robot OS though its
+    <td rowspan="2">An attacker gains access to the robot OS through its
 administration interface.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
@@ -3143,7 +3143,7 @@ participant.</td>
 System)</th></tr>
 
   <tr>
-    <td>An attacker modifies the robot file system by physically acessing
+    <td>An attacker modifies the robot file system by physically accessing
 it.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
@@ -3197,7 +3197,7 @@ all</li>
       </ul>
     </td>
     <td></td>
-    <td>A separate user account with disk quota enabled my be a solution but
+    <td>A separate user account with disk quota enabled may be a solution but
 this needs to be demonstrated.</td>
   </tr>
 
@@ -3215,7 +3215,7 @@ this needs to be demonstrated.</td>
     <td>
       <ul>
         <li>TurtleBot nodes should be properly isolated and log into files only
-them can access.</li>
+they can access.</li>
         <li> TurtleBot filesystem should be encrypted (dm-crypt / LUKS).</li>
       </ul>
     </td>
@@ -3311,7 +3311,7 @@ E-Stop</td>
   <tr><th colspan="11">Embedded / Hardware / Ancillary Functions</th></tr>
 
   <tr>
-    <td>An attacker compromises the software or send malicious commands to
+    <td>An attacker compromises the software or sends malicious commands to
 drain the robot battery.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
@@ -3379,7 +3379,7 @@ system.</li>
   </tr>
 
   <tr>
-    <td>An attacker alters or delete robot cloud data.</td>
+    <td>An attacker alters or deletes robot cloud data.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
@@ -3400,7 +3400,7 @@ kms.html">Setup encryption in Cloud Watch logs</a>.</li>
   </tr>
 
   <tr>
-    <td>An attacker alters or delete robot cloud data.</td>
+    <td>An attacker alters or deletes robot cloud data.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
     <td class="success">✘</td>
@@ -4482,7 +4482,7 @@ normally.</td>
   <tr><th colspan="13">Embedded / Software / Data Storage (File System)</th></tr>
 
   <tr>
-    <td>An attacker modifies the robot file system by physically acessing it.</td>
+    <td>An attacker modifies the robot file system by physically accessing it.</td>
     <td class="danger">✓</td>
     <td class="danger">✓</td>
     <td class="success">✘</td>
