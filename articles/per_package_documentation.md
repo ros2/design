@@ -25,17 +25,16 @@ Discoverability for package documentation (and documentation in general) is one 
 The goal of this design is to standardize a documentation process for ROS 2 packages to encourage maintainers to robustly document their packages.
 The results will be presented in a consistent way alongside the general ROS 2 documentation, making the documentation as a whole discoverable and consistent.
 
-In general, our vision for the system is:
+In general, the vision for the system is:
 
-- Package maintainers document their packages in their repositories following some guidelines or templates we recommend
+- Package maintainers document their packages in their repositories following some recommended guidelines or templates
 - Package documentation (API documentation, other package related content) from the repositories is built on the ROS 2 infrastructure and deployed to the ROS 2 documentation site in an automatic process maintainers can opt in to by adding a `doc` block to the `distribution.yaml`
   - See [REP 141](https://www.ros.org/reps/rep-0141.html) for more context.
-- Package documentation is indexed alongside ROS 2's generic content on our docs site
+- Package documentation is indexed alongside ROS 2's generic content on the docs site
 
 ## Context
 
-The per-package documentation plan is an extension of the general ROS 2 documentation project.
-That project, in the implementation phase now, includes some keys points that affect the context of the per-package documentation.
+The per-package documentation plan is an extension of the general ROS 2 documentation project, which introduced some requirements that affect the context of the per-package documentation:
 
 - All documentation will be hosted on `docs.ros.org`
 - All documentation will be versioned by ROS 2 distribution names
@@ -80,7 +79,7 @@ Package documentation should continue to utilize rst for consistency.
 The docs site and buildfarm will allow documentation for the latest version of a package corresponding to each ROS 2 distribution the docs site supports versioning for.
 The package repository can still maintain it's own docs for previous versions.
 
-While multiple package versions per distribution will not initially be supported, the URL structure will support the addition of this feature in the future (mentioned in the Secondary requirements below).
+While multiple package versions per distribution will not initially be supported, the URL structure will support the addition of this feature in the future (mentioned under "Secondary requirements" below).
 
 **The buildfarm must automatically build package documentation**
 
