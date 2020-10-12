@@ -167,6 +167,39 @@ another_node:
      string_param: bar
 ```
 
+Wildcards can be used for node names and namespaces as described in [Remapping Names](static_remapping.html#match-part-of-a-rule).
+`*` matches a single token delimeted by slashes (`/`).
+`**` matches zero or more tokens delimeted by slashes.
+Partial matches are not allowed (e.g. `foo*`).
+
+For example,
+
+```yaml
+/**:
+  ros__parameters:
+    string_param: foo
+```
+
+will set the parameter `string_param` on all nodes,
+
+```yaml
+/**:
+  some_node:
+    ros__parameters:
+      string_param: foo
+```
+
+will set the parameter `string_param` on nodes named `some_node` in any namespace,
+
+```yaml
+/foo:
+  "*":
+    ros__parameters:
+      string_param: foo
+```
+
+will set the parameter `string_param` on any node in the namespace `/foo`.
+
 #### Logging level assignments
 
 Minimum logging level can be externally set either globally or per logger using the `--log-level` option.
