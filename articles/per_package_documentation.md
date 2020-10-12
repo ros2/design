@@ -28,7 +28,7 @@ The results will be presented in a consistent way alongside the general ROS 2 do
 In general, our vision for the system is:
 
 - Package maintainers document their packages in their repositories following some guidelines or templates we recommend
-- Package documentation from the repositories is built on the ROS 2 infrastructure and deployed to the ROS 2 documentation site in an automatic process with no input from the maintainer besides an opt-in `doc` block in the distribution.yaml
+- Package documentation (API documentation, other package related content) from the repositories is built on the ROS 2 infrastructure and deployed to the ROS 2 documentation site in an automatic process maintainers can opt in to by adding a `doc` block to the `distribution.yaml`
   - See [REP 141](https://www.ros.org/reps/rep-0141.html) for more context.
 - Package documentation is indexed alongside ROS 2's generic content on our docs site
 
@@ -39,8 +39,9 @@ That project, in the implementation phase now, includes some keys points that af
 
 - All documentation will be hosted on `docs.ros.org`
 - All documentation will be versioned by ROS 2 distribution names
-- The URL structure will be `docs.ros.org/<lang>/<distro>/<page>` for generic documentation and `docs.ros.org/<lang>/<distro>/p/<package_name>/<page>` for package documentation
-  - For more context on where documentation will fall under this URL structure, see [this diagram](https://docs.google.com/drawings/d/1KxzDrcSZzwGgudk-kEXGWnoRuAtc1ffl_KBeIu-V60Y/edit?usp=sharing).
+- The URL structure will be `docs.ros.org/<lang>/<distro>/...` for generic documentation and `docs.ros.org/<lang>/<distro>/p/<package_name>/...` for package documentation
+  - See the diagram below for more context on where documentation will fall under this URL structure:
+  ![](per_package_documentation/Version_package_flowchart.png)
 
 ## Requirements
 
@@ -69,6 +70,11 @@ Despite being hosted alongside the generic documentation, working on a package's
 
 The system will automatically extract API docs for these languages from the source code in package repositories and build the output on the docs site.
 
+**Package documentation must be written and formatted in rst (reStructuredText)**
+
+Rst is the file format currently utilized by the ROS 2 documentation.
+Package documentation should continue to utilize rst for consistency.
+
 **The system must allow package documentation to be versioned per ROS 2 distribution**
 
 The docs site and buildfarm will allow documentation for the latest version of a package corresponding to each ROS 2 distribution the docs site supports versioning for.
@@ -81,7 +87,7 @@ While multiple package versions per distribution will not initially be supported
 Changes to the documentation in a package repository shouldn't require the maintainer to manually trigger a build.
 The changes should be automatically built and uploaded to the site.
 
-**The system must automatically generate content for a package so it's listed on docs.ros.org even if the package maintainer does not explicitly set up anything in the package repository**
+**The system must automatically generate listing content for a package so it's listed on docs.ros.org even if the package maintainer does not explicitly set up anything in the package repository**
 
 Maintainers can explicitly opt out of being listed, but otherwise by default some package info will be listed for every available package.
 
