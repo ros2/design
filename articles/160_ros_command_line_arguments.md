@@ -183,8 +183,7 @@ For example,
 will set the parameter `string_param` on all nodes,
 
 ```yaml
-/**:
-  some_node:
+/**/some_node:
     ros__parameters:
       string_param: foo
 ```
@@ -192,8 +191,7 @@ will set the parameter `string_param` on all nodes,
 will set the parameter `string_param` on nodes named `some_node` in any namespace,
 
 ```yaml
-/foo:
-  "*":
+/foo/*:
     ros__parameters:
       string_param: foo
 ```
