@@ -45,7 +45,8 @@ The per-package documentation plan is an extension of the general ROS 2 document
 ## Requirements
 
 The "Primary requirements" are those that must be in place for the system to be functional and achieve its purpose.
-The "Secondary requirements" are important features and functionality that are not necessary to roll out the first stage of implementation, but should be carried out as soon as possible following the initial roll out.
+The "Secondary requirements" are also absolute requirements, however they are not necessary to roll out the first stage of implementation.
+They will be carried out as soon as possible following the initial roll out.
 
 ### Primary requirements
 
