@@ -98,8 +98,8 @@ That will automatically declare the parameters for reconfiguring the QoS policie
 /my/ns/node_name:
   ros__parameters:
     qos_overrides:  # group for all the qos settings
-      publisher:
-        'my/fully/qualified/topic/name/here': 
+      'my/fully/qualified/topic/name/here':
+        publisher:
           reliability: reliable
           history_depth: 100
           history: keep_last
@@ -245,13 +245,13 @@ node->create_publisher(
 /my/ns/node_name:
   ros__parameters:
     qos_overrides:
-      publisher_id1:  # {entity_type}_{id}
-        'my/fully/qualified/topic/name/here': 
+      'my/fully/qualified/topic/name/here': 
+        publisher_id1:  # {entity_type}_{id}
           reliability: reliable
           history_depth: 100
           history: keep_last
-      publisher_id2:  # {entity_type}_{id}
-        'my/fully/qualified/topic/name/here': 
+      'my/fully/qualified/topic/name/here': 
+        publisher_id2:  # {entity_type}_{id}
           reliability: best_effort
           history_depth: 100
           history: keep_last
@@ -373,16 +373,16 @@ We could, for example, leverage yaml anchors to allow this:
 /my/ns/node_name:
   ros__parameters:
     qos_overrides:
-      publisher: &profileA
-        'my/fully/qualified/topic/name/here': 
+      'my/fully/qualified/topic/name/here':
+        publisher: &profileA
           reliability: reliable
           history_depth: 1
           history: keep_last
 /my/ns/node_name:
   ros__parameters:
     qos_overrides:
-      subscription:
-        'my/fully/qualified/topic/name/here': 
+      'my/fully/qualified/topic/name/here':
+        subscription:
           <<: *profileA,
           history_depth: 100  # override the history depth
 ```
