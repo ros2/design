@@ -245,13 +245,13 @@ node->create_publisher(
       publisher_id1:  # {entity_type}_{id}
         'my/fully/qualified/topic/name/here': 
           reliability: reliable
-            history_depth: 100
-             history: keep_last
+          history_depth: 100
+          history: keep_last
       publisher_id2:  # {entity_type}_{id}
         'my/fully/qualified/topic/name/here': 
           reliability: best_effort
-            history_depth: 100
-            history: keep_last
+          history_depth: 100
+          history: keep_last
 ```
 
 ### Lowering the amount of declared parameters
