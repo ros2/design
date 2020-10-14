@@ -118,6 +118,9 @@ node->create_publisher(
 
 The user provided QoS callback will be internally used as a [parameters callback](https://github.com/ros2/rclcpp/blob/3a4ac0ca2093d12035070443692798b0c9f9da3a/rclcpp/include/rclcpp/node_interfaces/node_parameters_interface.hpp#L183), but we provide a more user-friendly interface.
 
+Note: The examples through this document are using `QosOverridingOptions` as a new argument in `create_publisher`/`create_subscription`.
+Instead of that, `QosOverridingOptions` will likely be integrated in the existing `PublisherOptions`/`SubscriptionOptions` structures.
+
 ## Analysis of parameter API features and limitations
 
 ### Read-only parameters
