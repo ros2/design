@@ -35,7 +35,7 @@ Streams of IP packets from a given source to destination are called *flows*. App
 
 The *5-tuple* is a traditional unique identifier for flows. The 5-tuple consists of five parameters: source IP address, source  port, destination IP address, destination port, and the transport protocol (example, TCP/UDP).
 
-IPv6 specifies a *3-tuple* for uniquely identifying flows. The IPv6 3-tuple consists of the source IP address, destination IP address, and the Flow Label. The Flow Label [1] is a 20-bit field in the IPv6 header. It is typically set by the source of the flow. The default flow label is zero.
+IPv6 specifies a *3-tuple* for uniquely identifying flows. The IPv6 3-tuple consists of the source IP address, destination IP address, and the Flow Label. The Flow Label [1] is a 20-bit field in the IPv6 header. It is typically set by the source of the flow. The default Flow Label is zero.
 
 ### Explicit QoS Specification
 
@@ -51,7 +51,7 @@ We briefly discuss two relevant explicit QoS specification methods for applicati
 
 | 5QI         | Resource                                   | Priority | Packet Delay Budget (ms) | Packet Error Rate | Example Services                                                                                                        |
 | ----------- | ------------------------------------------ | -------- | ------------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------|
-| 3           | Guaranteed bitrate (GBR)                   | 30       | 50                       | 10^-3             | Real Time Gaming; V2X messages; Electricity distribution – medium voltage; Process automation monitoring.               |
+| 3           | Guaranteed bitrate (GBR)                   | 30       | 50                       | 10^-3             | Real Time Gaming; V2X messages; Electricity distribution – medium voltage; Process automation monitoring                |
 | 4           | GBR                                        | 50       | 300                      | 10^-6             | Non-Conversational Video (Buffered Streaming)                                                                           |
 | 7           | Non GBR (NGBR)                             | 70       | 100                      | 10^-3             | Voice Video (Live Streaming); Interactive Gaming                                                                        |
 | 9 (default) | NGBR                                       | 90       | 300                      | 10^-6             | Video (Buffered Streaming); TCP-based traffic (e.g., www, e-mail, chat, ftp, p2p file sharing, progressive video, etc.) |
@@ -70,7 +70,7 @@ We believe the problem occurs by design. For performance reasons, RMW implementa
 
 We use the following example to highlight the problem.
 
-Consider a distributed robotics application with nodes N1 and N2. N1 is active on device D1 and N2 on device D2. D1 and D2 are connected by an IP network, say a 5G network.
+Consider a distributed robotics application with communicating nodes N1 and N2. N1 is active on device D1 and N2 on device D2. D1 and D2 are connected by an IP network, say a 5G network.
 
 N1 contains publishers P1 and P2. P1 publishes video data whereas P2 publishes battery status data.
 
@@ -80,7 +80,7 @@ The link P1-S1 requires low-latency QoS from the 5G network, say a maximum delay
 
 ## Proposed Solution
 
-Our proposal to solve the problem is to make the flow identifiers of publishers and subscribers in communicating nodes unique using existing IP and transport header parameters.
+Our proposal to solve the problem is to make the flow identifiers of publishers and subscribers in communicating nodes unique using existing IP and transport header fields.
 
 ### Network Flow: a new QoS policy
 
@@ -115,15 +115,15 @@ Else, if the node is communicating via IPv4, then there are two alternatives. On
 
 The parameter `unique_flow` can be similarly handled with a minor difference -- the RMW implementation generates a `flow_id` internally first.
 
-Both DDS and non-DDS RMW implementations can trivially set fields in IP headers using existing socket API on all ROS2 platforms (Linux, Windows, MacOS). Generating the `flow_id` internally is a matter of implementing a simple hashing functions parameterized by exiting unique identifiers for publishers/subscribers within a node.
+Both DDS and non-DDS RMW implementations can trivially set fields in IP headers using existing socket API on all ROS2 platforms (Linux, Windows, MacOS). Generating the `flow_id` internally is a matter of implementing a simple hashing functions parameterized by exiting unique identifiers for publishers/subscribers within a node. A similar hashing scheme can be used by application programmers to set `flow_id` in the Network Flow QoS policy.
 
 ### Advantages
 
 Our proposal has the following advantages:
 
-- Easy to use: Application developers are only required to decide if unique flow identifiers for publishers/subscribers are necessary. If yes, they can supply the unique identifiers themselves, or obtain it from external components, or delegate unique identifier generation to the RMW implementation.
+- Easy to use: Application developers are only required to decide if unique flow identifiers for publishers/subscribers are necessary. If yes, they can easily generate the unique identifiers themselves, or obtain it from external components, or delegate unique identifier generation to the RMW implementation.
 - Light-weight implementation: Both non-DDS and DDS RMW can implement the required support conveniently with negligible impact on performance.
-- Network-agnostic: No particular network is targeted, respecting ROS2 design preferences.
+- Network-agnostic: No particular network is preferred, respecting ROS2 design preferences.
 - Minimum change: Introducing the *choice* of unique flow identifiers into the application layer is the minimum framework change required to obtain bespoke QoS from machine-machine network technologies such as 5G.
 
 ### Limitations
@@ -136,7 +136,9 @@ We list a few alternative solutions to the problem that are limited and dissatis
 
 1. Dedicated nodes: Publishers and subscribers that require special network QoS can be isolated to dedicated nodes. Such isolation indeed makes their 5-tuple flow identifier unique. However, this breaks the functionality-based node architecture of the application and degrades performance since nodes are heavy-weight structures. In the worst case, a dedicated node per publisher or subscriber is required.
 
-2. Side-loaded DDS Transport Priority QoS policies: Conceptually, the custom 6-tuple can be constructed by side-loading unique `flow_id` values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for two reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS2 today (Eloquent) support side-loading Transport Priority QoS policies for *select few* publishers and subscribers in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
+2. Custom 6-tuple using side-loaded DDS Transport Priority QoS policies: Conceptually, the custom 6-tuple can be constructed by side-loading unique `flow_id` values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for several reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, re-purposing DSCP values as identifiers is limited to 64 identifiers and requires careful network administration as mentioned before. Third, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS2 today (Eloquent) support side-loading Transport Priority QoS policies for *select few* publishers and subscribers in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
+
+3. DS-based QoS using side-loaded DDS Transport Priority QoS policies: This gets ahead of the problem by directly specifying the required DS-based QoS through side-loaded Transport Priority QoS policies. However, this suffers from similar problems as the previous alternative. It ignores non-DDS RMW, expects DS competence from programmers, and is not supported by tier-1 RMW implementations.  
 
 ## References
 
