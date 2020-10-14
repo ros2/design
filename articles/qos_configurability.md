@@ -97,7 +97,7 @@ That will automatically declare the parameters for reconfiguring the QoS policie
 ```yaml
 /my/ns/node_name:
   ros__parameters:
-    qos_profiles:  # group for all the qos settings
+    qos_overrides:  # group for all the qos settings
       publisher:
         'my/fully/qualified/topic/name/here': 
           reliability: reliable
@@ -199,7 +199,7 @@ For the following QoS policy:
 The URI of the automatically generated parameter would be:
 
 ```
-rosparam://asd/bsd/my_node/qos_profiles.publisher./foo/bar/topic_name.reliability
+rosparam://asd/bsd/my_node/qos_overrides.publisher./foo/bar/topic_name.reliability
 ```
 
 The `/` in one of the subgroups looks odd, but it's currently accepted.
@@ -207,7 +207,7 @@ The `/` in one of the subgroups looks odd, but it's currently accepted.
 If in the future the addressing changes described in [#241](https://github.com/ros2/design/pull/241) are implemented, the URI would be:
 
 ```
-rosparam://asd.bsd.my_node/qos_profiles/publisher/foo/bar/topic_name/reliability
+rosparam://asd.bsd.my_node/qos_overrides/publisher/foo/bar/topic_name/reliability
 ```
 
 but in both cases the previous parameters file example wouldn't change.
@@ -244,7 +244,7 @@ node->create_publisher(
 ```yaml
 /my/ns/node_name:
   ros__parameters:
-    qos_profiles:
+    qos_overrides:
       publisher_id1:  # {entity_type}_{id}
         'my/fully/qualified/topic/name/here': 
           reliability: reliable
@@ -372,7 +372,7 @@ We could, for example, leverage yaml anchors to allow this:
 ```yaml
 /my/ns/node_name:
   ros__parameters:
-    qos_profiles:
+    qos_overrides:
       publisher: &profileA
         'my/fully/qualified/topic/name/here': 
           reliability: reliable
@@ -380,7 +380,7 @@ We could, for example, leverage yaml anchors to allow this:
           history: keep_last
 /my/ns/node_name:
   ros__parameters:
-    qos_profiles:
+    qos_overrides:
       subscription:
         'my/fully/qualified/topic/name/here': 
           <<: *profileA,
