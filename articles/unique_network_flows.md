@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Unique Network Flow Identifiers
-permalink: articles/content_filtering.html
+permalink: articles/unique_network_flows.html
 abstract: Enable unique network flow identifiers for publishers and subscribers in communicating nodes
-author: '[Ananya Muddukrishna](https://github.com/anamud)'
+author: '[Ananya Muddukrishna, Ericsson AB](https://github.com/anamud)'
 published: true
 ---
 
