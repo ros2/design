@@ -35,19 +35,19 @@ Streams of IP packets from a given source to destination are called *flows*. App
 
 The *5-tuple* is a traditional unique identifier for flows. The 5-tuple consists of five parameters: source IP address, source  port, destination IP address, destination port, and the transport protocol (example, TCP/UDP).
 
-IPv6 specifies a *3-tuple* for uniquely identifying flows. The IPv6 3-tuple consists of the source IP address, destination IP address, and the Flow Label. The Flow Label [1] is a 20-bit field in the IPv6 header. It is typically set by the source of the flow. The default Flow Label is zero.
+IPv6 specifies a *3-tuple* for uniquely identifying flows. The IPv6 3-tuple consists of the source IP address, destination IP address, and the Flow Label. The Flow Label [2] is a 20-bit field in the IPv6 header. It is typically set by the source of the flow. The default Flow Label is zero.
 
 ### Explicit QoS Specification
 
 We briefly discuss two relevant explicit QoS specification methods for applications -- Differentiated Services and 5G network 5QI.
 
-- Differentiated Services (DS) [2] is a widely-used QoS architecture for IP networks. The required DS-based QoS is set by the application in the 6-bit DS Code Point (DSCP) sub-field of the 8-bit DS field in the IP packet header. For example, DSCP set to 0x2E specifies expedited forwarding as the required QoS. Expedited forwarding is typically used for real-time data such as voice and video.
+- Differentiated Services (DS) [3] is a widely-used QoS architecture for IP networks. The required DS-based QoS is set by the application in the 6-bit DS Code Point (DSCP) sub-field of the 8-bit DS field in the IP packet header. For example, DSCP set to 0x2E specifies expedited forwarding as the required QoS. Expedited forwarding is typically used for real-time data such as voice and video.
 
    ROS2 lacks an API to specify DS-based QoS for publishers and subscribers. The DSCP value in their flows is therefore set to 0x00. This specifies default forwarding as the required QoS from the network. However, DDS provides the Transport Priority QoS policy to specify DS-based QoS.
 
-   A frustrating problem with DS-based QoS is that intermediate routers can reset or alter the DSCP value of flows. One workaround is to carefully configure intermediate routers to retain DSCP markings from incoming to outgoing flows.
+   A frustrating problem with DS-based QoS is that intermediate routers can reset or alter the DSCP value within flows. One workaround is to carefully configure intermediate routers such that they retain DSCP markings from incoming to outgoing flows.
 
-- 5G network 5QI: The Network Exposure Function (NEF) [3] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically specify required QoS by associating 5G Quality Indicators (5QIs) to flow identifers. Twenty-six standard 5QIs are identified in the latest release-16 by 3GPP [3:Table 5.7.4-1]. We exemplify a few of them below. The variation in service characteristics of the example 5QIs emphasizes the importance of careful 5QI selection.
+- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically specify required QoS by associating 5G Quality Indicators (5QIs) to flow identifers. Twenty-six standard 5QIs are identified in the latest release-16 by 3GPP [4:Table 5.7.4-1]. We exemplify a few of them below. The variation in service characteristics of the example 5QIs emphasizes the importance of careful 5QI selection.
 
 | 5QI         | Resource                                   | Priority | Packet Delay Budget (ms) | Packet Error Rate | Example Services                                                                                                        |
 | ----------- | ------------------------------------------ | -------- | ------------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------|
@@ -138,7 +138,7 @@ We list a few alternative solutions to the problem that are limited and dissatis
 
 2. Custom 6-tuple using side-loaded DDS Transport Priority QoS policies: Conceptually, the custom 6-tuple can be constructed by side-loading unique `flow_id` values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for several reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, re-purposing DSCP values as identifiers is limited to 64 identifiers and requires careful network administration as mentioned before. Third, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS2 today (Eloquent) support side-loading Transport Priority QoS policies for *select few* publishers and subscribers in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
 
-3. DS-based QoS using side-loaded DDS Transport Priority QoS policies: This gets ahead of the problem by directly specifying the required DS-based QoS through side-loaded Transport Priority QoS policies. However, this suffers from similar problems as the previous alternative. It ignores non-DDS RMW, expects DS competence from programmers, and is not supported by tier-1 RMW implementations.  
+3. DS-based QoS using side-loaded DDS Transport Priority QoS policies: This gets ahead of the problem by directly specifying the required DS-based QoS through side-loaded Transport Priority QoS policies. However, this suffers from similar impracticalities as the previous alternative. It ignores non-DDS RMW, expects DS competence from programmers, and is not supported by tier-1 RMW implementations.
 
 ## References
 
