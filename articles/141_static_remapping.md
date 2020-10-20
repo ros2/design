@@ -338,8 +338,8 @@ Within each category, the rules are applied in the order in which the user gave 
 **Example of node/namespace remapping order:**
 
 - A node has name `talker`
-- A user gives the rules `talker:__ns:=/my_namespace` then `talker:__node:=foo`
-- The final node name is `foo` because the namespace and node name remap are applied without affecting each other
+- A user gives the rules `talker:__ns:=/my_namespace` then `talker:__node:=foo`, or vice versa
+- The final fully qualified name is `/my_namespace/foo` because the namespace and node name remap are applied without affecting each other
 
 **Example of a default and node specific namespace remap:**
 
