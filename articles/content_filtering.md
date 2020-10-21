@@ -69,6 +69,58 @@ ContentFilteredTopic describes a more sophisticated subscription that indicates 
 - Multiple filter_expression and expression_parameters can be modified dynamically at runtime.
   This is because of use cases for `/parameter_events` and action `feedback` and `status` topics, parameter filtering expression is dependent on user application, and action client has multiple goal id to handle.
 
+### Improvement Result
+
+This result indicates if ContentFilteredTopic provides the improvement for CPU consumption and network traffic as we described above. Using single writer and multiple readers up to 10 with filtering expression and expression parameters.
+
+#### Environment
+
+- Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz / 8GB memory
+- Ubuntu 18.04.5 LTS
+- docker 19.03.6
+- ubuntu:20.04 container
+- ros2:rolling, rti-connext-dds-5.3.1
+
+#### IDL
+
+```
+struct cft {
+    long count;
+    string flag;
+    string cmd;
+    long data_size;
+    string<8 * 1024 * 1024> data;
+};
+```
+
+#### Result
+
+`flag` means how many **readers** setup with filtering parameter `yes`. (means that receive will receive the message) `no filter` means in `normal topic` w/o content filtering. `improvement rate` means how much network traffic bytes to be saved compare to `no filter` mode, below is the formula:
+
+$$improvement\_rate = \frac{no\_filter\_transfer\_rate - reader\_transfer\_rate}{no\_filter\_transfer\_rate}$$
+
+- Publication Frequency: 10Hz, Data Size: 1KByte, Count: 3000 times
+
+| flags | cpu | memory | tx (Network load) | improvement |
+| -- | -- | -- | -- | -- | -- |
+| 1/10 'yes' | 0.40% | 0.2% | 11.49 KByte/s | 90% |
+| 2/10 'yes' | 0.46% | 0.2% | 22.9 KByte/s | 80% |
+| 3/10 'yes' | 0.48% | 0.2% | 34.28 KByte/s | 70% |
+| 4/10 'yes' | 0.55% | 0.2% | 45.69 KByte/s | 60% |
+| 5/10 'yes' | 0.60% | 0.2% | 57.09 KByte/s | 50% |
+| 6/10 'yes' | 0.69% | 0.2% | 68.49 KByte/s | 40% |
+| 7/10 'yes' | 0.73% | 0.2% | 79.89 KByte/s | 30% |
+| 8/10 'yes' | 0.79% | 0.2% | 91.29 KByte/s | 20% |
+| 9/10 'yes' | 0.84% | 0.2% | 102.69 KByte/s | 10% |
+| 10/10 'yes' | 0.85% | 0.2% | 114.09 KByte/s | 0% |
+| no filter | 0.85% | 0.2% | 114.05 KByte/s | Baseline |
+
+![improvement_cpu](../img/content_filter/improvement_cpu.png)
+![improvement_memory](../img/content_filter/improvement_memory.png)
+![improvement_tx](../img/content_filter/improvement_tx.png)
+
+**The bigger data it handles, the more improvement we can have.**
+
 ### Specification
 
 #### DDS 
