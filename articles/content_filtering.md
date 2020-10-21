@@ -97,12 +97,12 @@ struct cft {
 
 `flag` means how many **readers** setup with filtering parameter `yes`. (means that receive will receive the message) `no filter` means in `normal topic` w/o content filtering. `improvement rate` means how much network traffic bytes to be saved compare to `no filter` mode, below is the formula:
 
-$$improvement\_rate = \frac{no\_filter\_transfer\_rate - reader\_transfer\_rate}{no\_filter\_transfer\_rate}$$
+![formula](../img/content_filter/formula.png)
 
 - Publication Frequency: 10Hz, Data Size: 1KByte, Count: 3000 times
 
 | flags | cpu | memory | tx (Network load) | improvement |
-| -- | -- | -- | -- | -- | -- |
+| --- | --- | --- | --- | --- |
 | 1/10 'yes' | 0.40% | 0.2% | 11.49 KByte/s | 90% |
 | 2/10 'yes' | 0.46% | 0.2% | 22.9 KByte/s | 80% |
 | 3/10 'yes' | 0.48% | 0.2% | 34.28 KByte/s | 70% |
