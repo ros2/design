@@ -207,7 +207,7 @@ To prevent this to the best of the system's ability, the system will place auto-
 This section addresses requirement 2.8, cross-referencing between sibling packages.
 As packages integrate their documentation into the system, cross-referencing between packages will be inconsistent.
 It may require multiple builds of all the packages in the system to eventually reach a consistent state for cross-references.
-How exactly this will be executed will be determined once the system is deployed. 
+How exactly this will be executed will be determined.
 
 ### URL structure
 
