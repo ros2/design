@@ -184,7 +184,7 @@ It also maintains the standard landing page requirement; the top level entry poi
 The landing page will provide access to the other generated documentation.
 
 For packages with documentation for multiple languages, the landing pages will provide access to each generator (e.g. “Click here for Doxygen content, Click here for Javadoc content”).
-Supporting multiple documentation engines will require that each generator outputs into its own designated directory (see [URL Structure - /generated](#/generated)).
+Supporting multiple documentation engines will require that each generator outputs into its own designated directory (see [URL Structure - /generated](#generated)).
 
 #### Buildfarm process
 
@@ -200,7 +200,7 @@ Some files will be auto-generated during this process (changelogs, tag files, et
 The auto-generated content won’t be saved to the upstream repositories, but it will be built to `docs.ros.org`.
 
 There is a possibility of collision occurring between maintainer created files and generated files.
-To prevent this to the best of the system's ability, the system can place auto-generated content in a restricted directory (see [URL Structure - /generated](#/generated)).
+To prevent this to the best of the system's ability, the system can place auto-generated content in a restricted directory (see [URL Structure - /generated](#generated)).
 
 
 ### URL structure
