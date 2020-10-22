@@ -46,8 +46,8 @@ The per-package documentation plan is an extension of the general ROS 2 document
 
 ## Requirements
 
-The *Primary requirements* are those that must be in place for the system to be functional and achieve its purpose.
-The *Secondary requirements* are also absolute requirements, however they are not necessary to roll out the first stage of implementation.
+The [Primary requirements](#1.-primary-requirements) are those that must be in place for the system to be functional and achieve its purpose.
+The [Secondary requirements](#2.-secondary-requirements) are also absolute requirements, however they are not necessary to roll out the first stage of implementation.
 They will be carried out following the initial roll out.
 
 ### 1. Primary requirements
@@ -82,7 +82,7 @@ Package documentation should continue to utilize rst for consistency.
 The docs site and buildfarm will allow documentation for the latest version of a package corresponding to each ROS 2 distribution the docs site supports versioning for.
 The package repository can still maintain its own docs for previous versions.
 
-While multiple package versions per distribution will not initially be supported, the URL structure will support the addition of this feature in the future (mentioned under *Secondary requirements* below).
+While multiple package versions per distribution will not initially be supported, the URL structure will support the addition of this feature in the future (mentioned under [Secondary requirements](#2.-secondary-requirements) below).
 
 **1.7 The buildfarm must automatically build package documentation**
 
@@ -134,9 +134,9 @@ In summary, the design for the system is:
 
 The design description is laid out in the following subsections:
 
--  The *Documentation System* section, which describes, at a high level, the functionality of the doc tool for both the user side of package documentation as well as how it interacts with the buildfarm.
-- The *URL Structure* section, which shows how directories under `docs.ros.org` will be organized in the new system.
-- The *Considerations* section, which addresses some other options that were considered for various aspects of the design, and why they were decided against.
+-  The [Documentation System](#documentation-system) section, which describes, at a high level, the functionality of the doc tool for both the user side of package documentation as well as how it interacts with the buildfarm.
+- The [URL Structure](#url-structure) section, which shows how directories under `docs.ros.org` will be organized in the new system.
+- The [Considerations](#considerations) section, which addresses some other options that were considered for various aspects of the design, and why they were decided against.
 
 ### Documentation System
 
@@ -184,14 +184,14 @@ It also maintains the standard landing page requirement; the top level entry poi
 The landing page will provide access to the other generated documentation.
 
 For packages with documentation for multiple languages, the landing pages will provide access to each generator (e.g. “Click here for Doxygen content, Click here for Javadoc content”).
-Supporting multiple documentation engines will require that each generator outputs into its own designated directory (see *URL Structure - /generated*).
+Supporting multiple documentation engines will require that each generator outputs into its own designated directory (see [URL Structure - /generated](#`/generated`)).
 
 #### Buildfarm process
 
 To opt in to having documentation built on docs.ros.org, maintainers will have to add a `doc` block to their `distribution.yaml` file that indicates the rosdistro branch and a path to the repository.
 Opting-in this way will cause the tool to automatically generate an index landing page for the package.
 
-The buildfarm will invoke the same tool used in the *User process*, run on ***n*** packages, to generate the documentation for `docs.ros.org`.
+The buildfarm will invoke the same tool used in the user process, run on ***n*** packages, to generate the documentation for `docs.ros.org`.
 It will require some additional settings, for example the URL where content should generate into.
 
 A webhook between GitHub and the buildfarm will indicate when there is a new commit to a repository (for the branches being tracked for documentation) so the documentation can be automatically regenerated and immediately deployed.
@@ -200,7 +200,7 @@ Some files will be auto-generated during this process (changelogs, tag files, et
 The auto-generated content won’t be saved to the upstream repositories, but it will be built to `docs.ros.org`.
 
 There is a possibility of collision occurring between maintainer created files and generated files.
-To prevent this to the best of the system's ability, the system can place auto-generated content in a restricted directory (see *URL Structure - /generated*).
+To prevent this to the best of the system's ability, the system can place auto-generated content in a restricted directory (see [URL Structure - /generated](#`/generated`)).
 
 
 ### URL structure
@@ -229,7 +229,7 @@ When functionality is added to the documentation system for more than one versio
 For example, `/p/rclcpp` can have versioned content added to `/p/rclcpp-2.1.0` and `/p/rclcpp-3.0.0`.
 After enabling versioning, the unversioned URL will be a link to the version currently indexed in the rosdistro.
 
-See *Considerations - Package version directory* for an explanation of the naming convention.
+See [Considerations - Package version directory](#package-version-directory) for an explanation of the naming convention.
 
 #### `/generated`
 
@@ -284,7 +284,7 @@ To satisfy secondary requirement 2.6, the first obvious consideration for the st
 The chosen structure doesn’t force another directory, which allows versioned package documentation to be added later on in the development of the system without leaving an unused directory level in the meantime.
 Adding package versions in the future will not disrupt the meaning of the URL structure, because `/<package_name>/` without any appended `-version.number.n` will always implicitly indicate the latest version.
 
-## Reference
+<!-- ## Reference -->
 
 [1]: https://www.sphinx-doc.org/en/master/
 [2]: https://www.doxygen.nl/index.html
