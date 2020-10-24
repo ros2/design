@@ -339,13 +339,19 @@ Within each category, the rules are applied in the order in which the user gave 
 
 - A node has name `talker`
 - A user gives the rules `talker:__ns:=/my_namespace` then `talker:__node:=foo`, or vice versa
-- The final fully qualified name is `/my_namespace/foo` because the namespace and node name remap rules both match against the orignal node name before remappings are applied
+- The final fully qualified name is `/my_namespace/foo` because the namespace and node name remap rules both match against the original node name before remappings are applied
 
 **Example of a default and node specific namespace remap:**
 
 - A node has name `talker`
 - A user gives the rules `talker:__ns:=/foo` then `__ns:=/bar`
 - talker's namespace is `/foo` because that rule was given first
+
+**Example of node and topic/service remapping order:**
+
+- A node uses a name `/talker` and a topic/service name `/bar`
+- A user gives the rules `talker:__node:=foo` then `foo:bar:=/asdf`
+- The final fully qualified name is `/foo`, and the final topic/service name is `/asdf` because the node name remap rule is matched before other remappings are applied
 
 ### Applications of the syntax
 
