@@ -19,7 +19,7 @@ Original Author: {{ page.author }}
 
 # Unique Network Flow Identifiers
 
-For performance, ROS2 applications require careful selection of QoS for publishers and subscribers. Although networks offer various QoS options, ROS2 publishers and subscribers are unable to use them due to non-unique flow identifiers. As a result, the QoS provided by networks to ROS2 publishers and subscribers is vanilla and uniform. This ultimately degrades the performance potential of ROS2 applications and wastes networking infrastructure investments.
+For performance, ROS2 applications require careful selection of QoS for publishers and subscribers. Although networks offer various QoS options, ROS2 publishers and subscribers are unable to use them due to non-unique flow identifiers. As a result, ROS2 publishers and subscribers can only hope to obtain undifferentiated QoS from networks. This ultimately degrades the performance potential of ROS2 applications and wastes networking infrastructure investments.
 
 We propose unique network flow identifiers for ROS2 publishers and subscribers. Our proposal is easy to use, convenient to implement, and minimal. Plus, it respects network-agnostic and non-DDS-middleware-friendly concerns in ROS2.
 
@@ -29,13 +29,15 @@ In this document, we first describe essential background concepts. After that we
 
 IP networking [1] is the pre-dominant inter-networking technology used today. Ethernet, WiFi, 4G/5G telecommunication all rely on IP networking.
 
-Streams of IP packets from a given source to destination are called *flows*. Applications can uniquely identify certain flows and explicitly specify what QoS is required from the network for those flows.
+Streams of IP packets from a given source to destination are called *packet flows* or simply *flows*. Applications can uniquely identify certain flows and explicitly specify what QoS is required from the network for those flows.
 
 ### Flow Identifers
 
 The *5-tuple* is a traditional unique identifier for flows. The 5-tuple consists of five parameters: source IP address, source  port, destination IP address, destination port, and the transport protocol (example, TCP/UDP).
 
 IPv6 specifies a *3-tuple* for uniquely identifying flows. The IPv6 3-tuple consists of the source IP address, destination IP address, and the Flow Label. The Flow Label [2] is a 20-bit field in the IPv6 header. It is typically set by the source of the flow. The default Flow Label is zero.
+
+If the 5-tuple is not sufficient, then custom 6-tuples can be created by combining the 5-tuple with the IP Options field or the IP Differentiated Services Code Point sub-field. Such custom 6-tuples are typically used as workarounds for technical difficulties.
 
 ### Explicit QoS Specification
 
@@ -47,7 +49,14 @@ We briefly discuss two relevant explicit QoS specification methods for applicati
 
    A frustrating problem with DS-based QoS is that intermediate routers can reset or alter the DSCP value within flows. One workaround is to carefully configure intermediate routers such that they retain DSCP markings from incoming to outgoing flows.
 
-- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically specify required QoS by associating 5G Quality Indicators (5QIs) to flow identifers. Twenty-six standard 5QIs are identified in the latest release-16 by 3GPP [4:Table 5.7.4-1]. We exemplify a few of them below. The variation in service characteristics of the example 5QIs emphasizes the importance of careful 5QI selection.
+- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically (HTTP-JSON) specify required QoS by associating 5G Quality Indicators (5QIs) to flow identifers, as shown in the figure next. 
+  
+  ![ROS2 Application 5GS Network Programmability](./ros2-app-5gs-network-programmability.png)
+  
+  Twenty-six standard 5QIs are identified in the latest release-16 by 3GPP [4:Table 5.7.4-1]. We exemplify a few of them in the table below. The variation in service characteristics of the example 5QIs emphasizes the importance of careful 5QI selection.
+
+  The 5G network also has the ability to sensibly infer 5QI QoS from DS-based QoS markings in flows.
+
 
 | 5QI         | Resource                                   | Priority | Packet Delay Budget (ms) | Packet Error Rate | Example Services                                                                                                        |
 | ----------- | ------------------------------------------ | -------- | ------------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------|
@@ -57,8 +66,6 @@ We briefly discuss two relevant explicit QoS specification methods for applicati
 | 9 (default) | NGBR                                       | 90       | 300                      | 10^-6             | Video (Buffered Streaming); TCP-based traffic (e.g., www, e-mail, chat, ftp, p2p file sharing, progressive video, etc.) |
 | 82          | Delay critical guaranteed bitrate (DC GBR) | 19       | 10                       | 10^-4             | Discrete Automation                                                                                                     |
 | 85          | DC GBR                                     | 21       | 5                        | 10^-5             | Electricity distribution - high voltage; V2X messages (Remote Driving)                                                  |
-
-The 5G network also has the ability to sensibly infer 5QI QoS from DS-based QoS markings in flows.
 
 ## Problem
 
@@ -80,17 +87,19 @@ The link P1-S1 requires low-latency QoS from the 5G network, say a maximum delay
 
 ## Proposed Solution
 
-Our proposal to solve the problem is to make the flow identifiers of publishers and subscribers in communicating nodes unique using existing IP and transport header fields.
+Our proposal to solve the problem is to make the flow identifiers of publishers and subscribers in communicating nodes unique using existing IP header fields.
 
-### Network Flow: a new QoS policy
+We believe there are at least three architectural options to implement unique network flows. These are shown in the figure below.
+
+![Architecture options for unique network flows](./unique-network-flows-arch-options.png)
+
+### Option 1: Unique flow ID from publisher/subscriber
 
 We construct a new QoS policy called *Network Flow* as a support structure to enable unique identification of flows.
 
 The Network Flow QoS policy is parameterized by just one parameter -- a 32-bit unsigned integer called `flow_id`. The default `flow_id` is zero.
 
-Each publisher or subscriber that requires a specific QoS from the network is required to set the `flow_id` parameter to value unique within the node. The `flow_id` can be computed internally in the node or supplied by an external component.
-
-Eventually the `flow_id` is communicated to the RMW implementation where it is converted to a unique flow identifier.
+Each publisher or subscriber that requires a specific QoS from the network is required to set the `flow_id` parameter to value unique within the node. The `flow_id` can be computed internally in the node using simple UID generation schemes (atomic integer counters or random integer sampling without duplicates) or supplied by an external component.
 
 The example C++ snippet below shows a node creating a publisher (`pub1`)  and a subscriber (`sub1`) with unique `flow_id` values. Subscriber `sub2` is created with the default Network Flow QoS policy (`flow_id` = 0).
 
@@ -105,26 +114,36 @@ auto sub2_qos = rclcpp::QoS(rclcpp::KeepLast(1));
 sub2 = create_subscription<std_msgs::msg::String>("sub2_topic", sub2_qos, std::bind(&new_sub2_message, this, _1));
 ```
 
-A programmer-friendly alternative is to parameterize the Network Flow QoS policy with just a boolean parameter called `unique_flow`. Setting `unique_flow` to `true` instructs the RMW implementation to generate a unique flow identifier for the publisher/subscriber associated with the Network Flow QoS policy. By default, `unique_flow` is set to `false`.
-
-The RMW implementation has several options to convert `flow_id` to a unique flow identifier. 
+The RMW implementation has several options to convert `flow_id` to a unique flow identifier visible in packet headers. We list three candidate options.
 
 If the node is communicating using IPv6, then the lower 20-bits of `flow_id` can be transferred to the Flow Label field. This creates a unique 3-tuple.
 
 Else, if the node is communicating via IPv4, then there are two alternatives. One is copy the `flow_id` to the Options field. Another is to copy the lower 6-bits of the `flow_id` to the DSCP field. Both alternatives enable the network to infer a custom 6-tuple (traditional 5-tuple plus Options/DSCP) that uniquely identifies flows.
 
-The parameter `unique_flow` can be similarly handled with a minor difference -- the RMW implementation generates a `flow_id` internally first.
+Both DDS and non-DDS RMW implementations can trivially set fields in IP headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS). 
 
-Both DDS and non-DDS RMW implementations can trivially set fields in IP headers using existing socket API on all ROS2 platforms (Linux, Windows, MacOS). Generating the `flow_id` internally is a matter of implementing a simple hashing functions parameterized by exiting unique identifiers for publishers/subscribers within a node. A similar hashing scheme can be used by application programmers to set `flow_id` in the Network Flow QoS policy.
+### Option 2: Publisher/subscriber delegates flow ID generation to RMW
+
+This is a programmer-friendly alternative that modifies the Network Flow QoS policy to accept a boolean parameter called `unique_flow`. Setting `unique_flow` to `true` instructs the RMW implementation to generate a unique flow identifier for the publisher/subscriber associated with the Network Flow QoS policy. By default, `unique_flow` is set to `false`.
+
+The RMW implementation generates a `flow_id` internally first before writing it to an appropriate field in packet headers similar to Option-1.
+
+Generating the `flow_id` internally is a matter of implementing a simple hashing functions parameterized by existing unique identifiers for publishers/subscribers within a node (for example, the RTPS entity ID).
+
+A suitable interface should be created for publishers/subscribers to obtain the unique flow ID created by the RMW. We prefer to use community help to create this interface.
+
+### Option 3: RMW generates unique flow IDs for all publishers/subscribers
+
+This is the most programmer-friendly option. The RMW indiscriminately generates unique flow IDs for all publishers/subscribers. Everything else is similar to Option-2.
 
 ### Advantages
 
 Our proposal has the following advantages:
 
-- Easy to use: Application developers are only required to decide if unique flow identifiers for publishers/subscribers are necessary. If yes, they can easily generate the unique identifiers themselves, or obtain it from external components, or delegate unique identifier generation to the RMW implementation.
-- Light-weight implementation: Both non-DDS and DDS RMW can implement the required support conveniently with negligible impact on performance.
+- Easy to use: Application developers are only required to decide if unique flow identifiers for publishers/subscribers are necessary. If yes, they can easily generate the unique identifiers themselves, or obtain it from external components, or delegate unique identifier generation to the RMW implementation, or choose an RMW implementation that indiscriminately generates unique flow IDs for publishers/subscribers.
+- Light-weight implementation: Both non-DDS and DDS RMW can implement the required support conveniently using native socket API with negligible impact on performance.
 - Network-agnostic: No particular network is preferred, respecting ROS2 design preferences.
-- Minimum change: Introducing the *choice* of unique flow identifiers into the application layer is the minimum framework change required to obtain bespoke QoS from machine-machine network technologies such as 5G.
+- Minimum change: Introducing the *choice* of unique flow identifiers into the application layer is the minimum framework change required to obtain bespoke QoS from QoS-centric machine-machine network technologies such as 5G.
 
 ### Limitations
 
