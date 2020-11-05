@@ -226,7 +226,7 @@ It would be good to create ContentFilteredTopic for each of them. This can make 
 
 - new `DDSContentFilteredTopic` object needs to be managed in implementation.
 - parent topic information should be cached so that we can create CFT based on that parent topic.
-- extemd `rmw_create_subscription` with optional fileds.
+- extemd `rmw_create_subscription` with optional fields.
   - const char * filter_expression
   - const rcutils_string_array_t * expression_parameters
 - `rmw_<set/get>_expression_parameters` interface.
