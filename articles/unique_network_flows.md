@@ -49,7 +49,7 @@ We briefly discuss two relevant explicit QoS specification methods for applicati
 
    A frustrating problem with DS-based QoS is that intermediate routers can reset or alter the DSCP value within flows. One workaround is to carefully configure intermediate routers such that they retain DSCP markings from incoming to outgoing flows.
 
-- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically (HTTP-JSON) specify required QoS by associating 5G Quality Indicators (5QIs) to flow identifers, as shown in the figure next. 
+- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically (HTTP-JSON) specify required QoS by associating 5G QoS Identifiers (5QIs) to flow identifers, as shown in the figure next. 
   
   ![ROS2 Application 5GS Network Programmability](./ros2-app-5gs-network-programmability.png)
   
