@@ -362,8 +362,6 @@ We could also have a restricted list of default policies to be declared in param
 
 which are the ones that usually require reconfigurability.
 
-TBD: The defaults could be different to the ones proposed above.
-
 ### Reusing profiles
 
 It isn't currently possible to reuse a group of parameters in a parameter file.
