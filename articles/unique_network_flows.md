@@ -95,42 +95,58 @@ We believe there are at least three architectural options to implement unique ne
 
 ### Option 1: Unique flow ID from publisher/subscriber
 
-We construct a new QoS policy called *Network Flow* as a support structure to enable unique identification of flows.
+We construct a publisher and subscriber creation-time option called `unique_network_flow` as a candidate structure to enable unique identification of flows.
 
-The Network Flow QoS policy is parameterized by just one parameter -- a 32-bit unsigned integer called `flow_id`. The default `flow_id` is zero.
+In one variant, `unique_network_flow` is a 32-bit unsigned integer whose default value is zero.
 
-Each publisher or subscriber that requires a specific QoS from the network is required to set the `flow_id` parameter to value unique within the node. The `flow_id` can be computed internally in the node using simple UID generation schemes (atomic integer counters or random integer sampling without duplicates) or supplied by an external component.
+Each publisher or subscriber that requires a specific QoS from the network is required to set `unique_network_flow`  to a value unique within the node. This unique value can be computed internally in the node using simple UID generation schemes (atomic integer counters or random integer sampling without duplicates) or supplied by an external component.
 
-The example C++ snippet below shows a node creating a publisher (`pub1`)  and a subscriber (`sub1`) with unique `flow_id` values. Subscriber `sub2` is created with the default Network Flow QoS policy (`flow_id` = 0).
+The example C++ snippet below shows a node creating three subscriptions. Subscriptions `sub_1_` and `sub_2_` are created using subscription options with node-unique `unique_network_flow` values. Subscription `sub_3_` is created with default subscription options (`unique_network_flow` = 0).
 
 ```cpp
-auto pub1_qos = rclcpp::QoS(rclcpp::KeepLast(10)).network_flow(0xf4688c52);
-pub1 = create_publisher<std_msgs::msg::UInt64>("pub1_topic", pub1_qos);
+// Enable unique network flow via subscription options
+auto options_1 = rclcpp::SubscriptionOptions();
+options_1.unique_network_flow = 0xf4688c52;
 
-auto sub1_qos = rclcpp::QoS(rclcpp::KeepLast(1)).network_flow(0x88181c45);
-sub1 = create_subscription<std_msgs::msg::String>("sub1_topic", sub1_qos, std::bind(&new_sub1_message, this, _1));
+sub_1_ = this->create_subscription<std_msgs::msg::String>(
+  "topic_1", 10, std::bind(
+    &MyNode::topic_1_callback, this,
+    _1), options_1);
 
-auto sub2_qos = rclcpp::QoS(rclcpp::KeepLast(1));
-sub2 = create_subscription<std_msgs::msg::String>("sub2_topic", sub2_qos, std::bind(&new_sub2_message, this, _1));
+// Enable unique network flow via subscription options
+auto options_2 = rclcpp::SubscriptionOptions();
+options_2.unique_network_flow = 0x88181c45;
+
+sub_2_ = this->create_subscription<std_msgs::msg::String>(
+  "topic_2", 10, std::bind(
+    &MyNode::topic_2_callback, this,
+    _1), options_2);
+
+// Unique network flows are disabled by default
+auto options_3 = rclcpp::SubscriptionOptions();
+sub_3_ = this->create_subscription<std_msgs::msg::String>(
+  "topic_3", 10, std::bind(
+    &MyNode::topic_3_callback, this,
+    _1), options_3);
 ```
 
-The RMW implementation has several options to convert `flow_id` to a unique flow identifier visible in packet headers. We list three candidate options.
+The RMW implementation has several alternatives to convert the `unique_network_flow` argument to a unique flow identifier visible in packet headers. We list three candidate alternatives next.
 
-If the node is communicating using IPv6, then the lower 20-bits of `flow_id` can be transferred to the Flow Label field. This creates a unique 3-tuple.
+If the node is communicating using IPv6, then the lower 20-bits of `unique_network_flow` can be transferred to the Flow Label field. This creates a unique 3-tuple.
 
-Else, if the node is communicating via IPv4, then there are two alternatives. One is copy the `flow_id` to the Options field. Another is to copy the lower 6-bits of the `flow_id` to the DSCP field. Both alternatives enable the network to infer a custom 6-tuple (traditional 5-tuple plus Options/DSCP) that uniquely identifies flows.
+Else, if the node is communicating via IPv4, then there are two alternatives. One is copy the `unique_network_flow` argument to the Options field. Another is to copy the lower 6-bits of the `unique_network_flow` argument to the DSCP field. Both alternatives enable the network to infer a custom 6-tuple (traditional 5-tuple plus Options/DSCP) that uniquely identifies flows.
 
 Both DDS and non-DDS RMW implementations can trivially set fields in IP headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS). 
 
-### Option 2: Publisher/subscriber delegates flow ID generation to RMW
+### Option 2: Publisher/subscriber delegates unique flow ID generation to RMW
 
-This is a programmer-friendly alternative that modifies the Network Flow QoS policy to accept a boolean parameter called `unique_flow`. Setting `unique_flow` to `true` instructs the RMW implementation to generate a unique flow identifier for the publisher/subscriber associated with the Network Flow QoS policy. By default, `unique_flow` is set to `false`.
+This is a programmer-friendly alternative that modifies the `unique_network_flow` option to a boolean parameter. Setting it to `true` instructs the RMW implementation to generate a unique flow identifier for the associated publisher/subscriber. By default, `unique_network_flow` is set to `false`.
 
-The RMW implementation generates a `flow_id` internally first before writing it to an appropriate field in packet headers similar to Option-1.
+For those publishers/subscribers with `unique_network_flow` set to `true`, the RMW implementation generates an unique flow identifier internally first before writing it to an appropriate field in packet headers, similar to Option-1.
 
-Generating the `flow_id` internally is a matter of implementing a simple hashing functions parameterized by existing unique identifiers for publishers/subscribers within a node (for example, the RTPS entity ID).
+Generating the unique flow identifier internally is a matter of implementing a simple hashing functions parameterized by existing unique identifiers for publishers/subscribers within a node (for example, the RTPS entity ID).
 
-A suitable interface should be created for publishers/subscribers to obtain the unique flow ID created by the RMW. We prefer to use community help to create this interface.
+A suitable interface should be created for publishers/subscribers to obtain unique flow IDs created by the RMW. We prefer to use community help to create this interface.
 
 ### Option 3: RMW generates unique flow IDs for all publishers/subscribers
 
@@ -155,7 +171,7 @@ We list a few alternative solutions to the problem that are limited and dissatis
 
 1. Dedicated nodes: Publishers and subscribers that require special network QoS can be isolated to dedicated nodes. Such isolation indeed makes their 5-tuple flow identifier unique. However, this breaks the functionality-based node architecture of the application and degrades performance since nodes are heavy-weight structures. In the worst case, a dedicated node per publisher or subscriber is required.
 
-2. Custom 6-tuple using side-loaded DDS Transport Priority QoS policies: Conceptually, the custom 6-tuple can be constructed by side-loading unique `flow_id` values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for several reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, re-purposing DSCP values as identifiers is limited to 64 identifiers and requires careful network administration as mentioned before. Third, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS2 today (Foxy) support side-loading Transport Priority QoS policies for *select few* publishers and subscribers in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
+2. Custom 6-tuple using side-loaded DDS Transport Priority QoS policies: Conceptually, the custom 6-tuple can be constructed by side-loading `unique_network_flow` values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for several reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, re-purposing DSCP values as identifiers is limited to 64 identifiers and requires careful network administration as mentioned before. Third, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS2 today (Foxy) support side-loading Transport Priority QoS policies for *select few* publishers and subscribers in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
 
 3. DS-based QoS using side-loaded DDS Transport Priority QoS policies: This gets ahead of the problem by directly specifying the required DS-based QoS through side-loaded Transport Priority QoS policies. However, this suffers from similar impracticalities as the previous alternative. It ignores non-DDS RMW, expects DS competence from programmers, and is not supported by tier-1 RMW implementations.
 
