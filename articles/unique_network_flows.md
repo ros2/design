@@ -130,13 +130,16 @@ sub_3_ = this->create_subscription<std_msgs::msg::String>(
     _1), options_3);
 ```
 
-The RMW implementation has several alternatives to convert the `unique_network_flow` argument to a unique flow identifier visible in packet headers. We list three candidate alternatives next.
+The RMW implementation has several alternatives to convert the `unique_network_flow` argument to a unique flow identifier visible in packet headers. We list few candidate alternatives next.
 
 If the node is communicating using IPv6, then the lower 20-bits of `unique_network_flow` can be transferred to the Flow Label field. This creates a unique 3-tuple.
 
-Else, if the node is communicating via IPv4, then there are two alternatives. One is copy the `unique_network_flow` argument to the Options field. Another is to copy the lower 6-bits of the `unique_network_flow` argument to the DSCP field. Both alternatives enable the network to infer a custom 6-tuple (traditional 5-tuple plus Options/DSCP) that uniquely identifies flows.
+Else, if the node is communicating via IPv4, then there are two alternatives. One is to copy the `unique_network_flow` argument to the Options field. Another is to copy the lower 6-bits of the `unique_network_flow` argument to the DSCP field. Both alternatives enable the network to infer a custom 6-tuple (traditional 5-tuple plus Options/DSCP) that uniquely identifies flows.
 
-Both DDS and non-DDS RMW implementations can trivially set fields in IP headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS). 
+Yet another alternative is to use the `unique_network_flow` argument as a key that maps to unique identifiers maintained by the RMW implementation. These mapped unique identifiers are written to appropriate locations in packet headers, including transport protocol port fields.
+
+Both DDS and non-DDS RMW implementations can trivially set fields in IP or transport protocol headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS).
+
 
 ### Option 2: Publisher/subscriber delegates unique flow ID generation to RMW
 
