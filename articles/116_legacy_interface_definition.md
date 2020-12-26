@@ -144,7 +144,7 @@ Additional rule for `string` arrays:
 
 ### Constants
 
-Constants are defined by a *primitive type*, a *name* as well as a *fixed value*.
+Constants are defined by a *primitive type*, a *name* as well as a *fixed value*. The *fixed value* can be specified in binary, octal, decimal, or hex; e.g. 0b01, 0o01, 01, 0x01.
 
 ## Conventions
 
