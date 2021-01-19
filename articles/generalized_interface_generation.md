@@ -34,7 +34,11 @@ From a structural point-of-view, the `rosidl` interface generation pipeline is c
 
 Packages for interface definition translation (e.g. [`rosidl_adapter`](https://github.com/ros2/rosidl/tree/master/rosidl_adapter), [`rosidl_generator_dds_idl`](https://github.com/ros2/rosidl_dds/tree/master/rosidl_generator_dds_idl)), interface definition parsing (e.g. [`rosidl_parser`](https://github.com/ros2/rosidl/tree/master/rosidl_parser)), and `ament_cmake` integration (e.g. [`rosidl_cmake`](https://github.com/ros2/rosidl/tree/master/rosidl_cmake/rosidl_cmake)) complement and support generator and type support packages implementation.
 
-Alongside generated source code, generator and type support packages are expected to provide the means to build it by adding to the `rosidl_generate_idl_interfaces`' [`ament` extension point](https://index.ros.org/doc/ros2/Tutorials/Ament-CMake-Documentation/#adding-to-extension-points). By tapping into this extension, downstream `ament_cmake` packages can delegate interface generation to all available packages in the workspace (or any of its underlays). Note that the order in which each generator runs is the order in which each generator is impored into CMake, by virtue of how `ament` extensions work. This order is further obfuscated by the discovery process that the [`rosidl_default_generators`](https://github.com/ros2/rosidl_defaults/tree/master/rosidl_default_generators) package performs. Thus, for all practical purposes this order cannot be relied on, and build system dependencies must be leveraged to establish dependencies across generators' output.
+Alongside generated source code, generator and type support packages are expected to provide the means to build it by adding to the `rosidl_generate_idl_interfaces`' [`ament` extension point](https://index.ros.org/doc/ros2/Tutorials/Ament-CMake-Documentation/#adding-to-extension-points). By tapping into this extension, downstream `ament_cmake` packages can delegate build-system configuration to all available generator and type support packages in the workspace (or any of its underlays) during the configuration phase, so as to generate and then build source code during the build phase. This is what constitutes a (roughly) 3-stage pipeline, from interface definition files to source code to artifacts:
+
+![ROSIDL 3-stage pipeline](/img/generalized_interface_generation/rosidl_3_stage_pipeline.png)
+
+Note that the order in which each `ament` extension runs is the order in which each package was imported into CMake, by virtue of how these work. This order is further obfuscated by the discovery process that the [`rosidl_default_generators`](https://github.com/ros2/rosidl_defaults/tree/master/rosidl_default_generators) package performs. Thus, for all practical purposes this order cannot be relied on, and build-system dependencies must be leveraged to establish dependencies across generators' output.
 
 ### Drawbacks
 
@@ -53,15 +57,25 @@ As such, it does not fundamentally change the concepts that underpin it nor its 
 
 ### Goals
 
-- Decouple tooling from all build systems and build system generators
+- Decouple tooling from all build systems (generators)
 - Standardize tooling to simplify user and developer experience
 - Support tooling extensibility to encourage code share and reuse
 - Enforce tooling versioning to ensure API/ABI stability and simplify deprecation cycles
 - Allow tooling configuration to enable scoped builds
 
+### Overview
+
+The first stage in the current pipeline is split in two, configuring a 4-stage pipeline.
+
+![ROSIDL 4-stage pipeline](/img/generalized_interface_generation/rosidl_4_stage_pipeline.png)
+
+In the first stage, a [common build specification](#a-common-build-specification) that outlines how type representation and type support code must be generated (e.g. by invoking a source code generator) and built (e.g. by building a shared library) is generated.
+In the second stage, this specification is translated into build-system files.
+Both first and second stages would occur during the configuration phase once integrated into a build-system.
+
 ### Tooling updates
 
-#### Source code generation
+#### Source code generators
 
 ##### Description
 
@@ -74,7 +88,7 @@ Users can (but are not forced to) target specific plugin versions to prevent wor
 ##### Specification
 
 Interface type representation and interface type support are conceptually different pieces of functionality.
-Therefore, their generation CLIs, even if roughly equivalent, are kept separate. 
+Therefore, their generation CLIs, even if roughly equivalent, are kept separate.
 This allows them to deviate from each other in the future if need be.
 
 *For interface type representations*
@@ -98,17 +112,17 @@ If a specific version of a type representation / type support generator is speci
 Using Python allows for significant code reuse in the vast majority of existing generator and type support packages.
 Additionally, [`setuptools` entrypoints](https://setuptools.readthedocs.io/en/latest/userguide/entry_point.html#advertising-behavior) can be leveraged as a plugin system.
 
-#### Build system configuration
+#### Build specification generators
 
 ##### Description
 
 Migrate build logic to extensible, standardized tools that can generate [common build specifications](#a-common-build-specification) for language-specific type representation and middleware-specific type support code.
-These tools take a set of interface definition files and generate a build tool-agnostic description (aka a [common build specification](#a-common-build-specification)) that outlines how type representation and type support code must be generated (e.g. by invoking a source code generator) and built (e.g. by building a shared library).
+These tools take a set of interface definition files and generate a [common build specification](#a-common-build-specification).
 Support for new languages and middlewares can be added by external packages via a plugin system.
 
 ##### Rationale
 
-Source code generators output may vary significantly. 
+Source code generators output may vary significantly.
 It may be one source file or many source files in a hierarchy of directories.
 To build these source files, a command or a script specific to the code generator may have to be executed.
 Thus, in the most general case, build system integration is necessary.
@@ -123,7 +137,7 @@ By generating a build specification in a format designed to be simple yet genera
 ##### Specification
 
 Interface type representation and interface type support are conceptually different pieces of functionality.
-Therefore, their build configuration CLIs, even if roughly equivalent, are kept separate. 
+Therefore, their build configuration CLIs, even if roughly equivalent, are kept separate.
 This allows them to deviate from each other in the future if need be.
 
 *For interface type representations*
@@ -143,7 +157,7 @@ If no output file path is provided, the generated build specification is sent to
 
 ##### Implementation considerations
 
-All build logic in existing generator and type support packages is CMake code, and thus a port is necessary. 
+All build logic in existing generator and type support packages is CMake code, and thus a port is necessary.
 Using Python would ensure tooling interoperability and their supporting libraries.
 Additionally, [`setuptools` entrypoints](https://setuptools.readthedocs.io/en/latest/userguide/entry_point.html#advertising-behavior) can be leveraged as plugin system.
 
@@ -185,13 +199,21 @@ The broader native support is, the lower will build overhead (usually) be and th
 
 It can be achieved by adding thin layers that leverage [build system configuration](#build-system-configuration) and [meta build](#meta-build-tool) tooling to bootstrap an package builds.
 
-For instance, an `ament_cmake` integration would generate and include CMake code during the configuration stage:
+For instance, an `ament_cmake` integration would generate and include CMake code during the configuration stage e.g.:
 
 ```cmake
 # Generate C++ type representation build specification
-execute_process(COMMAND rosidl_build_configure --language cpp -I path/to/interface/dependencies/ interface0.idl interface1.idl OUTPUT_FILE build.spec)
+execute_process(
+  COMMAND rosidl_build_configure
+     --language cpp
+     -I path/to/interface/dependencies/
+     interface0.idl interface1.idl
+  OUTPUT_FILE build.spec)
 # Translate build specification into CMake code
-execute_process(COMMAND ament_meta_build -b cmake INPUT_FILE build.spec OUTPUT_FILE build.cmake)
+execute_process(
+  COMMAND ament_meta_build -b cmake
+  INPUT_FILE build.spec
+  OUTPUT_FILE build.cmake)
 # Use generate CMake code
 include(build.cmake)
 ```
@@ -237,10 +259,10 @@ Note that the format is declarative in nature.
 
 ### B. CLI Specification Syntax
 
-The syntax used to specify command line interfaces in this article takes after [Python 3 regular expression syntax](https://docs.python.org/3/library/re.html#re-syntax). 
+The syntax used to specify command line interfaces in this article takes after [Python 3 regular expression syntax](https://docs.python.org/3/library/re.html#re-syntax).
 
 Upper case tokens are expressions aliases, namely:
 
 - `IDENTIFIER` is a string of non-whitespace characters
-- `VERSION` is a [semantic](https://semver.org/) version 
+- `VERSION` is a [semantic](https://semver.org/) version
 - `PATH` is a host file system path
