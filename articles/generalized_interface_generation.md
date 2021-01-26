@@ -106,10 +106,12 @@ Users can (but are not forced to) target specific plugin versions to prevent wor
 ##### Specification
 
 ```sh
-rosidl_generate ((-d|--output-directory) PATH)? ((-l|--language) IDENTIFIER(==VERSION)?)* ((-t|--type-support) IDENTIFIER(==VERSION)?)* ((-I|--include-path) PATH)* PATH+
+rosidl generate ((-b|--base-configuration) PATH)? ((-d|--output-directory) PATH)? ((-l|--language) IDENTIFIER(==VERSION)?)* ((-t|--type-support) IDENTIFIER(==VERSION)?)* ((-I|--include-path) PATH)* ((ABSPATH:)?RELPATH)+
 ```
 
 All positional arguments are paths to interface definition files.
+To derive interface namespaces unambiguously when applicable, absolute paths are expressed as an absolute path prefix, followed by a colon ':', followed by a relative path.
+If a base configuration file is specified, argument defaults will be read from it.
 If no output directory is specified, the current working directory is used.
 If no language nor type support generator is specified, all available generators are used.
 If a language or a type support generator is specified but not found, the tool fails.
@@ -155,10 +157,12 @@ By generating a build specification in a format designed to be simple yet genera
 ##### Specification
 
 ```sh
-rosidl_build_configure ((-o|--output-file) PATH)? ((-l|--language) IDENTIFIER(==VERSION)?)* ((-t|--type-support) IDENTIFIER(==VERSION)?)* ((-I|--include-path) PATH)* PATH+
+rosidl build-configure ((-b|--base-configuration) PATH)? ((-o|--output-file) PATH)? ((-l|--language) IDENTIFIER(==VERSION)?)* ((-t|--type-support) IDENTIFIER(==VERSION)?)* ((-I|--include-path) PATH)* ((ABSPATH:)?RELPATH)+
 ```
 
 All positional arguments are paths to interface definition files.
+To derive interface namespaces unambiguously when applicable, absolute paths are expressed as an absolute path prefix, followed by a colon ':', followed by a relative path.
+If a base configuration file is specified, argument defaults will be read from it.
 If no language nor type support generator is specified, all available generators are used.
 If no language nor type support generator is found, the command fails.
 If no output file path is provided, the common build specification is sent to standard output.
@@ -660,3 +664,5 @@ Upper case tokens are expressions aliases, namely:
 - `IDENTIFIER` is a string of non-whitespace characters
 - `VERSION` is a [semantic](https://semver.org/) version
 - `PATH` is a host file system path
+- `ABSPATH` is a host file system absolute path
+- `RELPATH` is a host file system relative path
