@@ -91,7 +91,6 @@ Our proposal to solve the problem is to make the flows of publishers and subscri
 
 We construct a publisher/subscription creation-time option called `require_unique_network_flow` as a candidate structure to enable unique identification of flows. This option takes a value from the enumeration shown below.
 
-
 ```cpp
 enum unique_network_flow_requirement_t
 {
@@ -104,7 +103,7 @@ enum unique_network_flow_requirement_t
 
 Upon receiving the publisher/subscription creation request, the RMW implementation assigns unique flow identifiers according to the `require_unique_network_flow` option value.  
 
-The default value of the option is a `UNIQUE_NETWORK_FLOW_NOT_REQUIRED` which indicates to the RMW implementation that a unique network flow is not required.
+The default value of the option is `UNIQUE_NETWORK_FLOW_NOT_REQUIRED` which indicates to the RMW implementation that a unique network flow is not required.
 
 The value `UNIQUE_NETWORK_FLOW_STRICTLY_REQUIRED` indicates to the RMW implementation that a unique network flow is strictly required. If not feasible, the RMW implementation must flag an error and not create the associated publisher/subscription.
 
@@ -136,8 +135,10 @@ sub_y_ = this->create_subscription<std_msgs::msg::String>(
 auto options_z = rclcpp::PublisherOptions();
 options_z.require_unique_network_flow = RMW_UNIQUE_NETWORK_FLOW_OPTIONALLY_REQUIRED;
 
-publisher_z_ = this->create_publisher<std_msgs::msg::String>("topic_z", 10, options_z);
+pub_z_ = this->create_publisher<std_msgs::msg::String>("topic_z", 10, options_z);
 ```
+
+In the common case where nodes have a single publisher/subscription per topic, a unique flow is adequately achieved by activating either the publisher- or the subscription-side `require_unique_network_flow`  option. RMW implementations can therefore decide to support either publisher/subscription-side option to enable unique network flows. Support for options on both sides is required in the odd case that a node has multiple publishers/subscriptions for the same topic.
 
 The RMW implementation has several alternatives to convert the `require_unique_network_flow` option to a unique flow identifier visible in packet headers. We list few candidate alternatives next.
 
@@ -149,25 +150,29 @@ A simple option that works for both IPv6 and IPv4 is to use a unique transport p
 
 Both DDS and non-DDS RMW implementations can trivially set fields in IP or transport protocol headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS).
 
-To enable applications to discern (unique) network flows created by the RMW implementation, we propose a simple flow-getter interface for publishers/subscriptions. Continuing from the previous code snippet,
+To enable applications to discern (unique) network flows created by the RMW implementation, we propose a simple interface for getting flow endpoints of publishers/subscriptions. Continuing from the previous code snippet,
 
 ```cpp
 // Get network flows
-auto network_flows_x = sub_x_->get_network_flow();
-auto network_flows_y = sub_y_->get_network_flow();
+auto flows_x = sub_x_->get_network_flow_endpoints();
+auto flows_y = sub_y_->get_network_flow_endpoints();
 
 // Ensure sub_x_ has an unique network flow
-if (network_flows_x.size() > 0 && network_flows_y.size() > 0) {
-  for (auto network_flow_x : network_flows_x) {
-    for (auto network_flow_y : network_flows_y) {
-      if (network_flow_x == network_flow_y) {
+if (flows_x.size() > 0 && flows_y.size() > 0) {
+  for (auto flow_x : flows_x) {
+    for (auto flow_y : flows_y) {
+      if (flow_x == flow_y) {
         std::runtime_error("Flows are not unique!");
       }
     }
   }
 ```
 
-The RMW implementation is only required to the return the endpoints of network flows of the publisher/subscription associated with the `get_network_flow()` call.
+The proposed method `get_network_flow_endpoints()` requires RMW implementations to return a vector of byte-arrays/strings that represents the endpoints of network flows of the associated publisher/subscription. This information is custom to each RMW, similar to the existing `get_gid()` method that returns a custom `rmw_gid_t` value. The rationale to consider RMW-custom byte-arrays/strings instead of RMW-common structures is to address leaky-abstraction concerns.
+
+To clarify, the flow endpoints returned by the `get_network_flow_endpoints()` for a publisher represents the endpoints of the channels on the publisher-side only. It does not contain information about endpoints of matched subscriptions. Similarly, the endpoints returned by `get_network_flow_endpoints()` for a subscription has no information about matched publishers.
+
+DDS-based RMW may consider returning a string-serialized variant of the DDS-standard `Locator_t` structure when `get_network_flow_endpoints()` is called.
 
 ### Advantages
 
@@ -180,7 +185,9 @@ Our proposal has the following advantages:
 
 ### Limitations
 
-If the RMW implementation decides to create a custom 6-tuple using the IPv4 DSCP field, the flows of only up to 64 (2^6) publishers and subscriptions within a node can be uniquely identified. In addition, network administration processes should be notified that the DSCP field is re-purposed as an identifier to prevent misinterpretation.
+- If the RMW implementation decides to create a custom 6-tuple using the IPv4 DSCP field, the flows of only up to 64 (2^6) publishers and subscriptions within a node can be uniquely identified. In addition, network administration processes should be notified that the DSCP field is re-purposed as an identifier to prevent misinterpretation.
+
+- Custom parsers built using RMW-specific documentation are required to understand the byte-arrays/strings returned by `get_network_flow_endpoints()`.
 
 ## Alternative Solutions
 
@@ -201,4 +208,3 @@ We list a few alternative solutions to the problem that are limited and dissatis
 [3] [Differentiated Services (IETF RFC-2474)](https://tools.ietf.org/html/rfc2474)
 
 [4] [5G System Architecture Specification (3GPP TS 23.501)](https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3144)
-
