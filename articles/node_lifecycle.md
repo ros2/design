@@ -228,7 +228,7 @@ The service will report whether the transition was successfully completed.
 A topic should be provided to broadcast the new life cycle state when it changes.
 This topic must be latched.
 The topic must be named `lifecycle_state` it will carry both the end state and the transition, with result code.
-It will publish ever time that a transition is triggered, whether successful or not.
+It will publish every time that a transition is triggered, whether successful or not.
 
 ## Node Management
 
