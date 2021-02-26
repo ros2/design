@@ -111,41 +111,41 @@ Our proposal to solve the problem is to make the flows of publishers and subscri
 
 ### Unique Network Flow Endpoints
 
-We construct a publisher/subscription creation-time option called `require_unique_network_flow_endpoint` as a candidate structure to enable unique identification of network flows. This option takes a value from the enumeration shown below.
+We construct a publisher/subscription creation-time option called `require_unique_network_flow_endpoints` as a candidate structure to enable unique identification of network flows. This option takes a value from the enumeration shown below.
 
 ```cpp
-enum unique_network_flow_endpoint_requirement_t
+enum unique_network_flow_endpoints_requirement_t
 {
-  UNIQUE_NETWORK_FLOW_ENDPOINT_NOT_REQUIRED = 0,
-  UNIQUE_NETWORK_FLOW_ENDPOINT_STRICTLY_REQUIRED,
-  UNIQUE_NETWORK_FLOW_ENDPOINT_OPTIONALLY_REQUIRED,
-  UNIQUE_NETWORK_FLOW_ENDPOINT_SYSTEM_DEFAULT
+  UNIQUE_NETWORK_FLOW_ENDPOINTS_NOT_REQUIRED = 0,
+  UNIQUE_NETWORK_FLOW_ENDPOINTS_STRICTLY_REQUIRED,
+  UNIQUE_NETWORK_FLOW_ENDPOINTS_OPTIONALLY_REQUIRED,
+  UNIQUE_NETWORK_FLOW_ENDPOINTS_SYSTEM_DEFAULT
 }
 ```
 
-Upon receiving the publisher/subscription creation request, the RMW implementation assigns unique NFEs according to the `require_unique_network_flow_endpoint` option value.  
+Upon receiving the publisher/subscription creation request, the RMW implementation assigns unique NFEs according to the `require_unique_network_flow_endpoints` option value.  
 
-The default value of the option is `UNIQUE_NETWORK_FLOW_ENDPOINT_NOT_REQUIRED` which indicates to the RMW implementation that a unique NFE is not required.
+The default value of the option is `UNIQUE_NETWORK_FLOW_ENDPOINTS_NOT_REQUIRED` which indicates to the RMW implementation that unique NFEs are not required.
 
-The value `UNIQUE_NETWORK_FLOW_ENDPOINT_STRICTLY_REQUIRED` indicates to the RMW implementation that a unique NFE is strictly required. If not feasible, the RMW implementation must flag an error and not create the associated publisher/subscription.
+The value `UNIQUE_NETWORK_FLOW_ENDPOINTS_STRICTLY_REQUIRED` indicates to the RMW implementation that unique NFEs are strictly required. If not feasible, the RMW implementation must flag an error and not create the associated publisher/subscription.
 
-The value `UNIQUE_NETWORK_FLOW_ENDPOINT_OPTIONALLY_REQUIRED` enables the RMW implementation to create an unique NFE if feasible. If not feasible, it can continue to create the associated publisher/subscription and not flag an error.
+The value `UNIQUE_NETWORK_FLOW_ENDPOINTS_OPTIONALLY_REQUIRED` enables the RMW implementation to create unique NFEs if feasible. If not feasible, it can continue to create the associated publisher/subscription and not flag an error.
 
-The value `UNIQUE_NETWORK_FLOW_ENDPOINT_SYSTEM_DEFAULT` delegates the decision to create unique NFEs fully to the RMW implementation. The RMW implementation can decide internally on its own or be coerced through side-loading mechanisms to create a unique NFE for the associated publisher/subscription.
+The value `UNIQUE_NETWORK_FLOW_ENDPOINTS_SYSTEM_DEFAULT` delegates the decision to create unique NFEs fully to the RMW implementation. The RMW implementation can decide internally on its own or be coerced through side-loading mechanisms to create unique NFEs for the associated publisher/subscription.
 
-The example C++ snippet below shows a node creating two subscriptions and a publisher. Subscription `sub_x_` strictly requires a unique NFE whereas `sub_y_` is indifferent. Publisher `pub_z_`  optionally requires a unique NFE.
+The example C++ snippet below shows a node creating two subscriptions and a publisher. Subscription `sub_x_` strictly requires unique NFEs whereas `sub_y_` is indifferent. Publisher `pub_z_`  optionally requires a unique NFE.
 
 ```cpp
-// Unique network flow endpoint strictly required
+// Unique network flow endpoints strictly required
 auto options_x = rclcpp::SubscriptionOptions();
-options_x.require_unique_network_flow_endpoint = UNIQUE_NETWORK_FLOW_ENDPOINT_STRICTLY_REQUIRED;
+options_x.require_unique_network_flow_endpoints = UNIQUE_NETWORK_FLOW_ENDPOINTS_STRICTLY_REQUIRED;
 
 sub_x_ = this->create_subscription<std_msgs::msg::String>(
   "topic_x", 10, std::bind(
     &MyNode::topic_x_callback, this,
     _1), options_x);
 
-// Unique network flow endpoint not required, relying on default
+// Unique network flow endpoints not required, relying on default
 auto options_2 = rclcpp::SubscriptionOptions();
 
 sub_y_ = this->create_subscription<std_msgs::msg::String>(
@@ -153,9 +153,9 @@ sub_y_ = this->create_subscription<std_msgs::msg::String>(
     &MyNode::topic_y_callback, this,
     _1), options_y);
 
-// Unique network flow enpoint optionally required
+// Unique network flow endpoints optionally required
 auto options_z = rclcpp::PublisherOptions();
-options_z.require_unique_network_flow_endpoint = RMW_UNIQUE_NETWORK_FLOW_ENDPOINT_OPTIONALLY_REQUIRED;
+options_z.require_unique_network_flow_endpoints = RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_OPTIONALLY_REQUIRED;
 
 pub_z_ = this->create_publisher<std_msgs::msg::String>("topic_z", 10, options_z);
 ```
@@ -166,11 +166,9 @@ A strongly unique network flow is created by making both publisher and subscript
 
 We list few candidate alternatives next for RMW implementations to to implement the `require_unique_network_flow_endpoint` option.
 
-- If the node is communicating using IPv6, then the RMW implementation can write a unique value (such as a suitable derivative of the RTPS entity ID) in the Flow Label field. 
-
-- Else, if the node is communicating via IPv4, then the RMW implementation can write unique values in the IP Options and DSCP fields.
-
 - A simple option that works for both IPv6 and IPv4 is to select a unique transport port (UDP/TCP) and accordingly update the port field in the transport protocol header.
+- If the node is communicating using IPv6, then the RMW implementation can write a unique value (such as a suitable derivative of the RTPS entity ID) in the Flow Label field.
+- If the node is communicating via IPv4, then the RMW implementation can write a unique value in the DSCP field. This option should only be considered as a last resort since re-purposing the DSCP as an identifier is prone to misinterpretation, is limited to 64 entries, and requires careful configuration of intermediate routers.
 
 Both DDS and non-DDS RMW implementations can trivially set fields in IP or transport protocol headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS).
 
@@ -180,10 +178,10 @@ To enable applications to discern NFEs created by the RMW implementation, we pro
 
 ```cpp
 // Get network flows
-auto a_nfe_x = sub_x_->get_network_flow_endpoint();
-auto a_nfe_y = sub_y_->get_network_flow_endpoint();
+auto a_nfe_x = sub_x_->get_network_flow_endpoints();
+auto a_nfe_y = sub_y_->get_network_flow_endpoints();
 
-// Ensure sub_x_ has an unique network flow
+// Ensure sub_x_ has unique network flow endpoints
 if (a_nfe_x.size() > 0 && a_nfe_y.size() > 0) {
   for (auto nfe_x : a_nfe_x) {
     for (auto nfe_y  : a_nfe_y) {
@@ -194,11 +192,11 @@ if (a_nfe_x.size() > 0 && a_nfe_y.size() > 0) {
   }
 ```
 
-The proposed method `get_network_flow_endpoint()` requires RMW implementations to return NFEs of the associated publisher/subscription. The data structure of the NFE is specified concretely by the `rmw` layer.
+The proposed method `get_network_flow_endpoints()` requires RMW implementations to return NFEs of the associated publisher/subscription. The data structure of the NFE is specified concretely by the `rmw` layer.
 
-To reiterate, the NFEs returned by `get_network_flow_endpoint()` for a publisher represents the NFEs created on the publisher-side only. It does not contain information about NFEs of matched subscriptions. Similarly, the NFEs returned by `get_network_flow_endpoint()` for a subscription has no information about matched publishers.
+To reiterate, the NFEs returned by `get_network_flow_endpoints()` for a publisher represents the NFEs created on the publisher-side only (local). It does not contain information about NFEs of matched subscriptions. Similarly, the NFEs returned by `get_network_flow_endpoints()` for a subscription are localized with no information about matched publishers.
 
-DDS-based RMW implementations can obtain required information using the DDS-standard `Locator_t` structure when `get_network_flow_endpoint()` is called.
+DDS-based RMW implementations can obtain required information using the DDS-standard `Locator_t` structure when `get_network_flow_endpoints()` is called.
 
 ### Advantages
 
@@ -207,7 +205,7 @@ Our proposal has the following advantages:
 - Easy to use: Application developers are only required to decide if unique flow identifiers for publishers/subscriptions are necessary.
 - Light-weight implementation: Both non-DDS and DDS RMW can implement the required support conveniently using native socket API with negligible impact on performance.
 - RMW-agnostic: No particular network is preferred, respecting ROS2 design preferences.
-- Minimum change: Introducing the *choice* of unique flow identifiers into the application layer is the minimum framework change required to obtain bespoke QoS from QoS-centric machine-machine network technologies such as 5G.
+- Minimal change: The application layer is responsible for automating network QoS configuration. This represents minimal disruption to the ROS framework.
 
 ### Limitations
 
