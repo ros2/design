@@ -154,9 +154,9 @@ either nested or brought from a YAML file to make a map.
 ```xml
 <node pkg="my_pkg" exec="my_node">
   <param name="some_numeric_param" value="100.2"/>
-  <param name="some_list_of_strings" value="Some phrase,'100.0','true'" sep=","/>
-  <param name="some_list_of_ints" value="5, 3, 2" sep=", "/>
-  <param name="some_list_of_floats" value="5.0, 3.0, 2.0" sep=", "/>
+  <param name="some_list_of_strings" value="Some phrase,'100.0','true'" value-sep=","/>
+  <param name="some_list_of_ints" value="5, 3, 2" value-sep=", "/>
+  <param name="some_list_of_floats" value="5.0, 3.0, 2.0" value-sep=", "/>
   <param name="some_param_group">
     <param name="some_integer_param" value="10"/>
   </param>
