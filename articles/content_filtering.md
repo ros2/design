@@ -174,7 +174,6 @@ This is identical to updating a mutable QoS value.
 ### Requirement
 
 - ContentFilteredTopic interfaces can be used only if rmw implementation supports.
-- If rmw implementation does not support ContentFilteredTopic interfaces, filtering will be done internally on subscriber side in `rcl` before callback is fired.
 - User can specify filtering expression and expression parameters for subscription.
   - Simply, application can set/get the filter_expression and expression_parameters for subscription.
 - Filtering expression and expression parameters can be set and get at runtime.
@@ -207,7 +206,19 @@ Once new goal id is generated, that will be applied to ContentFilteredTopic obje
 In action use case, it does not need to change filtering expression at runtime.
 Instead of that it can use `MATCH` syntax with goal ids in expression parameters.
 
+<!--
 <img src="../img/content_filter/action_sequence_with_filter.png">
+-->
+
+```sequence
+ActionServer->ActionClient: server ready
+ActionClient->ActionServer: subscribe feedback & status topic
+ActionClient-->ActionClient: ask if ContentFilteredTopic supported
+ActionClient-->ActionClient: set filter expression and parameter based on goal id
+ActionClient-->ActionServer: set filter expression and parameter based on goal id
+ActionServer->ActionClient: publish feedback & status
+Note over ActionClient: Filtering Process(if not filtered)
+```
 
 #### Parameter Events
 
@@ -231,15 +242,29 @@ e.g)
   **use_sim_time** parameter event must be guaranteed by system to keep that in the filter and parameter expression when using ContentFilteredTopic.
 
 - User frontend (rclcpp/rclpy)
-  User API will be added to manage filtering configuration, so that user application can set its own filter_expression and expression_parameters for subscription.
-  Also using AsyncParametersClient::on_parameter_event, user can take care of the parameter event with user callback only for filtered parameter events.
-  It should be compatible interface for user application even if rmw_implementation does not support ContentFilteredTopic.
-  If rmw_implementation does not support ContentFilteredTopic, `rcl` will take care of filtering instead based on filtering expression and parameters.
+  - User can use ContentFilteredTopic only if it is supported by implementaion.
+    It could be compatible interface for user application even if rmw_implementation does not support ContentFilteredTopic.
+    But providing compatible interface increases comlication in `rcl` such as adding callback before user callback and dealing with filtering expression / parameters.
+    Which will increse the maintenance cost in system.
+    Besides, there are already user friendly classes are ready for user application such as `ParameterEventHandler` and `ParameterEventsFilter`.
+  - User API will be added to manage filtering configuration, so that user application can set its own filter_expression and expression_parameters for subscription.
+  - using AsyncParametersClient::on_parameter_event, user can take care of the parameter event with user callback only for filtered parameter events.
 
 - Filtering Expression and Parameters
   User can specify filtering expression and expression parameters.
 
+<!--
 <img src="../img/content_filter/parameter_event_sequence_with_filter.png">
+-->
+
+```sequence
+ParameterEventSubscription->ParameterEventPublication: subscribe /parameter_events
+ParameterEventSubscription-->ParameterEventSubscription: ask if ContentFilteredTopic is supported
+ParameterEventSubscription-->ParameterEventSubscription: set filter expression on /parameter_events
+ParameterEventSubscription-->ParameterEventPublication: set filter expression on /parameter_events
+ParameterEventPublication->ParameterEventSubscription: publish /parameter_events
+Note over ParameterEventSubscription: user callback fired(via on_parameter_event)
+```
 
 ### Interfaces
 
@@ -266,7 +291,6 @@ e.g)
 | rmw_connextdds | true |
 | rmw_fastrtps | false |
 | rmw_cyclonedds | false |
-
 
 #### rclcpp (rclpy)
 
