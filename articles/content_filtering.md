@@ -206,19 +206,7 @@ Once new goal id is generated, that will be applied to ContentFilteredTopic obje
 In action use case, it does not need to change filtering expression at runtime.
 Instead of that it can use `MATCH` syntax with goal ids in expression parameters.
 
-<!--
 <img src="../img/content_filter/action_sequence_with_filter.png">
--->
-
-```sequence
-ActionServer->ActionClient: server ready
-ActionClient->ActionServer: subscribe feedback & status topic
-ActionClient-->ActionClient: ask if ContentFilteredTopic supported
-ActionClient-->ActionClient: set filter expression and parameter based on goal id
-ActionClient-->ActionServer: set filter expression and parameter based on goal id
-ActionServer->ActionClient: publish feedback & status
-Note over ActionClient: Filtering Process(if not filtered)
-```
 
 #### Parameter Events
 
@@ -253,18 +241,7 @@ e.g)
 - Filtering Expression and Parameters
   User can specify filtering expression and expression parameters.
 
-<!--
 <img src="../img/content_filter/parameter_event_sequence_with_filter.png">
--->
-
-```sequence
-ParameterEventSubscription->ParameterEventPublication: subscribe /parameter_events
-ParameterEventSubscription-->ParameterEventSubscription: ask if ContentFilteredTopic is supported
-ParameterEventSubscription-->ParameterEventSubscription: set filter expression on /parameter_events
-ParameterEventSubscription-->ParameterEventPublication: set filter expression on /parameter_events
-ParameterEventPublication->ParameterEventSubscription: publish /parameter_events
-Note over ParameterEventSubscription: user callback fired(via on_parameter_event)
-```
 
 ### Interfaces
 
