@@ -101,7 +101,7 @@ Our proposal to solve the problem is to make the flows of publishers and subscri
 
   Network flows are defined for UDP/TCP and IP-based RMW implementations only. It is not a limiting definition since these are the majority protocols used today. The definition can be later extended to include relevant non-IP networks such as deterministic ethernet.
 
-- *Network Flow Endpoint (NFE)*: The portion of a network flow specific to the publisher and or the subscription. In other words, each network flow has two NFEs; one for the publisher and the other for the subscription.
+- *Network Flow Endpoint (NFE)*: The portion of a network flow specific to the publisher or the subscription. In other words, each network flow has two NFEs; one for the publisher and the other for the subscription.
 
 - *Dissimilar NFE pair*: Two NFEs are dissimilar if one or more of their networking resources are different.
 
@@ -164,7 +164,7 @@ A weakly unique network flow is created by making either the publisher or the su
 
 A strongly unique network flow is created by making both publisher and subscription NFEs unique. This enables network QoS differentiation in the rather odd case of a node having multiple publishers/subscriptions for the same topic. RMW implementations can decide not to support such odd cases i.e., not support both publisher and subscription option for unique NFEs.
 
-We list few candidate alternatives next for RMW implementations to to implement the `require_unique_network_flow_endpoint` option.
+We list few candidate alternatives next for RMW implementations to implement the `require_unique_network_flow_endpoint` option.
 
 - A simple option that works for both IPv6 and IPv4 is to select a unique transport port (UDP/TCP) and accordingly update the port field in the transport protocol header.
 - If the node is communicating using IPv6, then the RMW implementation can write a unique value (such as a suitable derivative of the RTPS entity ID) in the Flow Label field.
