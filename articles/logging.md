@@ -1,6 +1,44 @@
-1. What ROS1 had(?)
-2. what exists
-### Existing infrastructure
+## Desired User Experience
+This section describes the desired user interface of the ROS2 logging system.
+To define the interface of the ROS2 logging system, it is helpful to consider all of the various tasks users will want to perform.
+From this list of tasks, we can describe the steps users will have to take in order to perform each one.
+Based on our experiences with ROS1, other logging systems, and community feedback, the logging system in ROS2 will support the following interactions:
+- creating loggers
+- setting log levels
+- outputting logs
+- defining output destinations
+- specifying a backend
+- implementing a custom backend
+- tailoring performance impact
+### Interaction Descriptions
+This section describes what each of the interactions in the list entails, and the steps users will have to take to complete them.
+#### Creating Loggers
+This interaction contitutes creating the objects that users will use to output information from their code.
+#### Setting Log Levels
+This is how users set the severity levels for the loggers in their code.
+There are a number of ways users might want to be able to change these levels, so this interaction is further broken down to describe each of those.
+##### Programatically
+##### Command Line
+##### Via ROS2 Service Call
+##### Environment Variable?
+#### Outputting Logs
+This is primary interaction where users output information from their code.
+#### Defining Output Destinations (Sinks)
+Users may want logged information printed to the screen, written to a file, published to a topic, or a combination of those. This is how users setup those preferences.
+#### Specifying A Backend
+There are a number of widely used third-party logging libraries already available which may better suit a users use-case or provide extra features they need.
+ROS2 logging provides a default implementation, as well as a couple alternatives.
+This defines how users choose the implementation that best suits their needs.
+#### Creating A Backend
+Users may have requirements that none of the included backends support, so ROS2 provides an interface for users to create custom backend implementations.
+#### Tailoring Performance Impact
+Adding a sophisticated logging system to a complex code base can have performance impacts and are often mostly useful during development and debugging.
+ROS2 provides a few ways to configure the logging system to eliminate this performance impact when the logs are not needed.
+This section describes how to make those configuration changes.
+
+
+
+## Existing infrastructure
 ROS2 
 ### `rcutils`
 Contains macros for logging at several different levels and under various constraints
