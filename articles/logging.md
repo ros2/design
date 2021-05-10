@@ -1,8 +1,8 @@
 ## Desired User Experience
-This section describes the desired user interface of the ROS2 logging system.
-To define the interface of the ROS2 logging system, it is helpful to consider all of the various tasks users will want to perform.
+This section describes the desired user interface of the ROS 2 logging system.
+To define the interface of the ROS 2 logging system, it is helpful to consider all of the various tasks users will want to perform.
 From this list of tasks, we can describe the steps users will have to take in order to perform each one.
-Based on our experiences with ROS1, other logging systems, and community feedback, the logging system in ROS2 will support the following interactions:
+Based on our experiences with ROS 1, other logging systems, and community feedback, the logging system in ROS 2 will support the following interactions:
 - creating loggers
 - setting log levels
 - outputting logs
@@ -19,7 +19,7 @@ This is how users set the severity levels for the loggers in their code.
 There are a number of ways users might want to be able to change these levels, so this interaction is further broken down to describe each of those.
 ##### Programatically
 ##### Command Line
-##### Via ROS2 Service Call
+##### Via ROS 2 Service Call
 ##### Environment Variable?
 #### Outputting Logs
 This is primary interaction where users output information from their code.
@@ -27,19 +27,19 @@ This is primary interaction where users output information from their code.
 Users may want logged information printed to the screen, written to a file, published to a topic, or a combination of those. This is how users setup those preferences.
 #### Specifying A Backend
 There are a number of widely used third-party logging libraries already available which may better suit a users use-case or provide extra features they need.
-ROS2 logging provides a default implementation, as well as a couple alternatives.
+ROS 2 logging provides a default implementation, as well as a couple alternatives.
 This defines how users choose the implementation that best suits their needs.
 #### Creating A Backend
-Users may have requirements that none of the included backends support, so ROS2 provides an interface for users to create custom backend implementations.
+Users may have requirements that none of the included backends support, so ROS 2 provides an interface for users to create custom backend implementations.
 #### Tailoring Performance Impact
 Adding a sophisticated logging system to a complex code base can have performance impacts and are often mostly useful during development and debugging.
-ROS2 provides a few ways to configure the logging system to eliminate this performance impact when the logs are not needed.
+ROS 2 provides a few ways to configure the logging system to eliminate this performance impact when the logs are not needed.
 This section describes how to make those configuration changes.
 
 
 
 ## Existing infrastructure
-ROS2 
+ROS 2
 ### `rcutils`
 Contains macros for logging at several different levels and under various constraints
 ### `rclcpp`
@@ -52,8 +52,8 @@ Contains infrastructure to tie the logger implementations defined in `rcl_loggin
 
 
 ## User Interactions
-The focus of this document is to help decide what the user experience with the ROS2 logging system should look like and to identify what changes or additions need to be made to the existing infrastructure to enable that experience. 
-Below are enumerated the key high-level tasks that users of ROS2 will need to perform and descriptions of the current best-practices for achieving them according to my current understanding of the system.
+The focus of this document is to help decide what the user experience with the ROS 2 logging system should look like and to identify what changes or additions need to be made to the existing infrastructure to enable that experience.
+Below are enumerated the key high-level tasks that users of ROS 2 will need to perform and descriptions of the current best-practices for achieving them according to my current understanding of the system.
 
 ### Creating Loggers
 Within a node, users can use the `rclcpp::Node::get_logger()` function to get a logger named after the node.
