@@ -13,14 +13,28 @@ Based on our experiences with ROS 1, other logging systems, and community feedba
 ### Interaction Descriptions
 This section describes what each of the interactions in the list entails, and the steps users will have to take to complete them.
 #### Creating Loggers
-This interaction contitutes creating the objects that users will use to output information from their code.
+This interaction constitutes creating the objects that users will use to output information from their code.
+Users are able to create multiple named loggers which they can use to exercise fine-grained control over the logging output at runtime.
+Loggers are namespaced and can be controlled hierarchically by having their severity levels set individually.
+If a logger's level is not set explicitly, it will use the level of the nearest ancestor with an explicit severity, or the default if no ancestors have had their levels set.
+All named loggers are descendants of the default/unnamed logger.
 #### Setting Log Levels
 This is how users set the severity levels for the loggers in their code.
 There are a number of ways users might want to be able to change these levels, so this interaction is further broken down to describe each of those.
-##### Programatically
+##### Programmatically
+Severity levels for each logger can be set programmatically by calling a function that takes the desired severity level, and optionally a reference to or the name of a specific logger.
+If no name/reference is provided, function will apply the severity level as the default level.
 ##### Command Line
+When launching nodes from the command line, an argument can be provided setting the default log severity for that node.
+Programmatic logging severity changes within the node's code will override the severity set by the command line argument.
+##### Via Launch File
+Severity levels can be set for loggers by name via launch files.
+The severity levels will be applied to the appropriate loggers at startup, but may be overridden by programmatic changes.
 ##### Via ROS 2 Service Call
-##### Environment Variable?
+Users will be able to control severity levels of loggers during runtime via ROS 2 service calls.
+This level of control if often useful when debugging complex dynamic systems with many moving parts, especially when there is a high startup/restart cost.
+Severity levels set this way will override levels set at launch via command line arguments or configuration files.
+Programmatic changes to the severity may still occur after a level has been changed via the service call and will override the level set by the service call.
 #### Outputting Logs
 This is primary interaction where users output information from their code.
 #### Defining Output Destinations (Sinks)
@@ -35,6 +49,8 @@ Users may have requirements that none of the included backends support, so ROS 2
 Adding a sophisticated logging system to a complex code base can have performance impacts and are often mostly useful during development and debugging.
 ROS 2 provides a few ways to configure the logging system to eliminate this performance impact when the logs are not needed.
 This section describes how to make those configuration changes.
+#### Interacting with RMW Logging
+RMW implementations have their own built-in logging, and a function called `rmw_set_log_severity` which may need to be handled with special considerations.
 
 
 
@@ -68,7 +84,7 @@ Log level is *supposed* to be able to be set via the command line while launchin
 ### Outputting Logs
 Users that want to log information should use the `rclcpp` logging macros which cover a variety of use cases at 5 different severity levels.
 ### Specifying A Backend
-`rcl_logging` contians a couple different backend implementations, as well as an interface that can be used to add additional implementations. The environment variable `RCL_LOGGING_IMPLEMENTATION` can be set at compile time to select which implementation to compile in.
+`rcl_logging` contains a couple different backend implementations, as well as an interface that can be used to add additional implementations. The environment variable `RCL_LOGGING_IMPLEMENTATION` can be set at compile time to select which implementation to compile in.
 ### Avoiding Performance Impact
 `rcutils` and `rclcpp` include a flag called `RCLCPP_LOG_MIN_SEVERITY` which can be set to compile out all macros below a certain level. Constants of the form `RCLCPP_LOG_MIN_SEVERITY_[DEBUG|INFO|WARN|ERROR|FATAL|NONE]` are provided to facilitate setting the min severity that should be compiled out. (NOTE: in `rcutils` the `RCLCPP` is replaced with `RCUTILS`).
 
