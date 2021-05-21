@@ -27,7 +27,7 @@ In this document, we first describe essential background concepts. After that we
 
 ## Background
 
-IP networking [1] is the pre-dominant inter-networking technology used today. Ethernet, WiFi, 4G/5G telecommunication all rely on IP networking.
+IP networking [1] is the predominant inter-networking technology used today. Ethernet, WiFi, 4G/5G telecommunication all rely on IP networking.
 
 Streams of IP packets from a given source to destination are called *packet flows* or simply *flows*. Applications can uniquely identify certain flows and explicitly specify what QoS is required from the network for those flows.
 
