@@ -146,7 +146,7 @@ sub_x_ = this->create_subscription<std_msgs::msg::String>(
     _1), options_x);
 
 // Unique network flow endpoints not required, relying on default
-auto options_2 = rclcpp::SubscriptionOptions();
+auto options_y = rclcpp::SubscriptionOptions();
 
 sub_y_ = this->create_subscription<std_msgs::msg::String>(
   "topic_y", 10, std::bind(
