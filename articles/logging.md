@@ -36,15 +36,33 @@ This level of control if often useful when debugging complex dynamic systems wit
 Severity levels set this way will override levels set at launch via command line arguments or configuration files.
 Programmatic changes to the severity may still occur after a level has been changed via the service call and will override the level set by the service call.
 #### Outputting Logs
-This is primary interaction where users output information from their code.
+This is the primary interaction where users output information from their code.
+Users call macros that take loggers and message text as arguments and generate the code to produce log output when appropriate.
+Logging macros exist for each of the severity levels, and the macros for each severity cover a variety of use cases such as how frequently to output or whether to output based on conditional logic.
+The specific cases covered for each severity level are:
+- Log once
+- Log if given expression is true
+- Log if given function returns true
+- Ignore first call
+- Throttle to a certain rate (Don't log until a given duration has passed since the previous log)
+- Throttle, but ignore first call
 #### Defining Output Destinations (Sinks)
 Users may want logged information printed to the screen, written to a file, published to a topic, or a combination of those. This is how users setup those preferences.
+By default, logs are printed to the stderr and written to a log file.
+The location of the log file can be specified with an environment variable (`ROS_LOG_DIR`).
+If the log file location environment variable is not set, it will default to `$ROS_HOME/log`, using `~/.ros` if `$ROS_HOME` is not set.
+Console output can be redirected to stdout instead of stderr using an environment variable (`RCUTILS_LOGGING_USE_STDOUT`).
+Individual loggers can be configured to output to specific files or output streams in launch files.
+The destinations set in launch files can also be set according to severity level for a particular logger.
+For example, a logger could be configured to output all messages of severity ERROR or greater to stderr and messages below that severity to stdout.
+Logger configurations in launch files will override the behavior specified by the environment variables, and the behavior specified by the env variables will define the default behavior of any loggers not configured explicitly.
 #### Specifying A Backend
 There are a number of widely used third-party logging libraries already available which may better suit a users use-case or provide extra features they need.
-ROS 2 logging provides a default implementation, as well as a couple alternatives.
 This defines how users choose the implementation that best suits their needs.
+ROS 2 provides a default implementation, as well as alternatives based on log4cxx and spdlog, and a no-op implementation.
+The implementation can be specified at compile time by setting the environment variable `RCL_LOGGING_IMPLEMENTATION` to the name of the desired implementation when building `rcl`.
 #### Creating A Backend
-Users may have requirements that none of the included backends support, so ROS 2 provides an interface for users to create custom backend implementations.
+Users may have requirements that none of the included backends support, and may create additional implementations of `rcl_logging_interface`.
 #### Tailoring Performance Impact
 Adding a sophisticated logging system to a complex code base can have performance impacts and are often mostly useful during development and debugging.
 ROS 2 provides a few ways to configure the logging system to eliminate this performance impact when the logs are not needed.
