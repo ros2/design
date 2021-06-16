@@ -236,7 +236,7 @@ For example, the pipeline stages for targeting Secure DDS is as follows:
    - privileges and namespaces are remapped into a DDS centric representations
    - privileges with matching attributes are conjoined to reduce payload size
    - duplicate objects in the same privilege are pruned to reduce payload size
-   - privileges are sored deny first, abiding the priority of qualifiers when using DDS
+   - privileges are sorted deny first, abiding the priority of qualifiers when using DDS
    - objects are also sorted alphabetically to improve readability and change diffs
 
 ## Alternatives
@@ -300,9 +300,9 @@ In an effort to strike a balance between simplicity and flexibility, a flat sequ
 ### Separation of Privileges
 
 ROS 2 subsystems such as topics, services, actions, and parameters must eventually map to transport layer interfaces, such as DDS topic, that can sufficiently enforce the desired access control policy in order to secure the ROS application layer.
-However, any quirks between mapping of subsystems and separation of privileges can degridate security.
+However, any quirks between mapping of subsystems and separation of privileges can degrade security.
 
-As an example, if granting access to all topics and services starting with `/foo` additionally grants access to all actions starting with `/foo`, this would be a week example of privilege separation.
+As an example, if granting access to all topics and services starting with `/foo` additionally grants access to all actions starting with `/foo`, this would be a weak example of privilege separation.
 Such can be exacerbated when using globbing expressions that include matching patterns, such as with `fnmatch`, leading to innocuous and sound policies being inaccurately applied to the underlying transport security.
 While such privilege separation in [remains week between ROS 2 and DDS](https://github.com/ros2/design/pull/203), perhaps it is wise to discourage the use of expression matching for general use in permissions.
 
