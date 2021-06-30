@@ -553,7 +553,7 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="ns" type="xs:string" use="optional">
+      <xs:attribute name="namespace" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
             A ROS namespace to scope the launched ROS node.

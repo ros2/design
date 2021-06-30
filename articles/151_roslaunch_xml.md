@@ -81,7 +81,7 @@ The `<group>` tag allows for launch actions' grouping as well as optional launch
 
 ```xml
 <group scoped="true">
-  <node pkg="a_ros_package" name="dummy0" ns="my_ns" exec="dummy_node"/>
+  <node pkg="a_ros_package" name="dummy0" namespace="my_ns" exec="dummy_node"/>
   <node pkg="a_ros_package" name="dummy1" exec="dummy_node"/>
 </group>
 ```
