@@ -546,6 +546,13 @@
           </xs:documentation>
         </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="ros_args" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            ROS-specific 'command-line' arguments for the ROS node.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="args" type="xs:string" use="optional">
         <xs:annotation>
           <xs:documentation xml:lang="en">
