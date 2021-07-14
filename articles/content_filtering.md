@@ -80,7 +80,7 @@ This class therefore can be used to request content-based subscriptions.
   <img src="../img/content_filter/contents_filter_overview.png" width="600">
 - The filtering is done by means of evaluating a logical expression that involves the values some of the data-fields in the sample.
   The logical expression is derived from the filter_expression and expression_parameters arguments.
-- Multiple filter_expression and expression_parameters can be supported on single ContentFilteredTopic.
+- Each ContentFilteredTopic has a single filter_expression and a sequence of expression_parameters.
   ```
   [parameter use cases]
   "node = %0 OR node = %1" spinal_node attention_node : subscribe all parameter events from spinal and attention nodes
@@ -89,7 +89,7 @@ This class therefore can be used to request content-based subscriptions.
   [action use case]
   "uuid = %0 OR uuid = %1" DEADBEEF CAFEFEED : subscribe only interest goal ids which client handlers possess.
   ```
-- Multiple filter_expression and expression_parameters can be modified dynamically at runtime.
+- A single filter_expression and a sequence of expression_parameters can be modified dynamically at runtime.
   This is because of use cases for `/parameter_events` and action `feedback` and `status` topics, parameter filtering expression is dependent on user application, and action client has multiple goal id to handle.
 
 ### Improvement Result
@@ -153,9 +153,7 @@ the following create/delete API's are defined,
 - create_contentfilteredtopic()
 - delete_contentfilteredtopic()
 
-**According to the specification, filter_expression can be only initialized at constructor and it is read_only.
-Probably it is not possible to change the filter_expression at runtime based on the specification but [RTI v5.3.0](https://community.rti.com/static/documentation/connext-dds/5.3.0/doc/api/connext_dds/api_cpp2/classdds_1_1topic_1_1ContentFilteredTopic.html#a76310bf0b7123dd89afbacf43dbabf4a) can support this requirement.
-After all, it seems that it is dependent on implementation.**
+**According to the specification, filter_expression can be changed at runtime. [RTI v5.3.0](https://community.rti.com/static/documentation/connext-dds/5.3.0/doc/api/connext_dds/api_cpp2/classdds_1_1topic_1_1ContentFilteredTopic.html#a76310bf0b7123dd89afbacf43dbabf4a) can support this requirement.**
 
 #### DDSI-RTPS
 
@@ -309,6 +307,9 @@ e.g)
 
 - Side effect for making bunch of ContentFilteredTopic
   There will be always trading-off, with user aspect, making ContentFilteredTopic is really good not to filter the event. But thinking about dds responsibility, this will increase the complexity and complication for ContentFilteredTopic writer to comprehend which reader needs to receive what events.
+
+- Possible difference for expression parameters, depends on vendor implementation.
+  see [encountered problem](https://issues.omg.org/issues/spec/DDS/1.4#issue-47484).
 
 ## Responsibility
 
