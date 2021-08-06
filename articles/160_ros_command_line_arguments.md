@@ -143,7 +143,7 @@ node0_name:
      paramN_name: paramN_value
 ...
 nodeM_name:
-  ros_parameters:
+  ros__parameters:
      ...
 ```
 
@@ -163,7 +163,7 @@ some_node:
   ros__parameters:
      string_param: foo
 another_node:
-  ros_parameters:
+  ros__parameters:
      string_param: bar
 ```
 
