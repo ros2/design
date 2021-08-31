@@ -42,7 +42,7 @@ For example, for the `/foo/bar` enclave, the directory structure would look like
 
 Note that it also requires the names of the files to be the ones expected. Specifically, all certificate and key files must have the `.pem` extension. In order to configure the security properties of a DDS participant, the path of the appropriate file in the enclave directory is added as the `file` URI of the corresponding property. For example, for the private key in the authentication plugin:
 
-    dds.sed.auth.private_key = file:<root>/enclaves/foo/bar/key.pem
+    dds.sec.auth.private_key = file:<root>/enclaves/foo/bar/key.pem
 
 ## Proposal
 
