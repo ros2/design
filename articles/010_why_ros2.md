@@ -6,8 +6,8 @@ abstract:
   This article captures the reasons for making breaking changes to the ROS API, hence the 2.0.
 published: true
 author: Brian Gerkey
-date_written: 2014
-last_modified: 2015
+date_written: 2014-06
+last_modified: 2015-07
 categories: Overview
 ---
 
