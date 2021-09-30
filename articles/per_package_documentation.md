@@ -4,6 +4,8 @@ title: Per-Package Documentation
 permalink: articles/per_package_documentation.html
 abstract: This article describes the requirements and design of ROS 2’s per-package documentation system.
 author: Marya Belanger
+date_written: 2020-10
+last_modified: 2020-10
 published: true
 ---
 
@@ -15,7 +17,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

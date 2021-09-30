@@ -3,8 +3,10 @@ layout: default
 title: ROS QoS - Deadline, Liveliness, and Lifespan
 permalink: articles/qos_deadline_liveliness_lifespan.html
 abstract:
-  This article makes the case for adding Deadline, Liveliness, and Lifespan QoS settings to ROS. It outlines the requirements and explores the ways it could be integrated with the existing code base. 
+  This article makes the case for adding Deadline, Liveliness, and Lifespan QoS settings to ROS. It outlines the requirements and explores the ways it could be integrated with the existing code base.
 author: '[Nick Burek](https://github.com/nburek)'
+date_written: 2019-09
+last_modified: 2019-09
 published: true
 categories: Middleware
 date: February 13th 2019
@@ -18,7 +20,11 @@ date: February 13th 2019
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 Glossary:
 
@@ -55,9 +61,9 @@ The default deadline time will be 0.
 
 ### Liveliness
 
-The liveliness policy establishes a contract for how entities report that they are still alive. 
-For Subscriptions it establishes the level of reporting that they require from the Publishers to which they are subscribed. 
-For Publishers it establishes the level of reporting that they will provide to Subscribers that they are alive. 
+The liveliness policy establishes a contract for how entities report that they are still alive.
+For Subscriptions it establishes the level of reporting that they require from the Publishers to which they are subscribed.
+For Publishers it establishes the level of reporting that they will provide to Subscribers that they are alive.
 
 Topics will support the following levels of liveliness:
 - LIVELINESS_SYSTEM_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
@@ -144,7 +150,7 @@ The design and implementation of this API is out of scope for this document and 
 
 - How does the Deadline policy take into account the additional overhead of ROS (such as deserialization) when determining if a deadline was missed?
   - As a simplification it is not going to attempt to take into account any ROS overhead. A deadline will be considered missed if the rmw layer does not receive a message by the deadline and not if the user application on top of ROS does not receive it by the deadline. A new deadline policy could be added later that takes this into account.
-- Why will the callback not get called for every status change event instead of potentially combining events of the same type? 
+- Why will the callback not get called for every status change event instead of potentially combining events of the same type?
   - Adding this functionality would require an additional buffer that would be used to store multiple events between servicing them. Additionally, the DDS API lends itself better to only being informed of the latest change and would require a realtime response to status change events so as to not miss a single event. This is not a one way door and we could change this later to allow buffering events without breaking backwards compatibility.
 - How do these QoS policies impact Actions and Services?
   - The initial implementation does not support Actions and Services as there are more complex subtleties to how these concepts natively support these QoS features. In the future work section below we explore some ways that Services could implement these policies.

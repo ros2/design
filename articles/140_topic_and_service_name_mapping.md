@@ -5,6 +5,8 @@ permalink: articles/topic_and_service_names.html
 abstract:
   This article describes the proposed mapping between ROS topic and service names to DDS topic and service names.
 author: '[William Woodall](https://github.com/wjwwood)'
+date_written: 2016-10
+last_modified: 2018-06
 published: true
 ---
 
@@ -17,7 +19,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Context
 

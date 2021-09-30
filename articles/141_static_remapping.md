@@ -5,6 +5,8 @@ permalink: articles/static_remapping.html
 abstract:
   Topics, parameters, and services are identified by [Names](http://wiki.ros.org/Names). Names are hard coded in ROS nodes, but they can be changed at runtime through remapping. Without remapping every instance of a node would require changes in code. This article describes the requirements, rationale, and mechanisms for remapping names in ROS 2.
 author: '[Shane Loretz](https://github.com/sloretz)'
+date_written: 2017-03
+last_modified: 2020-03
 published: true
 ---
 
@@ -17,7 +19,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Why remap names
 

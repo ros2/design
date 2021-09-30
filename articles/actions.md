@@ -6,6 +6,8 @@ abstract:
   Actions are one of the three core types of interaction between ROS nodes.
   This article specifies the requirements for actions, how they've changed from ROS 1, and how they're communicated.
 author: '[Geoffrey Biggs](https://github.com/gbiggs) [Jacob Perron](https://github.com/jacobperron) [Shane Loretz](https://github.com/sloretz)'
+date_written: 2019-03
+last_modified: 2020-05
 published: true
 ---
 
@@ -17,7 +19,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

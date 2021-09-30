@@ -19,8 +19,10 @@ categories: Overview
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}  
-Date Written: {{ page.date_written }}  
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
 Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 We started work on ROS in November 2007.

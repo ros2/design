@@ -5,6 +5,8 @@ permalink: articles/intraprocess_communications.html
 abstract: Description of the current intra-process communication mechanism in ROS 2 and of its drawbacks. Design proposal for an improved implementation. Experimental results.
 published: true
 author: '[Alberto Soragna](https://github.com/alsora) [Juan Oxoby](https://github.com/joxoby) [Dhiraj Goel](https://github.com/dgoel)'
+date_written: 2020-03
+last_modified: 2020-03
 ---
 
 {:toc}
@@ -15,7 +17,11 @@ author: '[Alberto Soragna](https://github.com/alsora) [Juan Oxoby](https://githu
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Introduction
 

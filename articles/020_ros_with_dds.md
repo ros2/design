@@ -6,6 +6,8 @@ abstract:
   This article makes the case for using DDS as the middleware for ROS, outlining the pros and cons of this approach, as well as considering the impact to the user experience and code API that using DDS would have.
   The results of the "ros_dds" prototype are also summarized and used in the exploration of the issue.
 author: '[William Woodall](https://github.com/wjwwood)'
+date_written: 2014-06
+last_modified: 2019-07
 published: true
 categories: Middleware
 ---
@@ -23,7 +25,11 @@ For details on how ROS 2 has been implemented, see the [Core Documentation](http
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 Terminology:
 

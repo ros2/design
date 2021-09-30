@@ -5,6 +5,8 @@ abstract:
   This article captures the research done in regards to the serialization component, including an overview of the current implementation in ROS 1 and the alternatives for ROS 2.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas) and [Esteve Fernandez](https://github.com/esteve)'
+date_written: 2013-12
+last_modified: 2019-05
 ---
 
 {:toc}
@@ -15,7 +17,11 @@ author: '[Dirk Thomas](https://github.com/dirk-thomas) and [Esteve Fernandez](ht
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 > This document pre-dates the decision to build ROS 2 on top of DDS.
 >

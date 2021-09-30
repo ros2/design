@@ -6,6 +6,8 @@ abstract:
   This article is proposed design for the interfaces for interacting with parameters in ROS 2.
   We focus here on specifying the system design and leave the implementation unspecified.
 author: '[Tully Foote](https://github.com/tfoote)'
+date_written: 2015-09
+last_modified: 2019-05
 published: true
 ---
 
@@ -18,7 +20,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

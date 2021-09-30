@@ -4,6 +4,8 @@ title: Zero Copy via Loaned Messages
 permalink: articles/zero_copy.html
 abstract:
 author: '[Karsten Knese](https://github.com/karsten1987) [William Woodall](https://github.com/wjwwood) [Michael Carroll](https://github.com/mjcarroll)'
+date_written: 2020-02
+last_modified: 2020-04
 published: true
 ---
 
@@ -14,6 +16,12 @@ published: true
 <div class="abstract" markdown="1">
 {{ page.abstract }}
 </div>
+
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Overview
 

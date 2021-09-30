@@ -6,6 +6,8 @@ abstract:
   This article describes the ROS primitives to support programming which can run both in real time as well as simulated time which may be faster or slower.
 published: true
 author: '[Tully Foote](https://github.com/tfoote)'
+date_written: 2018-07
+last_modified: 2015-12
 ---
 
 - This will become a table of contents (this text will be scraped).
@@ -17,7 +19,11 @@ author: '[Tully Foote](https://github.com/tfoote)'
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

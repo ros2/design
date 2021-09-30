@@ -6,6 +6,8 @@ abstract:
   This article describes the build system "ament_cmake" and the meta build tool "ament_tools".
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+date_written: 2015-07
+last_modified: 2018-06
 categories: Overview
 ---
 
@@ -17,7 +19,11 @@ categories: Overview
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 <div class="alert alert-warning" markdown="1">
 When this article was originally written `ament_tools` was the ROS 2 specific build tool.

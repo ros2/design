@@ -4,6 +4,8 @@ title: Node to Participant mapping
 permalink: articles/Node_to_Participant_mapping.html
 abstract: This article analyzes the performance implications of enforcing a one-to-one mapping between ROS Nodes and DDS Participants, and proposes alternative implementation approaches.
 author: '[Ivan Paunovic](https://github.com/ivanpauno)'
+date_written: 2020-06
+last_modified: 2020-07
 published: true
 categories: Middleware
 ---
@@ -16,7 +18,11 @@ categories: Middleware
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

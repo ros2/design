@@ -6,6 +6,8 @@ abstract:
   This article describes the approach to provide QoS (Quality of Service) policies for ROS 2.
 published: true
 author: '[Esteve Fernandez](https://github.com/esteve)'
+date_written: 2015-10
+last_modified: 2019-05
 ---
 
 {:toc}
@@ -21,7 +23,11 @@ author: '[Esteve Fernandez](https://github.com/esteve)'
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 With the advent of inexpensive robots using unreliable wireless networks, developers and users need mechanisms to control how traffic is prioritized across network links.
 

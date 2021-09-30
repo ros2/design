@@ -5,6 +5,8 @@ permalink: articles/ros_command_line_arguments.html
 abstract:
   This article describes ROS 2 nodes command line arguments and their syntax.
 author: '[Michel Hidalgo](https://github.com/hidmic)'
+date_written: 2019-09
+last_modified: 2021-08
 published: true
 ---
 
@@ -17,7 +19,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Overview
 

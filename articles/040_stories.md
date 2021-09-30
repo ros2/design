@@ -6,6 +6,8 @@ abstract:
   This article captures some stories which drive the direction of features in ROS.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+date_written: 2016-12
+last_modified: 2016-12
 categories: Overview
 ---
 
@@ -17,7 +19,11 @@ categories: Overview
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 The article enumerates a few stories which sketch what will be possible with ROS in the future.
 The list is by no means exhaustive.

@@ -10,7 +10,8 @@ abstract: >
   This article describes how ROS 2 integrates with DDS-Security.
 author:  >
   [Kyle Fazzari](https://github.com/kyrofa)
-
+date_written: 2019-07
+last_modified: 2020-07
 published: true
 categories: Security
 ---
@@ -24,7 +25,11 @@ categories: Security
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 
 # DDS-Security overview

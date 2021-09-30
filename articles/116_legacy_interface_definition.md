@@ -6,6 +6,8 @@ abstract:
   This article specifies the file format coming from ROS 1 describing the data structures exchanged by ROS components to interact with each other.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+date_written: 2019-03
+last_modified: 2021-02
 categories: Interfaces
 ---
 
@@ -17,7 +19,11 @@ categories: Interfaces
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Scope
 

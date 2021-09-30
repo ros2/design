@@ -5,6 +5,8 @@ permalink: articles/realtime_background.html
 abstract: This article is a brief survey of real-time computing requirements and methods to achieve real-time performance.
 published: true
 author: Jackie Kay
+date_written: 2016-01
+last_modified: 2016-05
 ---
 
 {:toc}
@@ -15,7 +17,11 @@ author: Jackie Kay
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 This document seeks to summarize the requirements of real-time computing and the challenges of implementing real-time performance.
 It also lays out options for how ROS 2 could be structured to enforce real-time compatibility.

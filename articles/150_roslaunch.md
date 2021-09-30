@@ -5,6 +5,8 @@ permalink: articles/roslaunch.html
 abstract:
   The launch system in ROS is responsible for helping the user describe the configuration of their system and then execute it as described. The configuration of the system includes what programs to run, where to run them, what arguments to pass them, and ROS specific conventions which make it easy to reuse components throughout the system by giving them each different configurations. Also, because the launch system is the process (or the set of processes) which executes the user's processes, it is responsible for monitoring the state of the processes it launched, as well as reporting and/or reacting to changes in the state of those processes.
 author: '[William Woodall](https://github.com/wjwwood)'
+date_written: 2019-09
+last_modified: 2019-09
 published: true
 ---
 
@@ -18,6 +20,10 @@ published: true
 </div>
 
 Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Context
 

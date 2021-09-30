@@ -7,7 +7,8 @@ abstract:
 author:  >
   [Ruffin White](https://github.com/ruffsl),
   [Kyle Fazzari](https://github.com/kyrofa)
-
+date_written: 2019-08
+last_modified: 2021-06
 published: true
 categories: Security
 ---
@@ -21,7 +22,11 @@ categories: Security
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 
 [SROS 2](/articles/ros2_dds_security.html) introduces several security properties, including encryption, authentication, and authorization.

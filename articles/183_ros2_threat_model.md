@@ -18,7 +18,8 @@ author: >
   [Borja Erice](https://github.com/borkenerice)
   [Odei Olalde](https://github.com/o-olalde)
   [David Mayoral](https://github.com/dmayoral)
-
+date_written: 2019-03
+last_modified: 2021-01
 published: true
 categories: Security
 ---
@@ -39,6 +40,12 @@ th {
 </style>
 
 # {{ page.title }}
+
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 This is a **DRAFT DOCUMENT**.
 

@@ -9,6 +9,8 @@ author: >
   [Thomas Moulard](https://github.com/thomas-moulard),
   [Juan Rodriguez Hortala](https://github.com/juanrh),
   [Anas Abou Allaban](https://github.com/piraka9011)
+date_written: 2019-09
+last_modified: 2019-09
 published: true
 ---
 
@@ -22,7 +24,11 @@ This is a **DRAFT DOCUMENT**.
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

@@ -6,6 +6,8 @@ abstract:
   This article specifies the mapping between the ROS interface types and the DDS types.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+date_written: 2015-06
+last_modified: 2020-02
 categories: Interfaces
 ---
 
@@ -21,7 +23,11 @@ With the transition to use ``IDL`` for specifying interfaces in ROS 2 Dashing th
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Scope
 
