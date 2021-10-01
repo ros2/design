@@ -6,6 +6,8 @@ abstract:
   This article captures the reasons for making breaking changes to the ROS API, hence the 2.0.
 published: true
 author: Brian Gerkey
+date_written: 2014-06
+last_modified: 2015-07
 categories: Overview
 ---
 
@@ -17,7 +19,11 @@ categories: Overview
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 We started work on ROS in November 2007.
 A lot has happened since then and we believe that it is now time to build the next generation ROS platform.

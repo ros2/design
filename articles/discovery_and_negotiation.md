@@ -6,6 +6,8 @@ abstract:
   This article was written to try and understand the different possibilities for how the middleware could be implemented.
 published: true
 author: '[William Woodall](https://github.com/wjwwood)'
+date_written: 2014-06
+last_modified: 2019-03
 ---
 
 {:toc}
@@ -20,7 +22,11 @@ author: '[William Woodall](https://github.com/wjwwood)'
 > It does not aim to answer all implementation questions or suggest implementation strategies.
 > It simply tries to capture the concepts in the design space and identify trade-offs and relationships between design elements.
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Problem Space
 

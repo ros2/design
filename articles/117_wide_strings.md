@@ -6,6 +6,8 @@ abstract:
   This article describes how ROS 2 will support sending multi-byte character data using the [Unicode](https://en.wikipedia.org/wiki/Unicode) standard.
   It also describes how such data will be sent over the ROS 1 bridge.
 author: '[Chris Lalancette](https://github.com/clalancette)'
+date_written: 2019-05
+last_modified: 2020-07
 published: true
 ---
 
@@ -18,7 +20,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

@@ -7,6 +7,8 @@ abstract:
   It will outline the targeted use cases as well as their requirements and constraints.
   Based on that the developed middleware interface is explained.
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+date_written: 2014-08
+last_modified: 2017-09
 published: true
 categories: Middleware
 ---
@@ -19,7 +21,11 @@ categories: Middleware
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## The *middleware interface*
 

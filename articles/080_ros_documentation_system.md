@@ -5,6 +5,8 @@ permalink: articles/ros_documentation_system.html
 abstract:
   This article describes the proposed system for doing documentation for ROS 2.
 author: '[William Woodall](https://github.com/wjwwood)'
+date_written: 2015-01
+last_modified: 2016-02
 published: false
 ---
 
@@ -16,7 +18,11 @@ published: false
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 This document is meant to capture the results of discussions about the way we (the ROS 2 developers) would like documentation to work in ROS 2 and polish those results into a proposal.
 It is likely that this document should be refined and made into a REP once a suitable design is settled on.

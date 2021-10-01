@@ -8,6 +8,8 @@ abstract:
   This article also covers the results of the ZeroMQ based prototype made by OSRF.
 published: true
 author: '[William Woodall](https://github.com/wjwwood)'
+date_written: 2014-06
+last_modified: 2019-05
 ---
 
 {:toc}
@@ -20,7 +22,11 @@ author: '[William Woodall](https://github.com/wjwwood)'
 
 > This document pre-dates the decision to build ROS 2 on top of DDS.
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 While this article covers proposals and related experiments for building a new middleware specifically around ZeroMQ, it also generally captures the idea of building a new middleware out of a few component libraries.
 This strategy of composing existing libraries into a middleware is in contrast to wrapping up an existing end-to-end middleware which provides most if not all of the middleware needs for ROS out of the box.

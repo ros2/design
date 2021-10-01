@@ -7,6 +7,8 @@ abstract:
   We focus here on specifying the user API and leave the implementation unspecified.
   It is expected that there are one or more RPC implementations which can be used, such as Apache Thrift, ROS RPC, or MsgPack.
 author: '[Tully Foote](https://github.com/tfoote)'
+date_written: 2014-06
+last_modified: 2019-05
 published: true
 ---
 
@@ -25,7 +27,11 @@ It can be considered memoranda and not necessarily the intention of how to devel
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 In ROS there are two types of Remote Procedure Call (RPC) primitives.
 ROS Services are basic request-response style RPCs, while ROS Actions additionally are preemptible and offer feedback while requests are being processed.

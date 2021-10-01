@@ -6,6 +6,8 @@ abstract:
   This article describes the generated Python code for ROS 2 interfaces.
 published: true
 author: '[Dirk Thomas](https://github.com/dirk-thomas)'
+date_written: 2016-01
+last_modified: 2019-03
 categories: Interfaces
 ---
 
@@ -21,7 +23,11 @@ With the transition to use ``IDL`` for specifying interfaces in ROS 2 Dashing th
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Scope
 

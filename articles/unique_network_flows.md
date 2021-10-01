@@ -4,6 +4,8 @@ title: Unique Network Flows
 permalink: articles/unique_network_flows.html
 abstract: Enable unique network flow identifiers for publishers and subscriptions in communicating nodes
 author: '[Ananya Muddukrishna, Ericsson AB](https://github.com/anamud)'
+date_written: 2021-05
+last_modified: 2021-05
 published: true
 ---
 
@@ -15,7 +17,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 # Unique Network Flows
 
@@ -49,10 +55,10 @@ We briefly discuss two relevant explicit QoS specification methods for applicati
 
    A frustrating problem with DS-based QoS is that intermediate routers can reset or alter the DSCP value within flows. One workaround is to carefully configure intermediate routers such that they retain DSCP markings from incoming to outgoing flows.
 
-- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically (HTTP-JSON) specify required QoS by associating 5G QoS Identifiers (5QIs) to flow identifers, as shown in the figure next. 
-  
+- 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically (HTTP-JSON) specify required QoS by associating 5G QoS Identifiers (5QIs) to flow identifers, as shown in the figure next.
+
   ![ROS2 Application 5GS Network Programmability](./ros2-app-5gs-network-programmability.png)
-  
+
   Twenty-six standard 5QIs are identified in the latest release-16 by 3GPP [4:Table 5.7.4-1]. We exemplify a few of them in the table below. The variation in service characteristics of the example 5QIs emphasizes the importance of careful 5QI selection.
 
   The 5G network also has the ability to sensibly infer 5QI QoS from DS-based QoS markings in flows.
@@ -123,7 +129,7 @@ enum unique_network_flow_endpoints_requirement_t
 }
 ```
 
-Upon receiving the publisher/subscription creation request, the RMW implementation assigns unique NFEs according to the `require_unique_network_flow_endpoints` option value.  
+Upon receiving the publisher/subscription creation request, the RMW implementation assigns unique NFEs according to the `require_unique_network_flow_endpoints` option value.
 
 The default value of the option is `UNIQUE_NETWORK_FLOW_ENDPOINTS_NOT_REQUIRED` which indicates to the RMW implementation that unique NFEs are not required.
 

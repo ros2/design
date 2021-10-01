@@ -5,6 +5,8 @@ permalink: articles/roslaunch_xml.html
 abstract:
   The XML format for declarative launch descriptions in the ROS 2 launch system.
 author: '[Michel Hidalgo](https://github.com/hidmic)'
+date_written: 2019-09
+last_modified: 2021-06
 published: true
 ---
 
@@ -18,6 +20,10 @@ published: true
 </div>
 
 Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 
 # ROS 2 Launch XML Format v0.1.0

@@ -5,6 +5,8 @@ permalink: articles/roslaunch_frontend.html
 abstract:
   The launch system in ROS 2 aims to support extension of static descriptions, so as to easily allow both exposing new features of the underlying implementation, which may or may not be extensible itself, and introducing new markup languages. This document discusses several approaches for implementations to follow.
 author: '[Michel Hidalgo](https://github.com/hidmic) [William Woodall](https://github.com/wjwwood)'
+date_written: 2019-09
+last_modified: 2020-07
 published: true
 ---
 
@@ -18,6 +20,10 @@ published: true
 </div>
 
 Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Context
 

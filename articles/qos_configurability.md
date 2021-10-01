@@ -5,6 +5,8 @@ permalink: articles/qos_configurability.html
 abstract:
   This article describes a mechanism to allow reconfiguration of QoS settings at startup time.
 author: '[Ivan Santiago Paunovic](https://github.com/ivanpauno)'
+date_written: 2020-11
+last_modified: 2020-11
 published: true
 ---
 
@@ -17,7 +19,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Summary
 

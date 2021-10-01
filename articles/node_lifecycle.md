@@ -6,6 +6,8 @@ abstract:
   It aims to document some of the options for supporting manage d-life cycle nodes in ROS 2.
   It has been written with consideration for the existing design of the ROS 2 C++ client library, and in particular the current design of executors.
 author: '[Geoffrey Biggs](https://github.com/gbiggs) [Tully Foote](https://github.com/tfoote)'
+date_written: 2015-06
+last_modified: 2021-02
 published: true
 ---
 
@@ -17,7 +19,11 @@ published: true
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 ## Background
 

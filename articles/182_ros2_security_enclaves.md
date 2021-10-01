@@ -7,7 +7,8 @@ abstract:
 author:  >
   [Ruffin White](https://github.com/ruffsl),
   [Mikael Arguedas](https://github.com/mikaelarguedas)
-
+date_written: 2020-05
+last_modified: 2020-07
 published: true
 categories: Security
 ---
@@ -21,7 +22,11 @@ categories: Security
 {{ page.abstract }}
 </div>
 
-Original Author: {{ page.author }}
+Authors: {{ page.author }}
+
+Date Written: {{ page.date_written }}
+
+Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
 
 This design document formalizes the integration of ROS 2 with security enclaves.
 In summary, all secure processes must use an enclave that contains the runtime security artifacts unique to that enclave, yet each process may not necessarily have a unique enclave.
