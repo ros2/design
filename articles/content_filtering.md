@@ -1,8 +1,8 @@
 ---
 layout: default
-title: ContentFilteringTopic in ROS2
+title: ContentFilteredTopic in ROS 2
 permalink: articles/content_filtering.html
-abstract: Description draft of the current problem for /parameter_events and action feedback/status topics. Design proposal using ContentFilteringTopic.
+abstract: Description draft of the current problem for /parameter_events and action feedback/status topics. Design proposal using DDS ContentFilteredTopic.
 author: '[Tomoya Fujita](https://github.com/fujitatomoya)'
 published: true
 ---
@@ -19,15 +19,14 @@ Original Author: {{ page.author }}
 
 ## Problems
 
-Here describes the current problems that we have, these are already well-known issues. 
-Issues are not related to functionalities but efficiency like CPU consumption and network resource.
-The efficiency is dependent on the platform capability, but once it comes to embedded devices and IoT platform, these problems could be a huge pain to consume resources.
-Currently, at least there are following two main problems exist in ROS2, the one is `/parameter_events` topic and the other is action topics `feedback` and `status`. the detail is described as following.
+Here describes the current problems that we have, these are already well-known issues related to efficiency for CPU consumption and network resource.
+The efficiency is dependent on the platform capability, but once it comes to embedded devices and IoT platform such as microcontrollers, these problems could be a huge pain to consume resources.
+Currently, at least there are following two main problems exist in ROS 2, the one is `/parameter_events` topic and the other is action topics `feedback` and `status`. the detail is described as following.
 
 ### Parameter Event Topic
 
 Each node will publish (this is configurable via `NodeOptions`) and subscribe parameter events topic with `AsyncParametersClient` or `ParameterEventHandler`.
-This topic is to support monitoring parameters for change.
+This topic is to support monitoring parameters for any parameter changes.
 It is expected that client libraries will implement the ability to register a callback for specific parameter changes using this topic.
 And there is an internal subscription for each node for `/parameter_events` topic to handle the TimeSource via "use_sim_time" parameter.
 `rclcpp::ParameterEventsFilter` is used to filter the parameter with specific name "use_sim_time".
@@ -38,16 +37,18 @@ As user interface, `AsyncParametersClient::on_parameter_event` is provided to ha
 The problem can be broken into the following two parts,
 
 - Network resource consumption on `/parameter_events` topic
-  Since nobody cares who needs to receive which messages, all of the parameter activity will be published and subscribed.
-  That said everyone publishes and subscribes all of the events with this giant topic `/parameter_events`.
+  Since publisher does not know who needs to receive which messages, all of the parameter activity will be published and subscribed.
+  That said everyone publishes and subscribes all of the events within this giant topic `/parameter_events`.
   This leads to a lot of unnecessary message transmission over the network.
 - Subscriber needs to filter unnecessary (not interested) messages
   Subscriber does not know if the message is something it needs or not without checking the contents of the message via user callback.
   This filtering needs to be done every single time the message comes in.
-  In expectation, it is likely that parameter event callback is interested on specific parameter only, so that there will be a lot of unnecessary message receives and filtering process needs to be done.
+  In expectation, it is likely that parameter event callback is interested on specific parameters only, so that there will be a lot of unnecessary message receives and filtering process needs to be done.
 
 As described above, we could imagine that if the number of node are 10, 20 and 100 and so are the parameters for each nodes.
 This will be a huge burden and pain for entire system, passing unnecessary messages via limited bandwidth network with edge devices and filtering messages to drop is not something user application wants to do.
+
+Besides, this problem can be applied to user defined topics.
 
 ### Action Topics
 
@@ -56,7 +57,7 @@ Each action server will provide two topics named `feedback` and `status` as foll
 <img src="../img/content_filter/action_architecture_overview.png" width="600">
 
 `feedback` and `status` are topics mapped with action name and published by action server, and action clients subscribe those topics to get feedback and status.
-When there are many goals from many clients, the choice to have a single `feedback` and `status` topic per action server is suboptimal in terms of processing and bandwidth resource. 
+When there are many goals from multiple clients, the choice to have a single `feedback` and `status` topic per action server is suboptimal in terms of processing and bandwidth resource. 
 It is up to clients to filter out feedback/status messages that are not pertinent to them.
 In this scenario, M goals are sent to N clients there is an unnecessary use of bandwidth and processing.
 Especially in extreme cases where M and N are large. (each goal is identified by goal ID based on uuid, filtering out the goal id is done by client library so user application does not need to care.)
@@ -70,13 +71,13 @@ This class therefore can be used to request content-based subscriptions.
 ### Specification
 
 - Multiple ContentFilteredTopicDataReader exist and filtering is dependent on each ContentFilteredTopicDataReader's logical filtering expression and parameters.
-- Subscriber is responsible to create ContentFilteredTopic.
+- Subscription is responsible to create ContentFilteredTopic.
 - ContentFilteredTopicDataWriter does filtering for each ContentFilteredTopicDataReader endpoint.
-  Basically it is likely that ContentFilteredTopicDataWriter does filtering on writer side, so that it can provide the improvement and efficiency.
-  But it is dependent on imnplementation if always ContentFilteredTopicDataWriter does filtering.
-  This is because if there is a lot of ContentFilteredTopicDataReader with complicated filtering expression and parameter, it would be probably more efficient just to send the messages to all ContentFilteredTopicDataReader.
+  Basically it is likely that ContentFilteredTopicDataWriter does filtering on writer side, so that it can provide the improvement and efficiency especially for network resource.
+  But it is dependent on implementation if always ContentFilteredTopicDataWriter does filtering.
+  This is because if there is a lot of ContentFilteredTopicDataReader with complicated filtering expression and parameter, it would be probably more efficient just to send the messages to all ContentFilteredTopicDataReader. (for example, if the message type includes sequence, DataWriter needs to recreate the message for each DataReader based on filtering expression and parameters.)
   And ContentFilteredTopicDataReader can filter out the message if not necessary based on filtering expression and parameter.
-  This is also said that ContentFilteredTopicDataReader does need to do filtering always just in case ContentFilteredTopicDataWriter ends up sending w/o filitering.
+  This is also said that ContentFilteredTopicDataReader does need to do filtering always just in case ContentFilteredTopicDataWriter ends up sending w/o filtering.
   <img src="../img/content_filter/contents_filter_overview.png" width="600">
 - The filtering is done by means of evaluating a logical expression that involves the values some of the data-fields in the sample.
   The logical expression is derived from the filter_expression and expression_parameters arguments.
@@ -171,56 +172,45 @@ This is identical to updating a mutable QoS value.
 
 ### Requirement
 
+- ContentFilteredTopic will be managed in rmw implementation internally.
 - ContentFilteredTopic interfaces can be used only if rmw implementation supports.
 - User can specify filtering expression and expression parameters for subscription.
-  - Simply, application can set/get the filter_expression and expression_parameters for subscription.
+  - Simply, application can set/get the filter expression and expression parameters for subscription.
 - Filtering expression and expression parameters can be set and get at runtime.
   - As described above, according to DDS specification, it implies that filtering expression may not be able to be changed dynamically.
-  But to support requirements in ROS2, it should be able to support dynamic reconfiguration for filtering expression and parameter.
-- Filtering goal id for action `feedback` and `status` will be done ROS2 system.
+  But to support requirements in ROS 2, it should be able to support dynamic reconfiguration for filtering expression and parameter.
+- Filtering based on goal id for action `feedback` and `status` topics will be done ROS 2 system.
 - Filtering expression and parameter grammar will be compatible with DDS standard.
+- ContentFilteredTopic should not show up to ROS 2 system. (for example, `ros2 topic list` does not include ContentFilteredTopics.)
 
 ### Proposal
 
 #### Action
 
-Each action client id to ContentFilteredTopic based on `action_name/_action/feedback_or_status`.
-ContentFilteredTopic name would be decided by implementation such as action_name/_action/feedback_or_status_ActionClient_ID.
+ContentFilteredTopic for each action client topic will be created in rmw implementation internally.
+So that ROS 2 system only set the filtering expression and expression parameters for the subscription object for the topic.
 And filtering expression and parameters are constructed by UUID then ActionClient always get feedback events related to goal handler.
 Filtering based on UUID is mandatory for action feedback and status topic to have more transport efficiency.
 
-e.g)
-
-|  ContentFilterTopic Name  |  Description  |
-| :--- | :--- |
-|  action_name/_action/feedback_ActionClient_ID  |  feedback ContentFilteredTopic for ActionClient ID, ActionClient_ID would be uuid (consistent with status id for the same client)  |
-|  action_name/_action/status_ActionClient_ID  |  status ContentFilteredTopic for ActionClient ID, ActionClient_ID would be uuid (consistent with feedback id for the same client)  |
-
-(*) These ContentFilteredTopic should not show up to user but parent topic. (e.g `ros2 topic list`)
-
 `feedback` topic is user defined message type but it also includes goal id([GoalInfo](https://github.com/ros2/rcl_interfaces/blob/master/action_msgs/msg/GoalInfo.msg)).
-Goal id will be internally handled and action client internally issues ContentFilteredTopic API to notify the publication(server) what subscription(client) is interested in.
-Once new goal id is generated, that will be applied to ContentFilteredTopic object based on action client ID at runtime.
-In action use case, it does not need to change filtering expression at runtime.
+Goal id will be internally handled and action client internally issues ContentFilteredTopic API to set the filtering expression and expression parameters.
+Once new goal id is generated, that will be applied to filtering expression and expression parameters based on action client ID at runtime.
+In expectation, in action use case, it does not need to change filtering expression at runtime.
 Instead of that it can use `MATCH` syntax with goal ids in expression parameters.
 
 <img src="../img/content_filter/action_sequence_with_filter.png">
+
+`status` topic message type is [GoalStatusArray](https://github.com/ros2/rcl_interfaces/blob/master/action_msgs/msg/GoalStatusArray.msg) which includes goal ids([GoalInfo](https://github.com/ros2/rcl_interfaces/blob/master/action_msgs/msg/GoalInfo.msg)) as sequence.
+ContentFilteredTopic for unbound array/sequence is not described in DDS Specification but nice to have as implementation extension.
+So that ROS 2 cannot rely on it until it addresses in the spec for interoperability.
+Besides, filtering and reconstructing array or sequence message for each subscription would be more cost for resource.
+At this moment, because of all these reasons, we do not support ContentFilteredTopic on action `status` topic. (See discussion [here](https://github.com/ros2/rmw_connextdds/issues/11))
 
 #### Parameter Events
 
 There are two types of parameter events subscription, one is for system(TimeSource) which is controlled and taken care by rclcpp and rclpy internally.
 And the other is user application to register user callback to be fired when parameter events come in.
-
-ContentFilterTopic name would be decided by implementation internally based on parent topic name.
-
-e.g)
-
-|  ContentFilterTopic  |  Description  |
-| :--- | :--- |
-|  /parameter_events_system_Node_ID  |  parameter events ContentFilteredTopic for system internal usage, Node ID would be uuid to identify this NodeBase. |
-|  /parameter_events_user_Node_ID  |  parameter events ContentFilteredTopic for user callback  usage, Node ID would be uuid to identify this NodeBase. |
-
-(*) These ContentFilteredTopic should not show up to user but ordinary topic. (e.g `ros2 topic list`)
+ContentFilterTopic will be managed by rmw implementation internally.
 
 - TimeSource
   **use_sim_time** event is subscribed internally to check if **use_sim_time** parameter is enabled or disabled.S
@@ -245,16 +235,16 @@ e.g)
 
 #### rcl
 
-- `rcl_subscription_is_cft_supported` to see if ContentFilteredTopic is supported or not.
-- extend node option with filtering expression and parameter expressions so that it can allow user to create ContentFilteredTopic during `rcl_create_subscription`.
-- `rcl_subscription_set_cft_expression_parameters` to set filitering expression and parameter expressions to subscription.
-- `rcl_subscription_get_cft_expression_parameters` to get filitering expression and parameter expressions from subscription.
+- `rcl_subscription_is_cft_enabled` to see if ContentFilteredTopic is enabled by rmw implementation.
+- extend subscription option with filtering expression and parameter expressions.
+- `rcl_subscription_set_content_filter` to set filtering expression and parameter expressions to subscription.
+- `rcl_subscription_get_content_filter` to get filtering expression and parameter expressions from subscription.
 
 #### rmw
 
-- `rmw_subscription_set_cft_expression_parameters` to set filitering expression and parameter expressions to subscription.
-- `rmw_subscription_get_cft_expression_parameters` to get filitering expression and parameter expressions from subscription.
-- add new member `is_cft_supported` into `rmw_subscription_t` which indicates if CTF is supported by rmw_implementation or not.
+- `rmw_subscription_set_content_filter` to set filtering expression and parameter expressions to subscription.
+- `rmw_subscription_get_content_filter` to get filtering expression and parameter expressions from subscription.
+- add new member `is_cft_enabled` into `rmw_subscription_t` which indicates if CTF is enabled by rmw_implementation or not.
   e.g) see `can_loan_masseges` member as reference.
   support status will be set when parent subscription is created. then support status can be read from upper layer to know if CFT is supported or not.
 
@@ -262,31 +252,28 @@ e.g)
 
 | Implementation | `is_cft_supported` |
 | :--: | :--: |
-| rmw_connext | true |
 | rmw_connextdds | true |
-| rmw_fastrtps | false |
+| rmw_fastrtps | false (W.I.P) |
 | rmw_cyclonedds | false |
 
-#### rclcpp (rclpy)
+#### rclcpp
 
 - `ContentFilterOptions` is added to `SubscriptionOptionsBase`.
   This option will be used during subscription construction.
   If `ContentFilterOptions` is specified with filtering expression and parameter expression parameters, it will create ContentFilteredTopic at the same with parent topic.
-- `is_cft_supported` method to `SubscriptionBase` to see if the subscription can support ContentFilteredTopic.
-- `set_cft_expression_parameters` method to `SubscriptionBase` to set filitering expression and parameter expressions to subscription.
-- `get_cft_expression_parameters` method to `SubscriptionBase` to get filitering expression and parameter expressions from subscription.
+- `is_cft_enabled` method to `SubscriptionBase` to see if the subscription can support ContentFilteredTopic.
+- `set_content_filter` method to `SubscriptionBase` to set filtering expression and parameter expressions to subscription.
+- `get_content_filter` method to `SubscriptionBase` to get filtering expression and parameter expressions from subscription.
 
 ### Components
 
 #### Action
 
-***W.I.P***
-
 - Action Server
   Nothing needs to be changed, even with ContentFilteredTopic it should not be aware of that, just publishes feedback and status message, the rest will be taken care by rmw_implementation. if rmw_implementation does not support ContentFilteredTopic, filtering process is done by subscriber side which is Action Client as it does now.
 
 - Action Client
-  User interface(rclcpp and rclpy) should not be changed, everything can be integrated into internal implementation. It will check if ContentFilter is supported by rmw_implementation internally. If ContentFilter is supported by rmw_implementation, create ContentFilteredTopic internally based on ActionClient ID (uuid) so that no need to filter goal id. (technically there will be no unknown goal id event.) But w/o ContentFilter [current filtering](https://github.com/ros2/rclcpp/blob/99286978f92c30fe171313bf0785d6b6272c3257/rclcpp_action/include/rclcpp_action/client.hpp#L536-L553) needs to stay just in case, there would be unnecessary message from publisher or different rmw_implementation which does not support ContentFilteredTopic is used on Action Server side. At [send_goal_request](https://github.com/ros2/rclcpp/blob/99286978f92c30fe171313bf0785d6b6272c3257/rclcpp_action/include/rclcpp_action/client.hpp#L352-L388), it will set the filter_expression and expression_parameters based on goal id. The goal handler might have multiple goal ids, so that get current filtering configuration, modify and set new filtering configuration. (the un-registration is also needed when goal id is being unregistered from goal handler.)
+  User interface should not be changed, everything can be integrated into internal implementation. It will check if ContentFilter is supported by rmw_implementation internally. If ContentFilter is supported by rmw_implementation, create ContentFilteredTopic internally based on ActionClient ID (uuid) so that no need to filter goal id. (technically there will be no unknown goal id event.) But w/o ContentFilter [current filtering](https://github.com/ros2/rclcpp/blob/99286978f92c30fe171313bf0785d6b6272c3257/rclcpp_action/include/rclcpp_action/client.hpp#L536-L553) needs to stay just in case, there would be unnecessary message from publisher or different rmw_implementation which does not support ContentFilteredTopic is used on Action Server side. At [send_goal_request](https://github.com/ros2/rclcpp/blob/99286978f92c30fe171313bf0785d6b6272c3257/rclcpp_action/include/rclcpp_action/client.hpp#L352-L388), it will set the filter_expression and expression_parameters based on goal id. The goal handler might have multiple goal ids, so that get current filtering configuration, modify and set new filtering configuration. (the un-registration is also needed when goal id is being unregistered from goal handler.)
 
 #### Parameter Event
 
@@ -314,3 +301,8 @@ e.g)
 ## Responsibility
 
 <img src="../img/content_filter/responsibility.png" width="600">
+
+## Slides / Talks
+
+- [ROS WOrld 2021 ROS 2 Content Filtered Topics](https://vimeo.com/649654533/c8104829db)
+- [ROS 2 Content Filtered Topic Slides](https://www.slideshare.net/FujitaTomoya/ros-2-content-filtered-topics)
