@@ -293,6 +293,17 @@ void
 rclcpp::Subscription::handle_loaned_message(void * loaned_message, const rmw_message_info_t & message_info)
 ```
 
+### ROS_DISABLE_LOANED_MESSAGES
+
+By default, `Loaned Messages` will try to borrow memory from the underlying middleware.
+The `ROS_DISABLE_LOANED_MESSAGES` environment variable is provided so the user can disable `Loaned Messages` and fallback to normal publisher / subscription without any code change or middleware configuration.
+
+How to disable `Loaned Messages`:
+
+```
+export ROS_DISABLE_LOANED_MESSAGES=1
+```
+
 ## Additional Considerations
 
 ### Loaning non-POD messages
