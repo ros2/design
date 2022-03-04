@@ -38,7 +38,7 @@ The problem can be broken into the following two parts,
 
 - Network resource consumption on `/parameter_events` topic
   Since publisher does not know who needs to receive which messages, all of the parameter activity will be published and subscribed.
-  That said everyone publishes and subscribes all of the events within this giant topic `/parameter_events`.
+  That said everyone publishes and subscribes all of the events in this high traffic `/parameter_events` topic.
   This leads to a lot of unnecessary message transmission over the network.
 - Subscriber needs to filter unnecessary (not interested) messages
   Subscriber does not know if the message is something it needs or not without checking the contents of the message via user callback.
@@ -52,11 +52,11 @@ Besides, this problem can be applied to user defined topics.
 
 ### Action Topics
 
-Each action server will provide two topics named `feedback` and `status` as followings,
+Each action server provides two topics named `feedback` and `status` as followings,
 
 <img src="../img/content_filter/action_architecture_overview.png" width="600">
 
-`feedback` and `status` are topics mapped with action name and published by action server, and action clients subscribe those topics to get feedback and status.
+`feedback` and `status` are topics mapped with action name and published by action server, and action clients subscribe to those topics to get feedback and status.
 When there are many goals from multiple clients, the choice to have a single `feedback` and `status` topic per action server is suboptimal in terms of processing and bandwidth resource. 
 It is up to clients to filter out feedback/status messages that are not pertinent to them.
 In this scenario, M goals are sent to N clients there is an unnecessary use of bandwidth and processing.
@@ -92,6 +92,7 @@ This class therefore can be used to request content-based subscriptions.
   ```
 - A single filter_expression and a sequence of expression_parameters can be modified dynamically at runtime.
   This is because of use cases for `/parameter_events` and action `feedback` and `status` topics, parameter filtering expression is dependent on user application, and action client has multiple goal id to handle.
+- You can see DDS Specification [Annex B - Syntax for Queries and Filters](https://www.omg.org/spec/DDS/1.4/PDF).
 
 ### Improvement Result
 
