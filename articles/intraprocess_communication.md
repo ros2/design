@@ -650,6 +650,11 @@ The tests have been validated on multiple machines:
 
 ![Latency and CPU of Client/Service](../img/intraprocess_communication/latency-cpu-client-service-ipc.png)
 
+From this simple experiment we can see the great improvement in latency when using the proposed intra-process communication, even for the smallest of the messages tested where latency is four times smaller.
+The improvements in CPU are move visible when the bigger the messages get. CPU improvements are clearly visible for messages from 1MB, but seem to have same performances for 10Kb.
+
+Same conclusions are obtanined after repeating the test on an x86_64 machine:
+
 #### Performance evaluation on x86_64 Intel i9-8950HK CPU @ 2.90GHz
 
 | Msg Size   |   IPC    |  Latency [us] | CPU [%] |
@@ -662,6 +667,8 @@ The tests have been validated on multiple machines:
 |    4MB     |   OFF    |     6487      |  0.33   |
 |    8MB     |   ON     |     1873      |  0.22   |
 |    8MB     |   OFF    |     13327     |  0.61   |
+
+![Latency and CPU of Client/Service x86_64](../img/intraprocess_communication/latency-cpu-client-service-ipc-x86.png)
 
 ## Open Issues
 
