@@ -20,7 +20,7 @@ Original Author: {{ page.author }}
 ## Problems
 
 Here describes the current problems that we have, these are already well-known issues related to efficiency for CPU consumption and network resource.
-The efficiency is dependent on the platform capability, but once it comes to embedded devices and IoT platform such as microcontrollers, these problems could be a huge pain to consume resources.
+The efficiency is dependent on the platform capability, but once it comes to embedded devices and IoT platform such as micro-controllers, these problems could be a huge pain to consume resources.
 Currently, at least there are following two main problems exist in ROS 2, the one is `/parameter_events` topic and the other is action topics `feedback` and `status`. the detail is described as following.
 
 ### Parameter Event Topic
@@ -48,7 +48,7 @@ The problem can be broken into the following two parts,
 As described above, we could imagine that if the number of node are 10, 20 and 100 and so are the parameters for each nodes.
 This will be a huge burden and pain for entire system, passing unnecessary messages via limited bandwidth network with edge devices and filtering messages to drop is not something user application wants to do.
 
-Besides, this problem can be applied to user defined topics.
+Besides, these problems can be applied to user defined topics.
 
 ### Action Topics
 
@@ -183,6 +183,7 @@ This is identical to updating a mutable QoS value.
 - Filtering based on goal id for action `feedback` and `status` topics will be done ROS 2 system.
 - Filtering expression and parameter grammar will be compatible with DDS standard.
 - ContentFilteredTopic should not show up to ROS 2 system. (for example, `ros2 topic list` does not include ContentFilteredTopics.)
+- If rmw implementation does not support ContentFilteredTopic, ROS 2 fallback filtering will take care of the filtering process based on filtering expression and parameters.
 
 ### Proposal
 
@@ -245,16 +246,16 @@ ContentFilterTopic will be managed by rmw implementation internally.
 
 - `rmw_subscription_set_content_filter` to set filtering expression and parameter expressions to subscription.
 - `rmw_subscription_get_content_filter` to get filtering expression and parameter expressions from subscription.
-- add new member `is_cft_enabled` into `rmw_subscription_t` which indicates if CTF is enabled by rmw_implementation or not.
-  e.g) see `can_loan_masseges` member as reference.
-  support status will be set when parent subscription is created. then support status can be read from upper layer to know if CFT is supported or not.
+- add new member `is_cft_enabled` into `rmw_subscription_t` which indicates if ContentFilteredTopic is enabled on subscription by rmw_implementation or not.
+  e.g) see `can_loan_messages` member as reference.
+  support status will be set when parent subscription is created. then support status can be read from upper layer to know if ContentFilteredTopic is supported or not.
 
 -  current support status
 
 | Implementation | `is_cft_supported` |
 | :--: | :--: |
 | rmw_connextdds | true |
-| rmw_fastrtps | false (W.I.P) |
+| rmw_fastrtps | true |
 | rmw_cyclonedds | false |
 
 #### rclcpp
@@ -267,6 +268,14 @@ ContentFilterTopic will be managed by rmw implementation internally.
 - `get_content_filter` method to `SubscriptionBase` to get filtering expression and parameter expressions from subscription.
 
 ### Components
+
+#### Fallback filtering
+
+If rmw implementation does not support ContentFilteredTopic, ROS 2 internally process the filtering using the same filtering expression and parameters provided by user application.
+Fallback filtering is required to provide the same behavior for user application even if rmw implementation does not support ContentFilteredTopic.
+Basically fallback filtering will be integrated within `rcl`, so that it can be applied to any frontend libraries such as `rclcpp` and `rclpy`.
+But it requires type support c/cpp to access the message field. For doing that, some methods will be implemented in c++ library such as `rmw_dds_common`, and then those methods can be issued by `rcl`.
+See more details: https://github.com/ros2/design/pull/282#issuecomment-1062110693
 
 #### Action
 
@@ -290,6 +299,11 @@ ContentFilterTopic will be managed by rmw implementation internally.
 
 ### Notes
 
+- Filtering expression and parameters race condition
+  When the filtering expression and/or the expression parameters are updated, there might be race condition and possibility that publisher might apply the old version of the filter only if filtering happens on publisher side.
+  This depends on rmw implementation.
+  [eProsima Fast-DDS](https://fast-dds.docs.eprosima.com/) provides the configuration to [disable filtering on publisher side](https://fast-dds.docs.eprosima.com/en/latest/fastdds/dds_layer/topic/contentFilteredTopic/writerFiltering.html#discovery-race-condition) for some mission critical application.
+
 - How much flexibility of filtering expression for /parameter_events?
   dds filter_expression and expression_parameters are really flexible, it is designed to  support arbitrary user filtering.
 
@@ -298,10 +312,6 @@ ContentFilterTopic will be managed by rmw implementation internally.
 
 - Possible difference for expression parameters, depends on vendor implementation.
   see [encountered problem](https://issues.omg.org/issues/spec/DDS/1.4#issue-47484).
-
-## Responsibility
-
-<img src="../img/content_filter/responsibility.png" width="600">
 
 ## Slides / Talks
 
