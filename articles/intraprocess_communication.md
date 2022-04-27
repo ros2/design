@@ -633,7 +633,7 @@ Where MSG_TYPE: [stamped10b, stamped10kb, stamped1mb, stamped4mb, stamped8mb].
 
 The tests have been validated on multiple machines:
 
-#### Performance evaluation on embedded system CPU @ 1.4MHz, 1G RAM
+#### Performance evaluation on embedded system CPU @ 1.4GHz, 1G RAM
 
 | Msg Size   |   IPC    |  Latency [us] | CPU [%] |
 | ---------- |  -----   | ------------- | --------|
