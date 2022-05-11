@@ -7,7 +7,7 @@ abstract:
 published: true
 author: Brian Gerkey
 date_written: 2014-06
-last_modified: 2015-07
+last_modified: 2022-05
 categories: Overview
 ---
 
@@ -28,6 +28,28 @@ Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ p
 We started work on ROS in November 2007.
 A lot has happened since then and we believe that it is now time to build the next generation ROS platform.
 In this article we will explain why.
+
+In May 2022, [Robot Operating System 2: Design, architecture, and uses in the wild](https://www.science.org/doi/10.1126/scirobotics.abm6074) was published in Science Robotics describing ROS 2's motivations and design (among other things).
+This is a good reference as well.
+If you use ROS 2 in your work please cite:
+
+```
+S. Macenski, T. Foote, B. Gerkey, C. Lalancette, W. Woodall, “Robot Operating System 2: Design, architecture, and uses in the wild,” Science Robotics vol. 7, May 2022.
+
+@article{
+    doi:10.1126/scirobotics.abm6074,
+    author = {Steven Macenski  and Tully Foote  and Brian Gerkey  and Chris Lalancette  and William Woodall },
+    title = {Robot Operating System 2: Design, architecture, and uses in the wild},
+    journal = {Science Robotics},
+    volume = {7},
+    number = {66},
+    pages = {eabm6074},
+    year = {2022},
+    doi = {10.1126/scirobotics.abm6074},
+    URL = {https://www.science.org/doi/abs/10.1126/scirobotics.abm6074}
+}
+
+```
 
 ## How we got here
 
