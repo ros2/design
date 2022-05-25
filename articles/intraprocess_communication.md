@@ -152,7 +152,7 @@ If the history QoS is set to `keep all`, the buffers are dynamically adjusted in
 On the other hand, if the history QoS is set to `keep last`, the buffers have a size equal to the depth of the history and they act as ring buffers (overwriting the oldest data when trying to push while its full).
 
 Note that in case of publishers with `keep all` and `reliable` communication, the behavior can be different from the one of inter-process communication.
-In the intra-process case, the middlewares use buffers in both publisher and subscription.
+In the inter-process case, the middlewares use buffers in both publisher and subscription.
 If the subscription queue is full, the publisher one would start to fill and then finally the publish call would block when that queue is full.
 Since the intra-process communication uses a single queue on the subscription, this behavior can't be exactly emulated.
 
