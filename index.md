@@ -21,6 +21,26 @@ If you would like to contribute to the ROS 2 project, see [this page](https://gi
 The best mailing list for discussing these topics is [ros-sig-ng-ros@googlegroups.com](mailto:ros-sig-ng-ros@googlegroups.com), the Special Interest Group on Next-Generation ROS mailing list.
 You can view the archives [here](https://groups.google.com/forum/?fromgroups#!forum/ros-sig-ng-ros).
 
+To read more about ROS 2's detail and architecture, please see the [Science Robotics](https://www.science.org/doi/10.1126/scirobotics.abm6074) paper introducing ROS 2. If you use ROS 2 in your work, please cite the following:
+
+```
+S. Macenski, T. Foote, B. Gerkey, C. Lalancette, W. Woodall, “Robot Operating System 2: Design, architecture, and uses in the wild,” Science Robotics vol. 7, May 2022.
+
+@article{
+    doi:10.1126/scirobotics.abm6074,
+    author = {Steven Macenski  and Tully Foote  and Brian Gerkey  and Chris Lalancette  and William Woodall },
+    title = {Robot Operating System 2: Design, architecture, and uses in the wild},
+    journal = {Science Robotics},
+    volume = {7},
+    number = {66},
+    pages = {eabm6074},
+    year = {2022},
+    doi = {10.1126/scirobotics.abm6074},
+    URL = {https://www.science.org/doi/abs/10.1126/scirobotics.abm6074}
+}
+
+```
+
 # Articles
 
 Here is a list of the articles (white papers) which have been written so far. These articles should serve as an entry point for anyone wanting to join the conversation about a variety of the topics that relate to ROS 2.
