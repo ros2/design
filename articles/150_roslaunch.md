@@ -119,7 +119,7 @@ This is somewhere that the launch system in ROS 2 can hopefully improve on what 
 
 #### Deterministic Startup
 
-In the ROS 1 wiki for `rosluanch`, it says ([https://wiki.ros.org/roslaunch/Architecture](https://wiki.ros.org/roslaunch/Architecture)):
+In the ROS 1 wiki for `roslaunch`, it says ([https://wiki.ros.org/roslaunch/Architecture](https://wiki.ros.org/roslaunch/Architecture)):
 
 > roslaunch does not guarantee any particular order to the startup of nodes -- although this is a frequently requested feature, it is not one that has any particular meaning in the ROS architecture as there is no way to tell when a node is initialized.
 
