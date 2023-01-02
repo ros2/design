@@ -68,7 +68,6 @@ For Publishers it establishes the level of reporting that they will provide to S
 Topics will support the following levels of liveliness:
 - LIVELINESS_SYSTEM_DEFAULT - Use the ROS specified default for liveliness (which is LIVELINESS_AUTOMATIC).
 - LIVELINESS_AUTOMATIC - The signal that establishes a Topic is alive comes from the ROS rmw layer.
-- LIVELINESS_MANUAL_BY_NODE - The signal that establishes a Topic is alive is at the node level. Publishing a message on any outgoing channel on the node or an explicit signal from the application to assert liveliness on the node will mark all outgoing channels on the node as being alive.
 - LIVELINESS_MANUAL_BY_TOPIC - The signal that establishes a Topic is alive is at the Topic level. Only publishing a message on the Topic or an explicit signal from the application to assert liveliness on the Topic will mark the Topic as being alive.
 
 In order for a Subscriber to listen to a Publisher's Topic the level of liveliness tracking they request must be equal or less verbose than the level of tracking provided by the Publisher and the time until considered not alive set by the Subscriber must be greater than the time set by the Publisher.
