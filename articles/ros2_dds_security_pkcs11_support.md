@@ -73,9 +73,9 @@ Then, the RMW can be aware of the file extension and set the security property a
 Taking the private key in the authentication plugin as an example:
 
 1. The RMW will look for a file with name `key.pem` or `key.p11` in the enclave.
-1. If there is a `key.pem` file, it keeps the current behavior, and sets the value of the property to the path of the file.
-1. Otherwise, if there is a `key.p11` file, it must load the content of the file, and set this content as the value of the property.
-   Some check can be done at this point, e.g., assert that the file contains a PKCS#11 URI (i.e., starts with `pkcs11:`).
+1. If there is a `key.p11` file, and the RMW supports `pkcs11` URIs, it must load the content of the file, and set this content as the value of the property.
+   Some check can be done at this point, e.g., assert that the file contains a valid URI (i.e., starts with `pkcs11:`)
+1. Otherwise, if there is a `key.pem` file, it keeps the current behavior, and sets the value of the property to the path of the file.
 
 With this proposal, current RMW implementations do not need to be updated if no support for PKCS#11 URIs is planned.
 Existing use SROS2 projects that do not use PKCS#11 URIs will continue to work with both the legacy or the updated implementation.
