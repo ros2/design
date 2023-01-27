@@ -31,7 +31,7 @@ Specifically, in the case of certificates and private keys, it defines the suppo
 - PKCS#11 scheme (`pkcs11:object=MyParticipantPrivateKey;type=private`).
 - data scheme (`data:,-----BEGIN RSA PRIVATE KEY----- MIIEpAIBAAKCAQEA3HIh...AOBaaqSV37XBUJg== -----END RSA PRIVATE KEY-----`).
 
-Current RCL impementation only support the `file` scheme.
+Current RCL implementation only support the `file` scheme.
 Furthermore, it searches these security files in an enclave subdirectory within the reserved `enclaves` subfolder of the root keystore, corresponding to the fully-qualified path of every enclave.
 For example, for the `/foo/bar` enclave, the directory structure would look like:
 
@@ -62,7 +62,7 @@ Support PKCS#11 URIs for certificates and key files.
 
 ### Specification
 
-We want to keep the current keystore structure as much as possible, as this will enable to keep all the current implementation regarding the enclave management and the CLI features that help setting up the keystore.
+We want to keep the current keystore structure as much as possible, as this will enable to keep all the current implementations regarding the enclave management and the CLI features that help setting up the keystore.
 No changes should be needed to systems that do not use the PKCS#11 scheme.
 
 The problem then is how to let the RMW implementation when we want to use a `file` URI and when a `pkcs11` URI; and how to provide the values of these URIs (i.e., the file path in the case of `file` and the token name in the case of `pkcs11`).
