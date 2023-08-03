@@ -437,7 +437,7 @@ Given the current state of `rmw`, however, an alternative design may instead con
 To accomplish "minimal CPU usage", the `active` state will follow the same principles of `rmw::discoverable` (i.e., an `active` entity is a discoverable entity and an `inactive` entity is not discoverable). This means an `inactive` entity will not exist within the `ROS` graph. From a client perspective (e.g., subscribers/clients), the Managed Entities will not be discoverable. For an `inactive` entity, the `rmw` buffer will respect the Quality of Service the same as it does for a destroyed/nonexistent entity.
 
 ### Automating Transitions
-Note this section assumes the [Active state via Middleware State Awareness](#active-state-via-middleware-state-awareness) implementation as this is the "ideal" scenario.
+Note this section assumes the [Active State via Middleware State Awareness](#active-state-via-middleware-state-awareness) implementation as this is the "ideal" scenario.
 
 The process of {de}allocation as well as {de}activation are defined as:
 
