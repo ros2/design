@@ -199,7 +199,7 @@ The `change_state` process will end and any client will be responded to accordin
 For example and as outlined in [rclcpp::#1880](https://github.com/ros2/rclcpp/issues/1880), the `OnStateMachineTransitioned` event publication can fail.
 If this failure happens after the state machine update but prior to the user callback being called (e.g., `Unconfgured` → `Configuring` → publication fails), the state machine will be transitioned via the `CallbackReturn::FAILURE` (e.g., back to `Unconfgured` within this example).
 
-If the error occurs after a user callback has been called, the state machine will instead follow a `CallbackReturn::Error` pathway.
+If the error occurs after a user callback has been called, the state machine will instead follow a `CallbackReturn::ERROR` pathway.
 Any client will be responded to accordingly.
 
 #### User Transition Functions
