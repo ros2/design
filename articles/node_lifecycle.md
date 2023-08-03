@@ -198,7 +198,6 @@ In the event the backend throws and exception or error mid-transition (e.g., a s
 TODO @tgroechel: decide how to handle mid-transition error.
 
 #### User Transition Functions
-
 From the user perspective, transitions are completed in user transition functions.
 Each Transition state registers exactly one user transition function.
 This is to avoid needing to handle a more complicated register/deregister and ordering scheme for multiple callbacks (see [rclcpp::#2216](https://github.com/ros2/rclcpp/issues/2216)).
@@ -206,7 +205,8 @@ If a user would like multiple callbacks, they are expected to set up their own m
 
 All user transition functions are overridable and contain the prior state as an argument.
 This reduces having to explicitly write all user transition functions (e.g., the `Activating` callback may often just be a `CallbackReturn::SUCCESS` as Managed Entities are automatically transitioned). 
-All user transition functions are expected to return control back to the Lifecycle backend of a [Return Values](#return-values) either through function return type (synchronous) or response deferral (through a shared handler). See [Synchronous and Asynchronous Transitions](#synchronous-and-asynchronous-transitions) for details.
+All user transition functions are expected to return control back to the Lifecycle backend of a [Return Values](#return-values) either through function return type (synchronous) or response deferral (through a shared handler).
+See [Synchronous and Asynchronous Transitions](#synchronous-and-asynchronous-transitions) for details.
 
 By default, all user transition functions return `CallbackReturn::SUCCESS` **except the `ErrorProcessing` callback which returns `CallbackReturn::FAILURE` by default**. 
 This avoids the unintentional situation of returning a `CallbackReturn::ERROR` that silently succeeds/transitions into `Unconfigured`.
@@ -406,28 +406,42 @@ This would reduce needed code duplication if implemented as separate services (e
 
 Managed entities transition with the state machine, being automatically allocated and spun. 
 To reduce developer confusion, "Managed Entities" will be the canonical naming scheme for these entities (as opposed to "Lifecycle Entities").
-A separate API will exist when creating a Managed Entity (e.g., `create_managed_x`) to best denote what type of entity you are creating (Persistent Entity vs Managed Entities).
+A separate API will exist when creating a Managed Entity (e.g., `create_managed_x`) to best denote what type of entity you are creating (Persistent Entity vs. Managed Entitiy).
 
-### Active State and Entity Discoverability
-
+### Managed Entity Active State
 CPU usage (i.e., spinning) of entities is governed by their `active` state. An `inactive` (i.e., not `active`) entity will receive "minimal CPU usage".
+There are multiple potential implemenentation schemes to accomplish "minimal CPU usage".
+We discuss two here to garner conversation within the design PR (and will subsequently update/remove text once decided upon).
+We first outline an "ideal" scenario.
+However, this may or may not be practical given the current state of the `rmw` and further outline an alternative solution.
 
-There are multiple possible schemes to accomplish "minimal CPU usage". 
-Given the current state of `rmw`, below is a proposed implementation design.
-If the state of the `rmw` changes (e.g., includes the concept of an `active` entity), this design may be updated (e.g., be able to add to the `ROS` graph during `Configuring` while allowing clients to query for the `active` state).
+#### Active state via Middleware State Awareness
+The `rmw` will have `active` state awareness of a managed entity.
+An `active` entity requires being spun on an executor.
+Therefor, it is the executor's responsibility to update the `rmw`'s `active` state awareness.
+This `active` state will be client query-able the same as `rmw::discoverable` is now.
+E.g., `rclcpp::service_is_ready()` currently reflects a `discoverable` service, queried at the `rmw` layer.
+An equivalent `service_is_active()` will exist.
+
+Messages can still be sent to an `inactive` entity.
+A mechanism will exist where messages that are sent to an `inactive` entity stay in the middleware buffer - respecting the Quality of Service of the entity.
+
+#### Active State via Discoverability Overload
+Given the current state of `rmw`, however, an alternative design may instead consider the following:
 
 To accomplish "minimal CPU usage", the `active` state will follow the same principles of `rmw::discoverable` (i.e., an `active` entity is a discoverable entity and an `inactive` entity is not discoverable). This means an `inactive` entity will not exist within the `ROS` graph. From a client perspective (e.g., subscribers/clients), the Managed Entities will not be discoverable. For an `inactive` entity, the `rmw` buffer will respect the Quality of Service the same as it does for a destroyed/nonexistent entity.
 
 ### Automating Transitions
+Note this section assumes the [Active state via Middleware State Awareness](#active-state-via-middleware-state-awareness) implementation as this is the "ideal" scenario.
+
 The process of {de}allocation as well as {de}activation are defined as:
 
 - Automated {de}allocation: 
   - The entity memory is created/destroyed.
-- Automated {de}activation:
   - The entity is added/removed to/from the `ROS` graph.
+- Automated {de}activation:
   - The entity is added/removed to/from the executor to receive processing of events.
-
-![Lifecycle Managed Entity Allocation & Activation](/img/node_lifecycle/lifecycle_managed_entity.png)
+  - In addition, a mechanism will exist where messages that are sent to an `inactive` entity stay in the middleware buffer - respecting the Quality of Service of the entity.
 
 By default, Managed Entities will be automatically transitioned as outlined below. This will be configurable to disable any automated transitions on a per Transition State basis (e.g., disable `CleaningUp` automatically deallocating the entities but leave all other automations).
 All behaviors are based on the definition of a transition outlined in [Definition of a Transition](#definition-of-a-transition):
