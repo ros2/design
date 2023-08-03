@@ -193,9 +193,14 @@ It is worth noting this is prior to publishing the state machine transition even
 These event publications or service responses can fail.
 These are expected after a fully successful transition, however, and thus do not affect the underlying state machine.
 
-In the event the backend throws and exception or error mid-transition (e.g., a state change event publication mid-transition failure as outlined in [rclcpp::#1880](https://github.com/ros2/rclcpp/issues/1880)), 
+In the event the backend throws and exception or error mid-transition, the backend will attempt to recover. 
+If the error is prior to a calling a user transition callback, the state will fallback (i.e., follow the `CallbackReturn::FAILURE`) path.
+The `change_state` process will end and any client will be responded to accordingly.
+For example and as outlined in [rclcpp::#1880](https://github.com/ros2/rclcpp/issues/1880), the `OnStateMachineTransitioned` event publication can fail.
+If this failure happens after the state machine update but prior to the user callback being called (e.g., `Unconfgured` → `Configuring` → publication fails), the state machine will be transitioned via the `CallbackReturn::FAILURE` (e.g., back to `Unconfgured` within this example).
 
-TODO @tgroechel: decide how to handle mid-transition error.
+If the error occurs after a user callback has been called, the state machine will instead follow a `CallbackReturn::Error` pathway.
+Any client will be responded to accordingly.
 
 #### User Transition Functions
 From the user perspective, transitions are completed in user transition functions.
