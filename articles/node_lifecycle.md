@@ -420,7 +420,7 @@ We discuss two here to garner conversation within the design PR (and will subseq
 We first outline an "ideal" scenario.
 However, this may or may not be practical given the current state of the `rmw` and further outline an alternative solution.
 
-#### Active state via Middleware State Awareness
+#### Active State via Middleware State Awareness
 The `rmw` will have `active` state awareness of a managed entity.
 An `active` entity requires being spun on an executor.
 Therefor, it is the executor's responsibility to update the `rmw`'s `active` state awareness.
