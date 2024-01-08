@@ -133,7 +133,7 @@ The executor can then pop the message from the buffer and trigger the callback o
 The choice of having independent buffers for each `Subscription` leads to the following advantages:
 
  - It is easy to support different QoS for each `Subscription`, while, at the same time, simplifying the implementation.
- - Multiple `Subscription`s can extract messages from their own buffer in parallel without blocking each other, thus providing an higher throughput.
+ - Multiple `Subscription`s can extract messages from their own buffer in parallel without blocking each other, thus providing higher throughput.
 
 The only drawback is that the system is not reusing as much resources as possible, compared to sharing buffers between entities.
 However, from a practical point of view, the memory overhead caused by the proposed implementation with respect to the current one, will always be only a tiny delta compared to the overall memory usage of the application.
