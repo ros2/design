@@ -45,7 +45,7 @@ There are 4 primary states:
 - `Active`
 - `Finalized`
 
-To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state.
+To transition out of a primary state requires action from an external supervisory process, with the exception of an error being triggered in the `Active` state, the `Inactive` state, or the `Unconfigured`.
 
 There are also 6 transition states which are intermediate states during a requested transition.
 
@@ -77,6 +77,8 @@ This is the life cycle state the node is in immediately after being instantiated
 This is also the state in which a node may be retuned to after an error has happened.
 In this state there is expected to be no stored state.
 
+If an error that cannot be handled by the node/system occurs in this state, the node will transition to `ErrorProcessing`.
+
 #### Valid transition out
 
 - The node may transition to the `Inactive` state via the `configure` transition.
@@ -94,6 +96,8 @@ In the inactive state, any data that arrives on managed topics will not be read 
 Data retention will be subject to the configured QoS policy for the topic.
 
 Any managed service requests to a node in the inactive state will not be answered (to the caller, they will fail immediately).
+
+If an error that cannot be handled by the node/system occurs in this state, the node will transition to `ErrorProcessing`.
 
 #### Valid transitions out of Inactive
 
@@ -150,6 +154,7 @@ If the cleanup cannot be successfully achieved it will transition to `ErrorProce
 #### Valid transitions out if CleaningUp
 
 - If the `onCleanup` callback succeeds the node will transition to `Unconfigured`.
+- If the `onCleanup` callback results in a failure code, the node will transition back to `Inactive`.
 - If the `onCleanup` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: Activating
@@ -162,6 +167,7 @@ Ideally, no preparation that requires significant time (such as lengthy hardware
 #### Valid transitions out if Activating
 
 - If the `onActivate` callback succeeds the node will transition to `Active`.
+- If the `onActivate` callback results in a failure code, the node will transition back to `Inactive`.
 - If the `onActivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: Deactivating
@@ -172,6 +178,7 @@ This method is expected to do any cleanup to start executing, and should reverse
 #### Valid transitions out of Deactivating
 
 - If the `onDeactivate` callback succeeds the node will transition to `Inactive`.
+- If the `onDeactivate` callback results in a failure code, the node will transition back to `Active`.
 - If the `onDeactivate` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: ShuttingDown
@@ -182,7 +189,7 @@ It may be entered from any Primary State except `Finalized`, the originating sta
 
 #### Valid transitions out of ShuttingDown
 
-- If the `onShutdown` callback succeeds the node will transition to `Finalized`.
+- If the `onShutdown` callback succeeds or results in a failure code, the node will transition to `Finalized`.
 - If the `onShutdown` callback raises or results in any other return code the node will transition to `ErrorProcessing`.
 
 ### Transition State: ErrorProcessing
