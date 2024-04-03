@@ -25,9 +25,9 @@ Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ p
 
 # Unique Network Flows
 
-For performance, ROS2 applications require careful selection of QoS for publishers and subscriptions. Although networks offer various QoS options, ROS2 publishers and subscriptions are unable to use them due to non-unique flows. As a result, ROS2 publishers and subscriptions can only hope to obtain undifferentiated QoS from networks. This ultimately degrades the performance potential of ROS2 applications and wastes networking infrastructure investments.
+For performance, ROS 2 applications require careful selection of QoS for publishers and subscriptions. Although networks offer various QoS options, ROS 2 publishers and subscriptions are unable to use them due to non-unique flows. As a result, ROS 2 publishers and subscriptions can only hope to obtain undifferentiated QoS from networks. This ultimately degrades the performance potential of ROS 2 applications and wastes networking infrastructure investments.
 
-We propose unique network flows for ROS2 publishers and subscriptions. Our proposal is easy to use, convenient to implement, and minimal. Plus, it respects non-DDS-middleware-friendly concerns in ROS2.
+We propose unique network flows for ROS 2 publishers and subscriptions. Our proposal is easy to use, convenient to implement, and minimal. Plus, it respects non-DDS-middleware-friendly concerns in ROS 2.
 
 In this document, we first describe essential background concepts. After that we precisely state the problem and propose a solution to the problem. Existing solutions are compared in the end.
 
@@ -51,13 +51,13 @@ We briefly discuss two relevant explicit QoS specification methods for applicati
 
 - Differentiated Services (DS) [3] is a widely-used QoS architecture for IP networks. The required DS-based QoS is set by the application in the 6-bit DS Code Point (DSCP) sub-field of the 8-bit DS field in the IP packet header. For example, DSCP set to 0x2E specifies expedited forwarding as the required QoS. Expedited forwarding is typically used for real-time data such as voice and video.
 
-   ROS2 lacks an API to specify DS-based QoS for publishers and subscriptions. The DSCP value in their flows is therefore set to 0x00. This specifies default forwarding as the required QoS from the network. However, DDS provides the Transport Priority QoS policy to specify DS-based QoS.
+   ROS 2 lacks an API to specify DS-based QoS for publishers and subscriptions. The DSCP value in their flows is therefore set to 0x00. This specifies default forwarding as the required QoS from the network. However, DDS provides the Transport Priority QoS policy to specify DS-based QoS.
 
    A frustrating problem with DS-based QoS is that intermediate routers can reset or alter the DSCP value within flows. One workaround is to carefully configure intermediate routers such that they retain DSCP markings from incoming to outgoing flows.
 
 - 5G network 5QI: The Network Exposure Function (NEF) [4] in the 5G core network provides robust and secure API for QoS specification. This API enables applications to programmatically (HTTP-JSON) specify required QoS by associating 5G QoS Identifiers (5QIs) to flow identifers, as shown in the figure next.
 
-  ![ROS2 Application 5GS Network Programmability](./ros2-app-5gs-network-programmability.png)
+  ![ROS 2 Application 5GS Network Programmability](./ros2-app-5gs-network-programmability.png)
 
   Twenty-six standard 5QIs are identified in the latest release-16 by 3GPP [4:Table 5.7.4-1]. We exemplify a few of them in the table below. The variation in service characteristics of the example 5QIs emphasizes the importance of careful 5QI selection.
 
@@ -176,7 +176,7 @@ We list few candidate alternatives next for RMW implementations to implement the
 - If the node is communicating using IPv6, then the RMW implementation can write a unique value (such as a suitable derivative of the RTPS entity ID) in the Flow Label field.
 - If the node is communicating via IPv4, then the RMW implementation can write a unique value in the DSCP field. This option should only be considered as a last resort since re-purposing the DSCP as an identifier is prone to misinterpretation, is limited to 64 entries, and requires careful configuration of intermediate routers.
 
-Both DDS and non-DDS RMW implementations can trivially set fields in IP or transport protocol headers using native socket API on all ROS2 platforms (Linux, Windows, MacOS).
+Both DDS and non-DDS RMW implementations can trivially set fields in IP or transport protocol headers using native socket API on all ROS 2 platforms (Linux, Windows, MacOS).
 
 ### Get Network Flow Endpoints
 
@@ -210,7 +210,7 @@ Our proposal has the following advantages:
 
 - Easy to use: Application developers are only required to decide if unique flow identifiers for publishers/subscriptions are necessary.
 - Light-weight implementation: Both non-DDS and DDS RMW can implement the required support conveniently using native socket API with negligible impact on performance.
-- RMW-agnostic: No particular network is preferred, respecting ROS2 design preferences.
+- RMW-agnostic: No particular network is preferred, respecting ROS 2 design preferences.
 - Minimal change: The application layer is responsible for automating network QoS configuration. This represents minimal disruption to the ROS framework.
 
 ### Limitations
@@ -223,7 +223,7 @@ We list a few alternative solutions to the problem that are limited and dissatis
 
 1. Dedicated nodes: Publishers and subscriptions that require special network QoS can be isolated to dedicated nodes. Such isolation indeed makes their 5-tuple flow identifier unique. However, this breaks the functionality-based node architecture of the application and degrades performance since nodes are heavy-weight structures. In the worst case, a dedicated node per publisher or subscription is required.
 
-2. Custom 6-tuple using side-loaded DDS Transport Priority QoS policies: Conceptually, a custom 6-tuple can be constructed by side-loading unique values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for several reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, re-purposing DSCP values as unique identifiers is limited to 64 identifiers and requires careful network administration as mentioned before. Third, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS2 today (Foxy) support side-loading Transport Priority QoS policies for *select few* publishers and subscriptions in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
+2. Custom 6-tuple using side-loaded DDS Transport Priority QoS policies: Conceptually, a custom 6-tuple can be constructed by side-loading unique values into the Transport Priority QoS policy of the DDS RMW implementation. In practice, however, this is difficult to implement for several reasons. First, it expects  DDS RMW side-loading competence from application programmers which is inconvenient. Second, re-purposing DSCP values as unique identifiers is limited to 64 identifiers and requires careful network administration as mentioned before. Third, side-loading support varies across DDS RMW implementations. To the best of our knowledge, none of the tier-1 DDS implementations for ROS 2 today (Foxy) support side-loading Transport Priority QoS policies for *select few* publishers and subscriptions in a node due to lack of fine-grained interfaces. A glaring limitation is that this alternative ignores non-DDS RMW.
 
 3. DS-based QoS using side-loaded DDS Transport Priority QoS policies: This gets ahead of the problem by directly specifying the required DS-based QoS through side-loaded Transport Priority QoS policies. However, this suffers from similar impracticalities as the previous alternative. It ignores non-DDS RMW, expects DS competence from programmers, and is not supported by tier-1 RMW implementations.
 
