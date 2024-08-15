@@ -107,7 +107,7 @@ That will automatically declare the parameters for reconfiguring the QoS policie
       'my/fully/qualified/topic/name/here':
         publisher:
           reliability: reliable
-          history_depth: 100
+          depth: 100
           history: keep_last
 ```
 
@@ -186,7 +186,7 @@ Note 2: We could also have a `declare_parameters_atomically` method and use:
   node->declare_parameters_atomically(...);  // names and defaults for all parameters given here
   // callback_handle goes out of scope, the callback is auto-removed.
   ```
-  `declare_parameters_atomically` would be needed, if not you cannot have conditions like `history == keep_all or history_depth > 10`.
+  `declare_parameters_atomically` would be needed, if not you cannot have conditions like `history == keep_all or depth > 10`.
 
 ### Parameters URIs
 
@@ -254,12 +254,12 @@ node->create_publisher(
       'my/fully/qualified/topic/name/here': 
         publisher_id1:  # {entity_type}_{id}
           reliability: reliable
-          history_depth: 100
+          depth: 100
           history: keep_last
       'my/fully/qualified/topic/name/here': 
         publisher_id2:  # {entity_type}_{id}
           reliability: best_effort
-          history_depth: 100
+          depth: 100
           history: keep_last
 ```
 
@@ -331,7 +331,7 @@ node->create_publisher(
     {  // implicit, to lower verbosity
         {QosPolicyKind::Reliability, QosPolicyKind::History, QosPolicyKind::HistoryDepth}, // only declare parameters for history depth, history kind, reliability
         [](const QoSProfile qos) -> bool {
-            return qos.is_keep_all() || qos.history_depth() > 10u;  // constrains involving more than one QoS in callbacks
+            return qos.is_keep_all() || qos.depth() > 10u;  // constrains involving more than one QoS in callbacks
         },
         "my_id"  // id to disambiguate entities in same topic
     });
@@ -380,7 +380,7 @@ We could, for example, leverage yaml anchors to allow this:
       'my/fully/qualified/topic/name/here':
         publisher: &profileA
           reliability: reliable
-          history_depth: 1
+          depth: 1
           history: keep_last
 /my/ns/node_name:
   ros__parameters:
@@ -388,7 +388,7 @@ We could, for example, leverage yaml anchors to allow this:
       'my/fully/qualified/topic/name/here':
         subscription:
           <<: *profileA,
-          history_depth: 100  # override the history depth
+          depth: 100  # override the history depth
 ```
 
 ## Reconfigurability of topics the ROS 2 core creates
