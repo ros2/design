@@ -1,0 +1,16 @@
+```xml
+<interface version="1">
+  <node name="node_1" executable="first">
+    <parameter name="verbose" type="bool" />
+    <topic name="chatter" type="std_msgs/msg/String" role="publisher" />
+  </node>
+
+  <node name="node_2" executable="second">
+    <parameter name="rate" type="int" />
+    <topic name="/foo/bar" type="std_msgs/msg/String" role="subscription" />
+    <service name="/example_service" type="std_srvs/srv/Empty" role="client" />
+    <service name="/example_service_2" type="std_srvs/srv/Empty" role="server" />
+    <action name="/example_action" type="example_interfaces/action/Fibonacci" role="both" />
+  </node>
+</interface>
+```
