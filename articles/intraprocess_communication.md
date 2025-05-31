@@ -4,7 +4,7 @@ title: Intra-process Communications in ROS 2
 permalink: articles/intraprocess_communications.html
 abstract: Description of the current intra-process communication mechanism in ROS 2 and of its drawbacks. Design proposal for an improved implementation. Experimental results.
 published: true
-author: '[Alberto Soragna](https://github.com/alsora) [Juan Oxoby](https://github.com/joxoby) [Dhiraj Goel](https://github.com/dgoel)'
+author: '[Alberto Soragna](https://github.com/alsora) [Juan Oxoby](https://github.com/joxoby) [Dhiraj Goel](https://github.com/dgoel) [Mauro Passerino](https://github.com/mauropasse)'
 date_written: 2020-03
 last_modified: 2020-03
 ---
@@ -502,3 +502,174 @@ There are some open issues that are not addressed neither on the current impleme
  - The proposal does not take into account the problem of having a queue with twice the size when both inter and intra-process communication are used.
  A `Publisher` or a `Subscription` with a history depth of 10 will be able to store up to 20 messages without processing them (10 intra-process and 10 inter-process).
  This issue is also present in the current implementation, since each `Subscription` is doubled.
+
+
+# Intra-process communication between Clients and Services
+
+## Introduction
+
+Communication between clients and services in ROS 2 is currently inter-process only, i.e. client requests and server responses are sent via the underlying ROS 2 middleware layer, regardless of the entities belonging to the same or different processes.
+The specifics of how this happens depend on the chosen middleware implementation and may involve serialization steps.
+
+This design document presents an implementation for the intra-process communication between clients and services.
+
+## Motivations for an implementation
+
+Communication between clients and servers can be expensive. If the client request or server response involve the use of big data messages, we incur into a not negligible amount of CPU usage due the need for serialize/deserialize the data.
+There is also a baseline CPU time needed just to go through all layers from rclcpp to the specific middleware implementation, with the associated bookkeping and data safety checks.
+Serializing and deserializing does not only impact the CPU usage, it also increases the latency in which data is available since it has been produced.
+
+This overhead can be avoided if we take advantage of the shared memory space between clients and servers belonging to the same process, where we can pass pointers to the data (requests, responses) all done directly on the rclcpp layer.
+
+There is work being done using shared memory from the rmw to communicate data between different processes (loaned messages), but performances are far from what we can obtain performing intra-process communication only in rclcpp layer.
+
+Many ROS2 features make heavy use of service/client communication.
+For example, ROS2 action servers and action clients are implemented internally using several clients and services.
+Other usage case comes from enabling parameters on a node, which will currently create by default six services.
+Probably more features will be based on service/client communication in the future.
+
+The new intra-process communication implementation between publishers and subscribers have laid a groundwork which can easily be expanded to support intra-process communication between clients and services, and furthermore to ROS2 actions.
+
+Having implemented intra-process communication between services and clients has the advantage that any "stub" DDS with stubbed DDS apis can still work with these entities since the communication doesn't happen in the rmw.
+
+All of these reasons plus the need for ROS2 to evolve and be optimized over time as it grows in popularity, made us to implement intra-process communication between clients and services.
+
+### Incomplete Quality of Service support
+
+Same as what is currently supported between publisher/subscriber intra-process communication, the proposed implementation is limited to communication between clients and services who had set their QoS to "keep last" on history policy, have a "QoS depth" different than zero and "volatile" durability.
+Nevertheless, other QoS settings should not be too difficult to support if needed.
+
+### Problems when both inter and intra-process communication are needed
+
+In the case of communication between publishers and subscribers, if there is at least one subscription in a different process than the publisher the RMW will try to deliver inter-process messages also to the subscriptions within the same process of the `Publisher`, even if they have already received the intra-process message.
+These messages will be discarded, but they still cause an overhead.
+
+This issue also affects communication between clients and services.
+If we could enforce a single service per topic name, we would solve this issue for this particular case since a client would send a request to a unique service, which will reply directly to the same client who created the request.
+
+## Proposed implementation
+
+The implementation of the presented intra-process communication mechanism is hosted on [GitHub here](https://github.com/ros2/rclcpp/pull/1847).
+
+### Overview
+
+We want to make use of the infrastructure created to support publisher/subscription intra-process communication which has been designed with performance in mind, since it avoids any communication through the middleware between nodes in the same process.
+
+Consider a simple scenario, consisting of `Client`s and `Service`s all in the same process and with the durability QoS set to `volatile`.
+The proposed implementation creates one buffer per `Client` and `Service`.
+When a `Client` makes a request to a `Service` pushes the request into the buffer of the `Service` related to that topic and raises a notification, waking up the executor.
+The executor can then extract the request from the service's buffer and trigger the `Service`'s callback, which will in turn process the request and send the response to the `Client`'s buffer raising a notification, waking up the executor.
+The executor can then pop the `Service`'s response from the `Client`'s buffer and trigger its callback.
+
+The choice of having independent buffers for each `Client` and `Service` leads to the following advantages:
+
+ - It is easy to support different QoS for each `Client`/`Service`, while, at the same time, simplifying the implementation.
+ - Multiple `Client`s and `Service`s can extract messages from their own buffer in parallel without blocking each other, thus providing an higher throughput.
+
+These are the data-types stored in the buffer:
+The `Service` buffer stores `ClientIDtoRequest`s which is a map mapping the client's ID of the client making the request with the request data.
+The `Client` buffer stores `ServiceResponse`s which is just the `Service` response data.
+
+The buffers have a size equal to the depth of the history and they act as ring buffers (overwriting the oldest data when trying to push while its full). That is, if the service queue is full of requests, a new client request will erase the oldest one and be pushed at the back of the queue.
+
+New classes derived from `rclcpp::Waitable` are defined, named `ClientIntraProcessBase` and `ServiceIntraProcessBase`.
+Objects of this type are created by each `Client` and `Service` respectively if intra-process communication is set to be enabled, and it is used to notify the `Client`s and `Service`s that new requests/responses has been pushed into their ring buffer that need to be processed.
+
+The `IntraProcessManager` class stores information about each `Client` and each `Service`, together with pointers to these structures.
+This allows the system to know which entities can communicate with each other and to have access to methods for pushing data into the buffers.
+
+![IPC Client/Service Diagram](../img/intraprocess_communication/ipc_client_service.png)
+
+The implementation enforces one intra-process service per topic name, so we don't have the issue of double delivery.
+The decision whether to send inter-process or intra-process `Client`s requests is made every time the `Client::async_send_request()` method is called. If it finds a matching service available in the same process, it will send an intra-process request.
+If the `Service` got an intra-process request, it will send the response also via intra-process communication.
+
+### Creating a client
+
+1. User calls `Node::create_client<ServiceT>(...)` or `rclcpp::create_client<ServiceT>(...)`, where a `rclcpp::Client` is created.
+2. If intra-process communication is enabled, `Client::create_intra_process_client()` will create the intra-process client which creates a ring buffer of the size specified by the depth from the QoS.
+3. Then the `IntraProcessManager` is notified about the existence of the new `Client` through the method `IntraProcessManager::add_intra_process_client(...)`.
+4. Intra-process related variables are initialized through the `ClientBase::setup_intra_process(...)` method.
+5. `IntraProcessManager::add_intra_process_client(...)` stores a weak pointer from the client `Client` along its unique ID in a `std::map<uint64_t, ClientIntraProcessBase::WeakPtr>` object.
+Then we check the `Client`'s topic name and find services matching it, if they do a pair `<client_id, service_id>` is stored in a map.
+The function returns the `client_id`, that is stored within the `Client`.
+
+### Creating a service
+
+1. User calls `Node::create_service<ServiceT>(...)` or `rclcpp::create_service<ServiceT>(...)`, where a `rclcpp::Service` is created.
+2. If intra-process communication is enabled, `Service::create_intra_process_service()` will create the intra-process Service which creates a ring buffer of the size specified by the depth from the QoS.
+3. Then the `IntraProcessManager` is notified about the existence of the new `Service` through the method `IntraProcessManager::add_intra_process_service(...)`.
+4. Intra-process related variables are initialized through the `ServiceBase::setup_intra_process(...)` method.
+5. `IntraProcessManager::add_intra_process_service(...)` stores a weak pointer from the service `Service` along its unique ID in a `std::map<uint64_t, ServiceIntraProcessBase::WeakPtr>` object.
+Then we check the `Service`'s topic name and find clients matching it, if they do a pair `<client_id, service_id>` is stored in a map.
+The function returns the `service_id`, that is stored within the `Service`.
+
+### Client intra-process request
+1. User calls `Client::async_send_request()` where we look for an intra-process service matching the topic name.
+2. The intra-process manager sends the `SharedRequest` to the matching intra-process service, which stores it into its ring buffer and triggers its guard condition.
+3. The executor wakes up and the service processes the `SharedRequest` and creates a `SharedResponse`.
+
+### Service intra-process response
+1. The intra-process service processes the `SharedRequest` and creates a `SharedResponse`.
+2. The intra-process service uses the `client_id` present in the `SharedRequest` to obtain the intra-process client which will get the response.
+3. `Client::store_intra_process_response(...)` is called and the response is stored in the `Client`'s ring buffer, triggering also its guard condition.
+4. The executor wakes up and the client processes the `SharedReseponse`.
+
+## Perfomance evaluation
+
+This section contains experimental results obtained after comparing the current inter-process communication against the new intra-process communication for clients and services.
+
+To compare performances we've used the iRobot ros2-performance benchmark `simple_client_service_main` (source [here](https://github.com/irobot-ros/ros2-performance/blob/master/performance_test_factory/examples/simple_client_service_main.cpp)), which measures CPU ad latency of a ROS2 system formed by clients and services.
+
+The system we tested is made up of a single `Client` sending requests to a single `Service` five times per second, alternating inter and intra process communication, using different messages sizes for requests and responses: 10 bytes, 10 kilobytes, 1 megabyte, 4 megabytes and 8 megabytes.
+
+The latency is computed as the time since the `Client` makes a request until it gets the response from the `Server`.
+
+Command:
+```
+./simple_client_service_main --use_ipc <0/1> --msg_type <MSG_TYPE> --clients 1 --services 1 -f 5
+```
+Where MSG_TYPE: [stamped10b, stamped10kb, stamped1mb, stamped4mb, stamped8mb].
+
+The tests have been validated on multiple machines:
+
+#### Performance evaluation on embedded system CPU @ 1.4GHz, 1G RAM
+
+| Msg Size   |   IPC    |  Latency [us] | CPU [%] |
+| ---------- |  -----   | ------------- | --------|
+|    10B     |   ON     |      74       |  0.26   |
+|    10B     |   OFF    |      294      |  0.27   |
+|    10KB    |   ON     |      78       |  0.27   |
+|    10KB    |   OFF    |      345      |  0.27   |
+|    1MB     |   ON     |      348      |  0.32   |
+|    1MB     |   OFF    |      5311     |  0.86   |
+|    4MB     |   ON     |      1026     |  0.5    |
+|    4MB     |   OFF    |      18777    |  2.5    |
+|    8MB     |   ON     |      2070     |  0.72   |
+|    8MB     |   OFF    |      36510    |  4.7    |
+
+![Latency and CPU of Client/Service](../img/intraprocess_communication/latency-cpu-client-service-ipc.png)
+
+From this simple experiment we can see the great improvement in latency when using the proposed intra-process communication, even for the smallest of the messages tested where latency is four times smaller.
+The improvements in CPU are move visible when the bigger the messages get. CPU improvements are clearly visible for messages from 1MB, but seem to have same performances for 10Kb.
+
+Same conclusions are obtanined after repeating the test on an x86_64 machine:
+
+#### Performance evaluation on x86_64 Intel i9-8950HK CPU @ 2.90GHz
+
+| Msg Size   |   IPC    |  Latency [us] | CPU [%] |
+| ---------- |  -----   | ------------- | --------|
+|    10KB    |   ON     |     526       |  0.1    |
+|    10KB    |   OFF    |     747       |  0.1    |
+|    1MB     |   ON     |     737       |  0.11   |
+|    1MB     |   OFF    |     2353      |  0.15   |
+|    4MB     |   ON     |     1275      |  0.15   |
+|    4MB     |   OFF    |     6487      |  0.33   |
+|    8MB     |   ON     |     1873      |  0.22   |
+|    8MB     |   OFF    |     13327     |  0.61   |
+
+![Latency and CPU of Client/Service x86_64](../img/intraprocess_communication/latency-cpu-client-service-ipc-x86.png)
+
+## Open Issues
+
+The same issues of intra-process communication between Publishers and Subscriptions apply to Clients and Services.
