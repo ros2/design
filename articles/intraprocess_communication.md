@@ -344,6 +344,11 @@ A copy of the message will be given to all the `Subscription`s requesting owners
 The following tables show a recap of when the proposed implementation has to create a new copy of a message.
 The notation `@` indicates a memory address where the message is stored, different memory addresses correspond to different copies of the message.
 
+**Note on current behavior**: The actual implementation behavior differs from the proposed implementation as described in [rclcpp issue #2872](https://github.com/ros2/rclcpp/issues/2872):
+- **shared_ptr messages**: Cannot be published.
+- **unique_ptr messages**: When using `std::move()`, zero-copy transfer is achieved.
+- **raw messages**: Both `msg` and `std::move(msg)` result in copying the message.
+
 #### Publishing UniquePtr
 
 
@@ -352,22 +357,10 @@ The notation `@` indicates a memory address where the message is stored, differe
 | unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\>      |                     @1  |
 | unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\>     |     @1 <br> @2 |
 | unique_ptr\<MsgT\> @1   | shared_ptr\<MsgT\>      |                     @1  |
-| unique_ptr\<MsgT\> @1   | shared_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @1 <br> @1 |
+| unique_ptr\<MsgT\> @1   | shared_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @1 <br> @2 |
 | unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @1 <br> @2 |
-| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @1 <br> @2 <br> @2|
-| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @1 <br> @2 <br> @3 <br> @3|
-
-#### Publishing SharedPtr
-
-| publish\<T\>            | BufferT                 |   Results               |
-| ----------------------- | ----------------------- | ----------------------- |
-| shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\>      |                     @2  |
-| shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\>     |     @2 <br> @3 |
-| shared_ptr\<MsgT\> @1   | shared_ptr\<MsgT\>      |                     @1  |
-| shared_ptr\<MsgT\> @1   | shared_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @1 <br> @1 |
-| shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @2 <br> @1 |
-| shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @2 <br> @1 <br> @1|
-| shared_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @2 <br> @3 <br> @1 <br> @1|
+| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @1 <br> @2 <br> @3|
+| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @1 <br> @2 <br> @3 <br> @4|
 
 The possibility of setting the data-type stored in each buffer becomes helpful when dealing with more particular scenarios.
 
