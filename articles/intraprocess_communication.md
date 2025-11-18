@@ -329,7 +329,7 @@ If all the `Subscription`s want ownership of the message, then a total of `N-1` 
 The last one will receive ownership of the published message, thus saving a copy.
 
 If none of the `Subscription`s want ownership of the message, `0` copies are required.
-It is possible to convert the message into a `std::shared_ptr<MessageT> msg` and to add it to every buffer.
+It is possible to convert the message into a `std::shared_ptr<const MessageT> msg` and to add it to every buffer.
 
 If there is 1 `Subscription` that does not want ownership while the others want it, the situation is equivalent to the case of everyone requesting ownership:`N-1` copies of the message are required.
 As before the last `Subscription` will receive ownership.
@@ -344,11 +344,6 @@ A copy of the message will be given to all the `Subscription`s requesting owners
 The following tables show a recap of when the proposed implementation has to create a new copy of a message.
 The notation `@` indicates a memory address where the message is stored, different memory addresses correspond to different copies of the message.
 
-**Note on current behavior**: The actual implementation behavior differs from the proposed implementation as described in [rclcpp issue #2872](https://github.com/ros2/rclcpp/issues/2872):
-- **shared_ptr messages**: Cannot be published.
-- **unique_ptr messages**: When using `std::move()`, zero-copy transfer is achieved.
-- **raw messages**: Both `msg` and `std::move(msg)` result in copying the message.
-
 #### Publishing UniquePtr
 
 
@@ -356,17 +351,17 @@ The notation `@` indicates a memory address where the message is stored, differe
 | ----------------------- | ----------------------- | ----------------------- |
 | unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\>      |                     @1  |
 | unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\>     |     @1 <br> @2 |
-| unique_ptr\<MsgT\> @1   | shared_ptr\<MsgT\>      |                     @1  |
-| unique_ptr\<MsgT\> @1   | shared_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @1 <br> @2 |
-| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>     |     @1 <br> @2 |
-| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @1 <br> @2 <br> @3|
-| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<MsgT\>   <br> shared_ptr\<MsgT\>   |  @1 <br> @2 <br> @3 <br> @4|
+| unique_ptr\<MsgT\> @1   | shared_ptr\<const MsgT\>      |                     @1  |
+| unique_ptr\<MsgT\> @1   | shared_ptr\<const MsgT\> <br> shared_ptr\<const MsgT\>     |     @1 <br> @1 |
+| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<const MsgT\>     |     @1 <br> @2 |
+| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> shared_ptr\<const MsgT\>   <br> shared_ptr\<const MsgT\>   |  @1 <br> @2 <br> @2|
+| unique_ptr\<MsgT\> @1   | unique_ptr\<MsgT\> <br> unique_ptr\<MsgT\> <br> shared_ptr\<const MsgT\>   <br> shared_ptr\<const MsgT\>   |  @1 <br> @2 <br> @3 <br> @3|
 
 The possibility of setting the data-type stored in each buffer becomes helpful when dealing with more particular scenarios.
 
 Considering a scenario with N `Subscription`s all taking a unique pointer.
 If the `Subscription`s don't actually take the message (e.g. they are busy and the message is being overwritten due to QoS settings) the default buffer type (`unique_ptr` since the callbacks require ownership) would result in the copy taking place anyway.
-By setting the buffer type to `shared_ptr`, no copies are needed when the `Publisher` pushes messages into the buffers.
+By setting the buffer type to `shared_ptr<const MsgT>`, no copies are needed when the `Publisher` pushes messages into the buffers.
 Eventually, the `Subscription`s will copy the data only when they are ready to process it.
 
 On the other hand, if the published data are very small, it can be advantageous to do not use C++ smart pointers, but to directly store the data into the buffers.
